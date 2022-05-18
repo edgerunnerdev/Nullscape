@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(Hexterminate)
+project(Hyperscape)
 
 if(WIN32)
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/Genesis/cmake/windows)
