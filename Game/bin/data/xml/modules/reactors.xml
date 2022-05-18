@@ -1,0 +1,171 @@
+<Modules>
+  
+  <!-- Common reactors -->
+  
+  <Module>
+    <Name>CommonReactor1</Name>
+    <FullName>Kyros-Hyperion plasma reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Common</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>125.0</Capacity>
+    <RechargeRate>25.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>CommonReactor2</Name>
+    <FullName>Delacroix plasma reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Common</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>100.0</Capacity>
+    <RechargeRate>30.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>CommonReactor3</Name>
+    <FullName>Octer plasma reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Common</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>150.0</Capacity>
+    <RechargeRate>20.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+  
+  
+  <!-- Uncommon reactors -->
+
+  <Module>
+    <Name>UncommonReactor1</Name>
+    <FullName>Kyros-Hyperion fusion reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Uncommon</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>225.0</Capacity>
+    <RechargeRate>45.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>UncommonReactor2</Name>
+    <FullName>Delacroix fusion reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Uncommon</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>150.0</Capacity>
+    <RechargeRate>60.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>UncommonReactor3</Name>
+    <FullName>Octer fusion reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Uncommon</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>300.0</Capacity>
+    <RechargeRate>30.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+  
+  
+  <!-- Rare reactors -->
+
+  <Module>
+    <Name>RareReactor1</Name>
+    <FullName>Kyros-Hyperion anti-matter reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Rare</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>410.0</Capacity>
+    <RechargeRate>80.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>RareReactor2</Name>
+    <FullName>Delacroix anti-matter reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Rare</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>225.0</Capacity>
+    <RechargeRate>120.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>RareReactor3</Name>
+    <FullName>Octer anti-matter reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Rare</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>600.0</Capacity>
+    <RechargeRate>45.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+  
+  
+  <!-- Artifact reactors -->
+  
+  <Module>
+    <Name>ArtifactReactor1</Name>
+    <FullName>Frontier 'Ascendant' solid state reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Artifact</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>770.0</Capacity>
+    <RechargeRate>155.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>ArtifactReactor2</Name>
+    <FullName>Sinclair 'Rapture' solid state reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Artifact</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>340.0</Capacity>
+    <RechargeRate>240.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>ArtifactReactor3</Name>
+    <FullName>Daedalus 'Rise' solid state reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Artifact</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>1200.0</Capacity>
+    <RechargeRate>70.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+  
+  
+  <!-- Legendary reactors -->
+
+  <Module>
+    <Name>LegendaryReactor1</Name>
+    <FullName>'UNBOUND' grid reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Legendary</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>340.0</Capacity>
+    <RechargeRate>480.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+  <Module>
+    <Name>LegendaryReactor2</Name>
+    <FullName>'INFINITY' grid reactor</FullName>
+    <Type>Reactor</Type>
+    <Rarity>Legendary</Rarity>
+    <Model>data/models/reactors/module.tmf</Model>
+    <Capacity>2400.0</Capacity>
+    <RechargeRate>100.0</RechargeRate>
+    <ContextualTip>#tip_reactor</ContextualTip>
+  </Module>
+
+</Modules>
