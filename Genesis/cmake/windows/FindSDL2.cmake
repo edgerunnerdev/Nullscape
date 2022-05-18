@@ -1,0 +1,5 @@
+set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/SDL2-2.0.5/include" CACHE STRING "SDL2 - include directory")
+set(SDL2_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/SDL2-2.0.5/lib/x86" CACHE STRING "SDL2 - library directory")
+
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(SDL2 REQUIRED_VARS SDL2_INCLUDE_DIRS SDL2_LIBRARY_DIRS)
