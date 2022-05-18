@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+# CMake intermediate directories
+out/
+
+# Visual Studio's CMake integration
+.vs/
+
+# Generated artifacts
+Game/bin/config.xml
+Game/bin/Hyperscape.exe
+Game/bin/Hyperscape.pdb
+Game/bin/imgui.ini
+Game/bin/log.txt
+Game/bin/Screenshot*.bmp
