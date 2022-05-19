@@ -80,7 +80,7 @@ if(USE_STEAM)
   target_include_directories(Game PRIVATE ${STEAMWORKS_INCLUDE_DIRS})
   target_compile_definitions(Game PRIVATE USE_STEAM=1 STEAM_APP_ID=1123230)
   target_link_directories(Game PRIVATE ${STEAMWORKS_LIBRARY_DIRS})
-  target_link_libraries(Game PRIVATE steam_api)
+  target_link_libraries(Game PRIVATE steam_api64)
 endif()
 
 set_target_properties(Game PROPERTIES OUTPUT_NAME "Hyperscape")

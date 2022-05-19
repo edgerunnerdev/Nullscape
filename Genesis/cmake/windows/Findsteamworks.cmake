@@ -1,2 +1,2 @@
-set(STEAMWORKS_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/steamworks-1.4.2/include" CACHE STRING "Steam - include directory")
-set(STEAMWORKS_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/steamworks-1.4.2/lib/win32" CACHE STRING "Steam - library directory")
+set(STEAMWORKS_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/steamworks_sdk_153a/sdk/public" CACHE STRING "Steam - include directory")
+set(STEAMWORKS_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/steamworks_sdk_153a/sdk/redistributable_bin/win64" CACHE STRING "Steam - library directory")
