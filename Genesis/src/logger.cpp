@@ -99,7 +99,7 @@ void Logger::Log( const char* text, LogMessageType type /* = LOG_INFO */ )
     if ( type == LOG_ERROR )
     {
 #ifdef _WIN32
-        __asm int 3
+        __debugbreak();
 #else
         asm( "int $3" );
 #endif
