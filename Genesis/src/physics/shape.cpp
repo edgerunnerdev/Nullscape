@@ -156,7 +156,7 @@ SphereShape::SphereShape( float radius )
 
 ConvexHullShape::ConvexHullShape( const ConvexHullVertices& vertices )
 {
-	m_pShape = new btConvexHullShape( reinterpret_cast< const btScalar* >( vertices.data() ), vertices.size(), sizeof( glm::vec3 ) );
+	m_pShape = new btConvexHullShape( reinterpret_cast< const btScalar* >( vertices.data() ), static_cast<int>( vertices.size() ), static_cast<int>( sizeof( glm::vec3 ) ) );
 	m_pShape->setUserPointer( this );
 }
 

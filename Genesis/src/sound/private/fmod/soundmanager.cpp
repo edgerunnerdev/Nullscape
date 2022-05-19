@@ -322,7 +322,7 @@ bool SoundManager::HasValidPlaylist() const
         return false;
     }
 
-    int numTracks = m_CachedTracks.size();
+    const size_t numTracks = m_CachedTracks.size();
     if ( numTracks == 0 )
     {
         FrameWork::GetLogger()->LogInfo( "Playlist '%s' has no tracks in it", m_pActivePlaylist->GetFilename().GetName().c_str() );
@@ -337,8 +337,8 @@ bool SoundManager::PlayNextTrack()
     if ( HasValidPlaylist() == false )
         return false;
 
-    const int numTracks = m_CachedTracks.size();
-    const int trackToPlay = ( ++m_PlaylistSoundIndex ) % numTracks;
+    const size_t numTracks = m_CachedTracks.size();
+    const int trackToPlay = static_cast<int>( ( ++m_PlaylistSoundIndex ) % numTracks );
     ResourceSound* pNextTrackResource = m_CachedTracks[ trackToPlay ];
 
     FrameWork::GetLogger()->LogInfo( "Next track in queue (%d / %d): '%s'", trackToPlay + 1, numTracks, pNextTrackResource->GetFilename().GetName().c_str() );
@@ -357,8 +357,8 @@ bool SoundManager::PlayTrack( const std::string& trackName )
     if ( HasValidPlaylist() == false )
         return false;
 
-    const int numTracks = m_CachedTracks.size();
-    for ( int i = 0; i < numTracks; ++i )
+    const size_t numTracks = m_CachedTracks.size();
+    for ( size_t i = 0; i < numTracks; ++i )
     {
         ResourceSound* pTrackResource = m_CachedTracks[ i ];
 
@@ -366,7 +366,7 @@ bool SoundManager::PlayTrack( const std::string& trackName )
         {
             pTrackResource->Initialise( SOUND_FLAG_STREAM );
 			m_pPlaylistSoundInstance = CreateSoundInstance(pTrackResource);
-			m_PlaylistSoundIndex = i;
+			m_PlaylistSoundIndex = static_cast<int>(i);
 			return true;
         }
     }

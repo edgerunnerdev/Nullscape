@@ -132,7 +132,7 @@ unsigned int ResourceFont::PopulateVertexBuffer( VertexBuffer& vertexBuffer, flo
         return 0;
     }
 
-    const int textLength = text.length();
+    const size_t textLength = text.length();
     PositionData positionData;
     UVData uvData;
     positionData.reserve( textLength * 6 );
@@ -142,7 +142,7 @@ unsigned int ResourceFont::PopulateVertexBuffer( VertexBuffer& vertexBuffer, flo
     float ytranslate = y;
 
     unsigned int vertexCount = 0;
-    for ( int i = 0; i < textLength; i++ )
+    for ( size_t i = 0; i < textLength; i++ )
     {
         if ( text[ i ] == '\n' )
         {

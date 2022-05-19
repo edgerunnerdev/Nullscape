@@ -68,8 +68,8 @@ namespace Gui
 
         Genesis::ResourceImage* GetSource() const;
         void SetSource( Genesis::ResourceImage* pImage );
-        int GetElementCount() const;
-        int AddElement( float x1, float y1, float x2, float y2 );
+        size_t GetElementCount() const;
+        size_t AddElement( float x1, float y1, float x2, float y2 );
         const AtlasElement& GetElement( int index ) const;
 
     private:
@@ -77,7 +77,7 @@ namespace Gui
         AtlasElementVector m_Elements;
     };
 
-    inline int Atlas::GetElementCount() const
+    inline size_t Atlas::GetElementCount() const
     {
         return m_Elements.size();
     }

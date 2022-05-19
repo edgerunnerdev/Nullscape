@@ -63,10 +63,10 @@ public:
     void CopyNormals( const NormalData& data, size_t count );
     void CopyColours( const ColourData& data );
     void CopyColours( const ColourData& data, size_t count );
-    void CopyData( const float* pData, unsigned int count, unsigned int destination );
+    void CopyData( const float* pData, size_t count, unsigned int destination );
 
-    void Draw( unsigned int numVertices = 0 ); // Draw the vertex buffer. Passing 0 to this function will draw the entire buffer.
-    void Draw( unsigned int startVertex, unsigned int numVertices, void* pIndices = nullptr );
+    void Draw( size_t numVertices = 0 ); // Draw the vertex buffer. Passing 0 to this function will draw the entire buffer.
+    void Draw( size_t startVertex, size_t numVertices, void* pIndices = nullptr );
 
     void CreateUntexturedQuad( float x, float y, float width, float height );
     void CreateUntexturedQuad( float x, float y, float width, float height, const glm::vec4& colour );
@@ -83,7 +83,7 @@ private:
     GLuint m_UV;
     GLuint m_Normal;
     GLuint m_Colour;
-    std::array<unsigned int, 4> m_Size;
+    std::array<size_t, 4> m_Size;
     GLenum m_Mode;
 };
 GENESIS_DECLARE_SMART_PTR( VertexBuffer );

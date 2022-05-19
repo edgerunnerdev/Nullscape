@@ -338,7 +338,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
     while ( fp.getline( buffer, sizeof( buffer ) ) )
     {
 #ifdef _WIN32
-        sscanf_s( buffer, "  %s", parameterType, sizeof( parameterType ) );
+        sscanf_s( buffer, "  %s", parameterType, static_cast<unsigned int>( sizeof( parameterType ) ) );
 #else
         sscanf( buffer, "  %s", parameterType );
 #endif
@@ -348,7 +348,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         {
             int v = 0;
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s %d", parameterName, sizeof( parameterName ), &v );
+            sscanf_s( buffer, "%*s %s %d", parameterName, static_cast<unsigned int>( sizeof( parameterName ) ), &v );
 #else
             sscanf( buffer, "%*s %s %d", parameterName, &v );
 #endif
@@ -369,7 +369,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         {
             float v = 0.0f;
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s %f", parameterName, sizeof( parameterName ), &v );
+            sscanf_s( buffer, "%*s %s %f", parameterName, static_cast<unsigned int>( sizeof( parameterName ) ), &v );
 #else
             sscanf( buffer, "%*s %s %f", parameterName, &v );
 #endif
@@ -390,7 +390,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         {
             float v1, v2;
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s %f %f", parameterName, sizeof( parameterName ), &v1, &v2 );
+            sscanf_s( buffer, "%*s %s %f %f", parameterName, static_cast<unsigned int>( sizeof( parameterName ) ), &v1, &v2 );
 #else
             sscanf( buffer, "%*s %s %f %f", parameterName, &v1, &v2 );
 #endif
@@ -411,7 +411,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         {
             float v1, v2, v3;
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s %f %f %f", parameterName, sizeof( parameterName ), &v1, &v2, &v3 );
+            sscanf_s( buffer, "%*s %s %f %f %f", parameterName, static_cast<unsigned int>( sizeof( parameterName ) ), &v1, &v2, &v3 );
 #else
             sscanf( buffer, "%*s %s %f %f %f", parameterName, &v1, &v2, &v3 );
 #endif
@@ -432,7 +432,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         {
             float v1, v2, v3, v4;
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s %f %f %f %f", parameterName, sizeof( parameterName ), &v1, &v2, &v3, &v4 );
+            sscanf_s( buffer, "%*s %s %f %f %f %f", parameterName, static_cast<unsigned int>( sizeof( parameterName ) ), &v1, &v2, &v3, &v4 );
 #else
             sscanf( buffer, "%*s %s %f %f %f %f", parameterName, &v1, &v2, &v3, &v4 );
 #endif
@@ -452,7 +452,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         else if ( sparameterType == "TEXTUREMAP" )
         {
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s", parameterName, sizeof( parameterName ) );
+            sscanf_s( buffer, "%*s %s", parameterName, static_cast<unsigned int>( sizeof( parameterName ) ) );
 #else
             sscanf( buffer, "%*s %s", parameterName );
 #endif
@@ -481,7 +481,7 @@ void ResourceModel::LoadMaterialLibrary( const std::string& filename )
         else if ( sparameterType == "SHADER" )
         {
 #ifdef _WIN32
-            sscanf_s( buffer, "%*s %s", shaderName, sizeof( parameterName ) );
+            sscanf_s( buffer, "%*s %s", shaderName, static_cast<unsigned int>( sizeof( parameterName ) ) );
 #else
             sscanf( buffer, "%*s %s", shaderName );
 #endif

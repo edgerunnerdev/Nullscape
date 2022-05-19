@@ -737,10 +737,10 @@ namespace Gui
         std::string line;
         std::string word;
         const float width = GetSize().x;
-        int lastWordIdx = 0;
+        size_t lastWordIdx = 0;
         m_ProcessedText.clear();
 
-        for ( int i = 0, c = m_Text.length(); i < c; ++i )
+        for ( size_t i = 0, c = m_Text.length(); i < c; ++i )
         {
             if ( m_Text[ i ] == ' ' || m_Text[ i ] == '\n' || i == c - 1 )
             {
@@ -784,8 +784,8 @@ namespace Gui
             return 0;
 
         int lines = 1;
-        int l = m_ProcessedText.length();
-        for ( int i = 0; i < l; ++i )
+        size_t l = m_ProcessedText.length();
+        for ( size_t i = 0; i < l; ++i )
         {
             if ( m_ProcessedText[ i ] == '\n' )
                 lines++;

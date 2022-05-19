@@ -43,8 +43,8 @@ void Filename::Initialise( const std::string& filename )
 std::string Filename::ResolvePath( const std::string& filename ) const
 {
     std::string resolvedPath = filename;
-    const unsigned int length = resolvedPath.length();
-    for ( unsigned int i = 0; i < length; ++i )
+    const size_t length = resolvedPath.length();
+    for ( size_t i = 0; i < length; ++i )
     {
         if ( resolvedPath[ i ] == '/' )
             resolvedPath[ i ] = '\\';

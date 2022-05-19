@@ -75,9 +75,9 @@ private:
 inline float ResourceFont::GetTextLength( const std::string& text ) const
 {
     float len = 0.0f;
-    int charListSize = (int)mCharList.size();
-    int s = text.length();
-    for ( int i = 0; i < s; i++ )
+    size_t charListSize = (int)mCharList.size();
+    size_t s = text.length();
+    for ( size_t i = 0; i < s; i++ )
     {
         int fontCharPos = text[ i ] - 32;
         if ( fontCharPos >= charListSize || fontCharPos < 0 )

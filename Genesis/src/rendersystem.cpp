@@ -214,7 +214,7 @@ void RenderSystem::DrawDebugWindow()
         {
             ImGui::Text( "%s - %d x %d", pRenderTarget->GetName().c_str(), pRenderTarget->GetWidth(), pRenderTarget->GetHeight() );
             ImGui::Image( 
-                reinterpret_cast<ImTextureID>( pRenderTarget->GetColor() ), 
+                reinterpret_cast<ImTextureID>( static_cast<uintptr_t>( pRenderTarget->GetColor() ) ), 
                 ImVec2( static_cast<float>( pRenderTarget->GetWidth() ), static_cast<float>( pRenderTarget->GetHeight() ) ),
                 ImVec2( 0, 0 ), // UV1
                 ImVec2( 1, 1 ), // UV2

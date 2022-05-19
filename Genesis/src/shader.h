@@ -111,7 +111,7 @@ public:
     template <typename T>
     void GetParameterValue( int id, T* value ) const;
 
-    int GetParametersNumber() const;
+    size_t GetParametersNumber() const;
 
     void SetTextureMap( TextureMap textureMap, GLuint texture );
     int GetUsedTextureMaps() const;
@@ -131,7 +131,7 @@ private:
     int mUsedTextureMaps;
 };
 
-inline int ShaderParameters::GetParametersNumber() const
+inline size_t ShaderParameters::GetParametersNumber() const
 {
     return mParameters.size();
 }
