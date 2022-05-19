@@ -313,9 +313,9 @@ CommandLineParameters::CommandLineParameters( const char* parameterStr )
     }
 }
 
-CommandLineParameters::CommandLineParameters( const char** parameters, uint32_t numParameters )
+CommandLineParameters::CommandLineParameters( const char** parameters, size_t numParameters )
 {
-    for ( uint32_t i = 0; i < numParameters; i++ )
+    for ( size_t i = 0; i < numParameters; i++ )
     {
         mParameters.push_back( parameters[ i ] );
     }

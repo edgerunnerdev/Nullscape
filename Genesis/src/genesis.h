@@ -81,9 +81,9 @@ class CommandLineParameters
 {
 public:
     CommandLineParameters( const char* parameterStr );
-    CommandLineParameters( const char** parameters, uint32_t numParameters );
-    uint32_t Size() const;
-    const std::string& GetParameter( uint32_t n ) const;
+    CommandLineParameters( const char** parameters, size_t numParameters );
+    size_t Size() const;
+    const std::string& GetParameter( size_t n ) const;
     bool HasParameter( const std::string& name ) const;
 
 private:
@@ -91,12 +91,12 @@ private:
     CommandLineParameter mParameters;
 };
 
-inline uint32_t CommandLineParameters::Size() const
+inline size_t CommandLineParameters::Size() const
 {
     return mParameters.size();
 }
 
-inline const std::string& CommandLineParameters::GetParameter( uint32_t n ) const
+inline const std::string& CommandLineParameters::GetParameter( size_t n ) const
 {
     return mParameters.at( n );
 }
