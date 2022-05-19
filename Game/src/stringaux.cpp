@@ -321,7 +321,7 @@ int CountLines( const std::string& text )
 		return 0;
 
 	int lines = 1;
-	int l = text.length();
+	int l = static_cast<int>(text.length());
 	for ( int i = 0; i < l; ++i )
 	{
 		if ( text[ i ] == '\n' )
@@ -332,15 +332,15 @@ int CountLines( const std::string& text )
 
 bool StringEndsWith( const std::string& text, const std::string& substring )
 {
-	const int textLength = text.length();
-	const int substringLength = substring.length();
+	const int textLength = static_cast<int>(text.length());
+	const int substringLength = static_cast<int>(substring.length());
 	return ( textLength >= substringLength && text.substr( textLength - substringLength ) == substring );
 }
 
 bool StringEndsWith( const std::wstring& text, const std::wstring& substring )
 {
-	const int textLength = text.length();
-	const int substringLength = substring.length();
+    const int textLength = static_cast<int>(text.length());
+    const int substringLength = static_cast<int>(substring.length());
 	return ( textLength >= substringLength && text.substr( textLength - substringLength ) == substring );
 }
 
@@ -366,11 +366,11 @@ std::string	BreakdownString( const std::string& text, int maximumCharacters )
 {
 	std::stringstream ss;
 	std::vector<std::string> words = Split( text, ' ' );
-	int wordCount = words.size();
+	int wordCount = static_cast<int>(words.size());
 	int lineLength = 0;
 	for ( int i = 0; i < wordCount; ++i )
 	{
-		const int wordLength = words[ i ].length();
+		const int wordLength = static_cast<int>(words[ i ].length());
 		if ( lineLength + wordLength > maximumCharacters )
 		{
 			ss << "\n" << words[ i ] << " ";

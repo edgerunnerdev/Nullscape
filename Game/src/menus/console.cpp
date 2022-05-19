@@ -44,10 +44,10 @@ void Console::AddLine( const char* text )
 
 	m_Text += text;
 
-	int chars = m_Text.size();
+	size_t chars = m_Text.size();
 	int lines = 0;
 	int maxLines = 25;
-	for ( int i = 0; i < chars; ++i )
+	for ( size_t i = 0; i < chars; ++i )
 	{
 		if ( m_Text[ i ] == '\n' )
 			++lines;

@@ -49,11 +49,9 @@ LaserManager::~LaserManager()
 
 void LaserManager::Update( float delta )
 {
-	// VB-TODO
-
 	using namespace Genesis;
 
-	const unsigned int lasersCount = m_Lasers.size();
+	const size_t lasersCount = m_Lasers.size();
 	if ( lasersCount == 0 )
 	{
 		return;
@@ -105,13 +103,13 @@ void LaserManager::Render()
 {
 	using namespace Genesis;
 
-	const unsigned int lasersCount = m_Lasers.size();
+	const size_t lasersCount = m_Lasers.size();
 	if ( lasersCount == 0 )
 	{
 		return;
 	}
 
-	const unsigned int verticesCount = lasersCount * 6;
+	const size_t verticesCount = lasersCount * 6;
 
 	RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
 	pRenderSystem->SetBlendMode( BlendMode::Add );
@@ -131,7 +129,7 @@ void LaserManager::Render()
 
 void LaserManager::AddLaser( const Laser& laser )
 {
-	const int numLasers = m_Lasers.size();
+	const unsigned int numLasers = static_cast<unsigned int>(m_Lasers.size());
 	if ( numLasers == sLaserManagerCapacity )
 	{
 		Genesis::FrameWork::GetLogger()->LogWarning( "Unable to add laser, manager at capacity (%d)", sLaserManagerCapacity );

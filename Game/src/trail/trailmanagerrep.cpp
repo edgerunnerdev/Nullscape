@@ -129,7 +129,7 @@ void TrailManagerRep::Update( float delta )
 
 	if ( g_pGame->GetCurrentSector()->GetShipTweaks()->GetDrawTrails() )
 	{
-		int l = posData.size();
+		int l = static_cast<int>(posData.size());
 		for ( int i = 0; i < l - 1; ++i )
 		{
 			if ( l > 2 )
@@ -149,7 +149,7 @@ void TrailManagerRep::Update( float delta )
         m_pVertexBuffer->CopyUVs( uvData );
         m_pVertexBuffer->CopyColours( colourData );
 
-        m_NumVertices = posData.size();
+        m_NumVertices = static_cast<unsigned int>(posData.size());
 	}
 }
 

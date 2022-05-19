@@ -63,7 +63,7 @@ void SpriteManager::Update( float delta )
 	UVData uvData;
 	ColourData colourData;
 
-	unsigned int numVertices = m_Sprites.size() * 6;
+	size_t numVertices = m_Sprites.size() * 6;
 	posData.reserve( numVertices );
 	uvData.reserve( numVertices );
 	colourData.reserve( numVertices );

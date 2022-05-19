@@ -66,7 +66,7 @@ void ParticleManager::Update( float delta )
 
 ParticleEmitter* ParticleManager::GetAvailableEmitter()
 {
-	int numEmitters = m_Emitters.size();
+	int numEmitters = static_cast<int>(m_Emitters.size());
 	for ( int i = m_Idx; i < numEmitters; ++i )
 	{
 		if ( m_Emitters[ i ].IsActive() == false )

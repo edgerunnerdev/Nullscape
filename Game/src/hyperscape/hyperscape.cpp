@@ -132,7 +132,7 @@ void Hyperscape::UpdateDebugUI()
 						ImGui::TableNextColumn();
 						if ( isCurrent )
 						{
-							ImGui::PushID( id++ );
+							ImGui::PushID( static_cast<int>(id++) );
 							if ( ImGui::Button( "Call station" ) )
 							{
 								m_pSilverThread->CallStation();							
@@ -157,7 +157,7 @@ void Hyperscape::UpdateDebugUI()
 					else if ( location.GetType() == HyperscapeLocation::Type::Scanned )
 					{
 						ImGui::TableNextColumn();
-						ImGui::PushID( id++ );
+						ImGui::PushID( static_cast<int>(id++) );
 						if ( ImGui::Button( "Jump" ) )
 						{
 							m_pSilverThread->JumpToScannedLocation( location );

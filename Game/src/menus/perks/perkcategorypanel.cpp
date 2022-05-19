@@ -58,7 +58,7 @@ void PerkCategoryPanel::AddPerk( Perk perk, const std::string& name, const std::
 	pPanel->SetColour( 0.0f, 0.0f, 0.0f, 0.5f );
 	pPanel->SetBorderColour( 1.0f, 1.0f, 1.0f, 0.25f );
 	pPanel->SetBorderMode( Genesis::Gui::PANEL_BORDER_ALL );
-	pPanel->SetPosition( 4 + m_Perks.size() * ( panelWidth + 4 ), 32 );
+	pPanel->SetPosition( static_cast<int>(4 + m_Perks.size() * ( panelWidth + 4 )), 32 );
 	pPanel->Init( perk, name, description, icon, cost, state );
 	AddElement( pPanel );
 	m_Perks.push_back( pPanel );

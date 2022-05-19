@@ -77,7 +77,7 @@ void PerkTooltip::Init( const std::string& name, const std::string& description,
 	m_Cost = cost;
     std::stringstream ss;
     ss << cost;
-	m_pCost = GuiExtended::CreateText( panelWidth - 25 - 8 * ss.str().length(), 8, 256, 32, ss.str(), m_pMainPanel, true );
+	m_pCost = GuiExtended::CreateText( static_cast<int>(panelWidth - 25 - 8 * ss.str().length()), 8, 256, 32, ss.str(), m_pMainPanel, true );
 
 	m_pCostIcon = new Genesis::Gui::Image();
 	m_pCostIcon->SetSize( 16, 16 );

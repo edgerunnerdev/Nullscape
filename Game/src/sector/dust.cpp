@@ -91,7 +91,7 @@ void Dust::Render()
 	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Blend );
 	
 	const glm::vec2 size( 3.0f, 1.0f );
-	unsigned int numVertices = m_dustParticles.size() * 6;
+	size_t numVertices = m_dustParticles.size() * 6;
 	PositionData posData;
 	UVData uvData;
 	posData.reserve( numVertices );

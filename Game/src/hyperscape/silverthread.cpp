@@ -71,7 +71,7 @@ void SilverThread::Add( const HyperscapeLocation& location )
 
 void SilverThread::Scan( size_t count )
 {
-	uint32_t depth = m_Locations.size() - m_Scanned;
+	uint32_t depth = static_cast<uint32_t>(m_Locations.size() - m_Scanned);
 	for ( size_t i = 0; i < count; ++i )
 	{
 		m_Locations.emplace_back( HyperscapeLocation::Type::Scanned, Random::Next(), depth );

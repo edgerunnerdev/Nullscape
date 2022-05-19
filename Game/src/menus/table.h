@@ -83,7 +83,7 @@ private:
 
 inline unsigned int Table::GetRowCount() const
 {
-	return m_Rows.size();
+	return static_cast<unsigned int>(m_Rows.size());
 }
 
 inline TableRow* Table::GetRow( unsigned int index ) const

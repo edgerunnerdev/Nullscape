@@ -242,7 +242,7 @@ void Hotbar::UpdateAbilities( Ship* pPlayerShip )
 		} 
 	);
 		
-	const int addonsCount = addonModules.size();
+	const int addonsCount = static_cast<int>(addonModules.size());
 	int abilityCount = addonsCount;
 	if ( abilityCount > sNumShipAddons )
 		abilityCount = sNumShipAddons;

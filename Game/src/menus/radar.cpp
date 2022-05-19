@@ -90,7 +90,7 @@ void Radar::Update( float delta )
 	AddShipyard();
 	AddShips();
 
-	m_QuadCount = ( 1 + m_Icons.size() );
+	m_QuadCount = static_cast<unsigned int>(( 1 + m_Icons.size() ));
 
 	// * 6 = vertices per quad
 	m_PositionData.reserve( m_QuadCount * 6 );
@@ -137,7 +137,7 @@ void Radar::Render()
     }
 }
 
-void Radar::AddQuad( int atlasIndex, float x, float y, float scale /* = 1.0f */ )
+void Radar::AddQuad(Genesis::Gui::Atlas::Id atlasIndex, float x, float y, float scale /* = 1.0f */)
 {
 	const glm::vec2& pos = GetPositionAbsolute();
 	x += pos.x;
@@ -210,7 +210,7 @@ void Radar::AddShipyard()
 	}
 }
 
-void Radar::AddIcon( int atlasIndex, const glm::vec3& position )
+void Radar::AddIcon(Genesis::Gui::Atlas::Id atlasIndex, const glm::vec3 &position)
 {
 	float distance = glm::distance( m_CachedPlayerShipPosition, position );
 	float scale = 1.0f;

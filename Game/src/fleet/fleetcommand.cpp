@@ -96,7 +96,7 @@ void FleetCommand::Update()
 			const glm::vec2 leaderPosition( glm::column( tr, 3 ) );
 
 			SDL_assert( m_Ships.size() == m_Relationships.size() );
-			for ( int i = 0, s = m_Ships.size(); i < s; ++i )
+			for ( size_t i = 0, s = m_Ships.size(); i < s; ++i )
 			{
 				Ship* pShip = m_Ships[ i ];
 				if ( result == ScanForEnemiesResult::EnemiesInRange || isLeaderDocked )

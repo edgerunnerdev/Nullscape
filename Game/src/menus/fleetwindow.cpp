@@ -233,7 +233,7 @@ void FleetWindow::PopulateRequisitionShips()
 
 void FleetWindow::RefreshFleetShips()
 {
-	const int maxFleetShips = m_FleetShipInfos.size();
+	const int maxFleetShips = static_cast<int>(m_FleetShipInfos.size());
 	FleetSharedPtr pPlayerFleet = g_pGame->GetPlayerFleet().lock();
 	const ShipInfoList& fleetShips = pPlayerFleet->GetShips();
 

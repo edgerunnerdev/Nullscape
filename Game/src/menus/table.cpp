@@ -85,7 +85,7 @@ void Table::Render()
     PositionData posData;
     ColourData colourData;
 
-    const unsigned int numVertices = maxRows * 6;
+    const size_t numVertices = maxRows * 6;
     posData.reserve( numVertices );
     colourData.reserve( numVertices );
 
@@ -137,7 +137,7 @@ int Table::AddRow( TableRow* pRow )
 
 	m_ContentsDirty = true;
 
-	return m_Rows.size();
+	return static_cast<int>(m_Rows.size());
 }
 
 bool Table::UpdateDimensions( TableRow* pRow )

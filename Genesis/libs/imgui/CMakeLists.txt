@@ -15,7 +15,3 @@ include_directories("src/imgui")
 
 add_library(imgui STATIC ${SOURCE_FILES})
 set_target_properties(imgui PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/${CMAKE_BUILD_TYPE})
-
-if(WIN32)
-    target_compile_options(imgui PUBLIC $<$<CONFIG:Debug>:/MTd> $<$<CONFIG:Release>:/MT> $<$<CONFIG:Final>:/MT>)
-endif()

@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.14)
+﻿cmake_minimum_required(VERSION 3.15)
 project(Genesis)
 
 add_subdirectory("libs/imgui")
@@ -37,8 +37,6 @@ if(WIN32)
     find_package(FMOD REQUIRED)
     target_include_directories(Genesis PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(Genesis PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0 USE_FMOD=1)
-    target_compile_options(Genesis PUBLIC $<$<CONFIG:Debug>:/MTd> $<$<CONFIG:Release>:/MT> $<$<CONFIG:Final>:/MT>)
-
     target_compile_options(Genesis PUBLIC $<$<CONFIG:Final>:/Ob2 /GL>)
 else()
     find_package(SDL2_mixer REQUIRED)
@@ -54,7 +52,6 @@ target_compile_options(Genesis PRIVATE
           -fstandalone-debug
           >
      $<$<CXX_COMPILER_ID:MSVC>:
-          /W4
           /WX # warnings as errors
           /wd4100 # unreferenced formal parameter
           /wd4121 # alignment of a member was sensitive to packing

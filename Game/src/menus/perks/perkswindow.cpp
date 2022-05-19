@@ -157,7 +157,7 @@ PerkCategoryPanel* PerksWindow::AddCategory( const std::string& category, const 
 	pPanel->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
 	pPanel->SetBorderColour( EVA_COLOUR_BORDER );
 	pPanel->SetBorderMode( Genesis::Gui::PANEL_BORDER_ALL );
-	pPanel->SetPosition( 4, m_Categories.size() * ( panelHeight + 4 ) );
+	pPanel->SetPosition( 4, static_cast<int>(m_Categories.size() * ( panelHeight + 4 )) );
 	pPanel->SetTexture( pBackgroundImage );
 
 	pPanel->Init( category );

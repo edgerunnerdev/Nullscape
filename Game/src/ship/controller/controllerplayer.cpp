@@ -141,7 +141,7 @@ void ControllerPlayer::Update( float delta )
 	AddonModuleList addonModules = GetShip()->GetAddonModules();
 	SDL_Scancode addonKeys[ sNumShipAddons ] = { SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3, SDL_SCANCODE_4, SDL_SCANCODE_5, SDL_SCANCODE_6 };
 	static bool addonKeysPressed[ sNumShipAddons ] = { false, false, false, false, false, false };
-	int numAddons = addonModules.size();
+	int numAddons = static_cast<int>(addonModules.size());
 	SDL_assert( numAddons <= sNumShipAddons );
 	int i = 0;
 

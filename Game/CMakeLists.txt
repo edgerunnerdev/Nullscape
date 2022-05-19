@@ -61,7 +61,6 @@ if(WIN32)
     find_package(FMOD REQUIRED)
     target_include_directories(Game PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(Game PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
-    target_compile_options(Game PUBLIC $<$<CONFIG:Debug>:/MTd> $<$<CONFIG:Release>:/MT> $<$<CONFIG:Final>:/MT>)
     target_link_directories(Game PRIVATE ${FMOD_LIBRARY_DIRS})
     target_link_options(Game PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
     target_link_libraries(Game PRIVATE Opengl32 glu32 ws2_32 fmodex_vc)
@@ -84,7 +83,26 @@ if(USE_STEAM)
   target_link_libraries(Game PRIVATE steam_api)
 endif()
 
-set_target_properties(Game PROPERTIES OUTPUT_NAME "Hexterminate")
+set_target_properties(Game PROPERTIES OUTPUT_NAME "Hyperscape")
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIRECTORY})
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY})
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY_FINAL ${OUTPUT_DIRECTORY})
+
+target_compile_options(Game PRIVATE
+     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
+          -Wall 
+          -Werror
+          -Wno-reorder-ctor
+          -fstandalone-debug
+          >
+     $<$<CXX_COMPILER_ID:MSVC>:
+          /WX # warnings as errors
+          /wd4100 # unreferenced formal parameter
+          /wd4121 # alignment of a member was sensitive to packing
+          /wd4127 # conditional expression is constant
+          /wd4505 # unreferenced local function has been removed
+          /wd4189 # local variable is initialized but not referenced
+          /wd4201 # nonstandard extension used : nameless struct/union
+          /wd4702 # unreachable code
+          >
+)

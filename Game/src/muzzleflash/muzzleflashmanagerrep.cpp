@@ -124,7 +124,7 @@ void MuzzleflashManagerRep::Update( float delta )
 		}
 	}
 
-	m_NumVertices = posData.size();
+	m_NumVertices = static_cast<unsigned int>(posData.size());
 	if ( posData.empty() == false )
 	{
         m_pVertexBuffer->CopyPositions( posData );

@@ -53,7 +53,7 @@ void DetailsWindow::Show( bool state )
 void DetailsWindow::SetContents( const std::string& contents )
 {
 	m_NumLines = 1;
-	int len = contents.length();
+	int len = static_cast<int>(contents.length());
 	int lineLength = 0;
 	int maxLineLength = 0;
 	for ( int i = 0; i < len; ++i )

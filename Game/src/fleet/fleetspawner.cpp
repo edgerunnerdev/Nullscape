@@ -67,7 +67,7 @@ bool FleetSpawner::SpawnFleetAI( FleetSharedPtr pFleet, Sector* pSector, ShipVec
 	ShipSpawnDataVector fleetSpawnData;
 	GetSpawnData( shipsToSpawn, spawnPointX, spawnPointY, fleetSpawnData, formation );
 
-	for ( int i = 0, s = shipsToSpawn.size(); i < s; ++i )
+	for ( int i = 0, s = static_cast<int>(shipsToSpawn.size()); i < s; ++i )
 	{
 		Ship* pShip = SpawnShip( pSector, pFleet, shipsToSpawn[ i ], fleetSpawnData[ i ] );
 
@@ -140,7 +140,7 @@ void FleetSpawner::GetSpawnData( ShipInfoVector shipsToSpawn, float spawnPointX,
 		// TODO: Revise cohesive formation to take into account ship types
 		int side = static_cast<int>( ceil( sqrt( shipsToSpawn.size() ) ) );
 		ShipSpawnData spawnData;
-		for ( int i = 0, s = shipsToSpawn.size(); i < s; ++i )
+		for ( int i = 0, s = static_cast<int>(shipsToSpawn.size()); i < s; ++i )
 		{
 			spawnData.m_PositionX = spawnPointX + static_cast<float>( i % side ) * spacing - ( side * spacing ) / 2.0f;
 			spawnData.m_PositionY = spawnPointY + floor( static_cast<float>( i ) / side ) * spacing - ( side * spacing ) / 2.0f;
@@ -163,7 +163,7 @@ void FleetSpawner::GetSpawnData( ShipInfoVector shipsToSpawn, float spawnPointX,
 		// The remaining ships are placed in delta formation around the point ship
 		int spacingMultiplier = 1;
 		anchorY -= deltaStagger;
-		int numShips = shipsToSpawn.size();
+		int numShips = static_cast<int>(shipsToSpawn.size());
 		for ( int i = 0; i < numShips - 1; ++i )
 		{
 			spawnData.m_PositionX = anchorX + spacing * spacingMultiplier;

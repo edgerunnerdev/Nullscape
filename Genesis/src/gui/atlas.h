@@ -66,23 +66,25 @@ namespace Gui
         Atlas();
         ~Atlas(){};
 
+        using Id = size_t;
+
         Genesis::ResourceImage* GetSource() const;
         void SetSource( Genesis::ResourceImage* pImage );
-        size_t GetElementCount() const;
-        size_t AddElement( float x1, float y1, float x2, float y2 );
-        const AtlasElement& GetElement( int index ) const;
+        Id GetElementCount() const;
+        Id AddElement( float x1, float y1, float x2, float y2 );
+        const AtlasElement& GetElement( Id index ) const;
 
     private:
         Genesis::ResourceImage* m_pSource;
         AtlasElementVector m_Elements;
     };
 
-    inline size_t Atlas::GetElementCount() const
+    inline Atlas::Id Atlas::GetElementCount() const
     {
         return m_Elements.size();
     }
 
-    inline const AtlasElement& Atlas::GetElement( int index ) const
+    inline const AtlasElement& Atlas::GetElement( Id index ) const
     {
 #ifdef _DEBUG
         return m_Elements.at( index );

@@ -231,7 +231,7 @@ void SectorInfo::UpdateContestedStatus()
 	{
 		if ( HasStarfort() )
 		{
-			m_StarfortHealth -= m_ContestedFleets.size();
+			m_StarfortHealth -= static_cast<int>(m_ContestedFleets.size());
 			if ( m_StarfortHealth < 0 )
 			{
 				SetStarfort( false );

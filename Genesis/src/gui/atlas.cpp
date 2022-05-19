@@ -59,7 +59,7 @@ namespace Gui
         m_pSource = pImage;
     }
 
-    size_t Atlas::AddElement( float x1, float y1, float x2, float y2 )
+    Atlas::Id Atlas::AddElement( float x1, float y1, float x2, float y2 )
     {
         SDL_assert( m_pSource != nullptr );
         m_Elements.push_back( AtlasElement( x1, y1, x2, y2, m_pSource->GetWidth(), m_pSource->GetHeight() ) );

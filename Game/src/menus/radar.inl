@@ -24,7 +24,7 @@ namespace Hexterminate
 // RadarIcon
 /////////////////////////////////////////////////////////////////////
 
-inline RadarIcon::RadarIcon( int atlasIndex, float x, float y, float scale ) : 
+inline RadarIcon::RadarIcon( Genesis::Gui::Atlas::Id atlasIndex, float x, float y, float scale ) : 
 m_AtlasIndex( atlasIndex ), 
 m_X( x ), 
 m_Y( y ),
@@ -33,7 +33,7 @@ m_Scale( scale )
 
 };
 
-inline int RadarIcon::GetAtlasIndex() const
+inline Genesis::Gui::Atlas::Id RadarIcon::GetAtlasIndex() const
 {
 	return m_AtlasIndex;
 }

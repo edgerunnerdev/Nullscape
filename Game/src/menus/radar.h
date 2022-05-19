@@ -39,14 +39,14 @@ namespace Hexterminate
 class RadarIcon
 {
 public:
-	RadarIcon( int atlasIndex, float x, float y, float scale );
-	int	GetAtlasIndex() const;
+	RadarIcon( Genesis::Gui::Atlas::Id atlasIndex, float x, float y, float scale );
+    Genesis::Gui::Atlas::Id GetAtlasIndex() const;
 	float GetX() const;
 	float GetY() const;
 	float GetScale() const;
 
 private:
-	int	m_AtlasIndex;
+    Genesis::Gui::Atlas::Id m_AtlasIndex;
 	float m_X;
 	float m_Y;
 	float m_Scale;
@@ -69,21 +69,21 @@ public:
 	
 private:
 	void						CachePlayerShipPosition();
-	void						AddQuad( int atlasIndex, float x, float y, float scale = 1.0f );
+	void						AddQuad( Genesis::Gui::Atlas::Id atlasIndex, float x, float y, float scale = 1.0f );
 	void						AddShips();
 	void						AddShipyard();
-	void						AddIcon( int atlasIndex, const glm::vec3& position );
+	void						AddIcon( Genesis::Gui::Atlas::Id atlasIndex, const glm::vec3& position );
 
 	Genesis::ResourceImage*		m_pTexture;
 	Genesis::Gui::Atlas			m_Atlas;
 	RadarIconVector				m_Icons;
 	
 	// Atlas indices
-	int							m_BackgroundIdx;
-	int							m_BackgroundMaskIdx;
-	int							m_FriendlyShipIdx;
-	int							m_HostileShipIdx;
-	int							m_ShipyardIdx;
+	Genesis::Gui::Atlas::Id		m_BackgroundIdx;
+    Genesis::Gui::Atlas::Id		m_BackgroundMaskIdx;
+    Genesis::Gui::Atlas::Id		m_FriendlyShipIdx;
+    Genesis::Gui::Atlas::Id		m_HostileShipIdx;
+    Genesis::Gui::Atlas::Id		m_ShipyardIdx;
 
 	// Rendering
 	Genesis::VertexBuffer*		m_pVertexBuffer;

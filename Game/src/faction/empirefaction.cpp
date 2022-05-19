@@ -63,7 +63,7 @@ void EmpireFaction::Update( float delta )
 			Player* pPlayer = g_pGame->GetPlayer();
 			if ( pPlayer != nullptr )
 			{
-				const int numControlledSectors = GetControlledSectors().size();
+				const int numControlledSectors = static_cast<int>(GetControlledSectors().size());
 				const int influence = numControlledSectors * sInfluenceAllocationPerSector;
 				pPlayer->SetInfluence( pPlayer->GetInfluence() + influence );
 			}

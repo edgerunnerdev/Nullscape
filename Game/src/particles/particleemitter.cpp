@@ -99,7 +99,7 @@ void ParticleEmitter::CreateParticle()
 
 Particle* ParticleEmitter::GetAvailableParticle()
 {
-	int numEmitters = m_Particles.size();
+	int numEmitters = static_cast<int>(m_Particles.size());
 	for ( int i = m_Idx; i < numEmitters; ++i )
 	{
 		if ( m_Particles[ i ].IsAlive() == false )

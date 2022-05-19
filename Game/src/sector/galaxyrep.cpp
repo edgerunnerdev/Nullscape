@@ -625,7 +625,7 @@ void GalaxyRep::DrawSectors( SectorDrawInfoVector& drawInfoVec, Genesis::Shader*
 	UVData uvData;
 	ColourData colourData;
 
-	const unsigned int numVertices = drawInfoVec.size() * 6;
+	const size_t numVertices = drawInfoVec.size() * 6;
 	posData.reserve( numVertices );
 	uvData.reserve( numVertices );
 	colourData.reserve( numVertices );

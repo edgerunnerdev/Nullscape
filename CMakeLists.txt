@@ -11,6 +11,7 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Final" CACHE STRING "Custom build t
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXE_LINKER_FLAGS_FINAL "")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 add_subdirectory("Genesis")
 add_subdirectory("Game")

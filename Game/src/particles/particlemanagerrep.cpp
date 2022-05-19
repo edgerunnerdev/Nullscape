@@ -138,7 +138,7 @@ void ParticleManagerRep::AddQuad( const Genesis::Gui::Atlas* pAtlas, const Parti
 	if ( pAtlas->GetElementCount() > 0 )
 	{
 		float fraction = 1.0f - pParticle->GetCurrentLifetime() / pParticle->GetInitialLifetime();
-		int atlasIndex = gClamp<int>((int)(fraction * pAtlas->GetElementCount()), 0, pAtlas->GetElementCount() - 1);
+		int atlasIndex = gClamp<int>((int)(fraction * pAtlas->GetElementCount()), 0, static_cast<int>(pAtlas->GetElementCount()) - 1);
 
 		const Genesis::Gui::AtlasElement& atlasElement = pAtlas->GetElement( atlasIndex );
 		u1 = atlasElement.GetU1();
@@ -193,12 +193,12 @@ void ParticleManagerRep::Render()
 		ParticlePass* pPass = m_pPass[ i ];
 		for ( const ParticleRenderData& particleRenderData : pPass->m_Data )
 		{
-            const unsigned int numParticles = particleRenderData.particles.size();
+            const size_t numParticles = particleRenderData.particles.size();
             if ( numParticles > 0 )
             {
 			    Genesis::FrameWork::GetRenderSystem()->SetBlendMode( pPass->m_BlendMode );
 
-			    endIdx += numParticles * 6;
+			    endIdx += static_cast<int>(numParticles) * 6;
 
 			    if ( pPass->m_GlowEnabled )
 			    {
@@ -209,7 +209,7 @@ void ParticleManagerRep::Render()
 			    Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Default );
 			    RenderGeometry( pPass, particleRenderData, startIdx, endIdx );
 
-			    startIdx += numParticles * 6;
+			    startIdx += static_cast<int>(numParticles) * 6;
             }
 		}
 	}

@@ -38,7 +38,7 @@ void PirateFaction::ProcessTurn()
 	if ( IsCollapsing() == false )
 	{
 		// Attempt to claim a random sector if we are under the NumPirateSectors threshold
-		int numSectors = GetControlledSectors().size();
+                int numSectors = static_cast<int>(GetControlledSectors().size());
 		if ( numSectors < NumPirateSectors )
 		{
 			SectorInfo* pSector = g_pGame->GetGalaxy()->GetSectorInfo( rand() % NumSectorsX, rand() % NumSectorsY );
