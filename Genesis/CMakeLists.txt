@@ -36,7 +36,7 @@ set_target_properties(Genesis PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURREN
 if(WIN32)
     find_package(FMOD REQUIRED)
     target_include_directories(Genesis PRIVATE ${FMOD_INCLUDE_DIRS})
-    target_compile_definitions(Genesis PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0 USE_FMOD=1)
+    target_compile_definitions(Genesis PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_compile_options(Genesis PUBLIC $<$<CONFIG:Final>:/Ob2 /GL>)
 else()
     find_package(SDL2_mixer REQUIRED)
