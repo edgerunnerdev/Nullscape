@@ -1,5 +1,5 @@
 set(SDL2_IMAGE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/SDL2_image-2.0.1/include" CACHE STRING "SDL2_image - include directory")
-set(SDL2_IMAGE_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/SDL2_image-2.0.1/lib/x86" CACHE STRING "SDL2_image - library directory")
+set(SDL2_IMAGE_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/SDL2_image-2.0.1/lib/x64" CACHE STRING "SDL2_image - library directory")
 
 if(SDL2_IMAGE_INCLUDE_DIRS AND EXISTS "${SDL2_IMAGE_INCLUDE_DIRS}/SDL2_image.h")
   file(STRINGS "${SDL2_IMAGE_INCLUDE_DIRS}/SDL2_image.h" SDL2_IMAGE_VERSION_MAJOR_LINE REGEX "^#define[ \t]+SDL2_IMAGE_MAJOR_VERSION[ \t]+[0-9]+$")
