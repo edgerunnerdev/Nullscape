@@ -17,12 +17,12 @@
 
 #pragma once
 
-#include <array>
-#include <vector>
-
+#include "coredefines.h"
 #include "glm/gtx/transform.hpp"
 #include "rendersystem.fwd.h"
-#include "coredefines.h"
+
+#include <array>
+#include <vector>
 
 namespace Genesis
 {
@@ -52,30 +52,30 @@ enum class GeometryType
 class VertexBuffer
 {
 public:
-    VertexBuffer( GeometryType type, unsigned int flags );
+    VertexBuffer(GeometryType type, unsigned int flags);
     ~VertexBuffer();
 
-    void CopyPositions( const PositionData& data );
-    void CopyPositions( const PositionData& data, size_t count );
-    void CopyUVs( const UVData& data );
-    void CopyUVs( const UVData& data, size_t count );
-    void CopyNormals( const NormalData& data );
-    void CopyNormals( const NormalData& data, size_t count );
-    void CopyColours( const ColourData& data );
-    void CopyColours( const ColourData& data, size_t count );
-    void CopyData( const float* pData, size_t count, unsigned int destination );
+    void CopyPositions(const PositionData& data);
+    void CopyPositions(const PositionData& data, size_t count);
+    void CopyUVs(const UVData& data);
+    void CopyUVs(const UVData& data, size_t count);
+    void CopyNormals(const NormalData& data);
+    void CopyNormals(const NormalData& data, size_t count);
+    void CopyColours(const ColourData& data);
+    void CopyColours(const ColourData& data, size_t count);
+    void CopyData(const float* pData, size_t count, unsigned int destination);
 
-    void Draw( size_t numVertices = 0 ); // Draw the vertex buffer. Passing 0 to this function will draw the entire buffer.
-    void Draw( size_t startVertex, size_t numVertices, void* pIndices = nullptr );
+    void Draw(size_t numVertices = 0); // Draw the vertex buffer. Passing 0 to this function will draw the entire buffer.
+    void Draw(size_t startVertex, size_t numVertices, void* pIndices = nullptr);
 
-    void CreateUntexturedQuad( float x, float y, float width, float height );
-    void CreateUntexturedQuad( float x, float y, float width, float height, const glm::vec4& colour );
-    void CreateTexturedQuad( float x, float y, float width, float height );
-    void CreateTexturedQuad( float x, float y, float width, float height, const glm::vec4& colour );
+    void CreateUntexturedQuad(float x, float y, float width, float height);
+    void CreateUntexturedQuad(float x, float y, float width, float height, const glm::vec4& colour);
+    void CreateTexturedQuad(float x, float y, float width, float height);
+    void CreateTexturedQuad(float x, float y, float width, float height, const glm::vec4& colour);
 
 private:
-    void SetModeFromGeometryType( GeometryType type );
-    unsigned int GetSizeIndex( unsigned int flag ) const;
+    void SetModeFromGeometryType(GeometryType type);
+    unsigned int GetSizeIndex(unsigned int flag) const;
 
     unsigned int m_Flags;
     GLuint m_VAO;
@@ -86,12 +86,12 @@ private:
     std::array<size_t, 4> m_Size;
     GLenum m_Mode;
 };
-GENESIS_DECLARE_SMART_PTR( VertexBuffer );
+GENESIS_DECLARE_SMART_PTR(VertexBuffer);
 
 // Translates one of the VBO_ flags into an actual size index which we can use.
 // log( flag ) / log( 2 ) is the same as log2( flag ) but log2 isn't available in this version of VS for some reason.
-inline unsigned int VertexBuffer::GetSizeIndex( unsigned int flag ) const
+inline unsigned int VertexBuffer::GetSizeIndex(unsigned int flag) const
 {
-    return (unsigned int)( log( flag ) / log( 2 ) );
+    return (unsigned int)(log(flag) / log(2));
 }
-}
+} // namespace Genesis

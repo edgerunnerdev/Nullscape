@@ -15,20 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include <algorithm>
-#include <cctype>
-#include <fstream>
-#include <iostream>
-#include <string>
+#include "resourcemanager.h"
 
 #include "genesis.h"
 #include "memory.h"
-#include "resourcemanager.h"
 #include "resources/resourcefont.h"
 #include "resources/resourceimage.h"
 #include "resources/resourcemodel.h"
 #include "resources/resourcesound.h"
 #include "resources/resourcevideo.h"
+
+#include <algorithm>
+#include <cctype>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 namespace Genesis
 {
@@ -37,10 +38,10 @@ namespace Genesis
 // ResourceGeneric
 //////////////////////////////////////////////////////////////////////////////
 
-ResourceGeneric::ResourceGeneric( const Filename& filename )
-    : m_State( ResourceState::Unloaded )
-    , m_Filename( filename )
-    , m_Type( ResourceType::Unknown )
+ResourceGeneric::ResourceGeneric(const Filename& filename)
+    : m_State(ResourceState::Unloaded)
+    , m_Filename(filename)
+    , m_Type(ResourceType::Unknown)
 {
 }
 
@@ -55,94 +56,104 @@ ResourceGeneric::ResourceGeneric( const Filename& filename )
 
 ResourceManager::ResourceManager()
 {
-    ResourceFactoryFunction fCreateResourceImage = []( const Filename& filename ) { return new ResourceImage( filename ); };
-    RegisterExtension( "bmp", fCreateResourceImage );
-    RegisterExtension( "jpg", fCreateResourceImage );
-    RegisterExtension( "png", fCreateResourceImage );
-    RegisterExtension( "tga", fCreateResourceImage );
+    ResourceFactoryFunction fCreateResourceImage = [](const Filename& filename) {
+        return new ResourceImage(filename);
+    };
+    RegisterExtension("bmp", fCreateResourceImage);
+    RegisterExtension("jpg", fCreateResourceImage);
+    RegisterExtension("png", fCreateResourceImage);
+    RegisterExtension("tga", fCreateResourceImage);
 
-    ResourceFactoryFunction fCreateResourceModel = []( const Filename& filename ) { return new ResourceModel( filename ); };
-    RegisterExtension( "tmf", fCreateResourceModel );
+    ResourceFactoryFunction fCreateResourceModel = [](const Filename& filename) {
+        return new ResourceModel(filename);
+    };
+    RegisterExtension("tmf", fCreateResourceModel);
 
-    ResourceFactoryFunction fCreateResourceSound = []( const Filename& filename ) { return new ResourceSound( filename ); };
-    RegisterExtension( "mp3", fCreateResourceSound );
-    RegisterExtension( "wav", fCreateResourceSound );
-    RegisterExtension( "m3u", fCreateResourceSound );
+    ResourceFactoryFunction fCreateResourceSound = [](const Filename& filename) {
+        return new ResourceSound(filename);
+    };
+    RegisterExtension("mp3", fCreateResourceSound);
+    RegisterExtension("wav", fCreateResourceSound);
+    RegisterExtension("m3u", fCreateResourceSound);
 
-    ResourceFactoryFunction fCreateResourceFont = []( const Filename& filename ) { return new ResourceFont( filename ); };
-    RegisterExtension( "fnt", fCreateResourceFont );
+    ResourceFactoryFunction fCreateResourceFont = [](const Filename& filename) {
+        return new ResourceFont(filename);
+    };
+    RegisterExtension("fnt", fCreateResourceFont);
 
-    ResourceFactoryFunction fCreateResourceVideo = []( const Filename& filename ) { return new ResourceVideo( filename ); };
-    RegisterExtension( "ivf", fCreateResourceVideo );
+    ResourceFactoryFunction fCreateResourceVideo = [](const Filename& filename) {
+        return new ResourceVideo(filename);
+    };
+    RegisterExtension("ivf", fCreateResourceVideo);
 }
 
 ResourceManager::~ResourceManager()
 {
     // Clear up the registered extensions
     ExtensionMap::iterator it;
-    for ( it = mRegisteredExtensions.begin(); it != mRegisteredExtensions.end(); it++ )
+    for (it = mRegisteredExtensions.begin(); it != mRegisteredExtensions.end(); it++)
     {
         delete it->second;
     }
 
     // Clear up the resources we loaded
     ResourceMap::iterator it2;
-    for ( it2 = mResources.begin(); it2 != mResources.end(); it2++ )
+    for (it2 = mResources.begin(); it2 != mResources.end(); it2++)
     {
         delete it2->second;
     }
 }
 
-void ResourceManager::RegisterExtension( const std::string& extension, ResourceFactoryFunction& func )
+void ResourceManager::RegisterExtension(const std::string& extension, ResourceFactoryFunction& func)
 {
     // Check if the extension isn't already registered
-    ExtensionMap::iterator it = mRegisteredExtensions.find( extension );
-    if ( it != mRegisteredExtensions.end() )
+    ExtensionMap::iterator it = mRegisteredExtensions.find(extension);
+    if (it != mRegisteredExtensions.end())
         return;
 
-    ExtensionData* data = new ExtensionData( extension, func );
-    mRegisteredExtensions[ extension ] = data;
+    ExtensionData* data = new ExtensionData(extension, func);
+    mRegisteredExtensions[extension] = data;
 }
 
-bool ResourceManager::CanLoadResource( const Filename& filename )
+bool ResourceManager::CanLoadResource(const Filename& filename)
 {
     const std::string& extension = filename.GetExtension();
 
     // If the extension isn't registered, we can't load this resource
-    ExtensionMap::iterator extensionIter = mRegisteredExtensions.find( extension );
-    return ( extensionIter != mRegisteredExtensions.end() );
+    ExtensionMap::iterator extensionIter = mRegisteredExtensions.find(extension);
+    return (extensionIter != mRegisteredExtensions.end());
 }
 
 // GetResource() returns a ready-to-use resource. If the resource hadn't been previously loaded,
 // it will block the main thread until the resource has finished loading.
-ResourceGeneric* ResourceManager::GetResource( const Filename& filename )
+ResourceGeneric* ResourceManager::GetResource(const Filename& filename)
 {
     // Check if we already have this resource loaded
-    ResourceMap::iterator resourceMapIter = mResources.find( filename.GetFullPath() );
-    if ( resourceMapIter != mResources.end() )
+    ResourceMap::iterator resourceMapIter = mResources.find(filename.GetFullPath());
+    if (resourceMapIter != mResources.end())
     {
         return resourceMapIter->second;
     }
 
     const std::string& extension = filename.GetExtension();
-    ExtensionMap::iterator extensionIter = mRegisteredExtensions.find( extension );
-    if ( extensionIter == mRegisteredExtensions.end() )
+    ExtensionMap::iterator extensionIter = mRegisteredExtensions.find(extension);
+    if (extensionIter == mRegisteredExtensions.end())
     {
-        FrameWork::GetLogger()->LogWarning( "Trying to load unsupported resource: %s.", filename.GetFullPath().c_str() );
+        FrameWork::GetLogger()->LogWarning("Trying to load unsupported resource: %s.", filename.GetFullPath().c_str());
         return nullptr;
     }
 
     ExtensionData* extensionData = extensionIter->second;
-    ResourceGeneric* pResource = extensionData->GetFactoryFunction()( filename );
-    SDL_assert( pResource != nullptr );
+    ResourceGeneric* pResource = extensionData->GetFactoryFunction()(filename);
+    SDL_assert(pResource != nullptr);
 
-    mResources[ filename.GetFullPath() ] = pResource;
+    mResources[filename.GetFullPath()] = pResource;
 
     pResource->Preload();
     pResource->Load();
 
-    SDL_assert( pResource->GetState() == ResourceState::Loaded );
+    SDL_assert(pResource->GetState() == ResourceState::Loaded);
     return pResource;
 }
 
-}
+} // namespace Genesis

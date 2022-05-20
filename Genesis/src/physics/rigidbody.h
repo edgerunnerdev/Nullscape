@@ -17,15 +17,18 @@
 
 #pragma once
 
-#include "beginexternalheaders.h"
+#include "collisionobject.h"
+#include "shape.fwd.h"
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+
+// clang-format off
+#include "beginexternalheaders.h"
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 #include "endexternalheaders.h"
-
-#include "collisionobject.h"
-#include "shape.fwd.h"
+// clang-format on
 
 class btRigidBody;
 class btMotionState;
@@ -40,8 +43,8 @@ class Simulation;
 
 enum class MotionType
 {
-	Static,
-	Dynamic
+    Static,
+    Dynamic
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -51,43 +54,42 @@ enum class MotionType
 class RigidBodyConstructionInfo
 {
 public:
-	RigidBodyConstructionInfo();
+    RigidBodyConstructionInfo();
 
-	void SetMass( int value );
-	int GetMass() const;
+    void SetMass(int value);
+    int GetMass() const;
 
-	void SetMotionType( MotionType motionType );
-	MotionType GetMotionType() const;
+    void SetMotionType(MotionType motionType);
+    MotionType GetMotionType() const;
 
-	void SetWorldTransform( const glm::mat4x4& worldTransform );
-	const glm::mat4x4& GetWorldTransform() const;
+    void SetWorldTransform(const glm::mat4x4& worldTransform);
+    const glm::mat4x4& GetWorldTransform() const;
 
-	void SetShape( ShapeSharedPtr pShape );
-	ShapeSharedPtr GetShape() const;
+    void SetShape(ShapeSharedPtr pShape);
+    ShapeSharedPtr GetShape() const;
 
-	void SetLinearDamping( float value );
-	float GetLinearDamping() const;
+    void SetLinearDamping(float value);
+    float GetLinearDamping() const;
 
-	void SetAngularDamping( float value );
-	float GetAngularDamping() const;
+    void SetAngularDamping(float value);
+    float GetAngularDamping() const;
 
-	void SetFriction( float value );
-	float GetFriction() const;
+    void SetFriction(float value);
+    float GetFriction() const;
 
-	void SetCentreOfMass( const glm::vec3& centreOfMass );
-	const glm::vec3& GetCentreOfMass() const;
+    void SetCentreOfMass(const glm::vec3& centreOfMass);
+    const glm::vec3& GetCentreOfMass() const;
 
 private:
-	int m_Mass;
-	MotionType m_MotionType;
-	glm::mat4x4 m_WorldTransform;
-	ShapeSharedPtr m_pShape;
-	float m_LinearDamping;
-	float m_AngularDamping;
-	float m_Friction;
-	glm::vec3 m_CentreOfMass;
+    int m_Mass;
+    MotionType m_MotionType;
+    glm::mat4x4 m_WorldTransform;
+    ShapeSharedPtr m_pShape;
+    float m_LinearDamping;
+    float m_AngularDamping;
+    float m_Friction;
+    glm::vec3 m_CentreOfMass;
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // RigidBody
@@ -95,50 +97,51 @@ private:
 
 class RigidBody : public CollisionObject
 {
-	friend Simulation;
+    friend Simulation;
+
 public:
-	RigidBody( const RigidBodyConstructionInfo& ci );
-	virtual Type GetType() const override;
+    RigidBody(const RigidBodyConstructionInfo& ci);
+    virtual Type GetType() const override;
 
-	glm::mat4x4 GetWorldTransform() const;
-	glm::vec3 GetPosition() const;
-	glm::vec3 GetLinearVelocity() const;
-	glm::vec3 GetAngularVelocity() const;
-	MotionType GetMotionType() const;
-	int GetMass() const;
-	const glm::vec3& GetCentreOfMass() const;
-	void SetLinearDamping( float value );
-	float GetLinearDamping() const;
-	void SetAngularDamping( float value );
-	float GetAngularDamping() const;
+    glm::mat4x4 GetWorldTransform() const;
+    glm::vec3 GetPosition() const;
+    glm::vec3 GetLinearVelocity() const;
+    glm::vec3 GetAngularVelocity() const;
+    MotionType GetMotionType() const;
+    int GetMass() const;
+    const glm::vec3& GetCentreOfMass() const;
+    void SetLinearDamping(float value);
+    float GetLinearDamping() const;
+    void SetAngularDamping(float value);
+    float GetAngularDamping() const;
 
-	void SetWorldTransform( const glm::mat4x4 worldTransform );
-	void SetLinearVelocity( const glm::vec3& linearVelocity );
-	void SetAngularVelocity( const glm::vec3& angularVelocity );
-	void SetMotionType( MotionType motionType );
+    void SetWorldTransform(const glm::mat4x4 worldTransform);
+    void SetLinearVelocity(const glm::vec3& linearVelocity);
+    void SetAngularVelocity(const glm::vec3& angularVelocity);
+    void SetMotionType(MotionType motionType);
 
-	void ApplyAngularForce( const glm::vec3& force );
-	void ApplyLinearForce( const glm::vec3& force );
-	void ApplyAngularImpulse( const glm::vec3& impulse );
-	void ApplyLinearImpulse( const glm::vec3& impulse );
+    void ApplyAngularForce(const glm::vec3& force);
+    void ApplyLinearForce(const glm::vec3& force);
+    void ApplyAngularImpulse(const glm::vec3& impulse);
+    void ApplyLinearImpulse(const glm::vec3& impulse);
 
-	void SetLinearFactor( const glm::vec3& linearFactor );
-	const glm::vec3& GetLinearFactor() const;
-	void SetAngularFactor( const glm::vec3& angularFactor );
-	const glm::vec3& GetAngularFactor() const;
+    void SetLinearFactor(const glm::vec3& linearFactor);
+    const glm::vec3& GetLinearFactor() const;
+    void SetAngularFactor(const glm::vec3& angularFactor);
+    const glm::vec3& GetAngularFactor() const;
 
 private:
-	std::unique_ptr< btRigidBody > m_pRigidBody;
-	std::unique_ptr< btMotionState > m_pMotionState;
-	MotionType m_MotionType;
-	int m_Mass;
-	float m_LinearDamping;
-	float m_AngularDamping;
-	glm::vec3 m_CentreOfMass;
-	glm::vec3 m_LinearFactor;
-	glm::vec3 m_AngularFactor;
+    std::unique_ptr<btRigidBody> m_pRigidBody;
+    std::unique_ptr<btMotionState> m_pMotionState;
+    MotionType m_MotionType;
+    int m_Mass;
+    float m_LinearDamping;
+    float m_AngularDamping;
+    glm::vec3 m_CentreOfMass;
+    glm::vec3 m_LinearFactor;
+    glm::vec3 m_AngularFactor;
 };
-GENESIS_DECLARE_SMART_PTR( RigidBody );
+GENESIS_DECLARE_SMART_PTR(RigidBody);
 
 } // namespace Physics
 } // namespace Genesis

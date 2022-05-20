@@ -17,14 +17,12 @@
 
 #pragma once
 
-#include <list>
-
-#include <SDL.h>
-#include <glm/vec3.hpp>
-
 #include "../taskmanager.h"
 #include "layer.h"
 
+#include <SDL.h>
+#include <glm/vec3.hpp>
+#include <list>
 
 namespace Genesis
 {
@@ -40,16 +38,16 @@ class Scene : public Task
 public:
     Scene();
     virtual ~Scene();
-    TaskStatus Update( float delta );
+    TaskStatus Update(float delta);
     void Render();
-    LayerSharedPtr AddLayer( uint32_t depth, bool isBackground = false );
-    void RemoveLayer( uint32_t depth );
-    void SetLayerMask( uint32_t mask ); // Allows only layers which match this mask to be rendered
+    LayerSharedPtr AddLayer(uint32_t depth, bool isBackground = false);
+    void RemoveLayer(uint32_t depth);
+    void SetLayerMask(uint32_t mask); // Allows only layers which match this mask to be rendered
     uint32_t GetLayerMask() const;
     Camera* GetCamera() const;
 
 private:
-	using LayerList = std::list< LayerSharedPtr >;
+    using LayerList = std::list<LayerSharedPtr>;
 
     LayerList mLayerList;
     LayerList mLayersToDelete;
@@ -62,7 +60,7 @@ inline Camera* Scene::GetCamera() const
     return mCamera;
 }
 
-inline void Scene::SetLayerMask( uint32_t mask )
+inline void Scene::SetLayerMask(uint32_t mask)
 {
     mMask = mask;
 }
@@ -81,10 +79,10 @@ class Camera
 public:
     Camera();
     ~Camera();
-    void SetPosition( const glm::vec3& vec );
-    void SetPosition( float x, float y, float z );
-    void SetTargetPosition( const glm::vec3& vec );
-    void SetTargetPosition( float x, float y, float z );
+    void SetPosition(const glm::vec3& vec);
+    void SetPosition(float x, float y, float z);
+    void SetTargetPosition(const glm::vec3& vec);
+    void SetTargetPosition(float x, float y, float z);
     const glm::vec3& GetPosition() const;
     const glm::vec3& GetTargetPosition() const;
 
@@ -93,12 +91,12 @@ private:
     glm::vec3 mTargetPosition;
 };
 
-inline void Camera::SetPosition( const glm::vec3& vec )
+inline void Camera::SetPosition(const glm::vec3& vec)
 {
     mPosition = vec;
 }
 
-inline void Camera::SetPosition( float x, float y, float z )
+inline void Camera::SetPosition(float x, float y, float z)
 {
     mPosition.x = x;
     mPosition.y = y;
@@ -110,12 +108,12 @@ inline const glm::vec3& Camera::GetPosition() const
     return mPosition;
 }
 
-inline void Camera::SetTargetPosition( const glm::vec3& vec )
+inline void Camera::SetTargetPosition(const glm::vec3& vec)
 {
     mTargetPosition = vec;
 }
 
-inline void Camera::SetTargetPosition( float x, float y, float z )
+inline void Camera::SetTargetPosition(float x, float y, float z)
 {
     mTargetPosition.x = x;
     mTargetPosition.y = y;
@@ -126,4 +124,4 @@ inline const glm::vec3& Camera::GetTargetPosition() const
 {
     return mTargetPosition;
 }
-}
+} // namespace Genesis

@@ -17,11 +17,10 @@
 
 #pragma once
 
-#include <list>
+#include "coredefines.h"
 
 #include <SDL.h>
-
-#include "coredefines.h"
+#include <list>
 
 namespace Genesis
 {
@@ -40,12 +39,12 @@ typedef std::list<SceneObject*> SceneObjectList;
 class Layer
 {
 public:
-    Layer( uint32_t depth, bool isBackground );
+    Layer(uint32_t depth, bool isBackground);
     ~Layer();
-    void Update( float delta );
+    void Update(float delta);
     void Render();
-    void AddSceneObject( SceneObject* object, bool hasOwnership = true );
-    void RemoveSceneObject( SceneObject* object );
+    void AddSceneObject(SceneObject* object, bool hasOwnership = true);
+    void RemoveSceneObject(SceneObject* object);
     uint32_t GetLayerDepth() const;
     bool IsBackground() const;
     bool IsMarkedForDeletion() const;
@@ -58,10 +57,22 @@ private:
     bool mIsBackground;
     bool mMarkedForDeletion;
 };
-GENESIS_DECLARE_SMART_PTR( Layer );
+GENESIS_DECLARE_SMART_PTR(Layer);
 
-inline uint32_t Layer::GetLayerDepth() const { return mDepth; }
-inline bool Layer::IsBackground() const { return mIsBackground; }
-inline bool Layer::IsMarkedForDeletion() const { return mMarkedForDeletion; }
-inline void Layer::MarkForDeletion() { mMarkedForDeletion = true; }
+inline uint32_t Layer::GetLayerDepth() const
+{
+    return mDepth;
 }
+inline bool Layer::IsBackground() const
+{
+    return mIsBackground;
+}
+inline bool Layer::IsMarkedForDeletion() const
+{
+    return mMarkedForDeletion;
+}
+inline void Layer::MarkForDeletion()
+{
+    mMarkedForDeletion = true;
+}
+} // namespace Genesis

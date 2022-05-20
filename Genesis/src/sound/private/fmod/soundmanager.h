@@ -19,18 +19,18 @@
 
 #if USE_FMOD
 
+#include "sound/private/soundmanagerimpl.h"
+
 #include <list>
 #include <memory>
 #include <unordered_map>
-
-#include "sound/private/soundmanagerimpl.h"
 
 namespace FMOD
 {
 class Channel;
 class Sound;
 class System;
-}
+} // namespace FMOD
 
 namespace Genesis::Sound::Private::FMOD
 {
@@ -41,24 +41,24 @@ public:
     SoundManager();
     virtual ~SoundManager();
 
-    virtual void Update( float delta ) override;
-    virtual SoundInstanceSharedPtr CreateSoundInstance( ResourceSound* pResourceSound ) override;
-    virtual void SetPlaylist( ResourceSound* pResourceSound, const std::string& startingSong, bool shuffle ) override;
+    virtual void Update(float delta) override;
+    virtual SoundInstanceSharedPtr CreateSoundInstance(ResourceSound* pResourceSound) override;
+    virtual void SetPlaylist(ResourceSound* pResourceSound, const std::string& startingSong, bool shuffle) override;
     virtual ResourceSound* GetPlaylistResource() const override;
     virtual SoundInstanceSharedPtr GetCurrentSong() const override;
     virtual const SoundInstanceList& GetSoundInstances() const override;
-    virtual void SetListener( const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up ) override;
+    virtual void SetListener(const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up) override;
     virtual glm::vec3 GetListenerPosition() const override;
     virtual int GetActiveSoundCount() const override;
 
 private:
-    ::FMOD::Sound* CreateSound( ResourceSound* pResourceSound );
-    ::FMOD::Sound* GetSound( ResourceSound* pResourceSound );
-    void CacheTracks( bool shuffle = false );
+    ::FMOD::Sound* CreateSound(ResourceSound* pResourceSound);
+    ::FMOD::Sound* GetSound(ResourceSound* pResourceSound);
+    void CacheTracks(bool shuffle = false);
     bool PlayNextTrack();
-    bool PlayTrack( const std::string& songName );
+    bool PlayTrack(const std::string& songName);
     bool HasValidPlaylist() const;
-    bool UpdateInstancingLimit( ResourceSound* pResourceSound );
+    bool UpdateInstancingLimit(ResourceSound* pResourceSound);
 
     ::FMOD::System* m_pSystem;
     SoundInstanceList m_SoundInstances;

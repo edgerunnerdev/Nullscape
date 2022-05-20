@@ -1,10 +1,10 @@
 #ifndef _GENESIS_TASKMANAGER_H_
 #define _GENESIS_TASKMANAGER_H_
 
+#include "timer.h"
+
 #include <list>
 #include <string>
-
-#include "timer.h"
 
 namespace Genesis
 {
@@ -32,10 +32,10 @@ enum class TaskPriority
 enum class TaskStatus
 {
     Continue,
-	Stop
+    Stop
 };
 
-typedef TaskStatus ( Task::*TaskFunc )( float delta );
+typedef TaskStatus (Task::*TaskFunc)(float delta);
 
 struct TaskInfo
 {
@@ -52,10 +52,10 @@ class TaskManager
 {
 public:
     TaskManager();
-    TaskManager( Logger* pLogger );
+    TaskManager(Logger* pLogger);
     ~TaskManager();
 
-    void AddTask( const std::string& name, Task* pTask, TaskFunc func, TaskPriority priority );
+    void AddTask(const std::string& name, Task* pTask, TaskFunc func, TaskPriority priority);
     void PrintTasks() const;
     void Update();
     bool IsRunning() const;
@@ -70,8 +70,14 @@ private:
     Timer m_Timer;
 };
 
-inline bool TaskManager::IsRunning() const { return mIsRunning; }
-inline void TaskManager::Stop() { mIsRunning = false; }
+inline bool TaskManager::IsRunning() const
+{
+    return mIsRunning;
+}
+inline void TaskManager::Stop()
+{
+    mIsRunning = false;
+}
 
 class Task
 {
@@ -79,6 +85,6 @@ public:
     Task(){};
     virtual ~Task(){};
 };
-}
+} // namespace Genesis
 
 #endif

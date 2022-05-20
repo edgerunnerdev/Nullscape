@@ -19,28 +19,28 @@
 
 #if USE_FMOD
 
-#include <fmod.h>
-#include <glm/vec3.hpp>
-
 #include "genesis.h"
 #include "logger.h"
+
+#include <fmod.h>
+#include <glm/vec3.hpp>
 
 namespace Genesis::Sound::Private::FMOD
 {
 
-inline void CheckFMODResult( FMOD_RESULT result )
+inline void CheckFMODResult(FMOD_RESULT result)
 {
-    if ( result != FMOD_OK )
+    if (result != FMOD_OK)
     {
-        Genesis::FrameWork::GetLogger()->LogWarning( "FMOD error %d: %s", result, FMOD_ErrorString( result ) );
+        Genesis::FrameWork::GetLogger()->LogWarning("FMOD error %d: %s", result, FMOD_ErrorString(result));
     }
 }
 
 inline void ToFMODVector(const glm::vec3& inVector, FMOD_VECTOR* pOutVector)
 {
-	pOutVector->x = inVector.x;
-	pOutVector->y = inVector.y;
-	pOutVector->z = inVector.z;
+    pOutVector->x = inVector.x;
+    pOutVector->y = inVector.y;
+    pOutVector->z = inVector.z;
 }
 
 } // namespace Genesis::Sound::Private::FMOD

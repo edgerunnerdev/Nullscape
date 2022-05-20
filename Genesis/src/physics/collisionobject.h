@@ -27,33 +27,33 @@ namespace Physics
 class Shape;
 class Simulation;
 
-
 /////////////////////////////////////////////////////////////////////
 // CollisionObject
 /////////////////////////////////////////////////////////////////////
 
 class CollisionObject
 {
-	friend Simulation;
-public:
-	CollisionObject() {};
-	virtual ~CollisionObject() {};
-	ShapeWeakPtr GetShape() const;
+    friend Simulation;
 
-	enum class Type
-	{
-		RigidBody,
-		Ghost
-	};
-	virtual Type GetType() const = 0;
+public:
+    CollisionObject(){};
+    virtual ~CollisionObject(){};
+    ShapeWeakPtr GetShape() const;
+
+    enum class Type
+    {
+        RigidBody,
+        Ghost
+    };
+    virtual Type GetType() const = 0;
 
 protected:
-	ShapeSharedPtr m_pShape;
+    ShapeSharedPtr m_pShape;
 };
 
 inline ShapeWeakPtr CollisionObject::GetShape() const
 {
-	return m_pShape;
+    return m_pShape;
 }
 
 } // namespace Physics

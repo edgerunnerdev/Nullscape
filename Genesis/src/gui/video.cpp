@@ -16,13 +16,13 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "video.h"
+
+#include "../genesis.h"
+#include "../resources/resourceimage.h"
 #include "../resources/resourcevideo.h"
 #include "../shaderuniform.h"
 #include "../vertexbuffer.h"
 #include "../videoplayer.h"
-
-#include "../genesis.h"
-#include "../resources/resourceimage.h"
 
 namespace Genesis
 {
@@ -30,45 +30,45 @@ namespace Genesis
 namespace Gui
 {
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Image
-    ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// Image
+///////////////////////////////////////////////////////////////////////////
 
-    Video::Video()
-        : m_pImageVertexBuffer( nullptr )
-    {
-        m_pImageVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
-    }
+Video::Video()
+    : m_pImageVertexBuffer(nullptr)
+{
+    m_pImageVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
+}
 
-    Video::~Video()
-    {
-        delete m_pImageVertexBuffer;
-    }
+Video::~Video()
+{
+    delete m_pImageVertexBuffer;
+}
 
-    void Video::Render()
+void Video::Render()
+{
+    VideoPlayer* pVideoPlayer = FrameWork::GetVideoPlayer();
+    if (pVideoPlayer != nullptr && pVideoPlayer->IsPlaying())
     {
-        VideoPlayer* pVideoPlayer = FrameWork::GetVideoPlayer();
-        if ( pVideoPlayer != nullptr && pVideoPlayer->IsPlaying() )
+        GLuint texture = 0;
+        pVideoPlayer->Render(texture);
+
+        if (texture > 0)
         {
-            GLuint texture = 0;
-            pVideoPlayer->Render( texture );
+            const glm::vec2& pos = GetPositionAbsolute();
+            m_pImageVertexBuffer->CreateTexturedQuad(pos.x, pos.y, mSize.x, mSize.y);
 
-            if ( texture > 0 )
-            {
-                const glm::vec2& pos = GetPositionAbsolute();
-                m_pImageVertexBuffer->CreateTexturedQuad( pos.x, pos.y, mSize.x, mSize.y );
+            GuiManager::GetTexturedShaderColourUniform()->Set(mColour.glm());
+            GuiManager::GetTexturedSamplerUniform()->Set(texture, GL_TEXTURE0);
+            GuiManager::GetTexturedShader()->Use();
 
-                GuiManager::GetTexturedShaderColourUniform()->Set( mColour.glm() );
-                GuiManager::GetTexturedSamplerUniform()->Set( texture, GL_TEXTURE0 );
-                GuiManager::GetTexturedShader()->Use();
-
-                m_pImageVertexBuffer->Draw();
-            }
+            m_pImageVertexBuffer->Draw();
         }
-
-        DrawBorder();
-
-        GuiElement::Render();
     }
+
+    DrawBorder();
+
+    GuiElement::Render();
 }
-}
+} // namespace Gui
+} // namespace Genesis

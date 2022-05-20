@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include <glm/mat4x4.hpp>
-
 #include "collisionobject.h"
 #include "shape.fwd.h"
+
+#include <glm/mat4x4.hpp>
 
 class btRigidBody;
 
@@ -32,28 +32,28 @@ namespace Physics
 class Shape;
 class Simulation;
 
-
 /////////////////////////////////////////////////////////////////////
 // Ghost
 /////////////////////////////////////////////////////////////////////
 
 class Ghost : public CollisionObject
 {
-	friend Simulation;
+    friend Simulation;
+
 public:
-	Ghost( ShapeSharedPtr pShape, const glm::mat4x4& worldTransform );
-	virtual Type GetType() const override;
-	void SetWorldTransform( const glm::mat4x4& worldTransform );
+    Ghost(ShapeSharedPtr pShape, const glm::mat4x4& worldTransform);
+    virtual Type GetType() const override;
+    void SetWorldTransform(const glm::mat4x4& worldTransform);
 
 private:
-	std::unique_ptr< btRigidBody > m_pRigidBody;
-	glm::mat4x4 m_WorldTransform;
+    std::unique_ptr<btRigidBody> m_pRigidBody;
+    glm::mat4x4 m_WorldTransform;
 };
-GENESIS_DECLARE_SMART_PTR( Ghost );
+GENESIS_DECLARE_SMART_PTR(Ghost);
 
 inline CollisionObject::Type Ghost::GetType() const
 {
-	return CollisionObject::Type::Ghost;
+    return CollisionObject::Type::Ghost;
 }
 
 } // namespace Physics

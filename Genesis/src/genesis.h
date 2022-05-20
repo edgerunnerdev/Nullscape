@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include "SDL.h"
 #include "logger.h"
+
+#include <vector>
 
 namespace Genesis
 {
@@ -37,17 +37,17 @@ class Window;
 
 namespace Gui
 {
-    class GuiManager;
+class GuiManager;
 }
 
 namespace Render
 {
-	class DebugRender;
+class DebugRender;
 }
 
 namespace Sound
 {
-    class SoundManager;
+class SoundManager;
 }
 
 class FrameWork
@@ -55,10 +55,10 @@ class FrameWork
 public:
     static bool Initialize();
     static void Shutdown();
-    static bool CreateWindowGL( const std::string& name, uint32_t width, uint32_t height, uint32_t multiSampleSamples = 0 );
+    static bool CreateWindowGL(const std::string& name, uint32_t width, uint32_t height, uint32_t multiSampleSamples = 0);
 
-    static CommandLineParameters* CreateCommandLineParameters( const char* parameterStr );
-    static CommandLineParameters* CreateCommandLineParameters( const char** parameters, uint32_t numParameters );
+    static CommandLineParameters* CreateCommandLineParameters(const char* parameterStr);
+    static CommandLineParameters* CreateCommandLineParameters(const char** parameters, uint32_t numParameters);
     static CommandLineParameters* GetCommandLineParameters();
 
     static TaskManager* GetTaskManager();
@@ -71,7 +71,7 @@ public:
     static Gui::GuiManager* GetGuiManager();
     static Sound::SoundManager* GetSoundManager();
     static VideoPlayer* GetVideoPlayer();
-	static Render::DebugRender* GetDebugRender();
+    static Render::DebugRender* GetDebugRender();
 
 private:
     static CommandLineParameters* m_pCommandLineParameters;
@@ -80,11 +80,11 @@ private:
 class CommandLineParameters
 {
 public:
-    CommandLineParameters( const char* parameterStr );
-    CommandLineParameters( const char** parameters, size_t numParameters );
+    CommandLineParameters(const char* parameterStr);
+    CommandLineParameters(const char** parameters, size_t numParameters);
     size_t Size() const;
-    const std::string& GetParameter( size_t n ) const;
-    bool HasParameter( const std::string& name ) const;
+    const std::string& GetParameter(size_t n) const;
+    bool HasParameter(const std::string& name) const;
 
 private:
     typedef std::vector<std::string> CommandLineParameter;
@@ -96,9 +96,9 @@ inline size_t CommandLineParameters::Size() const
     return mParameters.size();
 }
 
-inline const std::string& CommandLineParameters::GetParameter( size_t n ) const
+inline const std::string& CommandLineParameters::GetParameter(size_t n) const
 {
-    return mParameters.at( n );
+    return mParameters.at(n);
 }
 
-}
+} // namespace Genesis

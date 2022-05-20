@@ -21,8 +21,8 @@ namespace Genesis
 {
 
 Timer::Timer()
-    : m_TimePoint( std::chrono::high_resolution_clock::now() )
-    , m_Delta( 0.0f )
+    : m_TimePoint(std::chrono::high_resolution_clock::now())
+    , m_Delta(0.0f)
 {
     m_TimePoint = std::chrono::high_resolution_clock::now();
 }

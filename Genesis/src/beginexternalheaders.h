@@ -1,5 +1,5 @@
 #ifdef _MSC_VER
 
-#pragma warning( push, 0 ) // Disables all warnings.
+#pragma warning(push, 0) // Disables all warnings.
 
 #endif

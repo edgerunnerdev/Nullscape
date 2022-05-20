@@ -28,13 +28,13 @@ namespace Genesis
 
 /////////////////////////////////////////////////////////////////////
 // Component
-// A component automatically registers itself with the 
+// A component automatically registers itself with the
 // ComponentFactory, as well as declaring smart pointers for the
 // templated type.
 //
 // To declare a new Component (.h file):
 //
-//	class ShieldInhibitorComponent : public Genesis::Component 
+//	class ShieldInhibitorComponent : public Genesis::Component
 //	{
 //		DECLARE_COMPONENT( ShieldInhibitorComponent )
 //	public:
@@ -51,38 +51,38 @@ namespace Genesis
 class Component;
 typedef unsigned int ComponentTypeID;
 
-#define DECLARE_COMPONENT_SMART_PTR( COMPONENT ) \
-	typedef std::shared_ptr<COMPONENT> COMPONENT ## SharedPtr; \
-	typedef std::weak_ptr<COMPONENT> COMPONENT ## WeakPtr;
+#define DECLARE_COMPONENT_SMART_PTR(COMPONENT)               \
+    typedef std::shared_ptr<COMPONENT> COMPONENT##SharedPtr; \
+    typedef std::weak_ptr<COMPONENT> COMPONENT##WeakPtr;
 
-#define DECLARE_COMPONENT( COMPONENT ) \
-public: \
-	static std::shared_ptr<Component> Create() { return std::static_pointer_cast<Component>( std::make_shared<COMPONENT>() ); } \
-	virtual std::string GetName() const override; \
-private: \
-	static const Genesis::ComponentAutoRegister<COMPONENT> m_AutoRegister;
+#define DECLARE_COMPONENT(COMPONENT)                                                                                          \
+public:                                                                                                                       \
+    static std::shared_ptr<Component> Create() { return std::static_pointer_cast<Component>(std::make_shared<COMPONENT>()); } \
+    virtual std::string GetName() const override;                                                                             \
+                                                                                                                              \
+private:                                                                                                                      \
+    static const Genesis::ComponentAutoRegister<COMPONENT> m_AutoRegister;
 
-#define IMPLEMENT_COMPONENT( COMPONENT ) \
-	const Genesis::ComponentAutoRegister<COMPONENT> COMPONENT::m_AutoRegister( #COMPONENT ); \
-	std::string COMPONENT::GetName() const { return #COMPONENT; } \
-	DECLARE_COMPONENT_SMART_PTR( COMPONENT )
+#define IMPLEMENT_COMPONENT(COMPONENT)                                                     \
+    const Genesis::ComponentAutoRegister<COMPONENT> COMPONENT::m_AutoRegister(#COMPONENT); \
+    std::string COMPONENT::GetName() const { return #COMPONENT; }                          \
+    DECLARE_COMPONENT_SMART_PTR(COMPONENT)
 
-DECLARE_COMPONENT_SMART_PTR( Component )
+DECLARE_COMPONENT_SMART_PTR(Component)
 class Component
 {
 public:
-	virtual bool Initialise() { return true; }
-	virtual void Update( float delta ) {}
-	void SetTypeID( ComponentTypeID id ) { m_TypeID = id; }
-	ComponentTypeID GetTypeID() const { return m_TypeID; }
-	virtual std::string GetName() const = 0;
+    virtual bool Initialise() { return true; }
+    virtual void Update(float delta) {}
+    void SetTypeID(ComponentTypeID id) { m_TypeID = id; }
+    ComponentTypeID GetTypeID() const { return m_TypeID; }
+    virtual std::string GetName() const = 0;
 
 private:
-	ComponentTypeID m_TypeID;
+    ComponentTypeID m_TypeID;
 };
 
 typedef std::function<ComponentSharedPtr()> ComponentCreationFn;
-
 
 /////////////////////////////////////////////////////////////////////
 // ComponentFactory
@@ -91,101 +91,83 @@ typedef std::function<ComponentSharedPtr()> ComponentCreationFn;
 class ComponentFactory
 {
 public:
-	static ComponentSharedPtr Create( const std::string& componentName )
-	{
-		const ComponentIDPair& pair = GetRegistryMap()[componentName];
-		ComponentSharedPtr component = pair.creationFn();
-		component->SetTypeID( pair.id );
-		return component;
-	}
+    static ComponentSharedPtr Create(const std::string& componentName)
+    {
+        const ComponentIDPair& pair = GetRegistryMap()[componentName];
+        ComponentSharedPtr component = pair.creationFn();
+        component->SetTypeID(pair.id);
+        return component;
+    }
 
-	static void Register( const std::string& componentName, ComponentCreationFn creationFn )
-	{
-		static ComponentTypeID sId = 0u;
+    static void Register(const std::string& componentName, ComponentCreationFn creationFn)
+    {
+        static ComponentTypeID sId = 0u;
 
-		ComponentIDPair pair;
-		pair.creationFn = creationFn;
-		pair.id = ++sId;
+        ComponentIDPair pair;
+        pair.creationFn = creationFn;
+        pair.id = ++sId;
 
-		GetRegistryMap()[componentName] = pair;
-	}
+        GetRegistryMap()[componentName] = pair;
+    }
 
-	struct ComponentIDPair
-	{
-		ComponentIDPair()
-        {
-			id = 0u;
-        }
+    struct ComponentIDPair
+    {
+        ComponentIDPair() { id = 0u; }
 
-		ComponentCreationFn creationFn;
-		ComponentTypeID id;
-	};
+        ComponentCreationFn creationFn;
+        ComponentTypeID id;
+    };
 
-	typedef std::unordered_map<std::string, ComponentIDPair> RegistryMap;
+    typedef std::unordered_map<std::string, ComponentIDPair> RegistryMap;
 
 private:
-	static RegistryMap& GetRegistryMap()
-	{
-		static RegistryMap sRegistryMap;
-		return sRegistryMap;
-	}
+    static RegistryMap& GetRegistryMap()
+    {
+        static RegistryMap sRegistryMap;
+        return sRegistryMap;
+    }
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // ComponentContainer
 /////////////////////////////////////////////////////////////////////
 
-typedef std::unordered_map< std::string, ComponentSharedPtr > ComponentMap;
+typedef std::unordered_map<std::string, ComponentSharedPtr> ComponentMap;
 
 class ComponentContainer
 {
 public:
-	void Add( ComponentSharedPtr component )
-	{
-		m_Components.insert( std::pair< std::string, ComponentSharedPtr >( component->GetName(), component ) );
-	}
+    void Add(ComponentSharedPtr component) { m_Components.insert(std::pair<std::string, ComponentSharedPtr>(component->GetName(), component)); }
 
-	ComponentSharedPtr Get( const std::string& name ) const
-	{
-		ComponentMap::const_iterator it = m_Components.find( name );
-		if ( it == m_Components.cend() )
-		{
-			return nullptr;
-		}
-		else
-		{
-			return it->second;
-		}
-	}
+    ComponentSharedPtr Get(const std::string& name) const
+    {
+        ComponentMap::const_iterator it = m_Components.find(name);
+        if (it == m_Components.cend())
+        {
+            return nullptr;
+        }
+        else
+        {
+            return it->second;
+        }
+    }
 
-	ComponentMap::iterator begin()
-	{
-		return m_Components.begin();
-	}
+    ComponentMap::iterator begin() { return m_Components.begin(); }
 
-	ComponentMap::iterator end()
-	{
-		return m_Components.end();
-	}
+    ComponentMap::iterator end() { return m_Components.end(); }
 
 private:
-	ComponentMap m_Components;
+    ComponentMap m_Components;
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // ComponentAutoRegister
 /////////////////////////////////////////////////////////////////////
 
-template<class T>
-class ComponentAutoRegister
+template <class T> class ComponentAutoRegister
 {
 public:
-	ComponentAutoRegister<T>( const std::string& componentName )
-	{
-		ComponentFactory::Register( componentName, &T::Create );
-	}
+    ComponentAutoRegister<T>(const std::string& componentName) { ComponentFactory::Register(componentName, &T::Create); }
 };
 
-}
+} // namespace Genesis

@@ -26,7 +26,7 @@ namespace Genesis
 class ResourceImage : public ResourceGeneric
 {
 public:
-    ResourceImage( const Filename& filename );
+    ResourceImage(const Filename& filename);
     virtual ~ResourceImage(){};
     virtual ResourceType GetType() const override;
     virtual void Preload() override;
@@ -37,11 +37,11 @@ public:
     uint32_t GetTexture() const;
 
     bool IsMipMapped() const;
-    void EnableMipMapping( bool state );
+    void EnableMipMapping(bool state);
 
 private:
-    SDL_Surface* CreateSurface( const std::string& filename );
-    void CreateTexture( uint32_t internalFormat, uint32_t format );
+    SDL_Surface* CreateSurface(const std::string& filename);
+    void CreateTexture(uint32_t internalFormat, uint32_t format);
     uint32_t m_Width;
     uint32_t m_Height;
     uint32_t m_TextureSlot;
@@ -49,9 +49,24 @@ private:
     SDL_Surface* m_pTemporarySurface; // Set during the async preload
 };
 
-inline ResourceType ResourceImage::GetType() const { return ResourceType::Texture; }
-inline uint32_t ResourceImage::GetWidth() const { return m_Width; }
-inline uint32_t ResourceImage::GetHeight() const { return m_Height; }
-inline uint32_t ResourceImage::GetTexture() const { return m_TextureSlot; }
-inline bool ResourceImage::IsMipMapped() const { return m_MipMapped; }
+inline ResourceType ResourceImage::GetType() const
+{
+    return ResourceType::Texture;
 }
+inline uint32_t ResourceImage::GetWidth() const
+{
+    return m_Width;
+}
+inline uint32_t ResourceImage::GetHeight() const
+{
+    return m_Height;
+}
+inline uint32_t ResourceImage::GetTexture() const
+{
+    return m_TextureSlot;
+}
+inline bool ResourceImage::IsMipMapped() const
+{
+    return m_MipMapped;
+}
+} // namespace Genesis

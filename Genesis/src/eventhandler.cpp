@@ -15,25 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include "imgui/imgui_impl.h"
 #include "eventhandler.h"
+
 #include "genesis.h"
+#include "imgui/imgui_impl.h"
 #include "inputmanager.h"
 
 namespace Genesis
 {
 
-TaskStatus EventHandler::Update( float delta )
+TaskStatus EventHandler::Update(float delta)
 {
     SDL_Event event;
-    while ( SDL_PollEvent( &event ) )
+    while (SDL_PollEvent(&event))
     {
-		if ( ImGuiImpl::HandleEvent( &event ) )
-		{
-			continue;
-		}
+        if (ImGuiImpl::HandleEvent(&event))
+        {
+            continue;
+        }
 
-        switch ( event.type )
+        switch (event.type)
         {
         case SDL_KEYDOWN:
         case SDL_KEYUP:
@@ -42,31 +43,26 @@ TaskStatus EventHandler::Update( float delta )
         case SDL_MOUSEMOTION:
         case SDL_MOUSEWHEEL:
         case SDL_TEXTEDITING:
-        case SDL_TEXTINPUT:
-            NotifyInputHandler( event );
-            break;
+        case SDL_TEXTINPUT: NotifyInputHandler(event); break;
 
-        case SDL_QUIT:
-            FrameWork::GetTaskManager()->Stop();
-            break;
+        case SDL_QUIT: FrameWork::GetTaskManager()->Stop(); break;
 
-        default:
-            break;
+        default: break;
         }
     }
 
     // A new frame in ImGui should only be started after all the events are pumped.
-    ImGuiImpl::NewFrame( delta );
+    ImGuiImpl::NewFrame(delta);
 
     return TaskStatus::Continue;
 }
 
-void EventHandler::NotifyInputHandler( SDL_Event& event )
+void EventHandler::NotifyInputHandler(SDL_Event& event)
 {
     InputManager* pInputManager = FrameWork::GetInputManager();
-    if ( pInputManager != nullptr )
+    if (pInputManager != nullptr)
     {
-        pInputManager->HandleEvent( event );
+        pInputManager->HandleEvent(event);
     }
 }
-}
+} // namespace Genesis

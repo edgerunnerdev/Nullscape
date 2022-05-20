@@ -43,7 +43,7 @@ enum class RenderTargetId
     GlowBlurVertical,
     Radar,
 
-	Count
+    Count
 };
 
 enum class IntersectionResult
@@ -53,4 +53,4 @@ enum class IntersectionResult
     FailureCoplanar
 };
 
-} // namespace Genesis 
+} // namespace Genesis

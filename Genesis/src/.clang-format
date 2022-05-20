@@ -10,13 +10,14 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: None
 BreakBeforeBraces: Allman
-BreakConstructorInitializers: AfterColon
+BreakConstructorInitializers: BeforeComma
 ColumnLimit: '200'
 CompactNamespaces: 'false'
 FixNamespaceComments: 'true'
 IncludeBlocks: Regroup
 IndentWidth: '4'
 Language: Cpp
+PointerAlignment: Left
 SpacesInParentheses: 'false'
 SpacesInSquareBrackets: 'false'
 UseTab: Never

@@ -21,30 +21,26 @@
 #include <fmod_errors.h>
 #endif
 
-#include "sound/soundmanager.h"
 #include "../genesis.h"
 #include "../logger.h"
-
 #include "resourcesound.h"
+#include "sound/soundmanager.h"
 
 namespace Genesis
 {
 
-ResourceSound::ResourceSound( const Filename& filename )
-    : ResourceGeneric( filename )
-    , m_Flags( 0 )
-    , m_InstancingLimit( 0.0f )
+ResourceSound::ResourceSound(const Filename& filename)
+    : ResourceGeneric(filename)
+    , m_Flags(0)
+    , m_InstancingLimit(0.0f)
 {
 }
 
-ResourceSound::~ResourceSound()
-{
-
-}
+ResourceSound::~ResourceSound() {}
 
 bool ResourceSound::Load()
 {
-    if ( GetFilename().GetExtension() == "m3u" )
+    if (GetFilename().GetExtension() == "m3u")
     {
         m_Flags |= SOUND_FLAG_PLAYLIST;
     }
@@ -53,7 +49,7 @@ bool ResourceSound::Load()
     return true;
 }
 
-bool ResourceSound::Initialise( int flags /* = 0 */ )
+bool ResourceSound::Initialise(int flags /* = 0 */)
 {
     // m_Flags might already have some values in it (e.g. this resource being a playlist) which have been injected after the object was constructed
     // but before Initialise() was called.
@@ -63,20 +59,20 @@ bool ResourceSound::Initialise( int flags /* = 0 */ )
     return true;
 }
 
-ResourceSound* ResourceSound::LoadAs3D( const std::string& filename )
+ResourceSound* ResourceSound::LoadAs3D(const std::string& filename)
 {
     ResourceSound* pResource = nullptr;
-    if ( filename.empty() == false )
+    if (filename.empty() == false)
     {
-        pResource = (ResourceSound*)FrameWork::GetResourceManager()->GetResource( filename );
-        if ( pResource != nullptr )
+        pResource = (ResourceSound*)FrameWork::GetResourceManager()->GetResource(filename);
+        if (pResource != nullptr)
         {
             int flags = SOUND_FLAG_3D | SOUND_FLAG_FX;
-            pResource->Initialise( flags );
-            pResource->SetInstancingLimit( 0.1f );
+            pResource->Initialise(flags);
+            pResource->SetInstancingLimit(0.1f);
         }
     }
 
     return pResource;
 }
-}
+} // namespace Genesis

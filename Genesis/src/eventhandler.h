@@ -17,8 +17,9 @@
 
 #pragma once
 
-#include <SDL.h>
 #include "taskmanager.h"
+
+#include <SDL.h>
 
 namespace Genesis
 {
@@ -26,9 +27,9 @@ namespace Genesis
 class EventHandler : public Task
 {
 public:
-    TaskStatus Update( float delta );
+    TaskStatus Update(float delta);
 
 private:
-    void NotifyInputHandler( SDL_Event& event );
+    void NotifyInputHandler(SDL_Event& event);
 };
-}
+} // namespace Genesis

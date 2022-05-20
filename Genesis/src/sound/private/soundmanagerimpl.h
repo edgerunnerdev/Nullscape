@@ -31,14 +31,14 @@ class SoundManagerImpl
 {
 public:
     virtual ~SoundManagerImpl() {}
-    virtual void Update( float delta ) = 0;
-    //FMOD::Sound* CreateSound( ResourceSound* pResourceSound );
-    virtual SoundInstanceSharedPtr CreateSoundInstance( ResourceSound* pResourceSound ) = 0;
-    virtual void SetPlaylist( ResourceSound* pResourceSound, const std::string& startingSong, bool shuffle ) = 0;
+    virtual void Update(float delta) = 0;
+    // FMOD::Sound* CreateSound( ResourceSound* pResourceSound );
+    virtual SoundInstanceSharedPtr CreateSoundInstance(ResourceSound* pResourceSound) = 0;
+    virtual void SetPlaylist(ResourceSound* pResourceSound, const std::string& startingSong, bool shuffle) = 0;
     virtual ResourceSound* GetPlaylistResource() const = 0;
     virtual SoundInstanceSharedPtr GetCurrentSong() const = 0;
     virtual const SoundInstanceList& GetSoundInstances() const = 0;
-    virtual void SetListener( const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up ) = 0;
+    virtual void SetListener(const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up) = 0;
     virtual glm::vec3 GetListenerPosition() const = 0;
     virtual int GetActiveSoundCount() const = 0;
 };

@@ -17,18 +17,18 @@
 
 #pragma once
 
-#include <array>
-#include <bitset>
-#include <vector>
-
-#include "rendersystem.fwd.h"
-#include "glm/gtx/transform.hpp"
-#include "render/rendertarget.h"
 #include "colour.h"
+#include "glm/gtx/transform.hpp"
 #include "inputmanager.h"
+#include "render/rendertarget.h"
+#include "rendersystem.fwd.h"
 #include "shader.h"
 #include "shaderuniformtype.h"
 #include "taskmanager.h"
+
+#include <array>
+#include <bitset>
+#include <vector>
 
 namespace Genesis
 {
@@ -45,16 +45,16 @@ class RenderSystem : public Task
 public:
     RenderSystem();
     virtual ~RenderSystem();
-    TaskStatus Update( float delta );
-    void Initialize( GLuint screenWidth, GLuint screenHeight );
+    TaskStatus Update(float delta);
+    void Initialize(GLuint screenWidth, GLuint screenHeight);
     void ViewOrtho();
     void ViewPerspective();
     ShaderCache* GetShaderCache() const;
 
-    glm::vec3 Raycast( const glm::vec2& screenCoordinates );
+    glm::vec3 Raycast(const glm::vec2& screenCoordinates);
 
     inline float GetShaderTimer() const;
-    void SetRenderTarget( RenderTargetId renderTargetId );
+    void SetRenderTarget(RenderTargetId renderTargetId);
 
     bool IsScreenshotScheduled() const;
     void BeginCapture();
@@ -69,9 +69,9 @@ public:
     void ResetDrawCallCount();
 
     BlendMode GetBlendMode() const;
-    void SetBlendMode( BlendMode blendMode );
+    void SetBlendMode(BlendMode blendMode);
 
-	void PrintFramebufferInfo( GLuint fboId );
+    void PrintFramebufferInfo(GLuint fboId);
 
     enum class PostProcessEffect
     {
@@ -81,32 +81,33 @@ public:
 
         Count
     };
-    void EnablePostProcessEffect( PostProcessEffect effect, bool enable );
-    bool IsPostProcessEffectEnabled( PostProcessEffect effect );
+    void EnablePostProcessEffect(PostProcessEffect effect, bool enable);
+    bool IsPostProcessEffectEnabled(PostProcessEffect effect);
 
 private:
-	void CreateRenderTargets();
+    void CreateRenderTargets();
     void ClearAll();
     void DrawDebugWindow();
     void InitializePostProcessing();
     void InitializeGlowChain();
     void RenderScene();
     void RenderGlow();
-    RenderTarget* GetRenderTarget( RenderTargetId id );
-    void ScreenPosToWorldRay( int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin, glm::vec3& out_direction );
-    IntersectionResult LinePlaneIntersection( const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result );
+    RenderTarget* GetRenderTarget(RenderTargetId id);
+    void ScreenPosToWorldRay(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin,
+                             glm::vec3& out_direction);
+    IntersectionResult LinePlaneIntersection(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result);
 
-    bool GetScreenshotFilename( std::string& filename ) const;
-    SDL_Surface* FlipSurfaceVertical( SDL_Surface* pSurface ) const;
-    void SetRenderTarget( RenderTarget* pRenderTarget );
+    bool GetScreenshotFilename(std::string& filename) const;
+    SDL_Surface* FlipSurfaceVertical(SDL_Surface* pSurface) const;
+    void SetRenderTarget(RenderTarget* pRenderTarget);
     void TakeScreenshot();
-    void TakeScreenshotAux( bool immediate );
+    void TakeScreenshotAux(bool immediate);
     void Capture();
 
-	void InitializeDebug();
-	std::string GetRenderbufferParameters( GLuint id );
-	std::string GetTextureParameters( GLuint id );
-	std::string ConvertInternalFormatToString( GLenum format );
+    void InitializeDebug();
+    std::string GetRenderbufferParameters(GLuint id);
+    std::string GetTextureParameters(GLuint id);
+    std::string ConvertInternalFormatToString(GLenum format);
 
     bool m_ScreenshotScheduled;
     bool m_CaptureInProgress;
@@ -146,9 +147,9 @@ private:
     RenderTarget* m_pCurrentRenderTarget;
     bool m_DebugWindowOpen;
 
-    using PostProcessBitSet = std::bitset<static_cast<size_t>( PostProcessEffect::Count )>;
+    using PostProcessBitSet = std::bitset<static_cast<size_t>(PostProcessEffect::Count)>;
     PostProcessBitSet m_ActivePostProcessEffects;
-    std::array<ShaderUniform*, static_cast<size_t>( PostProcessEffect::Count )> m_PostProcessShaderUniforms;
+    std::array<ShaderUniform*, static_cast<size_t>(PostProcessEffect::Count)> m_PostProcessShaderUniforms;
 };
 
 inline ShaderCache* RenderSystem::GetShaderCache() const
@@ -211,9 +212,9 @@ inline BlendMode RenderSystem::GetBlendMode() const
     return m_BlendMode;
 }
 
-inline bool RenderSystem::IsPostProcessEffectEnabled( PostProcessEffect effect )
+inline bool RenderSystem::IsPostProcessEffectEnabled(PostProcessEffect effect)
 {
-    return m_ActivePostProcessEffects[ static_cast<size_t>( effect ) ];
+    return m_ActivePostProcessEffects[static_cast<size_t>(effect)];
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -223,15 +224,15 @@ inline bool RenderSystem::IsPostProcessEffectEnabled( PostProcessEffect effect )
 struct VboFloat4
 {
     VboFloat4()
-        : x( 0.0f )
-        , y( 0.0f )
-        , z( 0.0f )
-        , w( 0.0f ){};
-    VboFloat4( float inX, float inY, float inZ, float inW )
-        : x( inX )
-        , y( inY )
-        , z( inZ )
-        , w( inW ){};
+        : x(0.0f)
+        , y(0.0f)
+        , z(0.0f)
+        , w(0.0f){};
+    VboFloat4(float inX, float inY, float inZ, float inW)
+        : x(inX)
+        , y(inY)
+        , z(inZ)
+        , w(inW){};
     float x, y, z, w;
 };
 typedef std::vector<VboFloat4> VboFloat4Vec;
@@ -239,13 +240,13 @@ typedef std::vector<VboFloat4> VboFloat4Vec;
 struct VboFloat3
 {
     VboFloat3()
-        : x( 0.0f )
-        , y( 0.0f )
-        , z( 0.0f ){};
-    VboFloat3( float inX, float inY, float inZ )
-        : x( inX )
-        , y( inY )
-        , z( inZ ){};
+        : x(0.0f)
+        , y(0.0f)
+        , z(0.0f){};
+    VboFloat3(float inX, float inY, float inZ)
+        : x(inX)
+        , y(inY)
+        , z(inZ){};
     float x, y, z;
 };
 typedef std::vector<VboFloat3> VboFloat3Vec;
@@ -253,12 +254,12 @@ typedef std::vector<VboFloat3> VboFloat3Vec;
 struct VboFloat2
 {
     VboFloat2()
-        : x( 0.0f )
-        , y( 0.0f ){};
-    VboFloat2( float inX, float inY )
-        : x( inX )
-        , y( inY ){};
+        : x(0.0f)
+        , y(0.0f){};
+    VboFloat2(float inX, float inY)
+        : x(inX)
+        , y(inY){};
     float x, y;
 };
 typedef std::vector<VboFloat2> VboFloat2Vec;
-}
+} // namespace Genesis

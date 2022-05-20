@@ -2,20 +2,20 @@
 
 enum class ResourceType
 {
-	Texture,
-	Texture3D,
-	Font,
-	Sound,
-	Video,
+    Texture,
+    Texture3D,
+    Font,
+    Sound,
+    Video,
 
-	Unknown
+    Unknown
 };
 
 enum class ResourceState
 {
-	Unloaded,
-	PreloadPending,
-	Preloading,
-	Preloaded,
-	Loaded
+    Unloaded,
+    PreloadPending,
+    Preloading,
+    Preloaded,
+    Loaded
 };

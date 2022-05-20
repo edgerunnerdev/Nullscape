@@ -16,6 +16,7 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "atlas.h"
+
 #include "../resources/resourceimage.h"
 
 namespace Genesis
@@ -24,46 +25,46 @@ namespace Genesis
 namespace Gui
 {
 
-    /////////////////////////////////////////////////////////////////////
-    // AtlasElement
-    /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// AtlasElement
+/////////////////////////////////////////////////////////////////////
 
-    AtlasElement::AtlasElement( float x1, float y1, float x2, float y2, int width, int height )
-    {
-        SDL_assert( width > 0 && height > 0 );
-        static const float sBias = 0.5f;
-        m_U1 = ( x1 + sBias ) / width;
-        m_V1 = ( y1 + sBias ) / height;
-        m_U2 = ( x2 - sBias ) / width;
-        m_V2 = ( y2 - sBias ) / height;
-        m_Width = fabs( x2 - x1 );
-        m_Height = fabs( y2 - y1 );
-    }
-
-    /////////////////////////////////////////////////////////////////////
-    // Atlas
-    /////////////////////////////////////////////////////////////////////
-
-    Atlas::Atlas()
-        : m_pSource( nullptr )
-    {
-    }
-
-    void Atlas::SetSource( ResourceImage* pImage )
-    {
-        if ( pImage != m_pSource && m_Elements.empty() == false )
-        {
-            m_Elements.clear();
-        }
-
-        m_pSource = pImage;
-    }
-
-    Atlas::Id Atlas::AddElement( float x1, float y1, float x2, float y2 )
-    {
-        SDL_assert( m_pSource != nullptr );
-        m_Elements.push_back( AtlasElement( x1, y1, x2, y2, m_pSource->GetWidth(), m_pSource->GetHeight() ) );
-        return m_Elements.size() - 1;
-    }
+AtlasElement::AtlasElement(float x1, float y1, float x2, float y2, int width, int height)
+{
+    SDL_assert(width > 0 && height > 0);
+    static const float sBias = 0.5f;
+    m_U1 = (x1 + sBias) / width;
+    m_V1 = (y1 + sBias) / height;
+    m_U2 = (x2 - sBias) / width;
+    m_V2 = (y2 - sBias) / height;
+    m_Width = fabs(x2 - x1);
+    m_Height = fabs(y2 - y1);
 }
+
+/////////////////////////////////////////////////////////////////////
+// Atlas
+/////////////////////////////////////////////////////////////////////
+
+Atlas::Atlas()
+    : m_pSource(nullptr)
+{
 }
+
+void Atlas::SetSource(ResourceImage* pImage)
+{
+    if (pImage != m_pSource && m_Elements.empty() == false)
+    {
+        m_Elements.clear();
+    }
+
+    m_pSource = pImage;
+}
+
+Atlas::Id Atlas::AddElement(float x1, float y1, float x2, float y2)
+{
+    SDL_assert(m_pSource != nullptr);
+    m_Elements.push_back(AtlasElement(x1, y1, x2, y2, m_pSource->GetWidth(), m_pSource->GetHeight()));
+    return m_Elements.size() - 1;
+}
+} // namespace Gui
+} // namespace Genesis

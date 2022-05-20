@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include "rendersystem.fwd.h"
+#include "resourcemanager.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include "resourcemanager.h"
-#include "rendersystem.fwd.h"
+#include <string>
+#include <vector>
 
 namespace Genesis
 {
@@ -33,18 +33,18 @@ class VertexBuffer;
 class ResourceFont : public ResourceGeneric
 {
 public:
-    ResourceFont( const Filename& filename );
+    ResourceFont(const Filename& filename);
     virtual ~ResourceFont();
     virtual ResourceType GetType() const override;
     virtual bool Load() override;
 
-    unsigned int PopulateVertexBuffer( VertexBuffer& vertexBuffer, float x, float y, const std::string& text, float lineSpacing );
+    unsigned int PopulateVertexBuffer(VertexBuffer& vertexBuffer, float x, float y, const std::string& text, float lineSpacing);
     ResourceImage* GetPage() const;
-    float GetTextLength( const std::string& text ) const;
+    float GetTextLength(const std::string& text) const;
     float GetLineHeight() const;
 
 private:
-    bool LoadFontFile( const std::string& filename );
+    bool LoadFontFile(const std::string& filename);
     void BuildLists();
 
     struct FontChar
@@ -60,8 +60,8 @@ private:
 
     struct FontCharRenderData
     {
-        glm::vec3 position[ 4 ];
-        glm::vec2 uv[ 4 ];
+        glm::vec3 position[4];
+        glm::vec2 uv[4];
     };
 
     typedef std::vector<FontChar*> FontCharList;
@@ -72,17 +72,17 @@ private:
     ResourceImage* mPage;
 };
 
-inline float ResourceFont::GetTextLength( const std::string& text ) const
+inline float ResourceFont::GetTextLength(const std::string& text) const
 {
     float len = 0.0f;
     size_t charListSize = (int)mCharList.size();
     size_t s = text.length();
-    for ( size_t i = 0; i < s; i++ )
+    for (size_t i = 0; i < s; i++)
     {
-        int fontCharPos = text[ i ] - 32;
-        if ( fontCharPos >= charListSize || fontCharPos < 0 )
+        int fontCharPos = text[i] - 32;
+        if (fontCharPos >= charListSize || fontCharPos < 0)
             continue;
-        len += mCharList[ fontCharPos ]->xadvance;
+        len += mCharList[fontCharPos]->xadvance;
     }
     return len;
 }
@@ -101,4 +101,4 @@ inline ResourceType ResourceFont::GetType() const
 {
     return ResourceType::Font;
 }
-}
+} // namespace Genesis

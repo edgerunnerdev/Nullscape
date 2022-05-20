@@ -17,9 +17,11 @@
 
 #pragma once
 
+// clang-format off
 #include "beginexternalheaders.h"
 #include <LinearMath/btIDebugDraw.h>
 #include "endexternalheaders.h"
+// clang-format on
 
 namespace Genesis
 {
@@ -33,34 +35,34 @@ namespace Physics
 class DebugRender : public btIDebugDraw
 {
 public:
-	DebugRender();
+    DebugRender();
 
-	enum class Mode
-	{
-		None				= 0,
-		Wireframe			= 1 << 0,
-		AABB				= 1 << 1,
-		Transforms			= 1 << 2,
-		RayTests			= 1 << 3,
-		ContactPoints		= 1 << 4
-	};
+    enum class Mode
+    {
+        None = 0,
+        Wireframe = 1 << 0,
+        AABB = 1 << 1,
+        Transforms = 1 << 2,
+        RayTests = 1 << 3,
+        ContactPoints = 1 << 4
+    };
 
-	void SetEnabled( Mode mode, bool state );
-	bool IsEnabled( Mode mode ) const;
+    void SetEnabled(Mode mode, bool state);
+    bool IsEnabled(Mode mode) const;
 
-	void draw3dText( const btVector3& location, const char* textString ) override;
-	void drawLine( const btVector3& from, const btVector3& to, const btVector3& color ) override;
-	void drawSphere( const btVector3& p, btScalar radius, const btVector3& color ) override;
-	void drawContactPoint( const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color ) override;
-	void reportErrorWarning( const char* warningString ) override;
-	void setDebugMode( int debugMode ) override;
-	int	getDebugMode() const override;
+    void draw3dText(const btVector3& location, const char* textString) override;
+    void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
+    void drawSphere(const btVector3& p, btScalar radius, const btVector3& color) override;
+    void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override;
+    void reportErrorWarning(const char* warningString) override;
+    void setDebugMode(int debugMode) override;
+    int getDebugMode() const override;
 
 private:
-	int ToBulletFlag( Mode mode ) const;
+    int ToBulletFlag(Mode mode) const;
 
-	int m_BulletDebugMode;
-	int m_DebugMode;
+    int m_BulletDebugMode;
+    int m_DebugMode;
 };
 
 } // namespace Physics

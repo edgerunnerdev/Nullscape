@@ -28,15 +28,15 @@ namespace Genesis
 class Window
 {
 public:
-    Window( const std::string& title, unsigned int width, unsigned int height, bool fullscreen );
+    Window(const std::string& title, unsigned int width, unsigned int height, bool fullscreen);
     ~Window();
     void Present();
 
     unsigned int GetWidth() const;
     unsigned int GetHeight() const;
-	unsigned int GetDrawableWidth() const;
-	unsigned int GetDrawableHeight() const;
-	bool HasFocus() const;
+    unsigned int GetDrawableWidth() const;
+    unsigned int GetDrawableHeight() const;
+    bool HasFocus() const;
 
     SDL_Window* GetSDLWindow();
     SDL_GLContext GetSDLThreadGLContext();
@@ -77,4 +77,4 @@ inline SDL_GLContext Window::GetSDLRenderContext()
     return m_RenderContext;
 }
 
-}
+} // namespace Genesis

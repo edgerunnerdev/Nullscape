@@ -16,6 +16,7 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "layer.h"
+
 #include "../genesis.h"
 #include "../rendersystem.h"
 #include "sceneobject.h"
@@ -23,10 +24,10 @@
 namespace Genesis
 {
 
-Layer::Layer( uint32_t depth, bool isBackground )
-    : mDepth( depth )
-    , mIsBackground( isBackground )
-    , mMarkedForDeletion( false )
+Layer::Layer(uint32_t depth, bool isBackground)
+    : mDepth(depth)
+    , mIsBackground(isBackground)
+    , mMarkedForDeletion(false)
 {
 }
 
@@ -34,9 +35,9 @@ Layer::~Layer()
 {
     // Remove any remaining objects from the layer
     LayerObjectList::iterator itEnd = mObjectList.end();
-    for ( LayerObjectList::iterator it = mObjectList.begin(); it != itEnd; ++it )
+    for (LayerObjectList::iterator it = mObjectList.begin(); it != itEnd; ++it)
     {
-        if ( it->hasOwnership )
+        if (it->hasOwnership)
         {
             delete it->pSceneObject;
         }
@@ -44,34 +45,34 @@ Layer::~Layer()
 }
 
 // Update all objects in this layer
-void Layer::Update( float delta )
+void Layer::Update(float delta)
 {
-    if ( IsMarkedForDeletion() )
+    if (IsMarkedForDeletion())
         return;
 
     {
         LayerObjectList::const_iterator itEnd = mObjectList.end();
-        for ( LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it )
+        for (LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it)
         {
-            it->pSceneObject->Update( delta );
+            it->pSceneObject->Update(delta);
         }
     }
 
-    if ( mToRemove.empty() == false )
+    if (mToRemove.empty() == false)
     {
         SceneObjectList::iterator itEnd = mToRemove.end();
-        for ( SceneObjectList::iterator it = mToRemove.begin(); it != itEnd; ++it )
+        for (SceneObjectList::iterator it = mToRemove.begin(); it != itEnd; ++it)
         {
             LayerObjectList::iterator it2End = mObjectList.end();
-            for ( LayerObjectList::iterator it2 = mObjectList.begin(); it2 != it2End; ++it2 )
+            for (LayerObjectList::iterator it2 = mObjectList.begin(); it2 != it2End; ++it2)
             {
-                if ( it2->pSceneObject == *it )
+                if (it2->pSceneObject == *it)
                 {
-                    if ( it2->hasOwnership )
+                    if (it2->hasOwnership)
                     {
                         delete *it;
                     }
-                    mObjectList.erase( it2 );
+                    mObjectList.erase(it2);
                     break;
                 }
             }
@@ -83,11 +84,11 @@ void Layer::Update( float delta )
 // Render all objects in this layer
 void Layer::Render()
 {
-    if ( IsMarkedForDeletion() )
+    if (IsMarkedForDeletion())
         return;
 
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    if ( IsBackground() )
+    if (IsBackground())
     {
         pRenderSystem->ViewOrtho();
     }
@@ -97,23 +98,23 @@ void Layer::Render()
     }
 
     LayerObjectList::const_iterator itEnd = mObjectList.end();
-    for ( LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it )
+    for (LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it)
     {
-        if ( it->pSceneObject->IsTerminating() == false )
+        if (it->pSceneObject->IsTerminating() == false)
         {
             it->pSceneObject->Render();
         }
     }
 }
 
-void Layer::AddSceneObject( SceneObject* pObject, bool hasOwnership /* = true */ )
+void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
 {
 #ifdef _DEBUG
-    for ( auto& pLayerObject : mObjectList )
+    for (auto& pLayerObject : mObjectList)
     {
-        if ( pLayerObject.pSceneObject == pObject )
+        if (pLayerObject.pSceneObject == pObject)
         {
-            FrameWork::GetLogger()->LogWarning( "Object has already been added to the layer!" );
+            FrameWork::GetLogger()->LogWarning("Object has already been added to the layer!");
         }
     }
 #endif
@@ -121,15 +122,15 @@ void Layer::AddSceneObject( SceneObject* pObject, bool hasOwnership /* = true */
     LayerObject obj;
     obj.pSceneObject = pObject;
     obj.hasOwnership = hasOwnership;
-    mObjectList.push_back( obj );
+    mObjectList.push_back(obj);
 }
 
 // We can't remove the objects immediately, since they may be
 // being stepped by the Update. Therefore we only remove them
 // when the update is finished.
-void Layer::RemoveSceneObject( SceneObject* object )
+void Layer::RemoveSceneObject(SceneObject* object)
 {
     object->SetTerminating();
-    mToRemove.push_back( object );
+    mToRemove.push_back(object);
 }
-}
+} // namespace Genesis

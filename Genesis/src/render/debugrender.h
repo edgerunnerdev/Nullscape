@@ -17,14 +17,12 @@
 
 #pragma once
 
-#include <vector>
-
+#include <genesis.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-
-#include <genesis.h>
 #include <resourcemanager.h>
 #include <scene/sceneobject.h>
+#include <vector>
 
 namespace Genesis
 {
@@ -36,7 +34,7 @@ namespace Render
 
 ///////////////////////////////////////////////////////////
 // DebugRender
-// Allows rendering of debug lines, circles and text 
+// Allows rendering of debug lines, circles and text
 ///////////////////////////////////////////////////////////
 
 static const int DEBUG_RENDER_CIRCLE_SIDES = 12;
@@ -44,58 +42,57 @@ static const int DEBUG_RENDER_CIRCLE_SIDES = 12;
 class DebugRender : public SceneObject
 {
 public:
-	DebugRender();
-	virtual ~DebugRender() override;
+    DebugRender();
+    virtual ~DebugRender() override;
 
-	virtual void Render() override;
+    virtual void Render() override;
 
-	void DrawLine( const glm::vec2& start, const glm::vec2& end, const glm::vec3& colour );
-	void DrawLine( const glm::vec3& start, const glm::vec3& end, const glm::vec3& colour );
-	void DrawCircle( const glm::vec2& origin, float radius, const glm::vec3& colour );
-	void DrawCircle( const glm::vec3& origin, float radius, const glm::vec3& colour );
-	void DrawText( float x, float y, const std::string& text, const glm::vec3& colour ); // Text is top-left aligned
+    void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec3& colour);
+    void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec3& colour);
+    void DrawCircle(const glm::vec2& origin, float radius, const glm::vec3& colour);
+    void DrawCircle(const glm::vec3& origin, float radius, const glm::vec3& colour);
+    void DrawText(float x, float y, const std::string& text, const glm::vec3& colour); // Text is top-left aligned
 
 private:
+    void RenderLines();
+    void RenderCircles();
+    void RenderText();
 
-	void RenderLines();
-	void RenderCircles();
-	void RenderText();
+    struct DebugRenderLine
+    {
+        glm::vec3 start;
+        glm::vec3 end;
+        glm::vec3 colour;
+    };
 
-	struct DebugRenderLine
-	{
-		glm::vec3 start;
-		glm::vec3 end;
-		glm::vec3 colour;
-	};
+    struct DebugRenderCircle
+    {
+        glm::vec3 origin;
+        glm::vec3 colour;
+        float radius;
+    };
 
-	struct DebugRenderCircle
-	{
-		glm::vec3 origin;
-		glm::vec3 colour;
-		float radius;
-	};
+    struct DebugRenderText
+    {
+        float x;
+        float y;
+        glm::vec3 colour;
+        std::string text;
+    };
 
-	struct DebugRenderText
-	{
-		float x;
-		float y;
-		glm::vec3 colour;
-		std::string text;
-	};
+    typedef std::vector<DebugRenderLine> DebugRenderLineVec;
+    typedef std::vector<DebugRenderCircle> DebugRenderCircleVec;
+    typedef std::vector<DebugRenderText> DebugRenderTextVec;
 
-	typedef std::vector< DebugRenderLine > DebugRenderLineVec;
-	typedef std::vector< DebugRenderCircle > DebugRenderCircleVec;
-	typedef std::vector< DebugRenderText > DebugRenderTextVec;
+    DebugRenderLineVec m_Lines;
+    DebugRenderCircleVec m_Circles;
+    DebugRenderTextVec m_Texts;
 
-	DebugRenderLineVec m_Lines;
-	DebugRenderCircleVec m_Circles;
-	DebugRenderTextVec m_Texts;
+    float m_LookupCos[DEBUG_RENDER_CIRCLE_SIDES];
+    float m_LookupSin[DEBUG_RENDER_CIRCLE_SIDES];
 
-	float m_LookupCos[ DEBUG_RENDER_CIRCLE_SIDES ];
-	float m_LookupSin[ DEBUG_RENDER_CIRCLE_SIDES ];
-
-	Shader* m_pShader;
-	VertexBuffer* m_pVertexBuffer;
+    Shader* m_pShader;
+    VertexBuffer* m_pVertexBuffer;
 };
 
 } // namespace Render

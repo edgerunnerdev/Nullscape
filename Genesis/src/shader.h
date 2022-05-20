@@ -17,16 +17,15 @@
 
 #pragma once
 
-#include <map>
-#include <vector>
-
-#include <glm/gtx/transform.hpp>
-
 #include "genesis.h"
 #include "logger.h"
-#include "rendersystem.fwd.h"
 #include "memory.h"
+#include "rendersystem.fwd.h"
 #include "shaderuniformtype.h"
+
+#include <glm/gtx/transform.hpp>
+#include <map>
+#include <vector>
 
 namespace Genesis
 {
@@ -54,21 +53,21 @@ typedef std::vector<ShaderUniformInstance> ShaderUniformInstances;
 class Shader
 {
 public:
-    Shader( const std::string& programName, GLuint programHandle );
+    Shader(const std::string& programName, GLuint programHandle);
     ~Shader();
 
     const std::string& GetName() const;
 
-    void Use( ShaderUniformInstances* pShaderUniformInstances = nullptr );
-    void Use( const glm::mat4& modelTransform, ShaderUniformInstances* pShaderUniformInstances = nullptr );
+    void Use(ShaderUniformInstances* pShaderUniformInstances = nullptr);
+    void Use(const glm::mat4& modelTransform, ShaderUniformInstances* pShaderUniformInstances = nullptr);
 
-    ShaderUniform* RegisterUniform( const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride = true );
+    ShaderUniform* RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride = true);
 
 private:
     void RegisterCoreUniforms();
 
-    void BindTextureMap( TextureMap textureMap, GLuint texture );
-    void UpdateParameters( const glm::mat4& modelMatrix, ShaderUniformInstances* pShaderUniformInstances );
+    void BindTextureMap(TextureMap textureMap, GLuint texture);
+    void UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstances* pShaderUniformInstances);
 
     std::string m_ShaderName;
 
@@ -103,19 +102,17 @@ class ShaderParameters
 public:
     ShaderParameters();
     ~ShaderParameters();
-    template <typename T>
-    void SetParameter( const std::string& name, ParameterType type, T value );
+    template <typename T> void SetParameter(const std::string& name, ParameterType type, T value);
 
-    const std::string& GetParameterName( int id ) const;
-    ParameterType GetParameterType( int id ) const;
-    template <typename T>
-    void GetParameterValue( int id, T* value ) const;
+    const std::string& GetParameterName(int id) const;
+    ParameterType GetParameterType(int id) const;
+    template <typename T> void GetParameterValue(int id, T* value) const;
 
     size_t GetParametersNumber() const;
 
-    void SetTextureMap( TextureMap textureMap, GLuint texture );
+    void SetTextureMap(TextureMap textureMap, GLuint texture);
     int GetUsedTextureMaps() const;
-    GLuint GetTextureMap( TextureMap textureMap ) const;
+    GLuint GetTextureMap(TextureMap textureMap) const;
 
 private:
     struct Parameter
@@ -127,7 +124,7 @@ private:
 
     typedef std::vector<Parameter*> ParameterGroup;
     ParameterGroup mParameters;
-    GLuint mTextureMap[ static_cast<unsigned int>( TextureMap::TEXTURE_MAP_MAX ) ];
+    GLuint mTextureMap[static_cast<unsigned int>(TextureMap::TEXTURE_MAP_MAX)];
     int mUsedTextureMaps;
 };
 
@@ -136,20 +133,19 @@ inline size_t ShaderParameters::GetParametersNumber() const
     return mParameters.size();
 }
 
-inline const std::string& ShaderParameters::GetParameterName( int id ) const
+inline const std::string& ShaderParameters::GetParameterName(int id) const
 {
-    return mParameters[ id ]->name;
+    return mParameters[id]->name;
 }
 
-inline ParameterType ShaderParameters::GetParameterType( int id ) const
+inline ParameterType ShaderParameters::GetParameterType(int id) const
 {
-    return mParameters[ id ]->type;
+    return mParameters[id]->type;
 }
 
-template <typename T>
-void ShaderParameters::GetParameterValue( int id, T* value ) const
+template <typename T> void ShaderParameters::GetParameterValue(int id, T* value) const
 {
-    T* v = (T*)( mParameters[ id ]->value );
+    T* v = (T*)(mParameters[id]->value);
     *value = *v;
 }
 
@@ -158,42 +154,41 @@ inline int ShaderParameters::GetUsedTextureMaps() const
     return mUsedTextureMaps;
 }
 
-inline GLuint ShaderParameters::GetTextureMap( TextureMap textureMap ) const
+inline GLuint ShaderParameters::GetTextureMap(TextureMap textureMap) const
 {
-    return mTextureMap[ static_cast<unsigned int>( textureMap ) ];
+    return mTextureMap[static_cast<unsigned int>(textureMap)];
 }
 
-template <typename T>
-void ShaderParameters::SetParameter( const std::string& name, ParameterType type, T value )
+template <typename T> void ShaderParameters::SetParameter(const std::string& name, ParameterType type, T value)
 {
     Parameter* parameter = 0;
 
     // See if the parameter already exists
     ParameterGroup::iterator it = mParameters.begin();
     ParameterGroup::iterator itEnd = mParameters.end();
-    for ( ; it != itEnd; it++ )
+    for (; it != itEnd; it++)
     {
-        if ( ( *it )->name == name )
+        if ((*it)->name == name)
         {
-            if ( ( *it )->type != type )
+            if ((*it)->type != type)
             {
-                FrameWork::GetLogger()->LogError( "Trying to set shader parameter to a different type than it was initialized with." );
+                FrameWork::GetLogger()->LogError("Trying to set shader parameter to a different type than it was initialized with.");
             }
-            parameter = ( *it );
+            parameter = (*it);
             break;
         }
     }
 
     // If it doesn't create a new parameter
-    if ( !parameter )
+    if (!parameter)
     {
         parameter = new Parameter();
         parameter->name = name;
         parameter->type = type;
         parameter->value = new T();
-        mParameters.push_back( parameter );
+        mParameters.push_back(parameter);
     }
-    *( (T*)( parameter->value ) ) = value;
+    *((T*)(parameter->value)) = value;
 }
 
 //---------------------------------------------------------------
@@ -203,7 +198,7 @@ class float2
 {
 public:
     float2();
-    float2( float v1, float v2 );
+    float2(float v1, float v2);
     float f1;
     float f2;
 };
@@ -212,7 +207,7 @@ class float3
 {
 public:
     float3();
-    float3( float v1, float v2, float v3 );
+    float3(float v1, float v2, float v3);
     float f1;
     float f2;
     float f3;
@@ -222,10 +217,10 @@ class float4
 {
 public:
     float4();
-    float4( float v1, float v2, float v3, float v4 );
+    float4(float v1, float v2, float v3, float v4);
     float f1;
     float f2;
     float f3;
     float f4;
 };
-}
+} // namespace Genesis

@@ -20,32 +20,20 @@
 namespace Genesis::Sound::Private::Null
 {
 
-SoundManager::SoundManager()
-{
+SoundManager::SoundManager() {}
 
-}
+SoundManager::~SoundManager() {}
 
-SoundManager::~SoundManager()
-{
+void SoundManager::Update(float delta) {}
 
-}
+// virtual FMOD::Sound* CreateSound( ResourceSound* pResourceSound ) override;
 
-void SoundManager::Update( float delta )
-{
-
-}
-
-//virtual FMOD::Sound* CreateSound( ResourceSound* pResourceSound ) override;
-
-SoundInstanceSharedPtr SoundManager::CreateSoundInstance( ResourceSound* pResourceSound )
+SoundInstanceSharedPtr SoundManager::CreateSoundInstance(ResourceSound* pResourceSound)
 {
     return nullptr;
 }
 
-void SoundManager::SetPlaylist( ResourceSound* pResourceSound, const std::string& startingSong, bool shuffle )
-{
-
-}
+void SoundManager::SetPlaylist(ResourceSound* pResourceSound, const std::string& startingSong, bool shuffle) {}
 
 ResourceSound* SoundManager::GetPlaylistResource() const
 {
@@ -63,14 +51,11 @@ const SoundInstanceList& SoundManager::GetSoundInstances() const
     return list;
 }
 
-void SoundManager::SetListener( const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up )
-{
-
-}
+void SoundManager::SetListener(const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up) {}
 
 glm::vec3 SoundManager::GetListenerPosition() const
 {
-    return glm::vec3( 0.0f );
+    return glm::vec3(0.0f);
 }
 
 int SoundManager::GetActiveSoundCount() const

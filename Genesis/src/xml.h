@@ -17,13 +17,12 @@
 
 #pragma once
 
-#include <string>
-
 #include "beginexternalheaders.h"
-#include "tinyxml2.h"
-#include "endexternalheaders.h"
-
 #include "colour.h"
+#include "endexternalheaders.h"
+#include "tinyxml2.h"
+
+#include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Xml namespace
@@ -34,9 +33,9 @@
 
 namespace Xml
 {
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, std::string& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, int& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, float& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, bool& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Genesis::Colour& value );
-}
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, std::string& value);
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, int& value);
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, float& value);
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, bool& value);
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, Genesis::Colour& value);
+} // namespace Xml

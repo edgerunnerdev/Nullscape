@@ -17,11 +17,11 @@
 
 #pragma once
 
-#include <vector>
-
 #include "glm/gtx/transform.hpp"
 #include "rendersystem.fwd.h"
 #include "shaderuniform.h"
+
+#include <vector>
 
 namespace Genesis
 {
@@ -38,17 +38,17 @@ typedef std::vector<ShaderUniformInstance> ShaderUniformInstances;
 class ShaderUniformInstance
 {
 public:
-    ShaderUniformInstance( ShaderUniform* pShaderUniform );
+    ShaderUniformInstance(ShaderUniform* pShaderUniform);
 
     void Apply();
 
-    void Set( int value );
-    void Set( float value );
-    void Set( const glm::vec2& value );
-    void Set( const glm::vec3& value );
-    void Set( const glm::vec4& value );
-    void Set( const glm::mat4& value );
-    void Set( ResourceImage* pTexture, GLenum textureSlot );
+    void Set(int value);
+    void Set(float value);
+    void Set(const glm::vec2& value);
+    void Set(const glm::vec3& value);
+    void Set(const glm::vec4& value);
+    void Set(const glm::mat4& value);
+    void Set(ResourceImage* pTexture, GLenum textureSlot);
 
 private:
     ShaderUniform* m_pShaderUniform;
@@ -60,39 +60,39 @@ private:
     GLenum m_TextureSlot;
 };
 
-inline void ShaderUniformInstance::Set( int value )
+inline void ShaderUniformInstance::Set(int value)
 {
     m_Integer = value;
 }
 
-inline void ShaderUniformInstance::Set( float value )
+inline void ShaderUniformInstance::Set(float value)
 {
     m_Float = value;
 }
 
-inline void ShaderUniformInstance::Set( const glm::vec2& value )
+inline void ShaderUniformInstance::Set(const glm::vec2& value)
 {
-    m_Vector = glm::vec4( value.x, value.y, 0.0f, 0.0f );
+    m_Vector = glm::vec4(value.x, value.y, 0.0f, 0.0f);
 }
 
-inline void ShaderUniformInstance::Set( const glm::vec3& value )
+inline void ShaderUniformInstance::Set(const glm::vec3& value)
 {
-    m_Vector = glm::vec4( value.x, value.y, value.z, 0.0f );
+    m_Vector = glm::vec4(value.x, value.y, value.z, 0.0f);
 }
 
-inline void ShaderUniformInstance::Set( const glm::vec4& value )
+inline void ShaderUniformInstance::Set(const glm::vec4& value)
 {
     m_Vector = value;
 }
 
-inline void ShaderUniformInstance::Set( const glm::mat4& value )
+inline void ShaderUniformInstance::Set(const glm::mat4& value)
 {
     m_Matrix = value;
 }
 
-inline void ShaderUniformInstance::Set( ResourceImage* pTexture, GLenum textureSlot )
+inline void ShaderUniformInstance::Set(ResourceImage* pTexture, GLenum textureSlot)
 {
     m_pTexture = pTexture;
     m_TextureSlot = textureSlot;
 }
-}
+} // namespace Genesis

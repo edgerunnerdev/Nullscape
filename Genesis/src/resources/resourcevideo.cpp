@@ -16,14 +16,15 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "resourcevideo.h"
+
 #include "../genesis.h"
 
 namespace Genesis
 {
 
-ResourceVideo::ResourceVideo( const Filename& filename )
-    : ResourceGeneric( filename )
-    , m_Skippable( false )
+ResourceVideo::ResourceVideo(const Filename& filename)
+    : ResourceGeneric(filename)
+    , m_Skippable(false)
 {
 }
 
@@ -33,4 +34,4 @@ bool ResourceVideo::Load()
     return true;
 }
 
-}
+} // namespace Genesis

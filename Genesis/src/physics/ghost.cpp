@@ -15,16 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
+#include "ghost.h"
+
+#include "shape.h"
+
+// clang-format off
 #include "beginexternalheaders.h"
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
 #include "endexternalheaders.h"
-
-#include "shape.h"
-
-#include "ghost.h"
+// clang-format on
 
 namespace Genesis
 {
@@ -35,31 +37,27 @@ namespace Physics
 // Ghost
 /////////////////////////////////////////////////////////////////////
 
-Ghost::Ghost( ShapeSharedPtr pShape, const glm::mat4x4& worldTransform )
+Ghost::Ghost(ShapeSharedPtr pShape, const glm::mat4x4& worldTransform)
 {
-	m_pShape = pShape;
+    m_pShape = pShape;
 
-	btCollisionShape* pCollisionShape = pShape->m_pShape;
+    btCollisionShape* pCollisionShape = pShape->m_pShape;
 
-	btRigidBody::btRigidBodyConstructionInfo rbInfo( 
-		0.0f,
-		nullptr,
-		pCollisionShape
-	);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(0.0f, nullptr, pCollisionShape);
 
-	m_pRigidBody = std::make_unique< btRigidBody >( rbInfo );
-	m_pRigidBody->setActivationState( DISABLE_DEACTIVATION );
-	m_pRigidBody->setCollisionFlags( m_pRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE );
-	m_pRigidBody->setUserPointer( this );
+    m_pRigidBody = std::make_unique<btRigidBody>(rbInfo);
+    m_pRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    m_pRigidBody->setCollisionFlags(m_pRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    m_pRigidBody->setUserPointer(this);
 
-	SetWorldTransform( worldTransform );
+    SetWorldTransform(worldTransform);
 }
 
-void Ghost::SetWorldTransform( const glm::mat4x4& worldTransform )
+void Ghost::SetWorldTransform(const glm::mat4x4& worldTransform)
 {
-	btTransform tr;
-	tr.setFromOpenGLMatrix( glm::value_ptr( worldTransform ) );
-	m_pRigidBody->setWorldTransform( tr );
+    btTransform tr;
+    tr.setFromOpenGLMatrix(glm::value_ptr(worldTransform));
+    m_pRigidBody->setWorldTransform(tr);
 }
 
 } // namespace Physics

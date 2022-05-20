@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include <string>
-
-#include <SDL.h>
+#include "xml.h"
 
 #include "math/misc.h"
-#include "xml.h"
+
+#include <SDL.h>
+#include <string>
 
 namespace Xml
 {
@@ -29,89 +29,89 @@ namespace Xml
 // Xml
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, std::string& value )
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, std::string& value)
 {
-    SDL_assert( pElement != nullptr );
+    SDL_assert(pElement != nullptr);
 
-    if ( name != pElement->Value() )
+    if (name != pElement->Value())
         return false;
 
-    if ( pElement->GetText() == nullptr )
+    if (pElement->GetText() == nullptr)
         return false;
 
     value = pElement->GetText();
     return true;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, int& value )
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, int& value)
 {
-    SDL_assert( pElement != nullptr );
+    SDL_assert(pElement != nullptr);
 
-    if ( name != pElement->Value() )
+    if (name != pElement->Value())
         return false;
 
-    if ( pElement->GetText() == nullptr )
+    if (pElement->GetText() == nullptr)
         return false;
 
-    value = atoi( pElement->GetText() );
+    value = atoi(pElement->GetText());
     return true;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, float& value )
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, float& value)
 {
-    SDL_assert( pElement != nullptr );
+    SDL_assert(pElement != nullptr);
 
-    if ( name != pElement->Value() )
+    if (name != pElement->Value())
         return false;
 
-    if ( pElement->GetText() == nullptr )
+    if (pElement->GetText() == nullptr)
         return false;
 
-    value = (float)atof( pElement->GetText() );
+    value = (float)atof(pElement->GetText());
     return true;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, bool& value )
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, bool& value)
 {
-    SDL_assert( pElement != nullptr );
+    SDL_assert(pElement != nullptr);
 
-    if ( name != pElement->Value() )
+    if (name != pElement->Value())
         return false;
 
-    if ( pElement->GetText() == nullptr )
+    if (pElement->GetText() == nullptr)
         return false;
 
     std::string text = pElement->GetText();
-    if ( text == "True" || text == "true" )
+    if (text == "True" || text == "true")
     {
         value = true;
     }
-    else if ( text == "False" || text == "false" )
+    else if (text == "False" || text == "false")
     {
         value = false;
     }
     else
     {
         // Invalid value in XML file, defaulting to false.
-        SDL_assert( false );
+        SDL_assert(false);
         value = false;
     }
 
     return true;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Genesis::Colour& value )
+bool Serialise(tinyxml2::XMLElement* pElement, const std::string& name, Genesis::Colour& value)
 {
-    SDL_assert( pElement != nullptr );
+    SDL_assert(pElement != nullptr);
 
-    if ( name != pElement->Value() )
+    if (name != pElement->Value())
         return false;
 
-    value.r = gClamp<float>( (float)atof( pElement->Attribute( "r" ) ), 0.0f, 1.0f );
-    value.g = gClamp<float>( (float)atof( pElement->Attribute( "g" ) ), 0.0f, 1.0f );
-    value.b = gClamp<float>( (float)atof( pElement->Attribute( "b" ) ), 0.0f, 1.0f );
-    value.a = gClamp<float>( (float)atof( pElement->Attribute( "a" ) ), 0.0f, 1.0f );
+    value.r = gClamp<float>((float)atof(pElement->Attribute("r")), 0.0f, 1.0f);
+    value.g = gClamp<float>((float)atof(pElement->Attribute("g")), 0.0f, 1.0f);
+    value.b = gClamp<float>((float)atof(pElement->Attribute("b")), 0.0f, 1.0f);
+    value.a = gClamp<float>((float)atof(pElement->Attribute("a")), 0.0f, 1.0f);
 
     return true;
 }
-}
+} // namespace Xml

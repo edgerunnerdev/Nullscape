@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 namespace Genesis
 {
@@ -38,11 +38,11 @@ public:
     ShaderCache();
     ~ShaderCache();
 
-    Shader* Load( const std::string& programName );
+    Shader* Load(const std::string& programName);
 
 private:
     typedef std::unordered_map<std::string, Shader*> ShaderMap;
 
     ShaderMap m_ProgramCache;
 };
-}
+} // namespace Genesis

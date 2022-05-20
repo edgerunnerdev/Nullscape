@@ -24,45 +24,45 @@ namespace Genesis
 namespace Gui
 {
 
-    class ScrollingElement : public GuiElement
-    {
-    public:
-        ScrollingElement();
+class ScrollingElement : public GuiElement
+{
+public:
+    ScrollingElement();
 
-        void Init();
+    void Init();
 
-        virtual void AddElement( GuiElement* pElement ) override;
-        virtual void RemoveElement( GuiElement* pElement ) override;
+    virtual void AddElement(GuiElement* pElement) override;
+    virtual void RemoveElement(GuiElement* pElement) override;
 
-        virtual void Update( float delta ) override;
-        void UpdateScrollingAreaHeight();
+    virtual void Update(float delta) override;
+    void UpdateScrollingAreaHeight();
 
-        int GetScrollbarWidth() const;
-        void Reset();
+    int GetScrollbarWidth() const;
+    void Reset();
 
-    private:
-        void UpdateScrollbarPosition();
-        bool IsMouseInside( GuiElement* pElement ) const;
-        bool IsScrollingEnabled() const;
+private:
+    void UpdateScrollbarPosition();
+    bool IsMouseInside(GuiElement* pElement) const;
+    bool IsScrollingEnabled() const;
 
-        GuiElement* m_pScrollingArea;
-        Panel* m_pScrollbarBackground;
-        Panel* m_pScrollbar;
-        Image* m_pScrollUp;
-        Image* m_pScrollDown;
-        bool m_GrabAndHold;
-        float m_CurrentOffset;
-        int m_OffsetLimit;
-    };
+    GuiElement* m_pScrollingArea;
+    Panel* m_pScrollbarBackground;
+    Panel* m_pScrollbar;
+    Image* m_pScrollUp;
+    Image* m_pScrollDown;
+    bool m_GrabAndHold;
+    float m_CurrentOffset;
+    int m_OffsetLimit;
+};
 
-    inline int ScrollingElement::GetScrollbarWidth() const
-    {
-        return 16;
-    }
-
-    inline bool ScrollingElement::IsScrollingEnabled() const
-    {
-        return m_OffsetLimit != 0;
-    }
+inline int ScrollingElement::GetScrollbarWidth() const
+{
+    return 16;
 }
+
+inline bool ScrollingElement::IsScrollingEnabled() const
+{
+    return m_OffsetLimit != 0;
 }
+} // namespace Gui
+} // namespace Genesis

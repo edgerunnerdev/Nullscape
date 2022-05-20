@@ -26,7 +26,7 @@ namespace Genesis
 
 enum class ShaderUniformType
 {
-	Boolean,
+    Boolean,
     Integer,
     Float,
     FloatVector2,
@@ -35,4 +35,4 @@ enum class ShaderUniformType
     FloatMatrix44,
     Texture
 };
-}
+} // namespace Genesis

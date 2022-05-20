@@ -22,15 +22,15 @@ namespace Genesis
 namespace Gui
 {
 
-    enum class GuiEvent
-    {
-        Close
-    };
+enum class GuiEvent
+{
+    Close
+};
 
-    class GuiEventHandler
-    {
-    public:
-        virtual bool HandleEvent( GuiEvent event ) { return false; }
-    };
-}
-}
+class GuiEventHandler
+{
+public:
+    virtual bool HandleEvent(GuiEvent event) { return false; }
+};
+} // namespace Gui
+} // namespace Genesis

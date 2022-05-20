@@ -17,13 +17,12 @@
 
 #pragma once
 
+#include "taskmanager.h"
+
+#include <glm/vec3.hpp>
 #include <list>
 #include <memory>
 #include <vector>
-
-#include <glm/vec3.hpp>
-
-#include "taskmanager.h"
 
 namespace Genesis
 {
@@ -49,18 +48,18 @@ public:
     SoundManager();
     virtual ~SoundManager();
 
-    TaskStatus Update( float delta );
+    TaskStatus Update(float delta);
 
-    SoundInstanceSharedPtr CreateSoundInstance( ResourceSound* pResourceSound );
+    SoundInstanceSharedPtr CreateSoundInstance(ResourceSound* pResourceSound);
 
-    void SetPlaylist( ResourceSound* pResourceSound, const std::string& startingSong = "", bool shuffle = false );
+    void SetPlaylist(ResourceSound* pResourceSound, const std::string& startingSong = "", bool shuffle = false);
 
     ResourceSound* GetPlaylistResource() const;
     SoundInstanceSharedPtr GetCurrentSong() const;
 
     const SoundInstanceList& GetSoundInstances() const;
 
-    void SetListener( const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up );
+    void SetListener(const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up);
     glm::vec3 GetListenerPosition() const;
 
     int GetActiveSoundCount() const;

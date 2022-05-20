@@ -25,11 +25,7 @@
 namespace Genesis
 {
 
-static const char* LogMessageText[ LOG_MAX ] = {
-    "INFO: ",
-    "WARNING: ",
-    "ERROR: "
-};
+static const char* LogMessageText[LOG_MAX] = {"INFO: ", "WARNING: ", "ERROR: "};
 
 //---------------------------------------------------------------
 // Logger
@@ -42,38 +38,38 @@ Logger::Logger()
 
 Logger::~Logger()
 {
-    SDL_DestroyMutex( m_pMutex );
+    SDL_DestroyMutex(m_pMutex);
     m_pMutex = nullptr;
 
-    for ( auto& pTarget : m_Targets )
+    for (auto& pTarget : m_Targets)
     {
         delete pTarget;
     }
 }
 
-void Logger::AddLogTarget( LogTarget* pLogTarget )
+void Logger::AddLogTarget(LogTarget* pLogTarget)
 {
-    if ( pLogTarget != nullptr )
+    if (pLogTarget != nullptr)
     {
-        m_Targets.push_back( pLogTarget );
+        m_Targets.push_back(pLogTarget);
     }
 }
 
-void Logger::RemoveLogTarget( LogTarget* pLogTarget )
+void Logger::RemoveLogTarget(LogTarget* pLogTarget)
 {
-    if ( pLogTarget == nullptr )
+    if (pLogTarget == nullptr)
     {
         return;
     }
 
     LogTargetList::iterator it = m_Targets.begin();
     LogTargetList::iterator itEnd = m_Targets.end();
-    while ( it != itEnd )
+    while (it != itEnd)
     {
-        if ( *it == pLogTarget )
+        if (*it == pLogTarget)
         {
             delete *it;
-            m_Targets.erase( it );
+            m_Targets.erase(it);
             break;
         }
 
@@ -83,106 +79,106 @@ void Logger::RemoveLogTarget( LogTarget* pLogTarget )
 
 // Internal logging function. Should be called by one of the public functions (LogInfo / LogWarning / LogError).
 // Assumes that m_pMutex is locked at this stage.
-void Logger::Log( const char* text, LogMessageType type /* = LOG_INFO */ )
+void Logger::Log(const char* text, LogMessageType type /* = LOG_INFO */)
 {
 #ifdef _WIN32
-    sprintf_s( m_Buffer.data(), LOG_BUFFER_SIZE, "%s%s\n", LogMessageText[ type ], text );
+    sprintf_s(m_Buffer.data(), LOG_BUFFER_SIZE, "%s%s\n", LogMessageText[type], text);
 #else
-    snprintf( m_Buffer.data(), LOG_BUFFER_SIZE, "%s%s\n", LogMessageText[ type ], text );
+    snprintf(m_Buffer.data(), LOG_BUFFER_SIZE, "%s%s\n", LogMessageText[type], text);
 #endif
 
-    for ( auto& pTarget : m_Targets )
+    for (auto& pTarget : m_Targets)
     {
-		pTarget->Log( m_Buffer.data(), type );
+        pTarget->Log(m_Buffer.data(), type);
     }
 
-    if ( type == LOG_ERROR )
+    if (type == LOG_ERROR)
     {
 #ifdef _WIN32
         __debugbreak();
 #else
-        asm( "int $3" );
+        asm("int $3");
 #endif
-        exit( -1 );
+        exit(-1);
     }
 }
 
-void Logger::LogInfo( const char* format, ... )
+void Logger::LogInfo(const char* format, ...)
 {
-    SDL_LockMutex( m_pMutex );
+    SDL_LockMutex(m_pMutex);
 
     va_list args;
-    va_start( args, format );
+    va_start(args, format);
 #ifdef _WIN32
-	vsprintf_s( m_VABuffer.data(), LOG_BUFFER_SIZE, format, args );
+    vsprintf_s(m_VABuffer.data(), LOG_BUFFER_SIZE, format, args);
 #else
-    vsnprintf( m_VABuffer.data(), LOG_BUFFER_SIZE, format, args );
+    vsnprintf(m_VABuffer.data(), LOG_BUFFER_SIZE, format, args);
 #endif
-    Log( m_VABuffer.data(), LOG_INFO );
-    va_end( args );
+    Log(m_VABuffer.data(), LOG_INFO);
+    va_end(args);
 
-    SDL_UnlockMutex( m_pMutex );
+    SDL_UnlockMutex(m_pMutex);
 }
 
-void Logger::LogWarning( const char* format, ... )
+void Logger::LogWarning(const char* format, ...)
 {
-    SDL_LockMutex( m_pMutex );
+    SDL_LockMutex(m_pMutex);
 
     va_list args;
-    va_start( args, format );
+    va_start(args, format);
 #ifdef _WIN32
-    vsprintf_s( m_VABuffer.data(), LOG_BUFFER_SIZE, format, args );
+    vsprintf_s(m_VABuffer.data(), LOG_BUFFER_SIZE, format, args);
 #else
-    vsnprintf( m_VABuffer.data(), LOG_BUFFER_SIZE, format, args );
+    vsnprintf(m_VABuffer.data(), LOG_BUFFER_SIZE, format, args);
 #endif
-    Log( m_VABuffer.data(), LOG_WARNING );
-    va_end( args );
+    Log(m_VABuffer.data(), LOG_WARNING);
+    va_end(args);
 
-    SDL_UnlockMutex( m_pMutex );
+    SDL_UnlockMutex(m_pMutex);
 }
 
-void Logger::LogError( const char* format, ... )
+void Logger::LogError(const char* format, ...)
 {
-    SDL_LockMutex( m_pMutex );
+    SDL_LockMutex(m_pMutex);
 
     va_list args;
-    va_start( args, format );
+    va_start(args, format);
 #ifdef _WIN32
-    vsprintf_s( m_VABuffer.data(), LOG_BUFFER_SIZE, format, args );
+    vsprintf_s(m_VABuffer.data(), LOG_BUFFER_SIZE, format, args);
 #else
-    vsnprintf( m_VABuffer.data(), LOG_BUFFER_SIZE, format, args );
+    vsnprintf(m_VABuffer.data(), LOG_BUFFER_SIZE, format, args);
 #endif
-    Log( m_VABuffer.data(), LOG_ERROR );
-    va_end( args );
+    Log(m_VABuffer.data(), LOG_ERROR);
+    va_end(args);
 
-    SDL_UnlockMutex( m_pMutex );
+    SDL_UnlockMutex(m_pMutex);
 }
 
 //---------------------------------------------------------------
 // FileLogger
 //---------------------------------------------------------------
 
-FileLogger::FileLogger( const char* pFilename )
+FileLogger::FileLogger(const char* pFilename)
 {
-    m_File.open( pFilename, std::fstream::out | std::fstream::trunc );
+    m_File.open(pFilename, std::fstream::out | std::fstream::trunc);
 }
 
 FileLogger::~FileLogger()
 {
-    if ( m_File.is_open() )
+    if (m_File.is_open())
     {
         m_File.close();
     }
 }
 
-void FileLogger::Log( const char* pText, LogMessageType type )
+void FileLogger::Log(const char* pText, LogMessageType type)
 {
-    if ( !m_File.is_open() )
+    if (!m_File.is_open())
     {
         return;
     }
 
-    m_File.write( pText, strlen( pText ) );
+    m_File.write(pText, strlen(pText));
     m_File.flush();
 }
 
@@ -190,15 +186,15 @@ void FileLogger::Log( const char* pText, LogMessageType type )
 // MessageBoxLogger
 //---------------------------------------------------------------
 
-void MessageBoxLogger::Log( const char* pText, LogMessageType type )
+void MessageBoxLogger::Log(const char* pText, LogMessageType type)
 {
-    if ( type == LOG_WARNING )
+    if (type == LOG_WARNING)
     {
-        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_WARNING, "Warning", pText, nullptr );
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", pText, nullptr);
     }
-    else if ( type == LOG_ERROR )
+    else if (type == LOG_ERROR)
     {
-        SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Error", pText, nullptr );
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", pText, nullptr);
     }
 }
 
@@ -207,9 +203,9 @@ void MessageBoxLogger::Log( const char* pText, LogMessageType type )
 //---------------------------------------------------------------
 
 #ifdef _WIN32
-void VisualStudioLogger::Log( const char* pText, LogMessageType type )
+void VisualStudioLogger::Log(const char* pText, LogMessageType type)
 {
-    OutputDebugStringA( pText );
+    OutputDebugStringA(pText);
 }
 #endif
-}
+} // namespace Genesis

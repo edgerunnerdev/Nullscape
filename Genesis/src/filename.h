@@ -25,8 +25,8 @@ namespace Genesis
 class Filename
 {
 public:
-    Filename( const char* pFilename );
-    Filename( const std::string& filename );
+    Filename(const char* pFilename);
+    Filename(const std::string& filename);
 
     const std::string& GetExtension() const;
     const std::string& GetDirectory() const;
@@ -34,9 +34,9 @@ public:
     const std::string& GetName() const;
 
 private:
-    void Initialise( const std::string& filename );
+    void Initialise(const std::string& filename);
 
-    std::string ResolvePath( const std::string& filename ) const;
+    std::string ResolvePath(const std::string& filename) const;
     std::string m_Extension;
     std::string m_Directory;
     std::string m_FullPath;
@@ -62,4 +62,4 @@ inline const std::string& Filename::GetName() const
 {
     return m_Name;
 }
-}
+} // namespace Genesis

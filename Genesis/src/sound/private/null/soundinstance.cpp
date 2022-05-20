@@ -20,30 +20,18 @@
 namespace Genesis::Sound::Private::Null
 {
 
-SoundInstance::SoundInstance()
-{
+SoundInstance::SoundInstance() {}
 
-}
+SoundInstance::~SoundInstance() {}
 
-SoundInstance::~SoundInstance()
-{
-    
-}
-
-void SoundInstance::Initialise( ResourceSound* pResourceSound, void* pData )
-{
-
-}
+void SoundInstance::Initialise(ResourceSound* pResourceSound, void* pData) {}
 
 bool SoundInstance::IsPlaying() const
 {
     return false;
 }
 
-void SoundInstance::Stop()
-{
-
-}
+void SoundInstance::Stop() {}
 
 unsigned int SoundInstance::GetLength() const
 {
@@ -65,37 +53,28 @@ ResourceSound* SoundInstance::GetResource() const
     return nullptr;
 }
 
-void SoundInstance::SetMinimumDistance( float value )
-{
+void SoundInstance::SetMinimumDistance(float value) {}
 
-}
-    
-void SoundInstance::Set3DAttributes( const glm::vec3* pPosition, const glm::vec3* pVelocity )
-{
+void SoundInstance::Set3DAttributes(const glm::vec3* pPosition, const glm::vec3* pVelocity) {}
 
-}
-
-void SoundInstance::Get3DAttributes( glm::vec3* pPosition, glm::vec3* pVelocity )
+void SoundInstance::Get3DAttributes(glm::vec3* pPosition, glm::vec3* pVelocity)
 {
-    if ( pPosition != nullptr )
+    if (pPosition != nullptr)
     {
-        *pPosition = glm::vec3( 0.0f );
+        *pPosition = glm::vec3(0.0f);
     }
 
-    if ( pVelocity != nullptr )
+    if (pVelocity != nullptr)
     {
-        *pVelocity = glm::vec3( 0.0f );
-    } 
+        *pVelocity = glm::vec3(0.0f);
+    }
 }
 
-void SoundInstance::SetVolume( float value )
-{
-
-}
+void SoundInstance::SetVolume(float value) {}
 
 float SoundInstance::GetVolume() const
 {
     return 0.0f;
 }
 
-} // namespace Genesis::Sound::Private
+} // namespace Genesis::Sound::Private::Null

@@ -15,10 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include "sound/private/soundmanagerimpl.h"
 #include "sound/private/fmod/soundmanager.h"
+
 #include "sound/private/null/soundmanager.h"
 #include "sound/private/soundinstanceimpl.h"
+#include "sound/private/soundmanagerimpl.h"
 #include "sound/soundmanager.h"
 
 namespace Genesis::Sound
@@ -35,27 +36,23 @@ SoundManager::SoundManager()
 #endif
 }
 
-SoundManager::~SoundManager()
-{
+SoundManager::~SoundManager() {}
 
-}
-
-TaskStatus SoundManager::Update( float delta )
+TaskStatus SoundManager::Update(float delta)
 {
-    m_pImpl->Update( delta );
+    m_pImpl->Update(delta);
     return TaskStatus::Continue;
 }
 
-SoundInstanceSharedPtr SoundManager::CreateSoundInstance( ResourceSound* pResourceSound )
+SoundInstanceSharedPtr SoundManager::CreateSoundInstance(ResourceSound* pResourceSound)
 {
-    return m_pImpl->CreateSoundInstance( pResourceSound );
+    return m_pImpl->CreateSoundInstance(pResourceSound);
 }
 
-void SoundManager::SetPlaylist( ResourceSound* pResourceSound, const std::string& startingTrack /* = "" */, bool shuffle /* = false */ )
+void SoundManager::SetPlaylist(ResourceSound* pResourceSound, const std::string& startingTrack /* = "" */, bool shuffle /* = false */)
 {
-    m_pImpl->SetPlaylist( pResourceSound, startingTrack, shuffle );
+    m_pImpl->SetPlaylist(pResourceSound, startingTrack, shuffle);
 }
-
 
 ResourceSound* SoundManager::GetPlaylistResource() const
 {
@@ -67,16 +64,14 @@ SoundInstanceSharedPtr SoundManager::GetCurrentSong() const
     return m_pImpl->GetCurrentSong();
 }
 
-
 const SoundInstanceList& SoundManager::GetSoundInstances() const
 {
     return m_pImpl->GetSoundInstances();
 }
 
-
-void SoundManager::SetListener( const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up )
-{  
-    m_pImpl->SetListener( position, velocity, forward, up );
+void SoundManager::SetListener(const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up)
+{
+    m_pImpl->SetListener(position, velocity, forward, up);
 }
 
 glm::vec3 SoundManager::GetListenerPosition() const

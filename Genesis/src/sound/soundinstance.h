@@ -17,14 +17,14 @@
 
 #pragma once
 
+#include "taskmanager.h"
+
 #include <list>
 #include <memory>
 
-#include "taskmanager.h"
-
 namespace Genesis
 {
-    class ResourceSound;
+class ResourceSound;
 }
 
 namespace Genesis::Sound
@@ -32,9 +32,9 @@ namespace Genesis::Sound
 
 namespace Private
 {
-    class SoundInstanceImpl;
-    using SoundInstanceImplUniquePtr = std::unique_ptr<SoundInstanceImpl>;
-}
+class SoundInstanceImpl;
+using SoundInstanceImplUniquePtr = std::unique_ptr<SoundInstanceImpl>;
+} // namespace Private
 
 class SoundInstance
 {
@@ -42,24 +42,24 @@ public:
     SoundInstance();
     ~SoundInstance();
 
-    void Initialise( ResourceSound* pResourceSound, void* pData );
+    void Initialise(ResourceSound* pResourceSound, void* pData);
     bool IsPlaying() const;
     void Stop();
 
-    unsigned int GetLength() const; // Length in milliseconds
+    unsigned int GetLength() const;   // Length in milliseconds
     unsigned int GetPosition() const; // Current position in milliseconds
     float GetAudability() const;
 
     ResourceSound* GetResource() const;
 
-    void SetMinimumDistance( float value );
-    void Set3DAttributes( const glm::vec3* pPosition = nullptr, const glm::vec3* pVelocity = nullptr );
-    void Get3DAttributes( glm::vec3* pPosition = nullptr, glm::vec3* pVelocity = nullptr );
-    void SetVolume( float value );
+    void SetMinimumDistance(float value);
+    void Set3DAttributes(const glm::vec3* pPosition = nullptr, const glm::vec3* pVelocity = nullptr);
+    void Get3DAttributes(glm::vec3* pPosition = nullptr, glm::vec3* pVelocity = nullptr);
+    void SetVolume(float value);
     float GetVolume() const;
 
 private:
     Private::SoundInstanceImplUniquePtr m_pImpl;
 };
 
-} // namespace Genesis
+} // namespace Genesis::Sound

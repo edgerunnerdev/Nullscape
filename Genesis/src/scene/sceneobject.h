@@ -8,7 +8,7 @@ class SceneObject
 public:
     SceneObject();
     virtual ~SceneObject();
-    virtual void Update( float );
+    virtual void Update(float);
     virtual void Render() = 0;
 
     inline void SetTerminating() { m_Terminating = true; }
@@ -17,4 +17,4 @@ public:
 private:
     bool m_Terminating;
 };
-}
+} // namespace Genesis

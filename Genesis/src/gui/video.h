@@ -27,19 +27,19 @@ class ResourceVideo;
 namespace Gui
 {
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Video
-    ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// Video
+///////////////////////////////////////////////////////////////////////////
 
-    class Video : public Panel
-    {
-    public:
-        Video();
-        virtual ~Video();
-        virtual void Render();
+class Video : public Panel
+{
+public:
+    Video();
+    virtual ~Video();
+    virtual void Render();
 
-    private:
-        VertexBuffer* m_pImageVertexBuffer;
-    };
-}
-}
+private:
+    VertexBuffer* m_pImageVertexBuffer;
+};
+} // namespace Gui
+} // namespace Genesis

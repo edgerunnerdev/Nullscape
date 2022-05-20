@@ -17,15 +17,14 @@
 
 #pragma once
 
+#include <SDL.h>
 #include <array>
 #include <fstream>
 #include <iostream>
 #include <list>
 #include <stdarg.h>
 
-#include <SDL.h>
-
-#define GENESIS_LOG( x ) Genesis::FrameWork::GetLogger()->LogInfo( x )
+#define GENESIS_LOG(x) Genesis::FrameWork::GetLogger()->LogInfo(x)
 
 namespace Genesis
 {
@@ -57,16 +56,16 @@ public:
     ~Logger();
 
     // Thread safe
-    void LogInfo( const char* pFormat, ... );
-    void LogWarning( const char* pFormat, ... );
-    void LogError( const char* pFormat, ... );
+    void LogInfo(const char* pFormat, ...);
+    void LogWarning(const char* pFormat, ...);
+    void LogError(const char* pFormat, ...);
 
     // Not thread safe. Call only from the main thread.
-    void AddLogTarget( LogTarget* pLogTarget );
-    void RemoveLogTarget( LogTarget* pLogTarget );
+    void AddLogTarget(LogTarget* pLogTarget);
+    void RemoveLogTarget(LogTarget* pLogTarget);
 
 private:
-    void Log( const char* pText, LogMessageType type = LOG_INFO );
+    void Log(const char* pText, LogMessageType type = LOG_INFO);
 
     SDL_mutex* m_pMutex;
     LogTargetList m_Targets;
@@ -81,8 +80,8 @@ private:
 class LogTarget
 {
 public:
-	virtual ~LogTarget() {}
-    virtual void Log( const char* pText, LogMessageType type = LOG_INFO ) = 0;
+    virtual ~LogTarget() {}
+    virtual void Log(const char* pText, LogMessageType type = LOG_INFO) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,9 +93,9 @@ public:
 class FileLogger : public LogTarget
 {
 public:
-    FileLogger( const char* pFilename );
+    FileLogger(const char* pFilename);
     ~FileLogger();
-    virtual void Log( const char* pText, LogMessageType type );
+    virtual void Log(const char* pText, LogMessageType type);
 
 private:
     std::ofstream m_File;
@@ -111,7 +110,7 @@ private:
 class MessageBoxLogger : public LogTarget
 {
 public:
-    virtual void Log( const char* pText, LogMessageType type );
+    virtual void Log(const char* pText, LogMessageType type);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,7 +123,7 @@ public:
 class VisualStudioLogger : public LogTarget
 {
 public:
-    virtual void Log( const char* pText, LogMessageType type );
+    virtual void Log(const char* pText, LogMessageType type);
 };
 #endif
-}
+} // namespace Genesis

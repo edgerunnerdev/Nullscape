@@ -15,14 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include <imgui/imgui.h>
-#include <SDL_image.h>
-
-#include "imgui/imgui_impl.h"
-#include "configuration.h"
 #include "genesis.h"
+
+#include "configuration.h"
 #include "eventhandler.h"
 #include "gui/gui.h"
+#include "imgui/imgui_impl.h"
 #include "inputmanager.h"
 #include "memory.h"
 #include "render/debugrender.h"
@@ -34,6 +32,9 @@
 #include "timer.h"
 #include "videoplayer.h"
 #include "window.h"
+
+#include <SDL_image.h>
+#include <imgui/imgui.h>
 
 namespace Genesis
 {
@@ -69,47 +70,47 @@ bool FrameWork::Initialize()
     // a warning or an error.
     gLogger = new Logger();
 
-    gLogger->AddLogTarget( new FileLogger( "log.txt" ) );
-    gLogger->AddLogTarget( new MessageBoxLogger() );
+    gLogger->AddLogTarget(new FileLogger("log.txt"));
+    gLogger->AddLogTarget(new MessageBoxLogger());
 #ifdef _WIN32
 #ifndef _FINAL
-    gLogger->AddLogTarget( new VisualStudioLogger() );
+    gLogger->AddLogTarget(new VisualStudioLogger());
 #endif
 #endif
 
     // Initialize SDL
     // Needs to be done before InputManager() is created,
     // otherwise key repetition won't work.
-    if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS ) < 0 )
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) < 0)
     {
-        gLogger->LogError( "%s", SDL_GetError() );
+        gLogger->LogError("%s", SDL_GetError());
     }
     else
     {
-        gLogger->LogInfo( "SDL initialized." );
+        gLogger->LogInfo("SDL initialized.");
     }
 
     Configuration::Load();
 
     int flags = IMG_INIT_JPG | IMG_INIT_PNG;
-    int imgResult = IMG_Init( flags );
-    if ( ( imgResult & flags ) != flags )
+    int imgResult = IMG_Init(flags);
+    if ((imgResult & flags) != flags)
     {
-        if ( ( flags & IMG_INIT_JPG ) == 0 )
+        if ((flags & IMG_INIT_JPG) == 0)
         {
-            gLogger->LogError( "SDL2_image is unable to load JPGs." );
+            gLogger->LogError("SDL2_image is unable to load JPGs.");
         }
 
-        if ( ( flags & IMG_INIT_PNG ) == 0 )
+        if ((flags & IMG_INIT_PNG) == 0)
         {
-            gLogger->LogError( "SDL2_image is unable to load PNGs." );
+            gLogger->LogError("SDL2_image is unable to load PNGs.");
         }
 
-        gLogger->LogError( "IMG_Init failed." );
+        gLogger->LogError("IMG_Init failed.");
     }
     else
     {
-        gLogger->LogInfo( "SDL2_image initialized with JPG and PNG support." );
+        gLogger->LogInfo("SDL2_image initialized with JPG and PNG support.");
     }
 
     gInputManager = new InputManager();
@@ -117,29 +118,29 @@ bool FrameWork::Initialize()
     gResourceManager = new ResourceManager();
 
     // Initialize the task manager, as well as all the related tasks
-    gTaskManager = new TaskManager( gLogger );
+    gTaskManager = new TaskManager(gLogger);
 
-    gTaskManager->AddTask( "InputManager", gInputManager, (TaskFunc)&InputManager::Update, TaskPriority::System );
-    gTaskManager->AddTask( "EventHandler", gEventHandler, (TaskFunc)&EventHandler::Update, TaskPriority::System );
+    gTaskManager->AddTask("InputManager", gInputManager, (TaskFunc)&InputManager::Update, TaskPriority::System);
+    gTaskManager->AddTask("EventHandler", gEventHandler, (TaskFunc)&EventHandler::Update, TaskPriority::System);
 
     gRenderSystem = new RenderSystem();
-    gTaskManager->AddTask( "Render", gRenderSystem, (TaskFunc)&RenderSystem::Update, TaskPriority::Rendering );
+    gTaskManager->AddTask("Render", gRenderSystem, (TaskFunc)&RenderSystem::Update, TaskPriority::Rendering);
 
     gGuiManager = new Gui::GuiManager();
-    gTaskManager->AddTask( "GUIManager", gGuiManager, (TaskFunc)&Gui::GuiManager::Update, TaskPriority::GameLogic );
+    gTaskManager->AddTask("GUIManager", gGuiManager, (TaskFunc)&Gui::GuiManager::Update, TaskPriority::GameLogic);
 
     gScene = new Scene();
-    gTaskManager->AddTask( "Scene", gScene, (TaskFunc)&Scene::Update, TaskPriority::GameLogic );
+    gTaskManager->AddTask("Scene", gScene, (TaskFunc)&Scene::Update, TaskPriority::GameLogic);
 
     gSoundManager = new Sound::SoundManager();
-    gTaskManager->AddTask( "SoundManager", gSoundManager, (TaskFunc)&Sound::SoundManager::Update, TaskPriority::System );
+    gTaskManager->AddTask("SoundManager", gSoundManager, (TaskFunc)&Sound::SoundManager::Update, TaskPriority::System);
 
     return true;
 }
 
 void FrameWork::Shutdown()
 {
-	delete gDebugRender;
+    delete gDebugRender;
     gDebugRender = nullptr;
 
     delete gGuiManager;
@@ -176,47 +177,47 @@ void FrameWork::Shutdown()
     gLogger = nullptr;
 }
 
-bool FrameWork::CreateWindowGL( const std::string& name, uint32_t width, uint32_t height, uint32_t multiSampleSamples /* = 0 */ )
+bool FrameWork::CreateWindowGL(const std::string& name, uint32_t width, uint32_t height, uint32_t multiSampleSamples /* = 0 */)
 {
     // Set OpenGL version to 3.3.
-	SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE ); // OpenGL core profile
-	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 ); // OpenGL 3+
-	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 ); // OpenGL 3.3
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); // OpenGL core profile
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);                          // OpenGL 3+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);                          // OpenGL 3.3
 
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
-	SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    if ( multiSampleSamples > 0 )
+    if (multiSampleSamples > 0)
     {
-        SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
-        SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, multiSampleSamples );
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, multiSampleSamples);
     }
 
-	gWindow = new Window( name, width, height, Configuration::IsFullscreen() );
+    gWindow = new Window(name, width, height, Configuration::IsFullscreen());
 
-    GetRenderSystem()->Initialize( width, height );
+    GetRenderSystem()->Initialize(width, height);
 
     GetGuiManager()->Initialize();
-	ImGuiImpl::Initialise();
+    ImGuiImpl::Initialise();
 
     gVideoPlayer = new VideoPlayer();
-    gTaskManager->AddTask( "VideoPlayer", gVideoPlayer, (TaskFunc)&VideoPlayer::Update, TaskPriority::System );
+    gTaskManager->AddTask("VideoPlayer", gVideoPlayer, (TaskFunc)&VideoPlayer::Update, TaskPriority::System);
 
-	gDebugRender = new Render::DebugRender();
+    gDebugRender = new Render::DebugRender();
 
     return true;
 }
 
-CommandLineParameters* FrameWork::CreateCommandLineParameters( const char* parameterStr )
+CommandLineParameters* FrameWork::CreateCommandLineParameters(const char* parameterStr)
 {
-    m_pCommandLineParameters = new CommandLineParameters( parameterStr );
+    m_pCommandLineParameters = new CommandLineParameters(parameterStr);
     return m_pCommandLineParameters;
 }
 
-CommandLineParameters* FrameWork::CreateCommandLineParameters( const char** parameters, uint32_t numParameters )
+CommandLineParameters* FrameWork::CreateCommandLineParameters(const char** parameters, uint32_t numParameters)
 {
-    m_pCommandLineParameters = new CommandLineParameters( parameters, numParameters );
+    m_pCommandLineParameters = new CommandLineParameters(parameters, numParameters);
     return m_pCommandLineParameters;
 }
 
@@ -277,55 +278,55 @@ VideoPlayer* FrameWork::GetVideoPlayer()
 
 Render::DebugRender* FrameWork::GetDebugRender()
 {
-	return gDebugRender;
+    return gDebugRender;
 }
 
 //---------------------------------------------------------------
 // CommandLineParameters
 //---------------------------------------------------------------
 
-CommandLineParameters::CommandLineParameters( const char* parameterStr )
+CommandLineParameters::CommandLineParameters(const char* parameterStr)
 {
     // Do we even have any parameters?
-    if ( parameterStr != nullptr )
+    if (parameterStr != nullptr)
     {
-        std::string tmpStr( parameterStr );
+        std::string tmpStr(parameterStr);
 
         size_t previousPos = 0;
-        size_t currentPos = tmpStr.find_first_of( " ", 0 );
+        size_t currentPos = tmpStr.find_first_of(" ", 0);
         // If there is no whitespace, then there's only one parameter
-        if ( currentPos == std::string::npos )
+        if (currentPos == std::string::npos)
         {
-            mParameters.push_back( parameterStr );
+            mParameters.push_back(parameterStr);
         }
         // Otherwise, process every parameter
         else
         {
             do
             {
-                mParameters.push_back( tmpStr.substr( previousPos, currentPos - previousPos ) );
+                mParameters.push_back(tmpStr.substr(previousPos, currentPos - previousPos));
                 previousPos = currentPos + 1;
-                currentPos = tmpStr.find_first_of( " ", previousPos );
-            } while ( currentPos != std::string::npos );
+                currentPos = tmpStr.find_first_of(" ", previousPos);
+            } while (currentPos != std::string::npos);
 
-            mParameters.push_back( tmpStr.substr( previousPos, tmpStr.size() - previousPos ) );
+            mParameters.push_back(tmpStr.substr(previousPos, tmpStr.size() - previousPos));
         }
     }
 }
 
-CommandLineParameters::CommandLineParameters( const char** parameters, size_t numParameters )
+CommandLineParameters::CommandLineParameters(const char** parameters, size_t numParameters)
 {
-    for ( size_t i = 0; i < numParameters; i++ )
+    for (size_t i = 0; i < numParameters; i++)
     {
-        mParameters.push_back( parameters[ i ] );
+        mParameters.push_back(parameters[i]);
     }
 }
 
-bool CommandLineParameters::HasParameter( const std::string& name ) const
+bool CommandLineParameters::HasParameter(const std::string& name) const
 {
-    for ( auto& parameter : mParameters )
+    for (auto& parameter : mParameters)
     {
-        if ( parameter == name )
+        if (parameter == name)
         {
             return true;
         }
@@ -333,4 +334,4 @@ bool CommandLineParameters::HasParameter( const std::string& name ) const
 
     return false;
 }
-}
+} // namespace Genesis

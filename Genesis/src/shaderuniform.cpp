@@ -16,6 +16,7 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "shaderuniform.h"
+
 #include "rendersystem.h"
 #include "resources/resourceimage.h"
 
@@ -26,44 +27,44 @@ namespace Genesis
 // ShaderUniform
 ///////////////////////////////////////////////////////////////////////////////
 
-ShaderUniform::ShaderUniform( GLuint handle, ShaderUniformType type, bool allowInstancingOverride /* = true */ )
-    : m_Handle( handle )
-    , m_Type( type )
-    , m_pData( nullptr )
-    , m_Slot( GL_TEXTURE0 )
-    , m_InstancingOverride( allowInstancingOverride )
+ShaderUniform::ShaderUniform(GLuint handle, ShaderUniformType type, bool allowInstancingOverride /* = true */)
+    : m_Handle(handle)
+    , m_Type(type)
+    , m_pData(nullptr)
+    , m_Slot(GL_TEXTURE0)
+    , m_InstancingOverride(allowInstancingOverride)
 {
-    SDL_assert( handle != -1 );
+    SDL_assert(handle != -1);
 
-	if ( m_Type == ShaderUniformType::Boolean )
-	{
-		m_pData = new bool;
-	}
-    else if ( m_Type == ShaderUniformType::Integer )
+    if (m_Type == ShaderUniformType::Boolean)
+    {
+        m_pData = new bool;
+    }
+    else if (m_Type == ShaderUniformType::Integer)
     {
         m_pData = new int;
     }
-    else if ( m_Type == ShaderUniformType::Float )
+    else if (m_Type == ShaderUniformType::Float)
     {
         m_pData = new float;
     }
-    else if ( m_Type == ShaderUniformType::FloatVector2 )
+    else if (m_Type == ShaderUniformType::FloatVector2)
     {
         m_pData = new glm::vec2();
     }
-    else if ( m_Type == ShaderUniformType::FloatVector3 )
+    else if (m_Type == ShaderUniformType::FloatVector3)
     {
         m_pData = new glm::vec3();
     }
-    else if ( m_Type == ShaderUniformType::FloatVector4 )
+    else if (m_Type == ShaderUniformType::FloatVector4)
     {
         m_pData = new glm::vec4();
     }
-    else if ( m_Type == ShaderUniformType::FloatMatrix44 )
+    else if (m_Type == ShaderUniformType::FloatMatrix44)
     {
         m_pData = new glm::mat4();
     }
-    else if ( m_Type == ShaderUniformType::Texture )
+    else if (m_Type == ShaderUniformType::Texture)
     {
         m_pData = new GLuint;
     }
@@ -71,35 +72,35 @@ ShaderUniform::ShaderUniform( GLuint handle, ShaderUniformType type, bool allowI
 
 ShaderUniform::~ShaderUniform()
 {
-	if ( m_Type == ShaderUniformType::Boolean )
-	{
-		delete (bool*)m_pData;
-	}
-    else if ( m_Type == ShaderUniformType::Integer )
+    if (m_Type == ShaderUniformType::Boolean)
+    {
+        delete (bool*)m_pData;
+    }
+    else if (m_Type == ShaderUniformType::Integer)
     {
         delete (int*)m_pData;
     }
-    else if ( m_Type == ShaderUniformType::Float )
+    else if (m_Type == ShaderUniformType::Float)
     {
         delete (float*)m_pData;
     }
-    else if ( m_Type == ShaderUniformType::FloatVector2 )
+    else if (m_Type == ShaderUniformType::FloatVector2)
     {
         delete (glm::vec2*)m_pData;
     }
-    else if ( m_Type == ShaderUniformType::FloatVector3 )
+    else if (m_Type == ShaderUniformType::FloatVector3)
     {
         delete (glm::vec3*)m_pData;
     }
-    else if ( m_Type == ShaderUniformType::FloatVector4 )
+    else if (m_Type == ShaderUniformType::FloatVector4)
     {
         delete (glm::vec4*)m_pData;
     }
-    else if ( m_Type == ShaderUniformType::FloatMatrix44 )
+    else if (m_Type == ShaderUniformType::FloatMatrix44)
     {
         delete (glm::mat4*)m_pData;
     }
-    else if ( m_Type == ShaderUniformType::Texture )
+    else if (m_Type == ShaderUniformType::Texture)
     {
         delete (GLuint*)m_pData;
     }
@@ -107,44 +108,44 @@ ShaderUniform::~ShaderUniform()
 
 void ShaderUniform::Apply()
 {
-	if ( m_Type == ShaderUniformType::Boolean )
-	{
-		const int v = (*(bool*)m_pData) ? 1 : 0;
-		glUniform1i( m_Handle, v);
-	}
-    else if ( m_Type == ShaderUniformType::Integer )
+    if (m_Type == ShaderUniformType::Boolean)
     {
-        glUniform1i( m_Handle, *(int*)m_pData );
+        const int v = (*(bool*)m_pData) ? 1 : 0;
+        glUniform1i(m_Handle, v);
     }
-    else if ( m_Type == ShaderUniformType::Float )
+    else if (m_Type == ShaderUniformType::Integer)
     {
-        glUniform1f( m_Handle, *(float*)m_pData );
+        glUniform1i(m_Handle, *(int*)m_pData);
     }
-    else if ( m_Type == ShaderUniformType::FloatVector2 )
+    else if (m_Type == ShaderUniformType::Float)
     {
-        glUniform2fv( m_Handle, 1, &( *(glm::vec2*)m_pData )[ 0 ] );
+        glUniform1f(m_Handle, *(float*)m_pData);
     }
-    else if ( m_Type == ShaderUniformType::FloatVector3 )
+    else if (m_Type == ShaderUniformType::FloatVector2)
     {
-        glUniform3fv( m_Handle, 1, &( *(glm::vec3*)m_pData )[ 0 ] );
+        glUniform2fv(m_Handle, 1, &(*(glm::vec2*)m_pData)[0]);
     }
-    else if ( m_Type == ShaderUniformType::FloatVector4 )
+    else if (m_Type == ShaderUniformType::FloatVector3)
     {
-        glUniform4fv( m_Handle, 1, &( *(glm::vec4*)m_pData )[ 0 ] );
+        glUniform3fv(m_Handle, 1, &(*(glm::vec3*)m_pData)[0]);
     }
-    else if ( m_Type == ShaderUniformType::FloatMatrix44 )
+    else if (m_Type == ShaderUniformType::FloatVector4)
     {
-        glUniformMatrix4fv( m_Handle, 1, GL_FALSE, &( *(glm::mat4*)m_pData )[ 0 ][ 0 ] );
+        glUniform4fv(m_Handle, 1, &(*(glm::vec4*)m_pData)[0]);
     }
-    else if ( m_Type == ShaderUniformType::Texture )
+    else if (m_Type == ShaderUniformType::FloatMatrix44)
     {
-        glActiveTexture( m_Slot );
-        glBindTexture( GL_TEXTURE_2D, *(GLuint*)m_pData );
-        glUniform1i( m_Handle, (int)( m_Slot - GL_TEXTURE0 ) );
+        glUniformMatrix4fv(m_Handle, 1, GL_FALSE, &(*(glm::mat4*)m_pData)[0][0]);
+    }
+    else if (m_Type == ShaderUniformType::Texture)
+    {
+        glActiveTexture(m_Slot);
+        glBindTexture(GL_TEXTURE_2D, *(GLuint*)m_pData);
+        glUniform1i(m_Handle, (int)(m_Slot - GL_TEXTURE0));
     }
     else
     {
-        SDL_assert( false ); // ShaderUniformType enum entry not implemented
+        SDL_assert(false); // ShaderUniformType enum entry not implemented
     }
 }
-}
+} // namespace Genesis

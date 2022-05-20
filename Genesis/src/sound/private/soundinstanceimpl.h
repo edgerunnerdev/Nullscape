@@ -21,7 +21,7 @@
 
 namespace Genesis
 {
-    class ResourceSound;
+class ResourceSound;
 }
 
 namespace Genesis::Sound::Private
@@ -31,7 +31,7 @@ class SoundInstanceImpl
 {
 public:
     virtual ~SoundInstanceImpl() {}
-    virtual void Initialise( ResourceSound* pResourceSound, void* pData ) = 0;
+    virtual void Initialise(ResourceSound* pResourceSound, void* pData) = 0;
     virtual bool IsPlaying() const = 0;
     virtual void Stop() = 0;
 
@@ -41,10 +41,10 @@ public:
 
     virtual ResourceSound* GetResource() const = 0;
 
-    virtual void SetMinimumDistance( float value ) = 0;
-    virtual void Set3DAttributes( const glm::vec3* pPosition = nullptr, const glm::vec3* pVelocity = nullptr ) = 0;
-    virtual void Get3DAttributes( glm::vec3* pPosition = nullptr, glm::vec3* pVelocity = nullptr ) = 0;
-    virtual void SetVolume( float value ) = 0;
+    virtual void SetMinimumDistance(float value) = 0;
+    virtual void Set3DAttributes(const glm::vec3* pPosition = nullptr, const glm::vec3* pVelocity = nullptr) = 0;
+    virtual void Get3DAttributes(glm::vec3* pPosition = nullptr, glm::vec3* pVelocity = nullptr) = 0;
+    virtual void SetVolume(float value) = 0;
     virtual float GetVolume() const = 0;
 };
 

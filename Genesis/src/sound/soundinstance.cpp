@@ -41,15 +41,12 @@ SoundInstance::SoundInstance()
     m_pImpl = std::make_unique<Private::Null::SoundInstance>();
 #endif
 }
-    
-SoundInstance::~SoundInstance()
-{
 
-}
+SoundInstance::~SoundInstance() {}
 
-void SoundInstance::Initialise( ResourceSound* pResourceSound, void* pData )
+void SoundInstance::Initialise(ResourceSound* pResourceSound, void* pData)
 {
-    m_pImpl->Initialise( pResourceSound, pData );
+    m_pImpl->Initialise(pResourceSound, pData);
 }
 
 bool SoundInstance::IsPlaying() const
@@ -82,24 +79,24 @@ ResourceSound* SoundInstance::GetResource() const
     return m_pImpl->GetResource();
 }
 
-void SoundInstance::SetMinimumDistance( float value )
+void SoundInstance::SetMinimumDistance(float value)
 {
-    m_pImpl->SetMinimumDistance( value );
+    m_pImpl->SetMinimumDistance(value);
 }
 
-void SoundInstance::Set3DAttributes( const glm::vec3* pPosition /* = nullptr */, const glm::vec3* pVelocity /* = nullptr */ )
+void SoundInstance::Set3DAttributes(const glm::vec3* pPosition /* = nullptr */, const glm::vec3* pVelocity /* = nullptr */)
 {
-    m_pImpl->Set3DAttributes( pPosition, pVelocity );
+    m_pImpl->Set3DAttributes(pPosition, pVelocity);
 }
-    
-void SoundInstance::Get3DAttributes( glm::vec3* pPosition /* = nullptr */, glm::vec3* pVelocity /* = nullptr */ )
+
+void SoundInstance::Get3DAttributes(glm::vec3* pPosition /* = nullptr */, glm::vec3* pVelocity /* = nullptr */)
 {
-    m_pImpl->Get3DAttributes( pPosition, pVelocity );
+    m_pImpl->Get3DAttributes(pPosition, pVelocity);
 }
-    
-void SoundInstance::SetVolume( float value )
+
+void SoundInstance::SetVolume(float value)
 {
-    m_pImpl->SetVolume( value );
+    m_pImpl->SetVolume(value);
 }
 
 float SoundInstance::GetVolume() const

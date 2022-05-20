@@ -19,8 +19,8 @@
 
 #include <memory>
 
-#define GENESIS_DECLARE_SMART_PTR( className ) \
-	class className; \
-	using className ## SharedPtr = std::shared_ptr< className >; \
-	using className ## WeakPtr = std::weak_ptr< className >; \
-	using className ## UniquePtr = std::unique_ptr< className >;
+#define GENESIS_DECLARE_SMART_PTR(className)                 \
+    class className;                                         \
+    using className##SharedPtr = std::shared_ptr<className>; \
+    using className##WeakPtr = std::weak_ptr<className>;     \
+    using className##UniquePtr = std::unique_ptr<className>;

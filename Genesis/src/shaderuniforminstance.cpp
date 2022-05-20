@@ -16,6 +16,7 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "shaderuniforminstance.h"
+
 #include "rendersystem.h"
 #include "resources/resourceimage.h"
 
@@ -26,58 +27,58 @@ namespace Genesis
 // ShaderUniformInstance
 ///////////////////////////////////////////////////////////////////////////////
 
-ShaderUniformInstance::ShaderUniformInstance( ShaderUniform* pShaderUniform )
-    : m_pShaderUniform( pShaderUniform )
-    , m_Integer( 0 )
-    , m_Float( 0.0f )
-    , m_Vector( 0.0f )
-    , m_Matrix( 0.0f )
-    , m_pTexture( nullptr )
-    , m_TextureSlot( GL_TEXTURE0 )
+ShaderUniformInstance::ShaderUniformInstance(ShaderUniform* pShaderUniform)
+    : m_pShaderUniform(pShaderUniform)
+    , m_Integer(0)
+    , m_Float(0.0f)
+    , m_Vector(0.0f)
+    , m_Matrix(0.0f)
+    , m_pTexture(nullptr)
+    , m_TextureSlot(GL_TEXTURE0)
 {
-    SDL_assert( pShaderUniform != nullptr );
+    SDL_assert(pShaderUniform != nullptr);
 }
 
 void ShaderUniformInstance::Apply()
 {
-    if ( m_pShaderUniform->IsInstancingOverrideAllowed() == false )
+    if (m_pShaderUniform->IsInstancingOverrideAllowed() == false)
     {
         return;
     }
 
     ShaderUniformType type = m_pShaderUniform->GetType();
 
-    if ( type == ShaderUniformType::Integer )
+    if (type == ShaderUniformType::Integer)
     {
-        m_pShaderUniform->Set( m_Integer );
+        m_pShaderUniform->Set(m_Integer);
     }
-    else if ( type == ShaderUniformType::Float )
+    else if (type == ShaderUniformType::Float)
     {
-        m_pShaderUniform->Set( m_Float );
+        m_pShaderUniform->Set(m_Float);
     }
-    else if ( type == ShaderUniformType::FloatVector2 )
+    else if (type == ShaderUniformType::FloatVector2)
     {
-        m_pShaderUniform->Set( glm::vec2( m_Vector.x, m_Vector.y ) );
+        m_pShaderUniform->Set(glm::vec2(m_Vector.x, m_Vector.y));
     }
-    else if ( type == ShaderUniformType::FloatVector3 )
+    else if (type == ShaderUniformType::FloatVector3)
     {
-        m_pShaderUniform->Set( glm::vec3( m_Vector.x, m_Vector.y, m_Vector.z ) );
+        m_pShaderUniform->Set(glm::vec3(m_Vector.x, m_Vector.y, m_Vector.z));
     }
-    else if ( type == ShaderUniformType::FloatVector4 )
+    else if (type == ShaderUniformType::FloatVector4)
     {
-        m_pShaderUniform->Set( m_Vector );
+        m_pShaderUniform->Set(m_Vector);
     }
-    else if ( type == ShaderUniformType::FloatMatrix44 )
+    else if (type == ShaderUniformType::FloatMatrix44)
     {
-        m_pShaderUniform->Set( m_Matrix );
+        m_pShaderUniform->Set(m_Matrix);
     }
-    else if ( type == ShaderUniformType::Texture )
+    else if (type == ShaderUniformType::Texture)
     {
-        m_pShaderUniform->Set( m_pTexture, m_TextureSlot );
+        m_pShaderUniform->Set(m_pTexture, m_TextureSlot);
     }
     else
     {
-        SDL_assert( false );
+        SDL_assert(false);
     }
 }
-}
+} // namespace Genesis

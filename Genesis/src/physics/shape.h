@@ -17,13 +17,12 @@
 
 #pragma once
 
-#include <utility>
-#include <vector>
+#include "shape.fwd.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-
-#include "shape.fwd.h"
+#include <utility>
+#include <vector>
 
 class btCollisionShape;
 class btBoxShape;
@@ -40,9 +39,8 @@ class RigidBody;
 class Shape;
 class Simulation;
 
-using ShapeContainer = std::vector< ShapeSharedPtr >;
+using ShapeContainer = std::vector<ShapeSharedPtr>;
 static unsigned int sActiveShapes = 0u;
-
 
 /////////////////////////////////////////////////////////////////////
 // Shape
@@ -50,32 +48,32 @@ static unsigned int sActiveShapes = 0u;
 
 class Shape
 {
-	friend Ghost;
-	friend RigidBody;
-	friend CompoundShape;
-	friend Simulation;
+    friend Ghost;
+    friend RigidBody;
+    friend CompoundShape;
+    friend Simulation;
+
 public:
-	Shape();
-	virtual ~Shape();
+    Shape();
+    virtual ~Shape();
 
-	enum class Type
-	{
-		Box,
-		Compound,
-		Sphere,
-		ConvexHull,
-		Cylinder
-	};
+    enum class Type
+    {
+        Box,
+        Compound,
+        Sphere,
+        ConvexHull,
+        Cylinder
+    };
 
-	virtual Type GetType() const = 0;
-	void SetUserData( void* pUserData );
-	void* GetUserData() const;
+    virtual Type GetType() const = 0;
+    void SetUserData(void* pUserData);
+    void* GetUserData() const;
 
 protected:
-	btCollisionShape* m_pShape;
-	void* m_pUserData;
+    btCollisionShape* m_pShape;
+    void* m_pUserData;
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // BoxShape
@@ -84,11 +82,10 @@ protected:
 class BoxShape : public Shape
 {
 public:
-	BoxShape( float width, float height, float depth );
+    BoxShape(float width, float height, float depth);
 
-	virtual Type GetType() const override { return Type::Box; }
+    virtual Type GetType() const override { return Type::Box; }
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // CompoundShape
@@ -97,22 +94,21 @@ public:
 class CompoundShape : public Shape
 {
 public:
-	CompoundShape();
+    CompoundShape();
 
-	void AddChildShape( ShapeSharedPtr pShape, const glm::mat4x4& localTransform );
-	void RemoveChildShape( ShapeSharedPtr pShape );
-	void RemoveChildShape( unsigned int index );
-	ShapeSharedPtr GetChildShape( unsigned int index ) const;
-	glm::mat4x4 GetChildTransform( unsigned int index ) const;
-	std::size_t GetChildrenCount() const;
+    void AddChildShape(ShapeSharedPtr pShape, const glm::mat4x4& localTransform);
+    void RemoveChildShape(ShapeSharedPtr pShape);
+    void RemoveChildShape(unsigned int index);
+    ShapeSharedPtr GetChildShape(unsigned int index) const;
+    glm::mat4x4 GetChildTransform(unsigned int index) const;
+    std::size_t GetChildrenCount() const;
 
-	virtual Type GetType() const override { return Type::Compound; }
+    virtual Type GetType() const override { return Type::Compound; }
 
 private:
-	using ChildShapeContainer = std::vector< std::pair< ShapeSharedPtr, glm::mat4x4 > >;
-	ChildShapeContainer m_ChildShapes;
+    using ChildShapeContainer = std::vector<std::pair<ShapeSharedPtr, glm::mat4x4>>;
+    ChildShapeContainer m_ChildShapes;
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // SphereShape
@@ -121,26 +117,24 @@ private:
 class SphereShape : public Shape
 {
 public:
-	SphereShape( float radius );
+    SphereShape(float radius);
 
-	virtual Type GetType() const override { return Type::Sphere; }
+    virtual Type GetType() const override { return Type::Sphere; }
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // ConvexHullShape
 /////////////////////////////////////////////////////////////////////
 
-using ConvexHullVertices = std::vector< glm::vec3 >;
+using ConvexHullVertices = std::vector<glm::vec3>;
 
 class ConvexHullShape : public Shape
 {
 public:
-	ConvexHullShape( const ConvexHullVertices& vertices );
+    ConvexHullShape(const ConvexHullVertices& vertices);
 
-	virtual Type GetType() const override { return Type::ConvexHull; }
+    virtual Type GetType() const override { return Type::ConvexHull; }
 };
-
 
 /////////////////////////////////////////////////////////////////////
 // CylinderShape
@@ -148,18 +142,18 @@ public:
 
 enum class CylinderShapeAxis
 {
-	X,
-	Y,
-	Z
+    X,
+    Y,
+    Z
 };
 
 class CylinderShape : public Shape
 {
 public:
-	CylinderShape( CylinderShapeAxis axis, float width, float height, float depth );
+    CylinderShape(CylinderShapeAxis axis, float width, float height, float depth);
 
-	virtual Type GetType() const override { return Type::Cylinder; }
+    virtual Type GetType() const override { return Type::Cylinder; }
 };
 
-}
-}
+} // namespace Physics
+} // namespace Genesis

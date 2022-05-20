@@ -17,30 +17,30 @@
 
 #pragma once
 
-#include <string>
-
 #include "../resourcemanager.h"
+
+#include <string>
 
 namespace Genesis
 {
 
-static const int SOUND_FLAG_FX = 1 << 0; // Sound effect which is entirely loaded into memory
-static const int SOUND_FLAG_STREAM = 1 << 1; // Sound is streamed (use for music)
-static const int SOUND_FLAG_SOFTWARE = 1 << 2; // Sound is mixed in software (for DPS effects, etc). If not set, hardware mixing is used instead.
-static const int SOUND_FLAG_LOOPING = 1 << 3; // Sound loops
-static const int SOUND_FLAG_PLAYLIST = 1 << 4; // Does this resource contain a playlist?
+static const int SOUND_FLAG_FX = 1 << 0;          // Sound effect which is entirely loaded into memory
+static const int SOUND_FLAG_STREAM = 1 << 1;      // Sound is streamed (use for music)
+static const int SOUND_FLAG_SOFTWARE = 1 << 2;    // Sound is mixed in software (for DPS effects, etc). If not set, hardware mixing is used instead.
+static const int SOUND_FLAG_LOOPING = 1 << 3;     // Sound loops
+static const int SOUND_FLAG_PLAYLIST = 1 << 4;    // Does this resource contain a playlist?
 static const int SOUND_FLAG_INITIALISED = 1 << 5; // Has this sound been initialised?
-static const int SOUND_FLAG_3D = 1 << 6; // 3D sound? Needs to have 3D attributes set as well
+static const int SOUND_FLAG_3D = 1 << 6;          // 3D sound? Needs to have 3D attributes set as well
 
 class ResourceSound : public ResourceGeneric
 {
 public:
-    ResourceSound( const Filename& filename );
+    ResourceSound(const Filename& filename);
     virtual ~ResourceSound();
     virtual ResourceType GetType() const override;
     virtual bool Load() override;
 
-    bool Initialise( int flags = 0 );
+    bool Initialise(int flags = 0);
 
     bool IsEffect() const;
     bool IsStreamed() const;
@@ -50,10 +50,10 @@ public:
     bool IsPlaylist() const;
     bool Is3D() const;
 
-    void SetInstancingLimit( float time );
+    void SetInstancingLimit(float time);
     float GetInstancingLimit() const;
 
-    static ResourceSound* LoadAs3D( const std::string& filename );
+    static ResourceSound* LoadAs3D(const std::string& filename);
 
 private:
     unsigned int m_Flags;
@@ -62,17 +62,17 @@ private:
 
 inline bool ResourceSound::IsEffect() const
 {
-    return ( m_Flags & SOUND_FLAG_FX ) != 0;
+    return (m_Flags & SOUND_FLAG_FX) != 0;
 }
 
 inline bool ResourceSound::IsStreamed() const
 {
-    return ( m_Flags & SOUND_FLAG_STREAM ) != 0;
+    return (m_Flags & SOUND_FLAG_STREAM) != 0;
 }
 
 inline bool ResourceSound::IsSoftwareMixed() const
 {
-    return ( m_Flags & SOUND_FLAG_SOFTWARE ) != 0;
+    return (m_Flags & SOUND_FLAG_SOFTWARE) != 0;
 }
 
 inline bool ResourceSound::IsHardwareMixed() const
@@ -82,20 +82,20 @@ inline bool ResourceSound::IsHardwareMixed() const
 
 inline bool ResourceSound::IsLooping() const
 {
-    return ( m_Flags & SOUND_FLAG_LOOPING ) != 0;
+    return (m_Flags & SOUND_FLAG_LOOPING) != 0;
 }
 
 inline bool ResourceSound::IsPlaylist() const
 {
-    return ( m_Flags & SOUND_FLAG_PLAYLIST ) != 0;
+    return (m_Flags & SOUND_FLAG_PLAYLIST) != 0;
 }
 
 inline bool ResourceSound::Is3D() const
 {
-    return ( m_Flags & SOUND_FLAG_3D ) != 0;
+    return (m_Flags & SOUND_FLAG_3D) != 0;
 }
 
-inline void ResourceSound::SetInstancingLimit( float value )
+inline void ResourceSound::SetInstancingLimit(float value)
 {
     m_InstancingLimit = value;
 }
@@ -109,4 +109,4 @@ inline ResourceType ResourceSound::GetType() const
 {
     return ResourceType::Sound;
 }
-}
+} // namespace Genesis

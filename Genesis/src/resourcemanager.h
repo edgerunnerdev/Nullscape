@@ -17,15 +17,15 @@
 
 #pragma once
 
+#include "SDL.h"
+#include "filename.h"
+#include "resources/resourcetypes.h"
+
 #include <atomic>
 #include <functional>
 #include <list>
-#include <unordered_map>
 #include <string>
-
-#include "filename.h"
-#include "resources/resourcetypes.h"
-#include "SDL.h"
+#include <unordered_map>
 
 namespace Genesis
 {
@@ -37,14 +37,14 @@ namespace Genesis
 class ResourceGeneric
 {
 public:
-    ResourceGeneric( const Filename& filename );
+    ResourceGeneric(const Filename& filename);
     virtual ~ResourceGeneric() {}
     virtual void Preload(){};
     virtual bool Load() = 0;
     virtual ResourceType GetType() const;
 
     ResourceState GetState() const;
-    void SetState( ResourceState state );
+    void SetState(ResourceState state);
     const Filename& GetFilename() const;
 
 protected:
@@ -55,12 +55,24 @@ private:
     ResourceType m_Type;
 };
 
-inline ResourceState ResourceGeneric::GetState() const { return m_State; }
-inline void ResourceGeneric::SetState( ResourceState state ) { m_State = state; }
-inline const Filename& ResourceGeneric::GetFilename() const { return m_Filename; }
-inline ResourceType ResourceGeneric::GetType() const { return m_Type; }
+inline ResourceState ResourceGeneric::GetState() const
+{
+    return m_State;
+}
+inline void ResourceGeneric::SetState(ResourceState state)
+{
+    m_State = state;
+}
+inline const Filename& ResourceGeneric::GetFilename() const
+{
+    return m_Filename;
+}
+inline ResourceType ResourceGeneric::GetType() const
+{
+    return m_Type;
+}
 
-typedef std::function<ResourceGeneric*( const Filename& )> ResourceFactoryFunction;
+typedef std::function<ResourceGeneric*(const Filename&)> ResourceFactoryFunction;
 
 //////////////////////////////////////////////////////////////////////////////
 // ExtensionData
@@ -69,9 +81,9 @@ typedef std::function<ResourceGeneric*( const Filename& )> ResourceFactoryFuncti
 class ExtensionData
 {
 public:
-    ExtensionData( const std::string& name, ResourceFactoryFunction& func )
-        : m_Name( name )
-        , m_ResourceFactoryFunction( func )
+    ExtensionData(const std::string& name, ResourceFactoryFunction& func)
+        : m_Name(name)
+        , m_ResourceFactoryFunction(func)
     {
     }
 
@@ -83,8 +95,14 @@ private:
     ResourceFactoryFunction m_ResourceFactoryFunction;
 };
 
-inline const std::string& ExtensionData::GetName() const { return m_Name; }
-inline ResourceFactoryFunction ExtensionData::GetFactoryFunction() const { return m_ResourceFactoryFunction; }
+inline const std::string& ExtensionData::GetName() const
+{
+    return m_Name;
+}
+inline ResourceFactoryFunction ExtensionData::GetFactoryFunction() const
+{
+    return m_ResourceFactoryFunction;
+}
 
 using ExtensionMap = std::unordered_map<std::string, ExtensionData*>;
 using ResourceMap = std::unordered_map<std::string, ResourceGeneric*>;
@@ -98,21 +116,17 @@ class ResourceManager
 public:
     ResourceManager();
     ~ResourceManager();
-    void RegisterExtension( const std::string& extension, ResourceFactoryFunction& func );
+    void RegisterExtension(const std::string& extension, ResourceFactoryFunction& func);
 
-    bool CanLoadResource( const Filename& filename );
+    bool CanLoadResource(const Filename& filename);
 
     // Retrieves a resource. This is a blocking operation.
-    ResourceGeneric* GetResource( const Filename& filename );
-    template <typename T>
-    T GetResource( const Filename& filename )
-    {
-        return static_cast<T>( GetResource( filename ) );
-    }
+    ResourceGeneric* GetResource(const Filename& filename);
+    template <typename T> T GetResource(const Filename& filename) { return static_cast<T>(GetResource(filename)); }
 
 private:
     ExtensionMap mRegisteredExtensions;
     ResourceMap mResources;
 };
 
-}
+} // namespace Genesis

@@ -19,25 +19,25 @@
 
 #if USE_FMOD
 
+#include "sound/private/soundinstanceimpl.h"
+
 #include <fmod.h>
 #include <fmod.hpp>
 
-#include "sound/private/soundinstanceimpl.h"
-
 namespace Genesis
 {
-    class ResourceSound;
+class ResourceSound;
 }
 
 namespace Genesis::Sound::Private::FMOD
 {
 
-class SoundInstance : public SoundInstanceImpl 
+class SoundInstance : public SoundInstanceImpl
 {
 public:
     SoundInstance();
     virtual ~SoundInstance() override;
-    virtual void Initialise( ResourceSound* pResourceSound, void* pData ) override;
+    virtual void Initialise(ResourceSound* pResourceSound, void* pData) override;
     virtual bool IsPlaying() const override;
     virtual void Stop() override;
 
@@ -47,10 +47,10 @@ public:
 
     virtual ResourceSound* GetResource() const override;
 
-    virtual void SetMinimumDistance( float value ) override;
-    virtual void Set3DAttributes( const glm::vec3* pPosition, const glm::vec3* pVelocity ) override;
-    virtual void Get3DAttributes( glm::vec3* pPosition, glm::vec3* pVelocity ) override;
-    virtual void SetVolume( float value ) override;
+    virtual void SetMinimumDistance(float value) override;
+    virtual void Set3DAttributes(const glm::vec3* pPosition, const glm::vec3* pVelocity) override;
+    virtual void Get3DAttributes(glm::vec3* pPosition, glm::vec3* pVelocity) override;
+    virtual void SetVolume(float value) override;
     virtual float GetVolume() const override;
 
 private:

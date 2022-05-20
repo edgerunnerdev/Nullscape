@@ -25,23 +25,23 @@ namespace Physics
 {
 
 class Shape;
-GENESIS_DECLARE_SMART_PTR( Shape );
+GENESIS_DECLARE_SMART_PTR(Shape);
 
 class BoxShape;
-GENESIS_DECLARE_SMART_PTR( BoxShape );
+GENESIS_DECLARE_SMART_PTR(BoxShape);
 
 class CompoundShape;
-GENESIS_DECLARE_SMART_PTR( CompoundShape );
+GENESIS_DECLARE_SMART_PTR(CompoundShape);
 
 class SphereShape;
-GENESIS_DECLARE_SMART_PTR( SphereShape );
+GENESIS_DECLARE_SMART_PTR(SphereShape);
 
 class ConvexHullShape;
-GENESIS_DECLARE_SMART_PTR( ConvexHullShape );
+GENESIS_DECLARE_SMART_PTR(ConvexHullShape);
 
 class CylinderShape;
-GENESIS_DECLARE_SMART_PTR( CylinderShape );
+GENESIS_DECLARE_SMART_PTR(CylinderShape);
 
-}
+} // namespace Physics
 
-}
+} // namespace Genesis

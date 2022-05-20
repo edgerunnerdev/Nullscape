@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include <glm/vec3.hpp>
-
 #include "shape.fwd.h"
+
+#include <glm/vec3.hpp>
 
 namespace Genesis
 {
@@ -31,25 +31,25 @@ class Shape;
 class RayTestResult
 {
 public:
-	RayTestResult( const glm::vec3& position, const glm::vec3& normal, ShapeWeakPtr pShape, ShapeWeakPtr pChildShape, float fraction );
-	const glm::vec3& GetPosition() const;
-	const glm::vec3& GetNormal() const;
+    RayTestResult(const glm::vec3& position, const glm::vec3& normal, ShapeWeakPtr pShape, ShapeWeakPtr pChildShape, float fraction);
+    const glm::vec3& GetPosition() const;
+    const glm::vec3& GetNormal() const;
 
-	// Value between 0 and 1, representing how far along the ray the collision has happened.
-	float GetFraction() const;
+    // Value between 0 and 1, representing how far along the ray the collision has happened.
+    float GetFraction() const;
 
-	// The shape of the object we've collided with.
-	ShapeWeakPtr GetShape() const;
+    // The shape of the object we've collided with.
+    ShapeWeakPtr GetShape() const;
 
-	// The specific child shape we've hit. This will be null if we haven't hit a CompoundObject.
-	ShapeWeakPtr GetChildShape() const;
+    // The specific child shape we've hit. This will be null if we haven't hit a CompoundObject.
+    ShapeWeakPtr GetChildShape() const;
 
 private:
-	glm::vec3 m_Position;
-	glm::vec3 m_Normal;
-	ShapeWeakPtr m_pShape;
-	ShapeWeakPtr m_pChildShape;
-	float m_Fraction;
+    glm::vec3 m_Position;
+    glm::vec3 m_Normal;
+    ShapeWeakPtr m_pShape;
+    ShapeWeakPtr m_pChildShape;
+    float m_Fraction;
 };
 
 } // namespace Physics

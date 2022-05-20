@@ -22,6 +22,7 @@
 #include "../shaderuniforminstance.h"
 #include "../vertexbuffer.h"
 #include "resourceimage.h"
+
 #include <array>
 #include <map>
 #include <stdio.h>
@@ -61,10 +62,10 @@ public:
     TMFObject();
     ~TMFObject();
 
-    void Preload( FILE* fp );
+    void Preload(FILE* fp);
     void Load();
-    void Render( const glm::mat4& modelTransform, const MaterialList& materialList );
-	void Render( const glm::mat4& modelTransform, Material* pOverrideMaterial );
+    void Render(const glm::mat4& modelTransform, const MaterialList& materialList);
+    void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial);
 
 private:
     struct Index3
@@ -76,10 +77,10 @@ private:
     {
         Index3 vertex;
         Index3 uv;
-        glm::vec3 normal[ 3 ];
+        glm::vec3 normal[3];
     };
 
-    bool Serialise( FILE* fp );
+    bool Serialise(FILE* fp);
     void BuildVertexBufferData();
 
     typedef std::vector<glm::vec3> VertexList;
@@ -111,21 +112,21 @@ private:
 class ResourceModel : public ResourceGeneric
 {
 public:
-    ResourceModel( const Filename& filename );
+    ResourceModel(const Filename& filename);
     virtual ~ResourceModel();
     virtual ResourceType GetType() const override;
     virtual void Preload() override;
     virtual bool Load() override;
 
-    void Render( const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr );
-    bool GetDummy( const std::string& name, glm::vec3* pPosition ) const;
+    void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr);
+    bool GetDummy(const std::string& name, glm::vec3* pPosition) const;
     MaterialList& GetMaterials();
-    void SetFlipAxis( bool value );
+    void SetFlipAxis(bool value);
 
 private:
-    void AddTMFDummy( FILE* fp );
-    void AddTMFObject( FILE* fp );
-    void LoadMaterialLibrary( const std::string& filename );
+    void AddTMFDummy(FILE* fp);
+    void AddTMFObject(FILE* fp);
+    void LoadMaterialLibrary(const std::string& filename);
 
     MaterialList mMaterialList;
     TMFObjectList mObjectList;
@@ -138,7 +139,7 @@ inline MaterialList& ResourceModel::GetMaterials()
     return mMaterialList;
 }
 
-inline void ResourceModel::SetFlipAxis( bool value )
+inline void ResourceModel::SetFlipAxis(bool value)
 {
     mFlipAxis = value;
 }
@@ -147,4 +148,4 @@ inline ResourceType ResourceModel::GetType() const
 {
     return ResourceType::Texture;
 }
-}
+} // namespace Genesis

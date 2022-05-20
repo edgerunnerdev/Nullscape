@@ -29,75 +29,75 @@ class ResourceImage;
 namespace Gui
 {
 
-    /////////////////////////////////////////////////////////////////////
-    // AtlasElement
-    /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// AtlasElement
+/////////////////////////////////////////////////////////////////////
 
-    class AtlasElement
-    {
-    public:
-        AtlasElement( float x1, float y1, float x2, float y2, int width, int height );
+class AtlasElement
+{
+public:
+    AtlasElement(float x1, float y1, float x2, float y2, int width, int height);
 
-        float GetU1() const { return m_U1; }
-        float GetV1() const { return m_V1; }
-        float GetU2() const { return m_U2; }
-        float GetV2() const { return m_V2; }
-        float GetWidth() const { return m_Width; }
-        float GetHeight() const { return m_Height; }
+    float GetU1() const { return m_U1; }
+    float GetV1() const { return m_V1; }
+    float GetU2() const { return m_U2; }
+    float GetV2() const { return m_V2; }
+    float GetWidth() const { return m_Width; }
+    float GetHeight() const { return m_Height; }
 
-    private:
-        float m_U1;
-        float m_V1;
-        float m_U2;
-        float m_V2;
-        float m_Width;
-        float m_Height;
-    };
+private:
+    float m_U1;
+    float m_V1;
+    float m_U2;
+    float m_V2;
+    float m_Width;
+    float m_Height;
+};
 
-    typedef std::vector<AtlasElement> AtlasElementVector;
+typedef std::vector<AtlasElement> AtlasElementVector;
 
-    /////////////////////////////////////////////////////////////////////
-    // Atlas
-    /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// Atlas
+/////////////////////////////////////////////////////////////////////
 
-    class Atlas
-    {
-    public:
-        Atlas();
-        ~Atlas(){};
+class Atlas
+{
+public:
+    Atlas();
+    ~Atlas(){};
 
-        using Id = size_t;
+    using Id = size_t;
 
-        Genesis::ResourceImage* GetSource() const;
-        void SetSource( Genesis::ResourceImage* pImage );
-        Id GetElementCount() const;
-        Id AddElement( float x1, float y1, float x2, float y2 );
-        const AtlasElement& GetElement( Id index ) const;
+    Genesis::ResourceImage* GetSource() const;
+    void SetSource(Genesis::ResourceImage* pImage);
+    Id GetElementCount() const;
+    Id AddElement(float x1, float y1, float x2, float y2);
+    const AtlasElement& GetElement(Id index) const;
 
-    private:
-        Genesis::ResourceImage* m_pSource;
-        AtlasElementVector m_Elements;
-    };
+private:
+    Genesis::ResourceImage* m_pSource;
+    AtlasElementVector m_Elements;
+};
 
-    inline Atlas::Id Atlas::GetElementCount() const
-    {
-        return m_Elements.size();
-    }
+inline Atlas::Id Atlas::GetElementCount() const
+{
+    return m_Elements.size();
+}
 
-    inline const AtlasElement& Atlas::GetElement( Id index ) const
-    {
+inline const AtlasElement& Atlas::GetElement(Id index) const
+{
 #ifdef _DEBUG
-        return m_Elements.at( index );
+    return m_Elements.at(index);
 #else
-        return m_Elements[ index ];
+    return m_Elements[index];
 #endif
-    }
+}
 
-    inline Genesis::ResourceImage* Atlas::GetSource() const
-    {
-        return m_pSource;
-    }
+inline Genesis::ResourceImage* Atlas::GetSource() const
+{
+    return m_pSource;
 }
-}
+} // namespace Gui
+} // namespace Genesis
 
 #endif

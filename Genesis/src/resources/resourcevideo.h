@@ -32,10 +32,10 @@ namespace Genesis
 class ResourceVideo : public ResourceGeneric
 {
 public:
-    ResourceVideo( const Filename& filename );
+    ResourceVideo(const Filename& filename);
     virtual ResourceType GetType() const override;
     virtual bool Load() override;
-    void SetSkippable( bool state );
+    void SetSkippable(bool state);
     bool IsSkippable() const;
 
 private:
@@ -47,7 +47,7 @@ inline ResourceType ResourceVideo::GetType() const
     return ResourceType::Video;
 }
 
-inline void ResourceVideo::SetSkippable( bool state )
+inline void ResourceVideo::SetSkippable(bool state)
 {
     m_Skippable = state;
 }

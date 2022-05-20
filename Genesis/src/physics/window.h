@@ -27,18 +27,19 @@ class Simulation;
 class Window
 {
 public:
-	Window( Simulation* pSimulation );
-	~Window();
+    Window(Simulation* pSimulation);
+    ~Window();
 
-	void Update( float delta );
+    void Update(float delta);
+
 private:
-	Simulation* m_pSimulation;
-	bool m_Open;
-	bool m_ModeWireframe;
-	bool m_ModeAABB;
-	bool m_ModeTransforms;
-	bool m_ModeRayTests;
-	bool m_ModeContactPoints;
+    Simulation* m_pSimulation;
+    bool m_Open;
+    bool m_ModeWireframe;
+    bool m_ModeAABB;
+    bool m_ModeTransforms;
+    bool m_ModeRayTests;
+    bool m_ModeContactPoints;
 };
 
 } // namespace Physics

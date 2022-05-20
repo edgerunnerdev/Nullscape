@@ -21,21 +21,20 @@
 #include <ShlObj.h>
 #include <windows.h>
 #else
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
-#include <SDL.h>
-
 #include "beginexternalheaders.h"
-#include "tinyxml2.h"
-#include "endexternalheaders.h"
-
 #include "configuration.h"
+#include "endexternalheaders.h"
 #include "genesis.h"
 #include "logger.h"
+#include "tinyxml2.h"
 #include "xml.h"
+
+#include <SDL.h>
 
 #define CONFIG_FILENAME "config.xml"
 
@@ -43,7 +42,7 @@ namespace Genesis
 {
 
 bool Configuration::m_Fullscreen = false;
-std::bitset<static_cast<size_t>( Genesis::RenderSystem::PostProcessEffect::Count )> Configuration::m_PostProcessEffects;
+std::bitset<static_cast<size_t>(Genesis::RenderSystem::PostProcessEffect::Count)> Configuration::m_PostProcessEffects;
 unsigned int Configuration::m_ScreenWidth = 800u;
 unsigned int Configuration::m_ScreenHeight = 600u;
 unsigned int Configuration::m_MultiSampleSamples = 4u;
@@ -53,35 +52,35 @@ unsigned int Configuration::m_SFXVolume = 100u;
 bool Configuration::m_Outlines = true;
 bool Configuration::m_FireToggle = false;
 
-void WriteXmlElement( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement& parentElement, const std::string& name, const std::string& content )
+void WriteXmlElement(tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement& parentElement, const std::string& name, const std::string& content)
 {
     using namespace tinyxml2;
 
-	XMLElement* pElement = xmlDoc.NewElement( name.c_str() );
-	pElement->SetText( content.c_str() );
-    parentElement.InsertEndChild( pElement );
+    XMLElement* pElement = xmlDoc.NewElement(name.c_str());
+    pElement->SetText(content.c_str());
+    parentElement.InsertEndChild(pElement);
 }
 
-void WriteXmlElement( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement& parentElement, const std::string& name, bool content )
+void WriteXmlElement(tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement& parentElement, const std::string& name, bool content)
 {
     using namespace tinyxml2;
 
-    XMLElement* pElement = xmlDoc.NewElement( name.c_str() );
-    pElement->SetText( content ? "true" : "false" );
-    parentElement.InsertEndChild( pElement );
+    XMLElement* pElement = xmlDoc.NewElement(name.c_str());
+    pElement->SetText(content ? "true" : "false");
+    parentElement.InsertEndChild(pElement);
 }
 
-void WriteXmlElement( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement& parentElement, const std::string& name, unsigned int content )
+void WriteXmlElement(tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement& parentElement, const std::string& name, unsigned int content)
 {
     using namespace tinyxml2;
 
-	XMLElement* pElement = xmlDoc.NewElement( name.c_str() );
+    XMLElement* pElement = xmlDoc.NewElement(name.c_str());
 
-	std::stringstream ss;
-	ss << content;
+    std::stringstream ss;
+    ss << content;
 
-	pElement->SetText( ss.str().c_str() );
-    parentElement.InsertEndChild( pElement );
+    pElement->SetText(ss.str().c_str());
+    parentElement.InsertEndChild(pElement);
 }
 
 void Configuration::Load()
@@ -90,31 +89,31 @@ void Configuration::Load()
 
     using namespace tinyxml2;
     tinyxml2::XMLDocument doc;
-    if ( doc.LoadFile( CONFIG_FILENAME ) == tinyxml2::XML_SUCCESS )
+    if (doc.LoadFile(CONFIG_FILENAME) == tinyxml2::XML_SUCCESS)
     {
         bool bleachBypass = true;
         bool glow = true;
         bool vignette = true;
 
         XMLElement* pElemConfiguration = doc.FirstChildElement();
-        for ( XMLElement* pElemEntry = pElemConfiguration->FirstChildElement(); pElemEntry; pElemEntry = pElemEntry->NextSiblingElement() )
+        for (XMLElement* pElemEntry = pElemConfiguration->FirstChildElement(); pElemEntry; pElemEntry = pElemEntry->NextSiblingElement())
         {
-			Xml::Serialise( pElemEntry, "Fullscreen", m_Fullscreen );
-			Xml::Serialise( pElemEntry, "PostProcessBleachBypass", bleachBypass );
-            Xml::Serialise( pElemEntry, "PostProcessGlow", glow );
-            Xml::Serialise( pElemEntry, "PostProcessVignette", vignette );
-			Xml::Serialise( pElemEntry, "MasterVolume", (int&)m_MasterVolume );
-			Xml::Serialise( pElemEntry, "MusicVolume", (int&)m_MusicVolume );
-			Xml::Serialise( pElemEntry, "SFXVolume", (int&)m_SFXVolume );
-			Xml::Serialise( pElemEntry, "Outlines", m_Outlines );
-			Xml::Serialise( pElemEntry, "FireToggle", m_FireToggle );
+            Xml::Serialise(pElemEntry, "Fullscreen", m_Fullscreen);
+            Xml::Serialise(pElemEntry, "PostProcessBleachBypass", bleachBypass);
+            Xml::Serialise(pElemEntry, "PostProcessGlow", glow);
+            Xml::Serialise(pElemEntry, "PostProcessVignette", vignette);
+            Xml::Serialise(pElemEntry, "MasterVolume", (int&)m_MasterVolume);
+            Xml::Serialise(pElemEntry, "MusicVolume", (int&)m_MusicVolume);
+            Xml::Serialise(pElemEntry, "SFXVolume", (int&)m_SFXVolume);
+            Xml::Serialise(pElemEntry, "Outlines", m_Outlines);
+            Xml::Serialise(pElemEntry, "FireToggle", m_FireToggle);
         }
 
-        EnablePostProcessEffect( Genesis::RenderSystem::PostProcessEffect::BleachBypass, bleachBypass );
-        EnablePostProcessEffect( Genesis::RenderSystem::PostProcessEffect::Glow, glow );
-        EnablePostProcessEffect( Genesis::RenderSystem::PostProcessEffect::Vignette, vignette );
+        EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::BleachBypass, bleachBypass);
+        EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::Glow, glow);
+        EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::Vignette, vignette);
 
-        FrameWork::GetLogger()->LogInfo( "Config file loaded." );
+        FrameWork::GetLogger()->LogInfo("Config file loaded.");
     }
     else
     {
@@ -127,25 +126,25 @@ void Configuration::Save()
     using namespace tinyxml2;
 
     tinyxml2::XMLDocument xmlDoc;
-    XMLElement* pRoot = xmlDoc.NewElement( "Configuration" );
-    xmlDoc.InsertFirstChild( pRoot );
+    XMLElement* pRoot = xmlDoc.NewElement("Configuration");
+    xmlDoc.InsertFirstChild(pRoot);
 
-	WriteXmlElement( xmlDoc, *pRoot, "Fullscreen", IsFullscreen() );
-	WriteXmlElement( xmlDoc, *pRoot, "PostProcessBleachBypass", IsPostProcessingEffectEnabled( Genesis::RenderSystem::PostProcessEffect::BleachBypass ) );
-    WriteXmlElement( xmlDoc, *pRoot, "PostProcessGlow", IsPostProcessingEffectEnabled( Genesis::RenderSystem::PostProcessEffect::Glow ) );
-    WriteXmlElement( xmlDoc, *pRoot, "PostProcessVignette", IsPostProcessingEffectEnabled( Genesis::RenderSystem::PostProcessEffect::Vignette ) );
-	WriteXmlElement( xmlDoc, *pRoot, "MasterVolume", GetMasterVolume() );
-	WriteXmlElement( xmlDoc, *pRoot, "MusicVolume", GetMusicVolume() );
-	WriteXmlElement( xmlDoc, *pRoot, "SFXVolume", GetSFXVolume() );
-	WriteXmlElement( xmlDoc, *pRoot, "Outlines", GetOutlines() );
-	WriteXmlElement( xmlDoc, *pRoot, "FireToggle", GetFireToggle() );
+    WriteXmlElement(xmlDoc, *pRoot, "Fullscreen", IsFullscreen());
+    WriteXmlElement(xmlDoc, *pRoot, "PostProcessBleachBypass", IsPostProcessingEffectEnabled(Genesis::RenderSystem::PostProcessEffect::BleachBypass));
+    WriteXmlElement(xmlDoc, *pRoot, "PostProcessGlow", IsPostProcessingEffectEnabled(Genesis::RenderSystem::PostProcessEffect::Glow));
+    WriteXmlElement(xmlDoc, *pRoot, "PostProcessVignette", IsPostProcessingEffectEnabled(Genesis::RenderSystem::PostProcessEffect::Vignette));
+    WriteXmlElement(xmlDoc, *pRoot, "MasterVolume", GetMasterVolume());
+    WriteXmlElement(xmlDoc, *pRoot, "MusicVolume", GetMusicVolume());
+    WriteXmlElement(xmlDoc, *pRoot, "SFXVolume", GetSFXVolume());
+    WriteXmlElement(xmlDoc, *pRoot, "Outlines", GetOutlines());
+    WriteXmlElement(xmlDoc, *pRoot, "FireToggle", GetFireToggle());
 
-    xmlDoc.SaveFile( CONFIG_FILENAME );
+    xmlDoc.SaveFile(CONFIG_FILENAME);
 }
 
 void Configuration::CreateDefaultFile()
 {
-    FrameWork::GetLogger()->LogInfo( "Creating default config file." );
+    FrameWork::GetLogger()->LogInfo("Creating default config file.");
     SetDefaultValues();
     Save();
 }
@@ -156,39 +155,39 @@ void Configuration::SetDefaultValues()
 
     m_Fullscreen = false;
 
-    for ( size_t i = 0; i < static_cast<size_t>( Genesis::RenderSystem::PostProcessEffect::Count ); ++i )
+    for (size_t i = 0; i < static_cast<size_t>(Genesis::RenderSystem::PostProcessEffect::Count); ++i)
     {
-        m_PostProcessEffects[ i ] = true;
+        m_PostProcessEffects[i] = true;
     }
 
     m_MultiSampleSamples = 4u;
 
-	m_MasterVolume = 100u;
-	m_MusicVolume = 50u;
-	m_SFXVolume = 100u;
+    m_MasterVolume = 100u;
+    m_MusicVolume = 50u;
+    m_SFXVolume = 100u;
 
-	m_Outlines = true;
-	m_FireToggle = false;
+    m_Outlines = true;
+    m_FireToggle = false;
 }
 
 void Configuration::EnsureValidResolution()
 {
     SDL_DisplayMode dm;
-    if ( SDL_GetDesktopDisplayMode( 0, &dm ) != 0 )
+    if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
     {
-        FrameWork::GetLogger()->LogError( "SDL_GetDesktopDisplayMode failed: %s", SDL_GetError() );
+        FrameWork::GetLogger()->LogError("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
     }
-    else if ( dm.w <= 0 )
+    else if (dm.w <= 0)
     {
-        FrameWork::GetLogger()->LogError( "Invalid screen width: %d.", dm.w );
+        FrameWork::GetLogger()->LogError("Invalid screen width: %d.", dm.w);
     }
-    else if ( dm.h <= 0 )
+    else if (dm.h <= 0)
     {
-        FrameWork::GetLogger()->LogError( "Invalid screen height: %d.", dm.h );
+        FrameWork::GetLogger()->LogError("Invalid screen height: %d.", dm.h);
     }
 
-    m_ScreenWidth = static_cast<unsigned int>( dm.w );
-    m_ScreenHeight = static_cast<unsigned int>( dm.h );
+    m_ScreenWidth = static_cast<unsigned int>(dm.w);
+    m_ScreenHeight = static_cast<unsigned int>(dm.h);
 }
 
 std::filesystem::path Configuration::GetSystemSaveGameFolder()
@@ -197,17 +196,17 @@ std::filesystem::path Configuration::GetSystemSaveGameFolder()
     // Return %USERPROFILE%\Saved Games for Windows Vista or newer
     // http://msdn.microsoft.com/en-us/library/windows/desktop/bb762188%28v=vs.85%29.aspx
     PWSTR pKnownFolderPath = nullptr;
-    HRESULT result = SHGetKnownFolderPath( FOLDERID_SavedGames, 0, nullptr, &pKnownFolderPath );
-    SDL_assert_release( result == S_OK );
-    std::wstring folder( pKnownFolderPath );
-    CoTaskMemFree( pKnownFolderPath );
+    HRESULT result = SHGetKnownFolderPath(FOLDERID_SavedGames, 0, nullptr, &pKnownFolderPath);
+    SDL_assert_release(result == S_OK);
+    std::wstring folder(pKnownFolderPath);
+    CoTaskMemFree(pKnownFolderPath);
     return folder;
 #else
-    struct passwd *pw = getpwuid( getuid() );
+    struct passwd* pw = getpwuid(getuid());
     const char* pHomeDir = pw->pw_dir;
-    std::filesystem::path folder = std::filesystem::path( pHomeDir ) / ".local" / "share";
+    std::filesystem::path folder = std::filesystem::path(pHomeDir) / ".local" / "share";
     return folder;
 #endif
 }
 
-}
+} // namespace Genesis
