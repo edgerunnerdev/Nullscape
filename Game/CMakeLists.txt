@@ -51,7 +51,6 @@ link_libraries(
   SDL2main
   SDL2
   SDL2_image
-  vpx
 )
 
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
@@ -63,12 +62,12 @@ if(WIN32)
     target_compile_definitions(Game PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_link_directories(Game PRIVATE ${FMOD_LIBRARY_DIRS})
     target_link_options(Game PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
-    target_link_libraries(Game PRIVATE Opengl32 glu32 ws2_32 fmodex_vc)
+    target_link_libraries(Game PRIVATE Opengl32 glu32 ws2_32 vpxmt$<$<CONFIG:Debug>:d>)
     set_target_properties(Game PROPERTIES VS_STARTUP_PROJECT ${OUTPUT_DIRECTORY})
     set_target_properties(Game PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${OUTPUT_DIRECTORY})
 else()
     add_executable(Game ${SOURCE_FILES})
-    target_link_libraries(Game PRIVATE GL pthread SDL2_mixer)
+    target_link_libraries(Game PRIVATE GL pthread SDL2_mixer vpx)
 endif()
 
 target_compile_definitions(Game PRIVATE $<$<CONFIG:Final>:NDEBUG _FINAL>)
