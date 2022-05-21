@@ -38,6 +38,7 @@ build/
 .vs/
 
 # Generated artifacts
+Genesis/libs/Genesis/Windows/AMD64/
 Game/bin/config.xml
 Game/bin/Hyperscape.exe
 Game/bin/Hyperscape.ilk
