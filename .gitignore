@@ -32,7 +32,7 @@
 *.app
 
 # CMake intermediate directories
-out/
+build/
 
 # Visual Studio's CMake integration
 .vs/

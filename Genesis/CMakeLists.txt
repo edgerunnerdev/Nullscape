@@ -49,6 +49,7 @@ target_compile_options(Genesis PRIVATE
           -fstandalone-debug
           >
      $<$<CXX_COMPILER_ID:MSVC>:
+          /MP # build with multiple processes
           /WX # warnings as errors
           /wd4100 # unreferenced formal parameter
           /wd4121 # alignment of a member was sensitive to packing
