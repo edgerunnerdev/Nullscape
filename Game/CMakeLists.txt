@@ -3,9 +3,6 @@ project(Game)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h src/*.hpp src/*.rc)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
@@ -41,10 +38,7 @@ link_directories(
 )
 
 link_libraries(
-  Bullet3Common
-  BulletDynamics
-  BulletCollision
-  LinearMath
+  ${BULLET3_LIBRARIES}
   Genesis
   ${GLEW_LIBRARIES}
   imgui
@@ -105,3 +99,5 @@ target_compile_options(Game PRIVATE
           /wd4702 # unreachable code
           >
 )
+
+#install(FILES "../out/build/Debug/Game/Hyperscape.exe" DESTINATION "${OUTPUT_DIRECTORY}")

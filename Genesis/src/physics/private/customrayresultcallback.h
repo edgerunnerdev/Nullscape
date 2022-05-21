@@ -17,7 +17,11 @@
 
 #pragma once
 
+// clang-format off
+#include "beginexternalheaders.h"
 #include "BulletCollision/CollisionDispatch/btCollisionWorld.h"
+#include "endexternalheaders.h"
+// clang-format on
 
 namespace Genesis
 {

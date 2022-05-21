@@ -17,8 +17,6 @@
 
 #include "window.h"
 
-#include "beginexternalheaders.h"
-#include "endexternalheaders.h"
 #include "genesis.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl.h"
@@ -26,7 +24,11 @@
 #include "physics/shape.h"
 #include "physics/simulation.h"
 
+// clang-format off
+#include "beginexternalheaders.h"
 #include <btBulletDynamicsCommon.h>
+#include "endexternalheaders.h"
+// clang-format on
 
 namespace Genesis
 {
