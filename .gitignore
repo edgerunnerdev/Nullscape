@@ -40,6 +40,7 @@ out/
 # Generated artifacts
 Game/bin/config.xml
 Game/bin/Hyperscape.exe
+Game/bin/Hyperscape.ilk
 Game/bin/Hyperscape.pdb
 Game/bin/imgui.ini
 Game/bin/log.txt
