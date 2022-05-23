@@ -1,0 +1,2 @@
+set(GENESISCORE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/GenesisCore/src" CACHE STRING "GenesisCore - include directory")
+set(GENESISCORE_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/GenesisCore/lib/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/$<IF:$<CONFIG:Debug>,Debug,Release>" CACHE STRING "GenesisCore - library directory")
