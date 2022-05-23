@@ -27,4 +27,5 @@ Game/bin/Hyperscape.pdb
 Game/bin/imgui.ini
 Game/bin/log.txt
 Game/bin/Screenshot*.bmp
-Genesis/exe/Forge.*
+Genesis/bin/Forge.*
+Genesis/bin/SDL2.dll
