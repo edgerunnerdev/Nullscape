@@ -29,3 +29,6 @@ Game/bin/log.txt
 Game/bin/Screenshot*.bmp
 Genesis/bin/Forge.*
 Genesis/bin/SDL2.dll
+
+# Blender temporary files
+*.blend?
