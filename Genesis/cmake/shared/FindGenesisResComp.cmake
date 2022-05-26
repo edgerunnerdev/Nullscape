@@ -1,0 +1,2 @@
+set(GENESISRESCOMP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/GenesisResComp/src" CACHE STRING "GenesisResComp - include directory")
+set(GENESISRESCOMP_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/GenesisResComp/lib/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/$<IF:$<CONFIG:Debug>,Debug,Release>" CACHE STRING "GenesisResComp - library directory")

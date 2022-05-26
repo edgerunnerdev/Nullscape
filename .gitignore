@@ -29,6 +29,7 @@ Game/bin/imgui.ini
 Game/bin/log.txt
 Game/bin/Screenshot*.bmp
 Genesis/bin/Forge.*
+Genesis/bin/ModelComp.*
 Genesis/bin/SDL2.dll
 
 # Blender temporary files

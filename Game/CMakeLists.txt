@@ -101,4 +101,6 @@ target_compile_options(Game PRIVATE
           >
 )
 
-#install(FILES "../out/build/Debug/Game/Hyperscape.exe" DESTINATION "${OUTPUT_DIRECTORY}")
+add_custom_target(BUILD_RESOURCES ALL DEPENDS alwaysrun)
+add_custom_command(TARGET BUILD_RESOURCES POST_BUILD COMMAND echo "test")
+add_dependencies(BUILD_RESOURCES Game Forge ModelComp)
