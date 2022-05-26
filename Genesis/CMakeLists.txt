@@ -3,12 +3,12 @@ project(Genesis)
 
 add_subdirectory("libs/imgui")
 add_subdirectory("libs/GenesisCore")
-add_subdirectory("src/rescomp")
+add_subdirectory("libs/GenesisResComp")
+add_subdirectory("tools")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h)
-list(FILTER SOURCE_FILES EXCLUDE REGEX "src/rescomp/*")
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
 find_package(bullet3 REQUIRED)
