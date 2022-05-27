@@ -72,27 +72,27 @@ Log::Stream Log::Error()
 }
 
 // Internal logging function. Should only be called by Log::Stream's destructor.
-void Log::LogInternal(const std::wstring& text, Log::Level level)
+void Log::LogInternal(const std::string& text, Log::Level level)
 {
     std::lock_guard<std::mutex> lock(m_Mutex);
-    std::wstring prefix;
+    std::string prefix;
     if (level == Log::Level::Info)
     {
 
-        prefix = L"[INFO] ";
+        prefix = "[INFO] ";
     }
     else if (level == Log::Level::Warning)
     {
 
-        prefix = L"[WARNING] ";
+        prefix = "[WARNING] ";
     }
     else if (level == Log::Level::Error)
     {
 
-        prefix = L"[ERROR] ";
+        prefix = "[ERROR] ";
     }
 
-    std::wostringstream msg;
+    std::ostringstream msg;
     msg << prefix << text;
     for (auto& pTarget : m_Targets)
     {
@@ -111,7 +111,7 @@ Log::Stream::Stream(Log::Level level)
 
 Log::Stream::~Stream()
 {
-        Log::LogInternal(m_Collector.str(), m_Level);
+    Log::LogInternal(m_Collector.str(), m_Level);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,9 +119,9 @@ Log::Stream::~Stream()
 // Prints the message to the console.
 //////////////////////////////////////////////////////////////////////////
 
-void TTYLogger::Log(const std::wstring& text, Log::Level type)
+void TTYLogger::Log(const std::string& text, Log::Level type)
 {
-    std::wcout << text << std::endl;
+    std::cout << text << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -141,7 +141,7 @@ FileLogger::~FileLogger()
     }
 }
 
-void FileLogger::Log(const std::wstring& text, Log::Level type)
+void FileLogger::Log(const std::string& text, Log::Level type)
 {
     if (m_File.is_open())
     {
@@ -154,18 +154,15 @@ void FileLogger::Log(const std::wstring& text, Log::Level type)
 // MessageBoxLogger
 //////////////////////////////////////////////////////////////////////////
 
-void MessageBoxLogger::Log(const std::wstring& text, Log::Level type)
+void MessageBoxLogger::Log(const std::string& text, Log::Level type)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-    std::string convertedText = converter.to_bytes(text);
-
     if (type == Log::Level::Warning)
     {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", convertedText.c_str(), nullptr);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", text.c_str(), nullptr);
     }
     else if (type == Log::Level::Error)
     {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", convertedText.c_str(), nullptr);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", text.c_str(), nullptr);
     }
 }
 
@@ -173,11 +170,13 @@ void MessageBoxLogger::Log(const std::wstring& text, Log::Level type)
 // VisualStudioLogger
 //////////////////////////////////////////////////////////////////////////
 
-void VisualStudioLogger::Log(const std::wstring& text, Log::Level type)
+void VisualStudioLogger::Log(const std::string& text, Log::Level type)
 {
 #if _MSC_VER
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    std::wstring wideText = converter.from_bytes(text);
     std::wostringstream ss;
-    ss << text << std::endl;
+    ss << wideText << std::endl;
     OutputDebugStringW(ss.str().c_str());
 #endif
 }
