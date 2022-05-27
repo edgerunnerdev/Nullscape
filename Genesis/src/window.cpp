@@ -19,7 +19,8 @@
 
 #include "SDL.h"
 #include "genesis.h"
-#include "logger.h"
+
+#include <log.hpp>
 
 namespace Genesis
 {
@@ -44,7 +45,8 @@ Window::Window(const std::string& title, unsigned int width, unsigned int height
 
     if (m_pWindow == nullptr)
     {
-        Genesis::FrameWork::GetLogger()->LogError("Failed to create window: %s", SDL_GetError());
+        Core::Log::Error() << "Failed to create window: " << SDL_GetError();
+        exit(-1);
     }
 
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
@@ -80,15 +82,15 @@ void Window::SetupSwapInterval()
     const bool lateSwapTearing = (SDL_GL_SetSwapInterval(-1) == 0);
     if (lateSwapTearing == false)
     {
-        FrameWork::GetLogger()->LogInfo("Couldn't enable late swap tearing: %s", SDL_GetError());
+        Core::Log::Info() << "Couldn't enable late swap tearing: " << SDL_GetError();
         const bool vsync = (SDL_GL_SetSwapInterval(1) == 0);
         if (vsync)
         {
-            FrameWork::GetLogger()->LogInfo("Falling back to vsync: success");
+            Core::Log::Info() << "Falling back to vsync: success";
         }
         else
         {
-            FrameWork::GetLogger()->LogInfo("Failed to enable vsync: %s", SDL_GetError());
+            Core::Log::Info() << "Failed to enable vsync: " << SDL_GetError();
         }
     }
 }

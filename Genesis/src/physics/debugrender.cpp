@@ -17,6 +17,7 @@
 
 #include "debugrender.h"
 
+#include <log.hpp>
 #include <render/debugrender.h>
 
 namespace Genesis
@@ -71,7 +72,7 @@ void DebugRender::drawContactPoint(const btVector3& PointOnB, const btVector3& n
 
 void DebugRender::reportErrorWarning(const char* warningString)
 {
-    FrameWork::GetLogger()->LogWarning(warningString);
+    Core::Log::Warning() << warningString;
 }
 
 void DebugRender::setDebugMode(int debugMode)

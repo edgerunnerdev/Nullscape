@@ -42,6 +42,7 @@
 #include "window.h"
 
 #include <SDL_image.h>
+#include <log.hpp>
 
 // These exports tell the drivers to use a high performance GPU.
 // Without these and in computers which have an integrated graphics card, it is
@@ -105,15 +106,15 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::Initialize(GLuint screenWidth, GLuint screenHeight)
 {
-    Logger* pLogger = FrameWork::GetLogger();
+    using namespace Core;
     GLenum err = glewInit();
     if (err == GLEW_OK)
     {
-        pLogger->LogInfo("%s", "GLEW initialised.");
+        Log::Info() << "GLEW initialised.";
     }
     else
     {
-        pLogger->LogError("GLEW initialisation failed: %s", glewGetErrorString(err));
+        Log::Error() << "GLEW initialisation failed: " << glewGetErrorString(err);
         return;
     }
 
@@ -132,16 +133,16 @@ void RenderSystem::Initialize(GLuint screenWidth, GLuint screenHeight)
     InitializeDebug();
 
     // Log graphics card information
-    pLogger->LogInfo("Graphics card info:");
-    pLogger->LogInfo(" - Vendor: %s", glGetString(GL_VENDOR));
-    pLogger->LogInfo(" - Renderer: %s", glGetString(GL_RENDERER));
-    pLogger->LogInfo(" - OpenGL version: %s", glGetString(GL_VERSION));
-    pLogger->LogInfo(" - Shader model info: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    Log::Info() << "Graphics card info:";
+    Log::Info() << " - Vendor: " << glGetString(GL_VENDOR);
+    Log::Info() << " - Renderer: " << glGetString(GL_RENDERER);
+    Log::Info() << " - OpenGL version: " << glGetString(GL_VERSION);
+    Log::Info() << " - Shader model info: " << glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     int major, minor;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
-    pLogger->LogInfo("Using OpenGL version %d.%d.", major, minor);
+    Log::Info() << "Using OpenGL version " << major << "." << minor;
 
     m_ProjectionMatrix = glm::perspective(45.0f, static_cast<float>(m_ScreenWidth) / static_cast<float>(m_ScreenHeight), 1.0f, 1000.0f);
     m_ViewMatrix = glm::mat4(1.0f);
@@ -412,14 +413,14 @@ std::string RenderSystem::GetTextureParameters(GLuint id)
 
 void RenderSystem::PrintFramebufferInfo(GLuint fboId)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+    using namespace Core;
 
-    Logger* pLogger = FrameWork::GetLogger();
+    glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
     // print max # of colorbuffers supported by FBO
     int colorBufferCount = 0;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &colorBufferCount);
-    pLogger->LogInfo("> Max Number of Color Buffer Attachment Points: %d.", colorBufferCount);
+    Log::Info() << "> Max Number of Color Buffer Attachment Points: " << colorBufferCount;
 
     int objectType;
     int objectId;
@@ -438,7 +439,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
                 output << "GL_TEXTURE, " << GetTextureParameters(objectId);
             else if (objectType == GL_RENDERBUFFER)
                 output << "GL_RENDERBUFFER, " << GetRenderbufferParameters(objectId);
-            pLogger->LogInfo("%s", output.str().c_str());
+            Log::Info() << output.str();
         }
     }
 
@@ -455,7 +456,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
         case GL_TEXTURE: output << "GL_TEXTURE, " << GetTextureParameters(objectId); break;
         case GL_RENDERBUFFER: output << "GL_RENDERBUFFER, " << GetRenderbufferParameters(objectId); break;
         }
-        pLogger->LogInfo("%s", output.str().c_str());
+        Log::Info() << output.str();
     }
 
     // print info of the stencilbuffer attachable image
@@ -471,7 +472,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
         case GL_TEXTURE: output << "GL_TEXTURE, " << GetTextureParameters(objectId); break;
         case GL_RENDERBUFFER: output << "GL_RENDERBUFFER, " << GetRenderbufferParameters(objectId); break;
         }
-        pLogger->LogInfo("%s", output.str().c_str());
+        Log::Info() << output.str();
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -664,18 +665,18 @@ void RenderSystem::TakeScreenshotAux(bool immediate)
             SDL_FreeSurface(pSurface);
             SDL_FreeSurface(pFlippedSurface);
 
-            FrameWork::GetLogger()->LogInfo("Screenshot taken: %s", filename.c_str());
+            Core::Log::Info() << "Screenshot taken: " << filename;
         }
         else
         {
-            FrameWork::GetLogger()->LogWarning("Couldn't take screenshot.");
+            Core::Log::Warning() << "Couldn't take screenshot.";
         }
 
         m_ScreenshotScheduled = false;
     }
     else
     {
-        FrameWork::GetLogger()->LogInfo("Screenshot scheduled...");
+        Core::Log::Info() << "Screenshot scheduled...";
         m_ScreenshotScheduled = true;
     }
 }

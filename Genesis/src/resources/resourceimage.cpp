@@ -18,9 +18,9 @@
 #include "resourceimage.h"
 
 #include "../genesis.h"
-#include "../logger.h"
 #include "../rendersystem.h"
 
+#include <log.hpp>
 #include <SDL_image.h>
 
 namespace Genesis
@@ -71,7 +71,7 @@ bool ResourceImage::Load()
         }
         else
         {
-            Genesis::FrameWork::GetLogger()->LogError("Don't know how to create texture for extension '%s'", extension.c_str());
+            Core::Log::Error() << "Don't know how to create texture for extension '" << extension << "'.";
             SDL_FreeSurface(m_pTemporarySurface);
             m_State = ResourceState::Unloaded;
             return false;
@@ -87,7 +87,7 @@ SDL_Surface* ResourceImage::CreateSurface(const std::string& filename)
     SDL_Surface* image = IMG_Load(filename.c_str());
     if (image == nullptr)
     {
-        FrameWork::GetLogger()->LogWarning("%s", IMG_GetError());
+        Core::Log::Warning() << IMG_GetError();
     }
 
     return image;

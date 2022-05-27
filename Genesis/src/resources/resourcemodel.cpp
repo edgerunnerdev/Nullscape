@@ -18,7 +18,6 @@
 #include "resourcemodel.h"
 
 #include "../genesis.h"
-#include "../logger.h"
 #include "../rendersystem.h"
 #include "../shadercache.h"
 #include "../shaderuniform.h"
@@ -26,6 +25,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <log.hpp>
 #include <sstream>
 #include <stdio.h>
 
@@ -237,7 +237,7 @@ bool ResourceModel::Load()
         pObject->Load();
     }
 
-    FrameWork::GetLogger()->LogInfo("Model '%s': %d objects, %d materials", GetFilename().GetFullPath().c_str(), mObjectList.size(), mMaterialList.size());
+    Core::Log::Info() << "Model '" << GetFilename().GetFullPath() << "': " << mObjectList.size() << " objects, " << mMaterialList.size() << " materials.";
     m_State = ResourceState::Loaded;
     return true;
 }
@@ -311,8 +311,6 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
 
 void ResourceModel::LoadMaterialLibrary(const std::string& filename)
 {
-    Logger* pLogger = FrameWork::GetLogger();
-
     std::string materialFilename = filename;
     std::string path = filename.substr(0, filename.find_last_of("\\/") + 1); // We keep the final dash
     // Replace the last character of the extension - tmf becomes tml
@@ -323,7 +321,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
 
     if (!fp.is_open())
     {
-        pLogger->LogError("Couldn't load material library for %s", filename.c_str());
+        Core::Log::Error() << "Couldn't load material library for " << filename;
         return;
     }
 
@@ -360,7 +358,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
             ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Integer);
             if (pShaderUniform == nullptr)
             {
-                pLogger->LogWarning("Model '%s', shader '%s', couldn't find uniform ShaderUniformType::Integer named '%s'", filename.c_str(), shaderName, parameterName);
+                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Integer named '" << parameterName << "'.";
             }
             else
             {
@@ -381,7 +379,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
             ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Float);
             if (pShaderUniform == nullptr)
             {
-                pLogger->LogWarning("Model '%s', shader '%s', couldn't find uniform ShaderUniformType::Float named '%s'", filename.c_str(), shaderName, parameterName);
+                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Float named '" << parameterName << "'.";
             }
             else
             {
@@ -402,7 +400,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
             ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector2);
             if (pShaderUniform == nullptr)
             {
-                pLogger->LogWarning("Model '%s', shader '%s', couldn't find uniform ShaderUniformType::FloatVector2 named '%s'", filename.c_str(), shaderName, parameterName);
+                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector2 named '" << parameterName << "'.";
             }
             else
             {
@@ -423,7 +421,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
             ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector3);
             if (pShaderUniform == nullptr)
             {
-                pLogger->LogWarning("Model '%s', shader '%s', couldn't find uniform ShaderUniformType::Floatglm::vec3 named '%s'", filename.c_str(), shaderName, parameterName);
+                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector3 named '" << parameterName << "'.";
             }
             else
             {
@@ -444,7 +442,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
             ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector4);
             if (pShaderUniform == nullptr)
             {
-                pLogger->LogWarning("Model '%s', shader '%s', couldn't find uniform ShaderUniformType::FloatVector4 named '%s'", filename.c_str(), shaderName, parameterName);
+                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector4 named '" << parameterName << "'.";
             }
             else
             {
@@ -470,7 +468,7 @@ void ResourceModel::LoadMaterialLibrary(const std::string& filename)
             ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(uniformName.str().c_str(), ShaderUniformType::Texture);
             if (pShaderUniform == nullptr)
             {
-                pLogger->LogWarning("Model '%s', shader '%s', couldn't find uniform ShaderUniformType::Texture named '%s'", filename.c_str(), shaderName, uniformName.str().c_str());
+                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Texture named '" << parameterName << "'.";
             }
             else
             {

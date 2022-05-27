@@ -13,14 +13,6 @@ namespace Genesis
 
 TaskManager::TaskManager()
     : mIsRunning(true)
-    , mLogger(nullptr)
-{
-}
-
-// Receives a Logger so we can use PrintTasks()
-TaskManager::TaskManager(Logger* logger)
-    : mIsRunning(true)
-    , mLogger(logger)
 {
 }
 
@@ -71,21 +63,6 @@ void TaskManager::AddTask(const std::string& name, Task* task, TaskFunc func, Ta
     // If every task has a lower priority value that our own, then we add
     // our task to the end of the list.
     mTasks.push_back(info);
-}
-
-void TaskManager::PrintTasks() const
-{
-    if (mLogger != nullptr)
-    {
-        mLogger->LogInfo("Tasks running: ");
-        TaskInfoList::const_iterator it = mTasks.begin();
-        TaskInfoList::const_iterator itEnd = mTasks.end();
-        while (it != itEnd)
-        {
-            mLogger->LogInfo("%d: %s", (int32_t)(*it)->priority, (*it)->name.c_str());
-            it++;
-        }
-    }
 }
 
 void TaskManager::Update()

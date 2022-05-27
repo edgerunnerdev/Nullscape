@@ -33,6 +33,7 @@
 #include "videoplayer.h"
 #include "window.h"
 
+#include <log.hpp>
 #include <SDL_image.h>
 #include <imgui/imgui.h>
 
@@ -44,7 +45,6 @@ namespace Genesis
 //---------------------------------------------------------------
 
 TaskManager* gTaskManager = nullptr;
-Logger* gLogger = nullptr;
 InputManager* gInputManager = nullptr;
 EventHandler* gEventHandler = nullptr;
 Window* gWindow = nullptr;
@@ -64,30 +64,20 @@ CommandLineParameters* FrameWork::m_pCommandLineParameters = nullptr;
 
 bool FrameWork::Initialize()
 {
-    // Initialize the Logger
-    // We also create a FileLogger to start logging to "log.txt" and
-    // a MessageBoxLogger that creates a message box if the log is
-    // a warning or an error.
-    gLogger = new Logger();
-
-    gLogger->AddLogTarget(new FileLogger("log.txt"));
-    gLogger->AddLogTarget(new MessageBoxLogger());
-#ifdef _WIN32
-#ifndef _FINAL
-    gLogger->AddLogTarget(new VisualStudioLogger());
-#endif
-#endif
+    using namespace Core;
+    Log::AddLogTarget(std::make_shared<FileLogger>("log.txt"));
+    Log::AddLogTarget(std::make_shared<MessageBoxLogger>());
 
     // Initialize SDL
     // Needs to be done before InputManager() is created,
     // otherwise key repetition won't work.
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) < 0)
     {
-        gLogger->LogError("%s", SDL_GetError());
+        Log::Error() << SDL_GetError();
     }
     else
     {
-        gLogger->LogInfo("SDL initialized.");
+        Log::Info() << "SDL initialized.";
     }
 
     Configuration::Load();
@@ -98,19 +88,20 @@ bool FrameWork::Initialize()
     {
         if ((flags & IMG_INIT_JPG) == 0)
         {
-            gLogger->LogError("SDL2_image is unable to load JPGs.");
+            Log::Error() << "SDL2_image is unable to load JPGs.";
         }
 
         if ((flags & IMG_INIT_PNG) == 0)
         {
-            gLogger->LogError("SDL2_image is unable to load PNGs.");
+            Log::Error() << "SDL2_image is unable to load PNGs.";
         }
 
-        gLogger->LogError("IMG_Init failed.");
+        Log::Error() << "IMG_Init failed.";
+        exit(-1);
     }
     else
     {
-        gLogger->LogInfo("SDL2_image initialized with JPG and PNG support.");
+        Log::Info() << "SDL2_image initialized with JPG and PNG support.";
     }
 
     gInputManager = new InputManager();
@@ -118,8 +109,6 @@ bool FrameWork::Initialize()
     gResourceManager = new ResourceManager();
 
     // Initialize the task manager, as well as all the related tasks
-    gTaskManager = new TaskManager(gLogger);
-
     gTaskManager->AddTask("InputManager", gInputManager, (TaskFunc)&InputManager::Update, TaskPriority::System);
     gTaskManager->AddTask("EventHandler", gEventHandler, (TaskFunc)&EventHandler::Update, TaskPriority::System);
 
@@ -172,9 +161,6 @@ void FrameWork::Shutdown()
 
     delete gWindow;
     gWindow = nullptr;
-
-    delete gLogger;
-    gLogger = nullptr;
 }
 
 bool FrameWork::CreateWindowGL(const std::string& name, uint32_t width, uint32_t height, uint32_t multiSampleSamples /* = 0 */)
@@ -224,11 +210,6 @@ CommandLineParameters* FrameWork::CreateCommandLineParameters(const char** param
 CommandLineParameters* FrameWork::GetCommandLineParameters()
 {
     return m_pCommandLineParameters;
-}
-
-Logger* FrameWork::GetLogger()
-{
-    return gLogger;
 }
 
 TaskManager* FrameWork::GetTaskManager()

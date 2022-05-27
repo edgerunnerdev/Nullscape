@@ -18,7 +18,6 @@
 #pragma once
 
 #include "genesis.h"
-#include "logger.h"
 #include "memory.h"
 #include "rendersystem.fwd.h"
 #include "shaderuniformtype.h"

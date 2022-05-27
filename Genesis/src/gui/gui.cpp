@@ -28,6 +28,8 @@
 #include "../vertexbuffer.h"
 #include "sound/soundmanager.h"
 
+#include <log.hpp>
+
 namespace Genesis
 {
 namespace Gui
@@ -48,7 +50,7 @@ ResourceSound* LoadSFX(const std::string& filename)
     }
     else
     {
-        FrameWork::GetLogger()->LogWarning("Couldn't load SFX '%s'", filename.c_str());
+        Core::Log::Warning() << "Couldn't load SFX '" << filename << "'.";
         return nullptr;
     }
 }
@@ -104,7 +106,7 @@ void GuiManager::AddElement(GuiElement* pElement)
 {
     if (pElement == nullptr)
     {
-        FrameWork::GetLogger()->LogError("Attempting to add null GuiElement.");
+        Core::Log::Error() << "Attempting to add null GuiElement.";
         return;
     }
 
@@ -252,7 +254,7 @@ void GuiElement::AddElement(GuiElement* pElement)
 {
     if (pElement == nullptr)
     {
-        FrameWork::GetLogger()->LogError("Attempting to add null GuiElement.");
+        Core::Log::Error() << "Attempting to add null GuiElement.";
         return;
     }
 

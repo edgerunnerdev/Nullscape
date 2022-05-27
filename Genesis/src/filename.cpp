@@ -1,9 +1,9 @@
 #include "filename.h"
 
 #include "genesis.h"
-#include "logger.h"
 
 #include <algorithm>
+#include <log.hpp>
 
 namespace Genesis
 {
@@ -30,7 +30,7 @@ void Filename::Initialise(const std::string& filename)
     const std::size_t e = m_FullPath.find_last_of(".");
     if (e == std::string::npos)
     {
-        Genesis::FrameWork::GetLogger()->LogError("Don't know how to initialise filename '%s', it has no extension.", filename.c_str());
+        Core::Log::Error() << "Don't know how to initialise filename '" << filename << "', it has no extension.";
     }
     else
     {

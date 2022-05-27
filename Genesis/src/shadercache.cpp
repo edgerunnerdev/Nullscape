@@ -21,6 +21,8 @@
 #include "rendersystem.h"
 #include "shader.h"
 
+#include <log.hpp>
+
 namespace Genesis
 {
 
@@ -40,8 +42,6 @@ ShaderCache::~ShaderCache()
 
 Shader* ShaderCache::Load(const std::string& programName)
 {
-    Logger* pLog = FrameWork::GetLogger();
-
     ShaderMap::const_iterator it = m_ProgramCache.find(programName);
     if (it != m_ProgramCache.cend())
     {
@@ -69,7 +69,7 @@ Shader* ShaderCache::Load(const std::string& programName)
     }
     else
     {
-        pLog->LogError("Couldn't open '%s'.", vertexFilename.c_str());
+        Core::Log::Error() << "Couldn't open " << vertexFilename << ".";
         return nullptr;
     }
 
@@ -89,7 +89,7 @@ Shader* ShaderCache::Load(const std::string& programName)
         fragmentShaderStream.close();
     }
 
-    pLog->LogInfo("Compiling shader program: %s", programName.c_str());
+    Core::Log::Info() << "Compiling shader program: " << programName;
 
     GLint compilationSuccessful = GL_FALSE;
     int infoLogLength = 0;
@@ -106,7 +106,7 @@ Shader* ShaderCache::Load(const std::string& programName)
         glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> vertexShaderErrorMessage(infoLogLength + 1);
         glGetShaderInfoLog(vertexShaderID, infoLogLength, nullptr, &vertexShaderErrorMessage[0]);
-        pLog->LogError("Compiling vertex shader '%s':\n%s", programName.c_str(), &vertexShaderErrorMessage[0]);
+        Core::Log::Error() << "Compiling vertex shader '" << programName << "':" << &vertexShaderErrorMessage[0];
     }
 
     // Compile Fragment Shader
@@ -121,7 +121,7 @@ Shader* ShaderCache::Load(const std::string& programName)
         glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> fragmentShaderErrorMessage(infoLogLength + 1);
         glGetShaderInfoLog(fragmentShaderID, infoLogLength, nullptr, &fragmentShaderErrorMessage[0]);
-        pLog->LogError("Compiling fragment shader '%s':\n%s", programName.c_str(), &fragmentShaderErrorMessage[0]);
+        Core::Log::Error() << "Compiling fragment shader '" << programName << "':" << &fragmentShaderErrorMessage[0];
     }
 
     // Link the program
@@ -138,7 +138,7 @@ Shader* ShaderCache::Load(const std::string& programName)
         glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> programErrorMessage(infoLogLength + 1);
         glGetProgramInfoLog(programHandle, infoLogLength, nullptr, &programErrorMessage[0]);
-        pLog->LogError("%s", &programErrorMessage[0]);
+        Core::Log::Error() << &programErrorMessage[0];
     }
 
     glDetachShader(programHandle, vertexShaderID);
@@ -150,7 +150,7 @@ Shader* ShaderCache::Load(const std::string& programName)
     Shader* pShader = new Shader(programName, programHandle);
     m_ProgramCache[programName] = pShader;
 
-    pLog->LogInfo("Cached shader program '%s'", programName.c_str());
+    Core::Log::Info() << "Cached shader program '" << programName;
 
     return pShader;
 }

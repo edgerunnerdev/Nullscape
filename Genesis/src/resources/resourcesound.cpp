@@ -22,7 +22,6 @@
 #endif
 
 #include "../genesis.h"
-#include "../logger.h"
 #include "resourcesound.h"
 #include "sound/soundmanager.h"
 

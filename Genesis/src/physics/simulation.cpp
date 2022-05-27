@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <log.hpp>
 
 // clang-format off
 #include "beginexternalheaders.h"
@@ -291,7 +292,7 @@ void Simulation::UnregisterCollisionCallback(CollisionCallbackHandle handle)
         }
     }
 
-    FrameWork::GetLogger()->LogError("Attempting to remove CollisionCallbackHandle '%ul', which doesn't exist.", handle);
+    Core::Log::Error() << "Attempting to remove CollisionCallbackHandle '" << handle << "', which doesn't exist.";
 }
 
 void Simulation::ProcessCollisionCallbacks()

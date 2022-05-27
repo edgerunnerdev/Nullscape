@@ -52,11 +52,9 @@ class TaskManager
 {
 public:
     TaskManager();
-    TaskManager(Logger* pLogger);
     ~TaskManager();
 
     void AddTask(const std::string& name, Task* pTask, TaskFunc func, TaskPriority priority);
-    void PrintTasks() const;
     void Update();
     bool IsRunning() const;
     void Stop();
@@ -66,7 +64,6 @@ private:
     TaskInfoList mTasks;
     TaskInfoList mTasksToBeRemoved;
     bool mIsRunning;
-    Logger* mLogger;
     Timer m_Timer;
 };
 

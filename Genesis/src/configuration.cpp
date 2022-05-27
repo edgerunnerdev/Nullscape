@@ -30,11 +30,11 @@
 #include "configuration.h"
 #include "endexternalheaders.h"
 #include "genesis.h"
-#include "logger.h"
 #include "tinyxml2.h"
 #include "xml.h"
 
 #include <SDL.h>
+#include <log.hpp>
 
 #define CONFIG_FILENAME "config.xml"
 
@@ -113,7 +113,7 @@ void Configuration::Load()
         EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::Glow, glow);
         EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::Vignette, vignette);
 
-        FrameWork::GetLogger()->LogInfo("Config file loaded.");
+        Core::Log::Info() << "Config file loaded.";
     }
     else
     {
@@ -144,7 +144,7 @@ void Configuration::Save()
 
 void Configuration::CreateDefaultFile()
 {
-    FrameWork::GetLogger()->LogInfo("Creating default config file.");
+    Core::Log::Info() << "Creating default config file.";
     SetDefaultValues();
     Save();
 }
@@ -175,15 +175,15 @@ void Configuration::EnsureValidResolution()
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
     {
-        FrameWork::GetLogger()->LogError("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+        Core::Log::Error() << "SDL_GetDesktopDisplayMode failed: " << SDL_GetError();
     }
     else if (dm.w <= 0)
     {
-        FrameWork::GetLogger()->LogError("Invalid screen width: %d.", dm.w);
+        Core::Log::Error() << "Invalid screen width: " << dm.w;
     }
     else if (dm.h <= 0)
     {
-        FrameWork::GetLogger()->LogError("Invalid screen height: %d.", dm.h);
+        Core::Log::Error() << "Invalid screen height: " << dm.h;
     }
 
     m_ScreenWidth = static_cast<unsigned int>(dm.w);

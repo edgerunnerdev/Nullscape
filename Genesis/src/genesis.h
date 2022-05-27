@@ -18,8 +18,8 @@
 #pragma once
 
 #include "SDL.h"
-#include "logger.h"
 
+#include <string>
 #include <vector>
 
 namespace Genesis
@@ -62,7 +62,6 @@ public:
     static CommandLineParameters* GetCommandLineParameters();
 
     static TaskManager* GetTaskManager();
-    static Logger* GetLogger();
     static InputManager* GetInputManager();
     static Window* GetWindow();
     static RenderSystem* GetRenderSystem();

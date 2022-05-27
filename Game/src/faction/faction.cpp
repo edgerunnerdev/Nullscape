@@ -18,7 +18,6 @@
 #include <algorithm>
 #include <math/misc.h>
 #include <genesis.h>
-#include <logger.h>
 #include <xml.h>
 #include "faction/empirefaction.h"
 #include "faction/faction.h"

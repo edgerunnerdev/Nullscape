@@ -21,6 +21,8 @@
 #include "../rendersystem.h"
 #include "sceneobject.h"
 
+#include <log.hpp>
+
 namespace Genesis
 {
 
@@ -114,7 +116,7 @@ void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
     {
         if (pLayerObject.pSceneObject == pObject)
         {
-            FrameWork::GetLogger()->LogWarning("Object has already been added to the layer!");
+            Core::Log::Warning() << "Object has already been added to the layer!";
         }
     }
 #endif

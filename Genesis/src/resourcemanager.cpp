@@ -29,6 +29,7 @@
 #include <cctype>
 #include <fstream>
 #include <iostream>
+#include <log.hpp>
 #include <string>
 
 namespace Genesis
@@ -139,7 +140,7 @@ ResourceGeneric* ResourceManager::GetResource(const Filename& filename)
     ExtensionMap::iterator extensionIter = mRegisteredExtensions.find(extension);
     if (extensionIter == mRegisteredExtensions.end())
     {
-        FrameWork::GetLogger()->LogWarning("Trying to load unsupported resource: %s.", filename.GetFullPath().c_str());
+        Core::Log::Warning() << "Trying to load unsupported resource: " << filename.GetFullPath();
         return nullptr;
     }
 

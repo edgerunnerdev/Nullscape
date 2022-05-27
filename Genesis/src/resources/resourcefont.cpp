@@ -1,7 +1,6 @@
 #include "resourcefont.h"
 
 #include "../genesis.h"
-#include "../logger.h"
 #include "../rendersystem.h"
 #include "../vertexbuffer.h"
 #include "beginexternalheaders.h"

@@ -47,7 +47,8 @@
 #include "render/gldebugmessagecallback.h"
 
 #include "genesis.h"
-#include "logger.h"
+
+#include <log.hpp>
 
 bool IsSeverityIgnored(GLenum severity)
 {
@@ -122,11 +123,11 @@ void GLAPIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id, GL
 
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
     {
-        Genesis::FrameWork::GetLogger()->LogInfo("OpenGL error [%d]: %s of %s severity, raised from %s: %s", id, _type, _severity, _source, msg);
+        Genesis::Core::Log::Info() << "OpenGL error " << id << ": " << _type << " of " << _severity << " severity, raised from " << _source << ": " << msg;
     }
     else
     {
-        Genesis::FrameWork::GetLogger()->LogWarning("OpenGL error [%d]: %s of %s severity, raised from %s: %s", id, _type, _severity, _source, msg);
+        Genesis::Core::Log::Warning() << "OpenGL error " << id << ": " << _type << " of " << _severity << " severity, raised from " << _source << ": " << msg;
     }
 }
 

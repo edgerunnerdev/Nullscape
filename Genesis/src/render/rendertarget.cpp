@@ -18,10 +18,10 @@
 #include "render/rendertarget.h"
 
 #include "genesis.h"
-#include "logger.h"
 #include "rendersystem.h"
 #include "window.h"
 
+#include <log.hpp>
 #include <sstream>
 
 namespace Genesis
@@ -89,7 +89,7 @@ RenderTargetUniquePtr RenderTarget::Create(const std::string& name, GLuint width
     SDL_GLContext pContext = SDL_GL_GetCurrentContext();
     if (pContext == nullptr)
     {
-        FrameWork::GetLogger()->LogError("Checking for framebuffer status with no current context.");
+        Core::Log::Error() << "Checking for framebuffer status with no current context.";
         return nullptr;
     }
 
@@ -101,7 +101,7 @@ RenderTargetUniquePtr RenderTarget::Create(const std::string& name, GLuint width
     }
     else
     {
-        FrameWork::GetLogger()->LogInfo("FBO info for render target %s:", name.c_str());
+        Core::Log::Info() << "FBO info for render target " << name << ":";
         FrameWork::GetRenderSystem()->PrintFramebufferInfo(fboId);
     }
 
@@ -151,9 +151,7 @@ void RenderTarget::LogCreationError(const std::string& name, GLenum status)
     default: reason = "Framebuffer unknown error"; break;
     }
 
-    std::stringstream error;
-    error << "Couldn't create render target '" << name << "'. Status code 0x" << std::hex << status << ": " << reason << ".";
-    FrameWork::GetLogger()->LogError("%s", error.str().c_str());
+    Core::Log::Error() << "Couldn't create render target '" << name << "'. Status code 0x" << std::hex << status << ": " << reason << ".";
 }
 
 } // namespace Genesis
