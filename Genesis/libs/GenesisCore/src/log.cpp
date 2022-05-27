@@ -23,8 +23,6 @@ SOFTWARE.
 */
 
 #include <algorithm>
-#include <iostream>
-#include <sstream>
 
 #ifdef _WIN32
 #include "windows.h"
@@ -45,8 +43,6 @@ namespace Core
 
 std::mutex Log::m_Mutex;
 Log::LogTargetList Log::m_Targets;
-std::array<char, sLogBufferSize> Log::m_Buffer;
-std::array<char, sLogBufferSize> Log::m_VABuffer;
 
 void Log::AddLogTarget(LogTargetSharedPtr pLogTarget)
 {
@@ -60,57 +56,62 @@ void Log::RemoveLogTarget(LogTargetSharedPtr pLogTarget)
     m_Targets.remove(pLogTarget);
 }
 
-// Internal logging function. Should be called by one of the public functions (LogInfo / LogWarning / LogError).
-// Assumes that m_Mutex is locked at this stage.
-void Log::LogInternal(const std::string& text, LogLevel level)
+Log::Stream Log::Info()
 {
-    std::string prefix;
-    if (level == LogLevel::Info)
-        prefix = "INFO: ";
-    else if (level == LogLevel::Warning)
-        prefix = "WARNING: ";
-    else if (level == LogLevel::Error)
-        prefix = "ERROR: ";
+    return Log::Stream(Log::Level::Info);
+}
 
-    snprintf(m_Buffer.data(), m_Buffer.size(), "%s%s\n", prefix.c_str(), text.c_str());
+Log::Stream Log::Warning()
+{
+    return Log::Stream(Log::Level::Warning);
+}
 
+Log::Stream Log::Error()
+{
+    return Log::Stream(Log::Level::Error);
+}
+
+// Internal logging function. Should only be called by Log::Stream's destructor.
+void Log::LogInternal(const std::wstring& text, Log::Level level)
+{
+    std::lock_guard<std::mutex> lock(m_Mutex);
+    std::wstring prefix;
+    if (level == Log::Level::Info)
+    {
+
+        prefix = L"[INFO] ";
+    }
+    else if (level == Log::Level::Warning)
+    {
+
+        prefix = L"[WARNING] ";
+    }
+    else if (level == Log::Level::Error)
+    {
+
+        prefix = L"[ERROR] ";
+    }
+
+    std::wostringstream msg;
+    msg << prefix << text;
     for (auto& pTarget : m_Targets)
     {
-        pTarget->Log(m_Buffer.data(), level);
+        pTarget->Log(msg.str(), level);
     }
 }
 
-void Log::Info(const char* format, ...)
-{
-    std::lock_guard<std::mutex> lock(m_Mutex);
+//////////////////////////////////////////////////////////////////////////
+// Log::Stream
+//////////////////////////////////////////////////////////////////////////
 
-    va_list args;
-    va_start(args, format);
-    vsnprintf(m_VABuffer.data(), m_VABuffer.size(), format, args);
-    LogInternal(m_VABuffer.data(), LogLevel::Info);
-    va_end(args);
+Log::Stream::Stream(Log::Level level)
+{
+    m_Level = level;
 }
 
-void Log::Warning(const char* format, ...)
+Log::Stream::~Stream()
 {
-    std::lock_guard<std::mutex> lock(m_Mutex);
-
-    va_list args;
-    va_start(args, format);
-    vsnprintf(m_VABuffer.data(), m_VABuffer.size(), format, args);
-    LogInternal(m_VABuffer.data(), LogLevel::Warning);
-    va_end(args);
-}
-
-void Log::Error(const char* format, ...)
-{
-    std::lock_guard<std::mutex> lock(m_Mutex);
-
-    va_list args;
-    va_start(args, format);
-    vsnprintf(m_VABuffer.data(), m_VABuffer.size(), format, args);
-    LogInternal(m_VABuffer.data(), LogLevel::Error);
-    va_end(args);
+        Log::LogInternal(m_Collector.str(), m_Level);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -118,18 +119,18 @@ void Log::Error(const char* format, ...)
 // Prints the message to the console.
 //////////////////////////////////////////////////////////////////////////
 
-void TTYLogger::Log(const std::string& text, LogLevel type)
+void TTYLogger::Log(const std::wstring& text, Log::Level type)
 {
-    std::cout << text;
+    std::wcout << text << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // FileLogger
 //////////////////////////////////////////////////////////////////////////
 
-FileLogger::FileLogger(const char* pFilename)
+FileLogger::FileLogger(const std::filesystem::path& filePath)
 {
-    m_File.open(pFilename, std::fstream::out | std::fstream::trunc);
+    m_File.open(filePath, std::fstream::out | std::fstream::trunc);
 }
 
 FileLogger::~FileLogger()
@@ -140,30 +141,31 @@ FileLogger::~FileLogger()
     }
 }
 
-void FileLogger::Log(const std::string& text, LogLevel level)
+void FileLogger::Log(const std::wstring& text, Log::Level type)
 {
-    if (!m_File.is_open())
+    if (m_File.is_open())
     {
-        return;
+        m_File << text << std::endl;
+        m_File.flush();
     }
-
-    m_File.write(text.c_str(), text.size());
-    m_File.flush();
 }
 
 //////////////////////////////////////////////////////////////////////////
 // MessageBoxLogger
 //////////////////////////////////////////////////////////////////////////
 
-void MessageBoxLogger::Log(const std::string& text, LogLevel type)
+void MessageBoxLogger::Log(const std::wstring& text, Log::Level type)
 {
-    if (type == LogLevel::Warning)
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::string convertedText = converter.to_bytes(text);
+
+    if (type == Log::Level::Warning)
     {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", text.c_str(), nullptr);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", convertedText.c_str(), nullptr);
     }
-    else if (type == LogLevel::Error)
+    else if (type == Log::Level::Error)
     {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", text.c_str(), nullptr);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", convertedText.c_str(), nullptr);
     }
 }
 
@@ -171,12 +173,14 @@ void MessageBoxLogger::Log(const std::string& text, LogLevel type)
 // VisualStudioLogger
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-void VisualStudioLogger::Log(const std::string& text, LogLevel level)
+void VisualStudioLogger::Log(const std::wstring& text, Log::Level type)
 {
-    OutputDebugStringA(text.c_str());
-}
+#if _MSC_VER
+    std::wostringstream ss;
+    ss << text << std::endl;
+    OutputDebugStringW(ss.str().c_str());
 #endif
+}
 
 } // namespace Core
 } // namespace Genesis

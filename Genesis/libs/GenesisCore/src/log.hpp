@@ -24,13 +24,15 @@ SOFTWARE.
 
 #pragma once
 
-#include <array>
+#include <codecvt>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <locale>
 #include <memory>
 #include <mutex>
-#include <stdarg.h>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -49,21 +51,57 @@ class ILogTarget;
 //////////////////////////////////////////////////////////////////////////
 
 using LogTargetSharedPtr = std::shared_ptr<ILogTarget>;
-static const size_t sLogBufferSize = 20480u;
-
-enum class LogLevel
-{
-    Info,
-    Warning,
-    Error
-};
 
 class Log
 {
 public:
-    static void Info(const char* pFormat, ...);
-    static void Warning(const char* pFormat, ...);
-    static void Error(const char* pFormat, ...);
+    enum class Level
+    {
+        Info,
+        Warning,
+        Error
+    };
+
+    class Stream
+    {
+    public:
+        Stream(Level level);
+        ~Stream();
+
+        template <typename T> Stream& operator<<(T const& value)
+        {
+            m_Collector << value;
+            return *this;
+        }
+
+        Stream& operator<<(std::string& value)
+        {
+            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+            m_Collector << converter.from_bytes(value);
+            return *this;
+        }
+
+        Stream& operator<<(const char* value)
+        {
+            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+            m_Collector << converter.from_bytes(value);
+            return *this;
+        }
+
+        Stream& operator<<(const std::filesystem::path& value)
+        {
+            m_Collector << value.wstring();
+            return *this;
+        }
+
+    private:
+        Level m_Level;
+        std::wostringstream m_Collector;
+    };
+
+    static Stream Info();
+    static Stream Warning();
+    static Stream Error();
 
     static void AddLogTarget(LogTargetSharedPtr pLogTarget);
     static void RemoveLogTarget(LogTargetSharedPtr pLogTarget);
@@ -71,12 +109,10 @@ public:
 private:
     using LogTargetList = std::list<LogTargetSharedPtr>;
 
-    static void LogInternal(const std::string& text, LogLevel level);
+    static void LogInternal(const std::wstring& text, Log::Level level);
 
     static std::mutex m_Mutex;
     static LogTargetList m_Targets;
-    static std::array<char, sLogBufferSize> m_Buffer;
-    static std::array<char, sLogBufferSize> m_VABuffer;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -88,7 +124,7 @@ class ILogTarget
 {
 public:
     virtual ~ILogTarget() {}
-    virtual void Log(const std::string& text, LogLevel level) = 0;
+    virtual void Log(const std::wstring& text, Log::Level level) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,7 +135,7 @@ public:
 class TTYLogger : public ILogTarget
 {
 public:
-    virtual void Log(const std::string& text, LogLevel type) override;
+    virtual void Log(const std::wstring& text, Log::Level type) override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,15 +144,15 @@ public:
 // after every entry.
 //////////////////////////////////////////////////////////////////////////
 
-class FileLogger : public ILogTarget
+ class FileLogger : public ILogTarget
 {
-public:
-    FileLogger(const char* pFilename);
+ public:
+    FileLogger(const std::filesystem::path& filePath);
     virtual ~FileLogger() override;
-    virtual void Log(const std::string& text, LogLevel type) override;
+    virtual void Log(const std::wstring& text, Log::Level type) override;
 
-private:
-    std::ofstream m_File;
+ private:
+    std::wofstream m_File;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,25 +160,22 @@ private:
 // Creates a message box whenever the log message is above LogLevel::Info.
 //////////////////////////////////////////////////////////////////////////
 
-class MessageBoxLogger : public ILogTarget
+ class MessageBoxLogger : public ILogTarget
 {
-public:
-    virtual void Log(const std::string& text, LogLevel type) override;
+ public:
+    virtual void Log(const std::wstring& text, Log::Level type) override;
 };
 
 //////////////////////////////////////////////////////////////////////////
 // VisualStudioLogger
-// Windows only - all the output from the logger goes to the
-// Visual Studio output window.
+// All the output from the logger goes to the Visual Studio output window.
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
 class VisualStudioLogger : public ILogTarget
 {
 public:
-    virtual void Log(const std::string& text, LogLevel type) override;
+    virtual void Log(const std::wstring& text, Log::Level type) override;
 };
-#endif
 
 } // namespace Core
 } // namespace Genesis
