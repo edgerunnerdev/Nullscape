@@ -30,6 +30,7 @@ class Asset
 public:
     Asset(const std::filesystem::path& path);
 
+    const std::filesystem::path& GetPath() const;
     bool IsValid() const;
     const std::string& GetCompiler() const;
 

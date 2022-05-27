@@ -25,12 +25,10 @@ int main(int argc, char** argv)
     using namespace Genesis::Core;
     using namespace Genesis::ResComp;
 
-#ifdef _WIN32
     Log::AddLogTarget(std::make_shared<VisualStudioLogger>());
-#endif
     Log::AddLogTarget(std::make_shared<TTYLogger>());
 
-    Log::Info("Running Forge...");
+    Log::Info() << "Running Forge...";
 
     cli::Parser parser(argc, argv);
     parser.set_required<std::string>("m", "mode", "Mode for Forge to run in. Can be 'standalone' or 'service'.");
@@ -51,7 +49,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        Log::Error("Mode '%s' not recognized, must be 'standalone' or 'service'.", modeArg.c_str());
+        Log::Error() << "Mode " << modeArg << " not recognized, must be 'standalone' or 'service'.";
         return -1;
     }
 

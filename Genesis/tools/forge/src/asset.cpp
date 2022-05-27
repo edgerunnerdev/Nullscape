@@ -28,6 +28,11 @@ Asset::Asset(const std::filesystem::path& path)
 {
 }
 
+const std::filesystem::path& Asset::GetPath() const
+{
+    return m_Path;
+}
+
 bool Asset::IsValid() const
 {
     return m_IsValid;

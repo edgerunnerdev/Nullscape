@@ -45,11 +45,16 @@ bool Forge::Run()
 
     if (!InitializeDirectories())
     {
-        Log::Error("Failed to initialize directories.");
+        Log::Error() <<"Failed to initialize directories.";
         return false;
     }
 
     AggregateKnownAssets();
+
+    for (Asset& asset : m_KnownAssets)
+    {
+        Log::Info() << "Asset found: " << asset.GetPath().native();
+    }
 
     return false;
 }
@@ -59,17 +64,17 @@ bool Forge::InitializeDirectories()
     using namespace Genesis::Core;
     if (std::filesystem::is_directory(m_AssetsDir) == false)
     {
-        Log::Error("Invalid asset directory: %s.", m_AssetsDir.c_str());
+        Log::Error() << "Invalid asset directory: " << m_AssetsDir;
         return false;
     }
     else if (std::filesystem::is_directory(m_DataDir) == false)
     {
-        Log::Error("Invalid data directory: %s.", m_DataDir.c_str());
+        Log::Error() << "Invalid data directory: " << m_DataDir;
         return false;
     }
     else if (std::filesystem::is_directory(m_IntermediatesDir) == false && std::filesystem::create_directories(m_IntermediatesDir) == false)
     {
-        Log::Error("Invalid intermediates directory: %s.", m_IntermediatesDir.c_str());
+        Log::Error() << "Invalid intermediates directory: " << m_IntermediatesDir;
         return false;
     }
     else
@@ -82,7 +87,7 @@ void Forge::AggregateKnownAssets()
 {
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_AssetsDir))
     {
-        if (dirEntry.is_regular_file() && dirEntry.path().extension() == "asset")
+        if (dirEntry.is_regular_file() && dirEntry.path().extension() == ".asset")
         {
             Asset asset(dirEntry);
             m_KnownAssets.push_back(std::move(asset));
