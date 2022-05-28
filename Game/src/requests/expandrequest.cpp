@@ -52,7 +52,6 @@ void ExpandRequest::OnBegin()
 #ifdef _DEBUG
 	int x, y;
 	m_pSectorInfo->GetCoordinates( x, y );
-	Genesis::FrameWork::GetLogger()->LogInfo( "Starting ExpandRequest on sector %d / %d", x, y );
 #endif
 }
 

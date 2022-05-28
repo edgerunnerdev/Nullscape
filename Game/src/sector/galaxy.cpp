@@ -18,7 +18,7 @@
 #include <imgui/imgui.h>
 
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 #include <memory.h>
 #include <xml.h>
 
@@ -135,14 +135,14 @@ void Galaxy::Create( const GalaxyCreationInfo& creationInfo )
 					}
 					else
 					{
-						FrameWork::GetLogger()->LogWarning( "Couldn't load sector %d / %d", pSectorInfo->GetCoordinates().x, pSectorInfo->GetCoordinates().y );
+                        Core::Log::Warning() << "Couldn't load sector " << pSectorInfo->GetCoordinates().x << "/" << pSectorInfo->GetCoordinates().y;
 					}
 				}
 			}
 		}
 		else
 		{
-			FrameWork::GetLogger()->LogError( "Failed to load sectors file: '%s'.", filename.c_str() );
+            Core::Log::Error() << "Failed to load sectors file: '" << filename << "'.";
 		}
 
 		if ( mode == GalaxyCreationInfo::CreationMode::Campaign )
@@ -421,52 +421,7 @@ void Galaxy::UpdateDebugUI()
 
 void Galaxy::UpgradeFromVersion( int version )
 {
-	Genesis::FrameWork::GetLogger()->LogInfo( "Galaxy::UpgradeFromVersion(): %d -> %d", version, GetVersion() );
-
-	// In 0.11.4 new components were added to two sectors.
-	if ( version == 1 )
-	{ 
-		SectorInfo* pSolarisSecundusSector = m_Sectors[ 15 ][ 2 ];
-		pSolarisSecundusSector->AddComponentName( "AnchorComponent" );
-		pSolarisSecundusSector->AddComponentName( "ReinforcementsComponent" );
-
-		SectorInfo* pIrianiPrimeSector = m_Sectors[ 20 ][ 16 ];
-		pIrianiPrimeSector->AddComponentName( "ReinforcementsComponent" );
-
-		version++;
-	}
-
-	if ( version == 2 )
-	{
-		SectorInfo* pIrianiPrimeSector = m_Sectors[ 20 ][ 16 ];
-		pIrianiPrimeSector->AddComponentName( "ArbiterReinforcementComponent" );
-		version++;
-	}
-
-	if ( version == 3 )
-	{
-		// This was due to a mismatched enum, where an Iriani invasion would get tagged.
-		// The invasion has no backing data files and was preventing the campaign from
-		// progressing. The num has been fixed, but the tag needs to be removed so no
-		// events are accidentally spawned.
-		if ( g_pGame->GetBlackboard()->Exists( "#invasion_iriani" ) )
-		{
-			g_pGame->GetBlackboard()->Add( "#invasion_iriani", 0 );
-		}
-		version++;
-	}
-
-	if ( version == 4 )
-	{
-		// It is possible for the Cradle to be conquered by anothe faction, and for that
-		// faction to then establish a shipyard. If this happens and then the player
-		// progresses sufficiently in the campaign as for the Cradle to be claimed by
-		// the Chrysamere (Special) faction, the game will crash to desktop when the
-		// player attempts to enter the sector as that faction has no turret prototype
-		// to defend the shipyard with.
-		SectorInfo* pSectorCradle = g_pGame->GetGalaxy()->GetSectorInfo( 21, 6 );
-		pSectorCradle->SetShipyard( false );
-	}
+    Genesis::Core::Log::Info() << "Galaxy::UpgradeFromVersion(): " << version << " -> " << GetVersion();
 }
 
 }

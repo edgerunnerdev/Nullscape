@@ -19,6 +19,7 @@
 
 #include <imgui/imgui.h>
 #include <imgui/misc/cpp/imgui_stdlib.h>
+#include <log.hpp>
 
 #include <gui/gui.h>
 
@@ -94,7 +95,7 @@ void Text::LoadProperties( const json& properties )
         Genesis::ResourceFont* pFont = Fonts::Get( fontName );
         if ( pFont == nullptr )
         {
-            Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't find font '%s' for UI element '%s'.", fontName.c_str(), GetName().c_str() );
+            Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "' for UI element '" << GetName() << "'.";
         }
         else
         {
@@ -174,7 +175,7 @@ void Text::SetFont( const std::string& fontName )
     Genesis::ResourceFont* pFont = Fonts::Get( fontName );
     if ( pFont == nullptr )
     {
-        Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't find font '%s'.", fontName.c_str() );
+        Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "'.";
     }
     else
     {

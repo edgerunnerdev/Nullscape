@@ -22,7 +22,7 @@
 #include <math/misc.h>
 #include <resources/resourcesound.h>
 #include <xml.h>
-#include <logger.h>
+#include <log.hpp>
 #include <genesis.h>
 
 #include "hexterminate.h"
@@ -203,7 +203,7 @@ m_OverlayColour( 0.0f, 0.0f, 0.0f, 0.0f )
 	// Fallback for all modules which don't have a model yet
 	if ( m_Model == "" )
 	{
-		Genesis::FrameWork::GetLogger()->LogInfo("No model set for '%s'", m_Name.c_str());
+        Genesis::Core::Log::Info() << "No model set for '" << m_Name << "'.";
 		m_Model = "data/models/armour/medium/t1/module.tmf";
 	}
 
@@ -685,11 +685,11 @@ m_Cooldown( 0.0f )
 
 	if ( m_Category == AddonCategory::Invalid )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Failed to serialise 'Category' on addon '%s'", GetName().c_str() );
+        Genesis::Core::Log::Error() << "Failed to serialise 'Category' on addon '" << GetName() << "'.";
 	}
 	else if ( m_ActivationType == AddonActivationType::Invalid )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Failed to serialise 'ActivationType' on addon '%s'", GetName().c_str() );
+        Genesis::Core::Log::Error() << "Failed to serialise 'ActivationType' on addon '" << GetName() << "'.";
 	}
 }
 

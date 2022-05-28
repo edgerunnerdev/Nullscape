@@ -17,6 +17,8 @@
 
 #include "galaxycreationinfo.h"
 
+#include <log.hpp>
+
 namespace Hexterminate
 {
 
@@ -43,7 +45,7 @@ void GalaxyCreationInfo::SetFaction( FactionId factionId, FactionPresence presen
 {
 	if ( presence != FactionPresence::None && generationType == GenerationType::Expansion && hasHomeworld == false )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "A faction can only use the Expansion generation type if it has a homeworld." );
+		Genesis::Core::Log::Error() << "A faction can only use the Expansion generation type if it has a homeworld.";
 	}
 
 	Data& data = m_Data[ static_cast< size_t >( factionId ) ];

@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <sstream>
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 #include <render/debugrender.h>
 #include <scene/layer.h>
 #include <scene/scene.h>
@@ -347,7 +347,7 @@ bool Sector::Initialise()
 			}
 		}
 
-		Genesis::FrameWork::GetLogger()->LogInfo( "Additional waves for this sector: %d", m_AdditionalWaves );
+		Genesis::Core::Log::Info() << "Additional waves for this sector: " << m_AdditionalWaves;
 	}
 	else
 	{
@@ -374,7 +374,7 @@ void Sector::InitialiseComponents()
 		ComponentSharedPtr pComponent = ComponentFactory::Create( componentName );
 		if ( pComponent == nullptr )
 		{
-			FrameWork::GetLogger()->LogWarning( "Couldn't instantiate a component with the name '%s'", componentName.c_str() );
+            Core::Log::Warning() << "Couldn't instantiate a component with the name '" << componentName << "'.";
 		}
 		else
 		{
@@ -676,7 +676,7 @@ void Sector::SpawnStarfort()
 	const ShipInfo* pStarfortInfo = g_pGame->GetShipInfoManager()->Get( g_pGame->GetFaction( FactionId::Empire ), "special_starfort" );
 	if ( pStarfortInfo == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Couldn't find Empire's special_starfort." );
+        Genesis::Core::Log::Error() << "Couldn't find Empire's special_starfort.";
 		return;
 	}
 

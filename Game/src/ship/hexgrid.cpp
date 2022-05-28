@@ -16,7 +16,7 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 
 #include "ship/moduleinfo.h"
 #include "ship/hexgrid.h"
@@ -61,7 +61,7 @@ bool WriteHexGridModuleInfo( HexGrid<ModuleInfo*>* pHexGrid, tinyxml2::XMLDocume
 
 bool ReadHexGridModuleInfo( HexGrid<ModuleInfo*>* pHexGrid, tinyxml2::XMLElement* pRootElement )
 {
-	Genesis::FrameWork::GetLogger()->LogInfo( "Loading hexgrid..." );
+	Genesis::Core::Log::Info() << "Loading hexgrid...";
 
 	for ( tinyxml2::XMLElement* pElement = pRootElement->FirstChildElement(); pElement != nullptr; pElement = pElement->NextSiblingElement() ) 
 	{
@@ -72,7 +72,7 @@ bool ReadHexGridModuleInfo( HexGrid<ModuleInfo*>* pHexGrid, tinyxml2::XMLElement
 
 			if ( pModuleInfo == nullptr )
 			{
-				Genesis::FrameWork::GetLogger()->LogWarning( "Unable to find module '%s', skipping.", moduleName.c_str() );
+				Genesis::Core::Log::Warning() << "Unable to find module '" << moduleName << "', skipping.";
 				return false;
 			}
 			else

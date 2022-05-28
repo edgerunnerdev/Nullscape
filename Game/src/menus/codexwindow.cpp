@@ -18,6 +18,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include <log.hpp>
+
 #include "menus/codexwindow.h"
 
 #include "ui/button.h"
@@ -99,7 +101,7 @@ void CodexWindow::LoadEntry( const std::filesystem::path& path )
 		}
 		else
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't load codex entry '%s'.", path.c_str() );
+            Genesis::Core::Log::Warning() << "Couldn't load codex entry: " << path;
 		}
     }
 }

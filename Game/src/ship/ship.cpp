@@ -20,6 +20,7 @@
 #include <glm/gtc/matrix_access.hpp>
 
 #include <genesis.h>
+#include <log.hpp>
 #include <resources/resourcemodel.h>
 #include <resources/resourcesound.h>
 #include <inputmanager.h>
@@ -1566,7 +1567,7 @@ void Ship::SpawnLoot()
 
 	if ( matchingModules.empty() )
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "Attempting to drop module of rarity %d but none exists", (int)moduleRarity );
+        Genesis::Core::Log::Warning() << "Attempting to drop module of rarity " << (int)moduleRarity << " but none exists";
 	}
 	else
 	{

@@ -4,6 +4,7 @@
 #include <xml.h>
 
 #include <genesis.h>
+#include <log.hpp>
 
 #include "fleet/fleet.h"
 #include "fleet/fleetrep.h"
@@ -327,7 +328,7 @@ bool Fleet::Read( tinyxml2::XMLElement* pRootElement )
 
 void Fleet::UpgradeFromVersion( int version )
 {
-	Genesis::FrameWork::GetLogger()->LogInfo( "Fleet::UpgradeFromVersion(): %d -> %d", version, GetVersion() );
+    Genesis::Core::Log::Info() << "Fleet::UpgradeFromVersion(): " << version << " -> " << GetVersion();
 
 	// From version 1 to version 2 the player ceases to have a fixed fleet of 3 companion ships and starts having 
 	// a dynamic fleet through the Fleet Management system. When loading an older game we give the player those
@@ -406,7 +407,7 @@ bool Fleet::IsInRangeOf( FleetWeakPtr pOtherFleetWeakPtr ) const
 	Player* pPlayer = g_pGame->GetPlayer();
 	if ( pPlayer->GetPerks()->IsEnabled( Perk::SwordOfTheEmpire ) && g_pGame->GetPlayerFleet().lock() == pOtherFleet )
 	{
-		Genesis::FrameWork::GetLogger()->LogInfo("Triggered Sword of the Empire");
+        Genesis::Core::Log::Info() << "Triggered Sword of the Empire";
 		supportDistance = 8.0f;
 	}
 				
@@ -436,9 +437,7 @@ void Fleet::GenerateProceduralFleet( int pointsToSpend )
 	{
 		if ( doctrine.GetRatio( static_cast<ShipType>( i ) ) > 0.0f && factionShipsByType[ i ].empty() )
 		{
-			Genesis::FrameWork::GetLogger()->LogError( 
-				"Faction '%s' doesn't have the ship types required by its doctrine.", 
-				GetFaction()->GetName().c_str() );
+            Genesis::Core::Log::Error() << "Faction " << GetFaction()->GetName() << "doesn't have the ship types required by its doctrine.";
 			return;
 		}
 	}
@@ -471,14 +470,6 @@ void Fleet::GenerateFlagshipFleet()
     {
         AddShip( shipInfo );
     }
-
-#ifndef _FINAL
-	Genesis::FrameWork::GetLogger()->LogInfo( "Created flagship fleet for faction '%s' (%d points):", GetFaction()->GetName().c_str(), m_Points );
-	for ( auto& pShipInfo : m_Ships )
-	{
-		Genesis::FrameWork::GetLogger()->LogInfo( "- %s", pShipInfo->GetName().c_str() );
-	}
-#endif
 }
 
 int Fleet::FindCheapestShipCost() const
@@ -508,11 +499,7 @@ void Fleet::AddShip( const std::string& shipName )
 {
 	ShipInfoManager* pShipInfoManager = g_pGame->GetShipInfoManager();
 	const ShipInfo* pShipInfo = pShipInfoManager->Get( GetFaction(), shipName );
-	if ( pShipInfo == nullptr )
-	{
-		Genesis::FrameWork::GetLogger()->LogError( "Faction '%s' doesn't have a ship named '%s'", GetFaction()->GetName().c_str(), shipName.c_str() );
-	}
-	else
+	if ( pShipInfo != nullptr )
 	{
 		AddShip( pShipInfo );
 	}

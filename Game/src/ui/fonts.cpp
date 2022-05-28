@@ -18,6 +18,7 @@
 #include <filesystem>
 
 #include <gui/gui.h>
+#include <log.hpp>
 
 #include "ui/fonts.h"
 #include "stringaux.h"
@@ -67,7 +68,7 @@ Genesis::ResourceFont* Fonts::Get( const std::string& fontName )
         }
     }
 
-    Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't find font '%s'.", fontName.c_str() );
+    Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "'.";
     return nullptr;
 }
 

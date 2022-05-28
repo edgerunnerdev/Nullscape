@@ -21,7 +21,7 @@
 
 #include <genesis.h>
 #include <timer.h>
-#include <logger.h>
+#include <log.hpp>
 #include <gui/gui.h>
 #include <resources/resourcesound.h>
 #include <configuration.h>

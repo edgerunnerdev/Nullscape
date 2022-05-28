@@ -21,7 +21,7 @@
 #include <fstream>
 
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 #include <xml.h>
 
 #include "fleet/fleet.h"
@@ -66,7 +66,7 @@ void ShipInfoManager::Initialise()
 	for ( int i = 0; i < static_cast<int>( FactionId::Count ); ++i )
 	{
 		Faction* pFaction = g_pGame->GetFaction( static_cast<FactionId>( i ) );
-		Genesis::FrameWork::GetLogger()->LogInfo( "Loading ships for faction '%s'.", pFaction->GetName().c_str() );
+        Genesis::Core::Log::Info() << "Loading ships for faction '" << pFaction->GetName() << "'.";
 
 		// These need to be separated into two loops, as the order in which files are listed
 		// by the directory_iterator is not guaranteed and XML files reference SHP files which
@@ -115,7 +115,7 @@ void ShipInfoManager::SerialiseHexGrid( const Faction* pFaction, const std::file
 			ModuleInfo* pModuleInfo = pModuleInfoManager->GetModuleByName( moduleName );
 			if ( pModuleInfo == nullptr )
 			{
-				Genesis::FrameWork::GetLogger()->LogInfo( "%s - Links to non-existent module '%s'", filename.c_str(), moduleName.c_str() );
+                Genesis::Core::Log::Info() << filename << " - Links to non-existent module '" << moduleName << "'.";
 				loadedWithWarnings = true;
 			}
 			else
@@ -129,12 +129,12 @@ void ShipInfoManager::SerialiseHexGrid( const Faction* pFaction, const std::file
 
 		if ( loadedWithWarnings )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "%s - Loaded with warnings", filename.c_str() );
+            Genesis::Core::Log::Warning() << filename << " - Loaded with warnings ";
 		}
 	}
 	else
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "Could not load HexGrid template '%s'", name.c_str() );
+        Genesis::Core::Log::Warning() << "Could not load HexGrid template '" << name << "'.";
 	}
 }
 
@@ -157,14 +157,14 @@ void ShipInfoManager::SerialiseXml( const  Faction* pFaction, const std::filesys
 	{
 		char errorMessage[256];
 		strerror_s( errorMessage, 256, err );
-		Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't open file '%s': %s", filename.c_str(), errorMessage );
+        Genesis::Core::Log::Warning() << "Couldn't open file '" << filename << "':" << errorMessage;
 		return;
 	}
 #else
 	fp = fopen( filename.c_str(), "rb" );
 	if ( fp == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Couldn't open file '%s'.", filename.c_str() );
+        Genesis::Core::Log::Error() << "Couldn't open file '" << filename << "'.";
 		return;
 	}
 #endif
@@ -222,7 +222,7 @@ const ShipInfo* ShipInfoManager::Get( const Faction* pFaction, const std::string
 			return pShipInfo;
 	}
 
-	Genesis::FrameWork::GetLogger()->LogError( "Couldn't find ship '%s' for faction '%s'", shipName.c_str(), pFaction->GetName().c_str() );
+	Genesis::Core::Log::Error() << "Couldn't find ship '" << shipName << "' for faction '" << pFaction->GetName();
 	return nullptr;
 }
 

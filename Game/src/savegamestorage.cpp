@@ -28,6 +28,7 @@
 #include <configuration.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
+#include <log.hpp>
 
 #include "menus/popup.h"
 #include "sector/galaxy.h"
@@ -140,7 +141,7 @@ bool SaveGameStorage::SaveGame( bool killSave /* = false */ )
 		}
 
 		fullPath = gameSaveGameFolder / filename; 
-		Genesis::FrameWork::GetLogger()->LogInfo( "Attempting to save to %s", ToString( fullPath ).c_str() );
+		Genesis::Core::Log::Info() << "Attempting to save to " << ToString(fullPath);
 	}
 
 	tinyxml2::XMLDocument xmlDoc;
@@ -189,7 +190,7 @@ bool SaveGameStorage::SaveToLocalStorage( tinyxml2::XMLDocument& xmlDoc, const s
 
 	if ( saveResult == XMLError::XML_SUCCESS )
 	{
-		Genesis::FrameWork::GetLogger()->LogInfo( "Game saved successfully!" );
+		Genesis::Core::Log::Info() << "Game saved successfully!";
 		fclose( fp );
 		return true;
 	}
@@ -278,7 +279,7 @@ bool SaveGameStorage::XmlRead( const std::filesystem::path& filename, tinyxml2::
 		const int fileSize = m_pSteamRemoteStorage->GetFileSize( steamFilename.c_str() );
 		if ( fileSize == 0 )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "SteamWorks gave a file size of 0 for save game '%s', skipping this save. This is likely a hiccup from Steam.", steamFilename.c_str() );
+            Genesis::Core::Log::Warning() << "SteamWorks gave a file size of 0 for save game '" << steamFilename << "', skipping this save. This is likely a hiccup from Steam.";
 			return false;
 		}
 		std::vector< char > fileData;
@@ -430,7 +431,7 @@ bool SaveGameStorage::CreateSaveGameFolder( const std::filesystem::path& folder 
 		}
 		else
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Could not create save game directory: %s.", errorCode.message().c_str() );
+			Genesis::Core::Log::Warning() << "Could not create save game directory: " << errorCode.message();
 			return false;
 		}
 	}

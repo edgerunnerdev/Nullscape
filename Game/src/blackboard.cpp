@@ -15,6 +15,7 @@
 
 #include <sstream>
 
+#include <log.hpp>
 #include <genesis.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
@@ -94,7 +95,7 @@ bool Blackboard::Read( tinyxml2::XMLElement* pRootElement )
 		const char* pName = pChildElement->Attribute( "name" );
 		if ( pName == nullptr )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Empty 'name' attribute in Blackboard::Read(), skipping" );
+            Genesis::Core::Log::Warning() << "Empty 'name' attribute in Blackboard::Read(), skipping";
 			continue;
 		}
 

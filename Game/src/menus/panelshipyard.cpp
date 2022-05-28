@@ -22,6 +22,7 @@
 #include <genesis.h>
 #include <gui/gui.h>
 #include <configuration.h>
+#include <log.hpp>
 #include "menus/eva.h"
 #include "menus/table.h"
 #include "menus/tablerow.h"
@@ -201,7 +202,7 @@ void PanelShipyard::FillTables()
         ModuleInfo* pModuleInfo = g_pGame->GetModuleInfoManager()->GetModuleByName( item.first );
 		if ( pModuleInfo == nullptr )
 		{
-			Genesis::FrameWork::GetLogger()->LogError( "Attempting to add to inventory non-existent module '%s'", item.first.c_str() );
+            Genesis::Core::Log::Error() << "Attempting to add to inventory non-existent module '" << item.first << "'.";
 			continue;
 		}
 		else

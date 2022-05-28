@@ -20,6 +20,7 @@
 #include <glm/gtc/matrix_access.hpp>
 
 #include <genesis.h>
+#include <log.hpp>
 #include <resources/resourcemodel.h>
 #include <resources/resourcesound.h>
 #include <math/misc.h>
@@ -408,7 +409,7 @@ void WeaponModule::Initialise( Ship* pShip )
 	}
 	else if ( hardpoint.isTurret )
 	{
-		Genesis::FrameWork::GetLogger()->LogInfo( "Turret weapon '%s' has no hardpoint dummy", pInfo->GetFullName().c_str() );
+        Genesis::Core::Log::Info() << "Turret weapon '" << pInfo->GetFullName() << "' has no hardpoint dummy.";
 	}
 
 	m_pWeapon = new Weapon( pShip, this, pInfo, hardpoint );
@@ -890,7 +891,7 @@ void AddonModule::CreateAddon()
 
 	if ( m_pAddon == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Couldn't create Addon, unrecognised type." );
+		Genesis::Core::Log::Error() << "Couldn't create Addon, unrecognised type.";
 	}
 	else
 	{

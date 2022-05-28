@@ -26,6 +26,7 @@
 #include <sound/soundinstance.h>
 #include <sound/soundmanager.h>
 #include <glm/gtc/matrix_access.hpp>
+#include <log.hpp>
 
 #include "ammo/ammo.h"
 #include "ammo/ammomanager.h"
@@ -331,9 +332,6 @@ void Weapon::Fire()
 		// The rate of fire increases the more siegebreaker stacks this weapon has.
 		const float siegebreakerBonus = logf( 1.0f + static_cast<float>( m_SiegebreakerStacks ) * 0.025f );
 		const float rateOfFire = m_RateOfFire * ( 1.0f + siegebreakerBonus );
-
-		//Genesis::FrameWork::GetLogger()->LogInfo( "Siegebreaker stacks: %d | RoF bonus: %.2f | rate of fire: %.2f", m_SiegebreakerStacks, siegebreakerBonus, rateOfFire );
-
 		m_ReloadTimer = 1.0f / rateOfFire;
 	}
 }
@@ -389,7 +387,7 @@ void Weapon::SetupMuzzles()
 	// We always need at least one muzzle for the ammo to ejected from.
 	if ( m_MuzzleOffsets.empty() )
 	{
-		Genesis::FrameWork::GetLogger()->LogInfo( "Weapon '%s' has no valid muzzles!", m_pInfo->GetName().c_str() );
+        Genesis::Core::Log::Info() << "Weapon '" << m_pInfo->GetName() << "' has no valid muzzles!";
 		AddMuzzle( glm::vec3( 0.0f, 0.0f, 0.0f ) );
 	}
 }

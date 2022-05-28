@@ -21,6 +21,7 @@
 #include <sstream>
 
 #include <genesis.h>
+#include <log.hpp>
 #include "fleet/fleet.h"
 #include "sector/sector.h"
 #include "player.h"
@@ -53,7 +54,7 @@ void DefendRequest::OnBegin()
 #ifdef _DEBUG
 	int x, y;
 	m_pSectorInfo->GetCoordinates( x, y );
-	Genesis::FrameWork::GetLogger()->LogInfo( "Starting DefendRequest on sector %d / %d", x, y );
+    Genesis::Core::Log::Info() << "Starting DefendRequest on sector " << x << "," << y;
 #endif
 }
 

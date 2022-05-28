@@ -18,7 +18,6 @@
 #pragma once
 
 #include <gui/gui.h>
-#include <logger.h>
 #include "eva.h"
 
 namespace Hexterminate

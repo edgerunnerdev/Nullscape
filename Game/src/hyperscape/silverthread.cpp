@@ -16,7 +16,7 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 
 #include "hyperscape/silverthread.h"
 #include "hyperscape/silverthreadrep.h"
@@ -46,7 +46,7 @@ void SilverThread::Add( const HyperscapeLocation& location )
 	{
 		if ( !m_Locations.empty() && m_Locations.back().GetType() == HyperscapeLocation::Type::Scanned )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Trying to add a Visited hyperscape location to a thread that still has scanned locations. Use MoveToScannedLocation() instead." );
+			Genesis::Core::Log::Warning() << "Trying to add a Visited hyperscape location to a thread that still has scanned locations. Use MoveToScannedLocation() instead.";
 			return;
 		}
 
@@ -61,7 +61,7 @@ void SilverThread::Add( const HyperscapeLocation& location )
 	{
 		if (!m_Locations.empty() && m_Locations.back().GetType() != HyperscapeLocation::Type::Visited )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Trying to add a Station hyperscape location to an invalid thread. ");
+            Genesis::Core::Log::Warning() << "Trying to add a Station hyperscape location to an invalid thread.";
 			return;
 		}
 		

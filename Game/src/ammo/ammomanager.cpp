@@ -24,6 +24,7 @@
 #include <sound/soundinstance.h>
 #include <sound/soundmanager.h>
 #include <genesis.h>
+#include <log.hpp>
 
 #include "hexterminate.h"
 #include "sector/sector.h"
@@ -106,7 +107,7 @@ Ammo* AmmoManager::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f *
 	Ammo** ppAmmo = GetFreeAmmo();
 	if ( ppAmmo == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "AmmoManager capacity exceeded!" );
+        Genesis::Core::Log::Error() << "AmmoManager capacity exceeded!";
 		return nullptr;
 	}
 

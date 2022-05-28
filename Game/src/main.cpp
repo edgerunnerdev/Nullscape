@@ -43,7 +43,7 @@
 #include <sound/soundmanager.h>
 #include <shadercache.h>
 #include <rendersystem.h>
-#include <logger.h>
+#include <log.hpp>
 #include <configuration.h>
 #include <memory.h>
 #include <stringaux.h>
@@ -85,7 +85,6 @@
 #include "ui/rootelement.h"
 #include "menus/mainmenu.h"
 #include "menus/audiodebug.h"
-#include "menus/console.h"
 #include "menus/intelwindow.h"
 #include "menus/galaxywindow.h"
 #include "menus/loadingscreen.h"
@@ -220,11 +219,7 @@ void Game::Initialise()
 	Random::Initialise();
 	RandomShuffle::Initialise();
 
-#ifndef _FINAL
-	m_pConsole = new Console(); // Should happen early so all the warnings / log entries are visible
-#endif
-
-	Genesis::FrameWork::GetLogger()->LogInfo( "HEXTERMINATE build %d", HEXTERMINATE_BUILD );
+	Genesis::Core::Log::Info() << "HEXTERMINATE build " << HEXTERMINATE_BUILD;
 
 	m_pLoadingScreen = LoadingScreenUniquePtr( new LoadingScreen );
 	m_pBlackboard = std::make_shared<Blackboard>();
@@ -284,11 +279,11 @@ void Game::Initialise()
 
 	if ( SteamAPI_Init() )
 	{
-		Genesis::FrameWork::GetLogger()->LogInfo( "Steam API initialised." );
+        Genesis::Core::Log::Info() << "Steam API initialised.";
 	}
 	else
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "SteamAPI_Init() failed." );
+        Genesis::Core::Log::Warning() << "SteamAPI_Init() failed.";
 	}
 #endif // USE_STEAM
 
@@ -405,11 +400,6 @@ Genesis::TaskStatus Game::Update( float delta )
 		m_pSector->Update( delta );
 	}
 
-	if ( m_pConsole )
-	{
-		m_pConsole->Update( delta );
-	}
-	
 	if ( m_pIntelWindow )
 	{
 		m_pIntelWindow->Update( delta );
@@ -429,8 +419,6 @@ Genesis::TaskStatus Game::Update( float delta )
 	static bool sConsoleToggle = false;
 	if ( pInputManager->IsButtonPressed( SDL_SCANCODE_GRAVE ) && !sConsoleToggle )
 	{
-		m_pConsole->Show( !m_pConsole->IsVisible() );
-
 		if ( m_pAudioDebug != nullptr )
 		{
 			m_pAudioDebug->Show( !m_pAudioDebug->IsVisible() );
@@ -486,7 +474,7 @@ void Game::StartNewLegacyGame( const ShipCustomisationData& customisationData, c
 	const SectorInfoVector& controlledSectors = GetFaction( FactionId::Empire )->GetControlledSectors();
 	if ( controlledSectors.empty() )
 	{
-		Genesis::FrameWork::GetLogger()->LogError("Game starting with no sectors controlled by the Empire, can't spawn player's fleet.");
+        Genesis::Core::Log::Error() << "Game starting with no sectors controlled by the Empire, can't spawn player's fleet.";
 	}
 	else
 	{
@@ -519,7 +507,7 @@ void Game::StartNewLegacyGame( const ShipCustomisationData& customisationData, c
 		const ShipInfo* pCompanionShipInfo = GetShipInfoManager()->Get( GetFaction( FactionId::Empire ), companionShipTemplate );
 		if ( pCompanionShipInfo == nullptr )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't find ship '%s'", companionShipTemplate.c_str() );
+            Genesis::Core::Log::Warning() << "Couldn't find ship '" << companionShipTemplate << "'.";
 		}
 		else
 		{
@@ -529,7 +517,7 @@ void Game::StartNewLegacyGame( const ShipCustomisationData& customisationData, c
 		
 		if ( GetPlayerFleet().expired() )
 		{
-			Genesis::FrameWork::GetLogger()->LogError( "Couldn't find starting sector, can't spawn player's fleet." );
+			Genesis::Core::Log::Error() << "Couldn't find starting sector, can't spawn player's fleet.";
 		}
 	}
 
@@ -1332,7 +1320,7 @@ SectorInfo* Game::FindSpawnSector() const
 			}
 		}
 
-		Genesis::FrameWork::GetLogger()->LogError( "Failed to find homeworld sector for the Empire." );
+		Genesis::Core::Log::Error() << "Failed to find homeworld sector for the Empire.";
 		return nullptr;
 	}
 	else
@@ -1424,7 +1412,7 @@ void Game::LoaderThreadMain()
 		GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
 		if ( result == GL_WAIT_FAILED )
 		{
-			Genesis::FrameWork::GetLogger()->LogError( "glClientWaitSync failed: GL_WAIT_FAILED." );
+			Genesis::Core::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
 			exit( -1 );
 		}
 		else if ( result != GL_TIMEOUT_EXPIRED )
@@ -1433,7 +1421,7 @@ void Game::LoaderThreadMain()
 		}
 	}
 
-	Genesis::FrameWork::GetLogger()->LogInfo( "All resources loaded." );
+	Genesis::Core::Log::Info() << "All resources loaded.";
 
 	m_AllResourcesLoaded = true;
 	SDL_GL_MakeCurrent( pWindow->GetSDLWindow(), nullptr );
@@ -1517,7 +1505,7 @@ void Game::RaiseInteractiveWarning( const std::string& text ) const
 		pPopup->Show( PopupMode::Ok, text );
 	}
 
-	Genesis::FrameWork::GetLogger()->LogWarning( "%s", text.c_str() );
+	Genesis::Core::Log::Warning() << text;
 }
 
 void Game::SetCursorType( CursorType type )

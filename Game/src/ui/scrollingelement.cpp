@@ -135,7 +135,6 @@ void ScrollingElement::Update()
 
         // Offset is rounded up to prevent shimmering of child elements
         m_pScrollingArea->GetPanel()->SetPosition( m_pScrollingArea->GetPanel()->GetPosition().x, ceilf( m_CurrentOffset ) );
-        Genesis::FrameWork::GetLogger()->LogInfo("grab and hold offset: %f, limit %d", m_CurrentOffset, m_OffsetLimit);
     }
 
     UpdateScrollbarPosition();

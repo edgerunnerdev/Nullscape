@@ -20,7 +20,7 @@
 
 #include <gui/gui.h>
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 #include <shadercache.h>
 
 #include "ui/image.h"
@@ -83,7 +83,7 @@ void Image::LoadResources()
         m_pResource = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_Path ) );
         if ( m_pResource == nullptr )
         {
-            FrameWork::GetLogger()->LogWarning( "Couldn't load '%s'.", m_Path.c_str() );
+            Core::Log::Warning() << "Couldn't load '" << m_Path << "'.";
         }
         else
         {

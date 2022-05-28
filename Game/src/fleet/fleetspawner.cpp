@@ -16,7 +16,6 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <genesis.h>
-#include <logger.h>
 #include <math/misc.h>
 
 #include "fleet/fleetcommand.h"

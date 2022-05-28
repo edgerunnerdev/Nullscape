@@ -20,6 +20,7 @@
 #include <genesis.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
+#include <log.hpp>
 
 #include "achievements.h"
 
@@ -145,7 +146,7 @@ void AchievementsManager::OnUserStatsReceived( UserStatsReceived_t *pCallback )
 	{
 		if ( k_EResultOK == pCallback->m_eResult )
 		{
-			Genesis::FrameWork::GetLogger()->LogInfo( "Received stats and achievements from Steam" );
+			Genesis::Core::Log::Info() << "Received stats and achievements from Steam";
 
 			m_StatsValid = true;
 
@@ -157,7 +158,7 @@ void AchievementsManager::OnUserStatsReceived( UserStatsReceived_t *pCallback )
 		}
 		else
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "RequestStats - failed, %d", pCallback->m_eResult );
+			Genesis::Core::Log::Warning() << "RequestStats - failed: " << pCallback->m_eResult;
 		}
 	}
 }

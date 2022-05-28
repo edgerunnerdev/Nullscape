@@ -19,6 +19,7 @@ include_directories(
   src/ 
   ${BULLET3_INCLUDE_DIRS}
   ${GENESIS_INCLUDE_DIRS}
+  ${GENESISCORE_INCLUDE_DIRS}
   ${GLEW_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
   ${IMGUI_INCLUDE_DIRS}
@@ -30,6 +31,7 @@ include_directories(
 link_directories(
   ${BULLET3_LIBRARY_DIRS}
   ${GENESIS_LIBRARY_DIRS}
+  ${GENESISCORE_LIBRARY_DIRS}
   ${GLEW_LIBRARY_DIRS}
   ${IMGUI_LIBRARY_DIRS}
   ${SDL2_LIBRARY_DIRS}
@@ -40,6 +42,7 @@ link_directories(
 link_libraries(
   ${BULLET3_LIBRARIES}
   Genesis
+  GenesisCore
   ${GLEW_LIBRARIES}
   imgui
   SDL2main

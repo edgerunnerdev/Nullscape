@@ -18,6 +18,8 @@
 #include <functional>
 #include <sstream>
 
+#include <log.hpp>
+
 #include "menus/popup.h"
 #include "menus/newgamewindow.h"
 #include "ship/shipinfo.h"
@@ -145,7 +147,7 @@ void NewGameWindow::Select( PageId pageId )
 		}
 		else
 		{
-			Genesis::FrameWork::GetLogger()->LogError( "Unsupported game mode." );
+            Genesis::Core::Log::Error() << "Unsupported game mode.";
 		}
 	}
 	else if ( pageId == PageId::Customisation )
@@ -204,7 +206,7 @@ void NewGameWindow::StartNewGame()
 	}
 	else
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Not implemented." );
+        Genesis::Core::Log::Error() << "Not implemented";
 		return;
 	}
 
@@ -454,7 +456,7 @@ void NewGameWindow::OnShipButtonPressed( const std::any& userData )
 	const ShipInfo* pInfo = g_pGame->GetShipInfoManager()->Get( g_pGame->GetPlayerFaction(), selectedShip );
 	if ( pInfo == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Couldn't find hexgrid '%s' for player faction", selectedShip.c_str() );
+        Genesis::Core::Log::Error() << "Couldn't find hexgrid '" << selectedShip << "' for player faction";
 	}
 	else
 	{

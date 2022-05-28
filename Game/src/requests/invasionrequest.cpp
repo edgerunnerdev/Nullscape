@@ -59,7 +59,6 @@ void InvasionRequest::OnBegin()
 #ifdef _DEBUG
 	int x, y;
 	m_pSectorInfo->GetCoordinates( x, y );
-    Genesis::FrameWork::GetLogger()->LogInfo( "Starting InvasionRequest on sector %d / %d by faction %s", x, y, ToString( m_InvadingFaction ).c_str() );
 #endif
 }
 
@@ -158,33 +157,6 @@ ShipInfoList InvasionRequest::GetShipsToSpawn() const
 	filename << "data/xml/invasions/" << ToString( GetInvadingFaction() ) << "_" << invasionId << ".inv";
 
 	ShipInfoList shipsToSpawn;
-	Faction* pInvadingFaction = g_pGame->GetFaction( GetInvadingFaction() );
-	std::ifstream fs( filename.str() );
-	if ( fs.is_open() )
-	{
-		std::string shipName;
-		ShipInfoManager* pShipInfoManager = g_pGame->GetShipInfoManager();
-		while ( fs.good() )
-		{
-			fs >> shipName;
-			
-			const ShipInfo* pShipInfo = pShipInfoManager->Get( pInvadingFaction, shipName );
-			if ( pShipInfo == nullptr )
-			{
-				Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't load ship '%s' for faction '%s'", shipName.c_str(), factionName.c_str() );
-			}
-			else
-			{
-				shipsToSpawn.push_back( pShipInfo );
-			}
-		}
-		fs.close();
-	}
-	else
-	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "Could not open invasion file '%s'", filename.str().c_str() );
-	}
-
 	return shipsToSpawn;
 }
 

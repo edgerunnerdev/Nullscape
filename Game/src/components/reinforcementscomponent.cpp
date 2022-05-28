@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include <genesis.h>
+#include <log.hpp>
 
 #include "fleet/fleet.h"
 #include "sector/sector.h"
@@ -101,7 +102,7 @@ ShipInfoVector ReinforcementsComponent::LoadShipListFile( Faction* pFaction, con
 			const ShipInfo* pShipInfo = pShipInfoManager->Get( pFaction, shipName );
 			if ( pShipInfo == nullptr )
 			{
-				Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't load ship '%s' for faction '%s'", shipName.c_str(), pFaction->GetName().c_str() );
+                Genesis::Core::Log::Warning() << "Couldn't load ship '" << shipName << "' for faction '" << pFaction->GetName() << "'";
 			}
 			else
 			{
@@ -112,7 +113,7 @@ ShipInfoVector ReinforcementsComponent::LoadShipListFile( Faction* pFaction, con
 	}
 	else
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "Could not open ship list file '%s'", filename.c_str() );
+        Genesis::Core::Log::Warning() << "Could not open ship list file '" << filename << "'";
 	}
 
 	return shipInfos;

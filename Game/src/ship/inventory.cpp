@@ -18,6 +18,7 @@
 #include <xml.h>
 #include <math/misc.h>
 #include <genesis.h>
+#include <log.hpp>
 #include "ship/hexgrid.h"
 #include "ship/inventory.h"
 #include "gameevents.h"
@@ -32,7 +33,7 @@ void Inventory::AddModule( const std::string& moduleName, unsigned int quantity 
 	ModuleInfo* pModuleInfo = g_pGame->GetModuleInfoManager()->GetModuleByName( moduleName );
 	if ( pModuleInfo == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "Unknown module: %s", moduleName.c_str() );
+		Genesis::Core::Log::Warning() << "Unknown module: " << moduleName;
 	}
 	else
 	{
@@ -139,15 +140,7 @@ bool Inventory::Read( tinyxml2::XMLElement* pRootElement )
 
 void Inventory::UpgradeFromVersion( int version )
 {
-	Genesis::FrameWork::GetLogger()->LogInfo( "Inventory::UpgradeFromVersion(): %d -> %d", version, GetVersion() );
-
-	// In 0.7.0 the Phase Barrier was introduced. This gives the players from previous versions of the game one of the
-	// new modules.
-	if ( version == 1 )
-	{ 
-		AddModule( "RarePhaseBarrier1" );
-		version++;
-	}
+    Genesis::Core::Log::Info() << "Inventory::UpgradeFromVersion(): " << version << " -> " << GetVersion();
 }
 
 bool Inventory::ReadItems( tinyxml2::XMLElement* pRootElement )
@@ -177,12 +170,12 @@ void Inventory::ClearCachedModules()
 		ItemData& itemData = inventoryEntry.second;
 		if ( itemData.cached > 0 )
 		{
-			Genesis::FrameWork::GetLogger()->LogInfo( "Module made permanent: %s (%d)", inventoryEntry.first.c_str(), itemData.cached );
+            Genesis::Core::Log::Info() << "Module made permanent: " << inventoryEntry.first << "(" << itemData.cached << ")";
 			itemData.cached = 0;
 			cachedModulesCleared++;
 		}
 	}
-	Genesis::FrameWork::GetLogger()->LogInfo( "%d modules made permanent.", cachedModulesCleared );
+    Genesis::Core::Log::Info() << cachedModulesCleared << " modules made permanent.";
 }
 
 // Removes any temporary modules.
@@ -194,12 +187,12 @@ void Inventory::DeductCachedModules()
 		ItemData& itemData = inventoryEntry.second;
 		if ( itemData.cached > 0 )
 		{
-			Genesis::FrameWork::GetLogger()->LogInfo( "Module lost: %s (%d)", inventoryEntry.first.c_str(), itemData.cached );
+            Genesis::Core::Log::Info() << "Module lost: " << inventoryEntry.first << "(" << itemData.cached << ")";
 			itemData.quantity -= itemData.cached;
 			itemData.cached = 0;
 		}
 	}
-	Genesis::FrameWork::GetLogger()->LogInfo( "%d modules lost.", modulesLost );
+    Genesis::Core::Log::Info() << modulesLost << " modules lost.";
 }
 
 }

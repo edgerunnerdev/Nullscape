@@ -21,7 +21,7 @@
 #include <gui/gui.h>
 #include <imgui/imgui.h>
 #include <configuration.h>
-#include <logger.h>
+#include <log.hpp>
 #include <genesis.h>
 
 #include "menus/popup.h"
@@ -73,7 +73,7 @@ void Element::Add( ElementSharedPtr pElement )
     {
         if ( pChild->GetName() == pElement->GetName() )
         {
-            Genesis::FrameWork::GetLogger()->LogWarning( "UI Element '%s' already contains a child called '%s'.", pElement->GetName().c_str() );
+            Genesis::Core::Log::Warning() << "UI Element '" << GetName() << "' already contains a child called '" << pElement->GetName();
             return;
         }
     }

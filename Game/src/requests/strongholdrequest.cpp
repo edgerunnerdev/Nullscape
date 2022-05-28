@@ -53,7 +53,6 @@ void StrongholdRequest::OnBegin()
 #ifdef _DEBUG
 	int x, y;
 	m_pSectorInfo->GetCoordinates( x, y );
-	Genesis::FrameWork::GetLogger()->LogInfo( "Starting StrongholdRequest on sector %d / %d", x, y );
 #endif
 
     // The threat for the stronghold is artificially boosted since it is actually a pretty nasty structure,

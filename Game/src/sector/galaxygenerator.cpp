@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <random>
+#include <log.hpp>
 
 #include "faction/faction.h"
 #include "sector/galaxygenerator.h"
@@ -179,7 +180,7 @@ void GalaxyGenerator::GenerateSectors( Galaxy* pGalaxy, const GalaxyCreationInfo
 			}
 			else
 			{
-				Genesis::FrameWork::GetLogger()->LogError( "Unsupported generation type." );
+				Genesis::Core::Log::Error() << "Unsupported generation type.";
 			}
 		}
 	}
@@ -195,7 +196,7 @@ void GalaxyGenerator::GenerateNames( Galaxy* pGalaxy, const GalaxyCreationInfo& 
 	std::vector< std::string > names = LoadNames();
 	if ( names.size() < NumSectorsX * NumSectorsY )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Insufficient sector names for galaxy generation." );
+        Genesis::Core::Log::Error() << "Insufficient sector names for galaxy generation.";
 	}
 
 	std::random_device dev;

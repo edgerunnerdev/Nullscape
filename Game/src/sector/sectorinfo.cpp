@@ -16,7 +16,7 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 #include <math/misc.h>
 #include <xml.h>
 
@@ -474,7 +474,6 @@ bool SectorInfo::Read( tinyxml2::XMLElement* pRootElement )
 	Faction* pFaction = nullptr;
 	if ( faction.empty() )
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "No faction defined for sector '%d / %d', setting ownership to Neutral", m_Coordinates.x, m_Coordinates.y );
 		pFaction = g_pGame->GetFaction( FactionId::Neutral );
 	}
 	else
@@ -482,8 +481,6 @@ bool SectorInfo::Read( tinyxml2::XMLElement* pRootElement )
 		pFaction = g_pGame->GetFaction( faction );
 		if ( pFaction == nullptr )
 		{
-			Genesis::FrameWork::GetLogger()->LogWarning( "Invalid faction '%s' for sector '%d / %d', setting ownership to Neutral",
-				faction.c_str(), m_Coordinates.x, m_Coordinates.y );
 			pFaction = g_pGame->GetFaction( FactionId::Neutral );
 		}
 		else if ( m_IsHomeworld )

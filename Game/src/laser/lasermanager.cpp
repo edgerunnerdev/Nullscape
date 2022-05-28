@@ -17,6 +17,7 @@
 
 #include <shadercache.h>
 #include <vertexbuffer.h>
+#include <log.hpp>
 
 #include "laser/lasermanager.h"
 
@@ -132,7 +133,7 @@ void LaserManager::AddLaser( const Laser& laser )
 	const unsigned int numLasers = static_cast<unsigned int>(m_Lasers.size());
 	if ( numLasers == sLaserManagerCapacity )
 	{
-		Genesis::FrameWork::GetLogger()->LogWarning( "Unable to add laser, manager at capacity (%d)", sLaserManagerCapacity );
+        Genesis::Core::Log::Warning() << "Unable to add laser, manager at capacity (" << sLaserManagerCapacity << ").";
 	}
 	else
 	{

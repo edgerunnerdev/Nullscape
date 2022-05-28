@@ -16,6 +16,7 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <genesis.h>
+#include <log.hpp>
 #include <resources/resourcemodel.h>
 #include <resources/resourcesound.h>
 #include <sound/soundinstance.h>
@@ -61,7 +62,7 @@ void HyperspaceGate::Initialise()
 
 	if ( m_pModel == nullptr )
 	{
-		Genesis::FrameWork::GetLogger()->LogError( "Couldn't find required hyperspace model." );
+        Genesis::Core::Log::Error() << "Couldn't find required hyperspace model.";
 	}
 	else
 	{

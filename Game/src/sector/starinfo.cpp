@@ -22,7 +22,7 @@
 #include <math/constants.h>
 #include <math/misc.h>
 #include <genesis.h>
-#include <logger.h>
+#include <log.hpp>
 
 #include "sector/starinfo.h"
 
@@ -94,25 +94,25 @@ m_StarType( StarType::MainSequenceClassM )
 
 void StarInfo::PrintOut() const
 {
-    Genesis::Logger* pLog = Genesis::FrameWork::GetLogger();
-    pLog->LogInfo( "Star info: " );
-    pLog->LogInfo( "- Seed: %u", m_Seed );
+	using namespace Genesis::Core;
+    Log::Info() << "Star info:";
+    Log::Info() << "- Seed: " << m_Seed;
 
     if ( m_StarType == StarType::MainSequenceClassA )
-        pLog->LogInfo( "- Main sequence star, class A" );
+        Log::Info() << "- Main sequence star, class A";
     else if ( m_StarType == StarType::MainSequenceClassF )
-        pLog->LogInfo( "- Main sequence star, class F" );
+        Log::Info() << "- Main sequence star, class F";
     else if ( m_StarType == StarType::MainSequenceClassG )
-        pLog->LogInfo( "- Main sequence star, class G" );
+        Log::Info() << "- Main sequence star, class G";
     else if ( m_StarType == StarType::MainSequenceClassK )
-        pLog->LogInfo( "- Main sequence star, class K" );
+        Log::Info() << "- Main sequence star, class K";
     else if ( m_StarType == StarType::MainSequenceClassM )
-        pLog->LogInfo( "- Main sequence star, class M" );
+        Log::Info() << "- Main sequence star, class M";
 
-    pLog->LogInfo( "- Surface temperature: %u", m_SurfaceTemperature );
-    pLog->LogInfo( "- Core colour: %.2f %.2f %.2f", m_CoreColour.r, m_CoreColour.g, m_CoreColour.b );
-    pLog->LogInfo( "- Corona colour: %.2f %.2f %.2f", m_CoronaColour.r, m_CoronaColour.g, m_CoronaColour.b );
-    pLog->LogInfo( "- Distance: %.2f", m_Distance );
+	Log::Info() << "- Surface temperature: " << m_SurfaceTemperature;
+    Log::Info() << "- Core colour: " << m_CoreColour.r << ", " << m_CoreColour.g << ", " << m_CoreColour.b;
+    Log::Info() << "- Corona colour: " << m_CoronaColour.r << ", " << m_CoronaColour.g << ", " << m_CoronaColour.b;
+    Log::Info() << "- Distance: " << m_Distance;
 }
 
 

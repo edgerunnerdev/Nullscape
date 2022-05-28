@@ -17,6 +17,7 @@
 
 #include <imgui/imgui.h>
 #include <imgui/misc/cpp/imgui_stdlib.h>
+#include <log.hpp>
 
 #include <gui/gui.h>
 
@@ -111,7 +112,7 @@ void Button::LoadResources()
         m_pDefault = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_DefaultPath ) );
         if ( m_pDefault == nullptr )
         {
-            FrameWork::GetLogger()->LogWarning( "Couldn't load '%s'.", m_DefaultPath.c_str() );
+            Core::Log::Warning() << "Couldn't load '" << m_DefaultPath << "'.";            
         }
         else
         {
@@ -127,7 +128,7 @@ void Button::LoadResources()
         m_pHovered = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_HoveredPath ) );
         if ( m_pHovered == nullptr )
         {
-            FrameWork::GetLogger()->LogWarning( "Couldn't load '%s'.", m_HoveredPath.c_str() );
+            Core::Log::Warning() << "Couldn't load '" << m_HoveredPath << "'.";    
         }
     }
 
@@ -136,7 +137,7 @@ void Button::LoadResources()
         m_pPressed = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_PressedPath ) );
         if ( m_pPressed == nullptr )
         {
-            FrameWork::GetLogger()->LogWarning( "Couldn't load '%s'.", m_PressedPath.c_str() );
+            Core::Log::Warning() << "Couldn't load '" << m_PressedPath << "'.";    
         }
         else if ( m_State == State::Selected )
         {
@@ -174,7 +175,7 @@ void Button::SetFont( const std::string& fontName )
     Genesis::ResourceFont* pFont = Fonts::Get( fontName );
     if ( pFont == nullptr )
     {
-        Genesis::FrameWork::GetLogger()->LogWarning( "Couldn't find font '%s' for UI element '%s'.", fontName.c_str(), GetName().c_str() );
+        Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "' for UI element '" << GetName() << ".";
     }
     else
     {
