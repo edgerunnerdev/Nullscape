@@ -16,7 +16,7 @@ include_directories(
     ${GENESISRESCOMP_INCLUDE_DIRS}
 )
 
-set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin)
+set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin/Compilers)
 
 if(WIN32)
     add_executable(${PROJECT_NAME} ${SOURCE_FILES})

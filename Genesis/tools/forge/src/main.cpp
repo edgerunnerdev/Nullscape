@@ -33,6 +33,7 @@ int main(int argc, char** argv)
     cli::Parser parser(argc, argv);
     parser.set_required<std::string>("m", "mode", "Mode for Forge to run in. Can be 'standalone' or 'service'.");
     parser.set_required<std::string>("a", "assets-dir", "Assets directory, containing all assets to be converted.");
+    parser.set_required<std::string>("c", "compilers-dir", "Compilers directory, containing all compiler binaries.");
     parser.set_required<std::string>("d", "data-dir", "Data directory, to which compiled resources will be written to.");
     parser.set_required<std::string>("i", "intermediates-dir", "Intermediates directory, containing temporary files used by the build process.");
     parser.run_and_exit_if_error();
@@ -54,9 +55,10 @@ int main(int argc, char** argv)
     }
 
     std::filesystem::path assetsDir(parser.get<std::string>("a"));
+    std::filesystem::path compilersDir(parser.get<std::string>("c"));
     std::filesystem::path dataDir(parser.get<std::string>("d"));
     std::filesystem::path intermediatesDir(parser.get<std::string>("i"));
 
-    Forge forge(mode, assetsDir, dataDir, intermediatesDir);
+    Forge forge(mode, assetsDir, compilersDir, dataDir, intermediatesDir);
     return forge.Run() == true ? 0 : -1;
 }

@@ -23,15 +23,17 @@
 
 #include <filesystem>
 #include <log.hpp>
+#include <stringhelpers.hpp>
 
 namespace Genesis
 {
 namespace ResComp
 {
 
-Forge::Forge(Mode mode, const std::filesystem::path& assetsDir, const std::filesystem::path& dataDir, const std::filesystem::path& intermediatesDir)
+Forge::Forge(Mode mode, const std::filesystem::path& assetsDir, const std::filesystem::path& compilersDir, const std::filesystem::path& dataDir, const std::filesystem::path& intermediatesDir)
     : m_Mode(mode)
     , m_AssetsDir(assetsDir)
+    , m_CompilersDir(compilersDir)
     , m_DataDir(dataDir)
     , m_IntermediatesDir(intermediatesDir)
 {
@@ -49,7 +51,13 @@ bool Forge::Run()
         return false;
     }
 
+    AggregateCompilers();
     AggregateKnownAssets();
+
+    for (auto& compiler : m_CompilersMap)
+    {
+        Log::Info() << "Compiler found: " << compiler.first;
+    }
 
     for (Asset& asset : m_KnownAssets)
     {
@@ -67,6 +75,11 @@ bool Forge::InitializeDirectories()
         Log::Error() << "Invalid asset directory: " << m_AssetsDir;
         return false;
     }
+    else if (std::filesystem::is_directory(m_CompilersDir) == false)
+    {
+        Log::Error() << "Invalid compilers directory: " << m_CompilersDir;
+        return false;
+    }
     else if (std::filesystem::is_directory(m_DataDir) == false)
     {
         Log::Error() << "Invalid data directory: " << m_DataDir;
@@ -80,6 +93,21 @@ bool Forge::InitializeDirectories()
     else
     {
         return true;
+    }
+}
+
+void Forge::AggregateCompilers() 
+{
+    for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_CompilersDir))
+    {
+        const std::filesystem::path path = dirEntry.path();
+        const std::string fileName = path.stem().generic_string();
+        const bool isExecutable = (std::filesystem::status(path).permissions() & std::filesystem::perms::owner_exec) != std::filesystem::perms::none;
+        const bool isCompiler = Genesis::Core::StringEndsWith(fileName, "Comp");
+        if (isExecutable && isCompiler)
+        {
+            m_CompilersMap[fileName] = path;
+        }
     }
 }
 

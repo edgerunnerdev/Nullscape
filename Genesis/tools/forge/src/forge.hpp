@@ -19,6 +19,7 @@
 
 #include <filesystem>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 namespace Genesis
@@ -28,6 +29,7 @@ namespace ResComp
 
 class Asset;
 using AssetVector = std::vector<Asset>;
+using CompilersMap = std::unordered_map<std::string, std::filesystem::path>;
 
 class Forge
 {
@@ -38,7 +40,7 @@ public:
         Service
     };
 
-    Forge(Mode mode, const std::filesystem::path& assetsDir, const std::filesystem::path& dataDir, const std::filesystem::path& intermediatesDir);
+    Forge(Mode mode, const std::filesystem::path& assetsDir, const std::filesystem::path& compilersDir, const std::filesystem::path& dataDir, const std::filesystem::path& intermediatesDir);
     ~Forge();
 
     bool Run();
@@ -46,12 +48,15 @@ public:
 private:
     bool InitializeDirectories();
     void AggregateKnownAssets();
+    void AggregateCompilers();
 
     Mode m_Mode;
     std::filesystem::path m_AssetsDir;
+    std::filesystem::path m_CompilersDir;
     std::filesystem::path m_DataDir;
     std::filesystem::path m_IntermediatesDir;
     AssetVector m_KnownAssets;
+    CompilersMap m_CompilersMap;
 };
 
 } // namespace ResComp
