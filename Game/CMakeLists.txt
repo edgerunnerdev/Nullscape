@@ -11,6 +11,7 @@ find_package(imgui REQUIRED)
 find_package(Genesis REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
+find_package(json REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
@@ -23,6 +24,7 @@ include_directories(
   ${GLEW_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
   ${IMGUI_INCLUDE_DIRS}
+  ${JSON_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIRS}
   ${SDL2_IMAGE_INCLUDE_DIRS}
   ${VPX_INCLUDE_DIRS}

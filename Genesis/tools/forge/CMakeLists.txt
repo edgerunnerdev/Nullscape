@@ -7,11 +7,13 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
+find_package(json REQUIRED)
 
 include_directories(
-  src/
-  ${CMDPARSER_INCLUDE_DIRS}
-  ${GENESISCORE_INCLUDE_DIRS}
+    src/
+    ${CMDPARSER_INCLUDE_DIRS}
+    ${GENESISCORE_INCLUDE_DIRS}
+    ${JSON_INCLUDE_DIRS}
 )
 
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin)

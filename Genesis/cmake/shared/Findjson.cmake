@@ -1,0 +1,1 @@
+set(JSON_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/json-3.10.5/single_include/nlohmann" CACHE STRING "JSON - include directory")
