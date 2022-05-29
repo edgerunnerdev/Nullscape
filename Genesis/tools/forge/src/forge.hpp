@@ -49,6 +49,7 @@ private:
     bool InitializeDirectories();
     void AggregateKnownAssets();
     void AggregateCompilers();
+    void CompileAssets();
 
     Mode m_Mode;
     std::filesystem::path m_AssetsDir;

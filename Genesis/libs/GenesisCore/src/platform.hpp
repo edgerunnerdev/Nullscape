@@ -17,20 +17,10 @@
 
 #pragma once
 
-#include "modelcomp.hpp"
-
-namespace Genesis
-{
-namespace ResComp
-{
-
-ModelComp::ModelComp() {}
-ModelComp::~ModelComp() {}
-
-int ModelComp::Run()
-{
-    return 0;
-}
-
-} // namespace ResComp
-} // namespace Genesis
+#if defined(__linux__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+#define TARGET_PLATFORM_LINUX
+#elif defined(__APPLE__) && defined(__MACH__)
+#define TARGET_PLATFORM_MACOS
+#elif defined(_WIN32) || defined(_WIN64)
+#define TARGET_PLATFORM_WINDOWS
+#endif

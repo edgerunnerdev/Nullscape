@@ -19,10 +19,13 @@
 
 #include "forge.hpp"
 
-#include "asset.hpp"
-
 #include <filesystem>
+#include <sstream>
+
+#include "asset.hpp"
+#include <platform.hpp>
 #include <log.hpp>
+#include <process.hpp>
 #include <stringhelpers.hpp>
 
 namespace Genesis
@@ -59,10 +62,7 @@ bool Forge::Run()
         Log::Info() << "Compiler found: " << compiler.first;
     }
 
-    for (Asset& asset : m_KnownAssets)
-    {
-        Log::Info() << "Asset found: " << asset.GetPath().native();
-    }
+    CompileAssets();
 
     return false;
 }
@@ -102,7 +102,12 @@ void Forge::AggregateCompilers()
     {
         const std::filesystem::path path = dirEntry.path();
         const std::string fileName = path.stem().generic_string();
+        
+#ifdef TARGET_PLATFORM_WINDOWS
+        const bool isExecutable = (path.extension() == ".exe");
+#else
         const bool isExecutable = (std::filesystem::status(path).permissions() & std::filesystem::perms::owner_exec) != std::filesystem::perms::none;
+#endif
         const bool isCompiler = Genesis::Core::StringEndsWith(fileName, "Comp");
         if (isExecutable && isCompiler)
         {
@@ -117,8 +122,39 @@ void Forge::AggregateKnownAssets()
     {
         if (dirEntry.is_regular_file() && dirEntry.path().extension() == ".asset")
         {
-            Asset asset(dirEntry);
-            m_KnownAssets.push_back(std::move(asset));
+            m_KnownAssets.emplace_back(dirEntry);
+        }
+    }
+}
+
+void Forge::CompileAssets() 
+{
+    Core::Log::Info() << "Compiling assets...";
+    
+    for (Asset& asset : m_KnownAssets)
+    {
+        Core::Log::Info() << "Compiling " << asset.GetPath().native();
+        CompilersMap::iterator it = m_CompilersMap.find(asset.GetCompiler());
+        if (it == m_CompilersMap.end())
+        {
+            Core::Log::Error() << "Unable to compile '" << asset.GetPath() << "', can't find compiler '" << asset.GetCompiler() << "'."; 
+        }
+        else
+        {
+            std::stringstream arguments;
+            arguments << "-a " << m_AssetsDir.generic_string() << " -d " << m_DataDir.generic_string() << " -f " << asset.GetPath();
+
+            Core::Process process(it->second, arguments.str());
+            process.Run();
+            process.Wait();
+            if (process.GetExitCode() == 0)
+            {
+                Core::Log::Info() << "Compiled " << asset.GetPath();
+            }
+            else
+            {
+                Core::Log::Error() << "Failed to compile " << asset.GetPath() << ": " << process.GetExitCode();
+            }
         }
     }
 }

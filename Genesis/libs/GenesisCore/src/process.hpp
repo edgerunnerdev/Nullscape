@@ -17,26 +17,39 @@
 
 #pragma once
 
+#include "platform.hpp"
+
 #include <filesystem>
+#include <functional>
+#include <memory>
 #include <string>
 
 namespace Genesis
 {
-namespace ResComp
+namespace Core
 {
 
-class Asset
+class Process;
+using ProcessSharedPtr = std::shared_ptr<Process>;
+using ProcessOnCompletionCallback = std::function<void(uint32_t)>;
+using ProcessOnOutputCallback = std::function<void(const std::string&)>;
+
+class ProcessImpl;
+
+class Process
 {
 public:
-    Asset(const std::filesystem::path& path);
+    Process(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback = nullptr, ProcessOnOutputCallback outputCallback = nullptr);
+    ~Process();
 
-    const std::filesystem::path& GetPath() const;
-    const std::string& GetCompiler() const;
+    void Run();
+    void Wait();
+    uint32_t GetExitCode() const;
+    bool HasExited() const;
 
 private:
-    std::filesystem::path m_Path;
-    std::string m_Compiler;
+    std::unique_ptr<ProcessImpl> m_pImpl;
 };
 
-} // namespace ResComp
+} // namespace Core
 } // namespace Genesis

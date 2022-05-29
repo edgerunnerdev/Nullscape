@@ -17,6 +17,9 @@
 
 #include "asset.hpp"
 
+#include <fstream>
+#include <json.hpp>
+
 namespace Genesis
 {
 namespace ResComp
@@ -24,18 +27,31 @@ namespace ResComp
 
 Asset::Asset(const std::filesystem::path& path)
     : m_Path(path)
-    , m_IsValid(false)
 {
+    using namespace nlohmann;
+    std::ifstream file(path);
+    if (file.good())
+    {
+        json j;
+        file >> j;
+
+        json::iterator it = j.find("compiler");
+        if (it != j.end() && it->is_string())
+        {
+            m_Compiler = it->get<std::string>();
+        }
+        else
+        {
+            m_Compiler = "GenericComp";
+        }
+
+        file.close();
+    }
 }
 
 const std::filesystem::path& Asset::GetPath() const
 {
     return m_Path;
-}
-
-bool Asset::IsValid() const
-{
-    return m_IsValid;
 }
 
 const std::string& Asset::GetCompiler() const

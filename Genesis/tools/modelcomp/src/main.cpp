@@ -17,14 +17,18 @@
 
 #include "modelcomp.hpp"
 
+#include <chrono>
 #include <rescomp.hpp>
 #include <cmdparser.hpp>
 #include <log.hpp>
+#include <thread>
 
 int main(int argc, char** argv)
 {
     using namespace Genesis::Core;
     using namespace Genesis::ResComp;
 
-    
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    return 0;
 }

@@ -17,26 +17,40 @@
 
 #pragma once
 
-#include <filesystem>
-#include <string>
+#include "platform.hpp"
+
+#if defined(TARGET_PLATFORM_WINDOWS)
+
+#include "private/processimpl.hpp"
+#include "process.hpp"
+
+#include <Windows.h>
 
 namespace Genesis
 {
-namespace ResComp
+namespace Core
 {
 
-class Asset
+class ProcessWindows : public ProcessImpl
 {
 public:
-    Asset(const std::filesystem::path& path);
+    ProcessWindows(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback = nullptr, ProcessOnOutputCallback outputCallback = nullptr);
+    ~ProcessWindows();
 
-    const std::filesystem::path& GetPath() const;
-    const std::string& GetCompiler() const;
+    virtual void Run() override;
+    virtual void Wait() override;
+    virtual uint32_t GetExitCode() const override;
+    virtual bool HasExited() const override;
 
 private:
-    std::filesystem::path m_Path;
-    std::string m_Compiler;
+    PROCESS_INFORMATION m_ProcessInformation;
+    bool m_HandlesValid;
+    bool m_HasExited;
+    DWORD m_ExitCode;
+    HANDLE m_WaitHandle;
 };
 
-} // namespace ResComp
+} // namespace Core
 } // namespace Genesis
+
+#endif // TARGET_PLATFORM_WINDOWS
