@@ -24,32 +24,46 @@ SOFTWARE.
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <rpc/client.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <filesystem>
+#include <memory>
 
 namespace Genesis
 {
+
 namespace ResComp
 {
+
+using RPCClientUniquePtr = std::unique_ptr<rpc::client>;
 
 class ResComp
 {
 public:
-	ResComp();
-	virtual ~ResComp();
+    ResComp();
+    virtual ~ResComp();
 
-	virtual void Initialise(int argc, char** argv);
-	virtual int Run();
+    virtual bool Initialize(int argc, char** argv);
+    virtual int Run();
 
-	const std::filesystem::path& GetAssetsDir() const;
-	const std::filesystem::path& GetDataDir() const;
-	const std::filesystem::path& GetIntermediatesDir() const;
-	const std::filesystem::path& GetFile() const;
+    const std::filesystem::path& GetAssetsDir() const;
+    const std::filesystem::path& GetDataDir() const;
+    const std::filesystem::path& GetFile() const;
+    bool IsUsingForge() const;
+    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource);
+    void OnAssetCompiled(const std::filesystem::path& asset);
+    void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
 
 private:
-	std::filesystem::path m_AssetsDir;
-	std::filesystem::path m_DataDir;
-	std::filesystem::path m_IntermediatesDir;
-	std::filesystem::path m_File;
+    std::filesystem::path m_AssetsDir;
+    std::filesystem::path m_DataDir;
+    std::filesystem::path m_File;
+    bool m_UsingForge;
+    RPCClientUniquePtr m_pRPCClient;
 };
 
 } // namespace ResComp

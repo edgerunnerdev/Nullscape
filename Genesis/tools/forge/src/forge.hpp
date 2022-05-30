@@ -17,9 +17,16 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.h>
+#include <rpc/server.h>
+#include <externalheadersend.h>
+// clang-format on
+
 #include <filesystem>
-#include <unordered_set>
+#include <memory>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace Genesis
@@ -30,6 +37,7 @@ namespace ResComp
 class Asset;
 using AssetVector = std::vector<Asset>;
 using CompilersMap = std::unordered_map<std::string, std::filesystem::path>;
+using RPCServerUniquePtr = std::unique_ptr<rpc::server>;
 
 class Forge
 {
@@ -46,6 +54,11 @@ public:
     bool Run();
 
 private:
+    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource);
+    void OnAssetCompiled(const std::filesystem::path& asset);
+    void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
+
+    void InitializeRPCServer();
     bool InitializeDirectories();
     void AggregateKnownAssets();
     void AggregateCompilers();
@@ -58,6 +71,7 @@ private:
     std::filesystem::path m_IntermediatesDir;
     AssetVector m_KnownAssets;
     CompilersMap m_CompilersMap;
+    RPCServerUniquePtr m_pRPCServer;
 };
 
 } // namespace ResComp

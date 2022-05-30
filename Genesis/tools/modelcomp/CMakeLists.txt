@@ -8,12 +8,14 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
+find_package(rpc REQUIRED)
 
 include_directories(
     src/
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GENESISRESCOMP_INCLUDE_DIRS}
+    ${RPC_INCLUDE_DIRS}
 )
 
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin/Compilers)
@@ -33,6 +35,7 @@ target_link_directories(${PROJECT_NAME} PRIVATE
     ${GENESISCORE_LIBRARY_DIRS}
     ${GENESISRESCOMP_LIBRARY_DIRS}
     ${SDL2_LIBRARY_DIRS}
+    ${RPC_LIBRARY_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
@@ -40,6 +43,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     GenesisResComp
     SDL2main
     SDL2
+    rpc
 )
 
 add_dependencies(${PROJECT_NAME} GenesisCore)

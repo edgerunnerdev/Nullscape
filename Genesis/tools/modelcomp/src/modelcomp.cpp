@@ -29,7 +29,8 @@ ModelComp::~ModelComp() {}
 
 int ModelComp::Run()
 {
-    return 0;
+    OnAssetCompilationFailed(GetFile(), "Not implemented.");
+    return -1;
 }
 
 } // namespace ResComp

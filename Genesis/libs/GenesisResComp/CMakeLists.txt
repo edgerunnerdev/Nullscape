@@ -6,12 +6,16 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
 find_package(CmdParser REQUIRED)
+find_package(GenesisCore REQUIRED)
 find_package(SDL2 REQUIRED)
+find_package(rpc REQUIRED)
 
 include_directories(
   src/
   ${CMDPARSER_INCLUDE_DIRS}
+  ${GENESISCORE_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIRS}
+  ${RPC_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
