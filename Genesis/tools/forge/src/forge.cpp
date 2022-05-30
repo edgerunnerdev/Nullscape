@@ -19,13 +19,13 @@
 
 #include "forge.hpp"
 
-#include <filesystem>
-#include <sstream>
-
 #include "asset.hpp"
-#include <platform.hpp>
+
+#include <filesystem>
 #include <log.hpp>
+#include <platform.hpp>
 #include <process.hpp>
+#include <sstream>
 #include <stringhelpers.hpp>
 
 namespace Genesis
@@ -42,7 +42,7 @@ Forge::Forge(Mode mode, const std::filesystem::path& assetsDir, const std::files
 {
 }
 
-Forge::~Forge() 
+Forge::~Forge()
 {
     if (m_pRPCServer)
     {
@@ -57,7 +57,7 @@ bool Forge::Run()
 
     if (!InitializeDirectories())
     {
-        Log::Error() <<"Failed to initialize directories.";
+        Log::Error() << "Failed to initialize directories.";
         return false;
     }
 
@@ -101,17 +101,21 @@ bool Forge::InitializeDirectories()
     }
     else
     {
+        m_AssetsDir = std::filesystem::canonical(m_AssetsDir);
+        m_CompilersDir = std::filesystem::canonical(m_CompilersDir);
+        m_DataDir = std::filesystem::canonical(m_DataDir);
+        m_IntermediatesDir = std::filesystem::canonical(m_IntermediatesDir);
         return true;
     }
 }
 
-void Forge::AggregateCompilers() 
+void Forge::AggregateCompilers()
 {
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_CompilersDir))
     {
         const std::filesystem::path path = dirEntry.path();
         const std::string fileName = path.stem().generic_string();
-        
+
 #ifdef TARGET_PLATFORM_WINDOWS
         const bool isExecutable = (path.extension() == ".exe");
 #else
@@ -136,28 +140,61 @@ void Forge::AggregateKnownAssets()
     }
 }
 
-void Forge::InitializeRPCServer() 
-{ 
+void Forge::InitializeRPCServer()
+{
+    using namespace Core;
     static const int port = 47563;
     m_pRPCServer = std::make_unique<rpc::server>(port);
     m_pRPCServer->async_run(2);
-    Core::Log::Info() << "Initialized RPC server on port " << port << ".";
+    Log::Info() << "Initialized RPC server on port " << port << ".";
 
-    m_pRPCServer->bind("cache", [this](const std::string& asset, const std::string& resource) { OnResourceBuilt(asset, resource); });
-    m_pRPCServer->bind("success", [this](const std::string& asset) { OnAssetCompiled(asset); });
-    m_pRPCServer->bind("failed", [this](const std::string& asset, const std::string& reason) { OnAssetCompilationFailed(asset, reason); });
+    m_pRPCServer->bind("cache",
+                       [this](const std::string& asset, const std::string& resource)
+                       {
+                           OnResourceBuilt(asset, resource);
+                       });
+
+    m_pRPCServer->bind("success",
+                       [this](const std::string& asset)
+                       {
+                           OnAssetCompiled(asset);
+                       });
+
+    m_pRPCServer->bind("failed",
+                       [this](const std::string& asset, const std::string& reason)
+                       {
+                           OnAssetCompilationFailed(asset, reason);
+                       });
+
+    m_pRPCServer->bind("log",
+                       [this](const std::string& text, int level)
+                       {
+                           Log::Level logLevel = static_cast<Log::Level>(level);
+                           if (logLevel == Log::Level::Info)
+                           {
+                               Log::Info() << text;
+                           }
+                           else if (logLevel == Log::Level::Warning)
+                           {
+                               Log::Warning() << text;
+                           }
+                           else if (logLevel == Log::Level::Error)
+                           {
+                               Log::Error() << text;
+                           }
+                       });
 }
 
-void Forge::CompileAssets() 
+void Forge::CompileAssets()
 {
     Core::Log::Info() << "Compiling assets...";
-    
+
     for (Asset& asset : m_KnownAssets)
     {
         CompilersMap::iterator it = m_CompilersMap.find(asset.GetCompiler());
         if (it == m_CompilersMap.end())
         {
-            Core::Log::Error() << "Unable to compile '" << asset.GetPath().lexically_normal() << "', can't find compiler '" << asset.GetCompiler() << "'."; 
+            Core::Log::Error() << "Unable to compile '" << asset.GetPath() << "', can't find compiler '" << asset.GetCompiler() << "'.";
         }
         else
         {
@@ -169,23 +206,23 @@ void Forge::CompileAssets()
             process.Wait();
             if (process.GetExitCode() != 0)
             {
-                Core::Log::Error() << "Failed to compile " << asset.GetPath().lexically_normal() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
+                Core::Log::Error() << "Failed to compile " << asset.GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
             }
         }
     }
 }
 
-void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource) 
+void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource)
 {
     Core::Log::Info() << asset << ": build resource " << resource;
 }
 
-void Forge::OnAssetCompiled(const std::filesystem::path& asset) 
+void Forge::OnAssetCompiled(const std::filesystem::path& asset)
 {
-    Core::Log::Info() << "Compiled asset " << asset; 
+    Core::Log::Info() << "Compiled asset " << asset;
 }
 
-void Forge::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason) 
+void Forge::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason)
 {
     Core::Log::Error() << "Failed to compile asset " << asset << ": " << reason;
 }

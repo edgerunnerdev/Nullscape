@@ -24,6 +24,7 @@
 // clang-format on
 
 #include <filesystem>
+#include <log.hpp>
 #include <memory>
 
 namespace Genesis
@@ -32,31 +33,14 @@ namespace Genesis
 namespace ResComp
 {
 
-using RPCClientUniquePtr = std::unique_ptr<rpc::client>;
-
-class ResComp
+class ForgeLogger : public Core::ILogTarget
 {
 public:
-    ResComp();
-    virtual ~ResComp();
-
-    virtual bool Initialize(int argc, char** argv);
-    virtual int Run();
-
-    const std::filesystem::path& GetAssetsDir() const;
-    const std::filesystem::path& GetDataDir() const;
-    const std::filesystem::path& GetFile() const;
-    bool IsUsingForge() const;
-    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource);
-    void OnAssetCompiled(const std::filesystem::path& asset);
-    void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
+    ForgeLogger(rpc::client* pRPCClient);
+    virtual void Log(const std::string& text, Core::Log::Level type) override;
 
 private:
-    std::filesystem::path m_AssetsDir;
-    std::filesystem::path m_DataDir;
-    std::filesystem::path m_File;
-    bool m_UsingForge;
-    RPCClientUniquePtr m_pRPCClient;
+    rpc::client* m_pRPCClient;
 };
 
 } // namespace ResComp

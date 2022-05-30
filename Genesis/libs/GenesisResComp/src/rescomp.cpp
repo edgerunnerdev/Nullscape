@@ -1,26 +1,19 @@
-/*
-MIT License
-
-Copyright (c) 2022 Pedro Nunes
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+// Copyright 2022 Pedro Nunes
+//
+// This file is part of Genesis.
+//
+// Genesis is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Genesis is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rescomp.hpp"
 
@@ -30,6 +23,9 @@ SOFTWARE.
 #include <SDL.h>
 #include <externalheadersend.hpp>
 // clang-format on
+
+#include <log.hpp>
+#include "forgelogger.hpp"
 
 namespace Genesis
 {
@@ -63,7 +59,7 @@ bool ResComp::Initialize(int argc, char** argv)
     }
     else
     {
-        // Log::Error() << "Mode " << modeArg << " not recognized, must be 'standalone' or 'service'.";
+        Core::Log::Error() << "Mode " << modeArg << " not recognized, must be 'standalone' or 'service'.";
         return false;
     }
 
@@ -71,11 +67,16 @@ bool ResComp::Initialize(int argc, char** argv)
     {
         static const int port = 47563;
         m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", port);
+        Core::Log::AddLogTarget(std::make_shared<ForgeLogger>(m_pRPCClient.get()));
+    }
+    else
+    {
+        Core::Log::AddLogTarget(std::make_shared<Core::TTYLogger>());
     }
 
-    m_AssetsDir = parser.get<std::string>("a");
-    m_DataDir = parser.get<std::string>("d");
-    m_File = parser.get<std::string>("f");
+    m_AssetsDir = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("a")));
+    m_DataDir = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("d")));
+    m_File = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("f")));
 
     return true;
 }

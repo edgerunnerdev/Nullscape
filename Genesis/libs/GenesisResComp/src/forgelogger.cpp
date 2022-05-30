@@ -15,26 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <log.hpp>
-#include "genericcomp.hpp"
+#include "forgelogger.hpp"
 
 namespace Genesis
 {
+
 namespace ResComp
 {
 
-GenericComp::GenericComp() {}
-GenericComp::~GenericComp() {}
-
-int GenericComp::Run()
+ForgeLogger::ForgeLogger(rpc::client* pRPCClient) 
 {
-    Core::Log::Info() << "Assets dir: " << GetAssetsDir();
-    Core::Log::Info() << "Data dir: " << GetDataDir();
-    Core::Log::Info() << "File: " << GetFile();
-    OnAssetCompilationFailed(GetFile(), "Not implemented.");
-    return -1;
+    m_pRPCClient = pRPCClient;
+}
+
+void ForgeLogger::Log(const std::string& text, Core::Log::Level type) 
+{
+    m_pRPCClient->call("log", text, static_cast<int>(type));
 }
 
 } // namespace ResComp
