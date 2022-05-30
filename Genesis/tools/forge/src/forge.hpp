@@ -18,9 +18,9 @@
 #pragma once
 
 // clang-format off
-#include <externalheadersbegin.h>
+#include <externalheadersbegin.hpp>
 #include <rpc/server.h>
-#include <externalheadersend.h>
+#include <externalheadersend.hpp>
 // clang-format on
 
 #include <filesystem>
