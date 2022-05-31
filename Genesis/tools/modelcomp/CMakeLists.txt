@@ -5,6 +5,7 @@ project(${PROJECT_NAME})
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
+find_package(assimp REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
@@ -12,6 +13,7 @@ find_package(rpc REQUIRED)
 
 include_directories(
     src/
+    ${ASSIMP_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GENESISRESCOMP_INCLUDE_DIRS}
@@ -25,6 +27,7 @@ if(WIN32)
     target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
+    target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<CONFIG:Debug>,assimp-vc142-mtd,assimp-vc142-mt>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_LIBRARY_DIRS}/SDL2.dll ${OUTPUT_DIRECTORY})
 else()
 	add_executable(${PROJECT_NAME} ${SOURCE_FILES})
@@ -32,6 +35,7 @@ else()
 endif()
 
 target_link_directories(${PROJECT_NAME} PRIVATE 
+    ${ASSIMP_LIBRARY_DIRS}
     ${GENESISCORE_LIBRARY_DIRS}
     ${GENESISRESCOMP_LIBRARY_DIRS}
     ${SDL2_LIBRARY_DIRS}
