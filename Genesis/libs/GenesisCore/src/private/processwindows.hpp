@@ -24,6 +24,7 @@
 #include "private/processimpl.hpp"
 #include "process.hpp"
 
+#include <atomic>
 #include <Windows.h>
 
 namespace Genesis
@@ -42,12 +43,15 @@ public:
     virtual uint32_t GetExitCode() const override;
     virtual bool HasExited() const override;
 
+    void WaitOrTimerCallback();
+
 private:
     PROCESS_INFORMATION m_ProcessInformation;
     bool m_HandlesValid;
     bool m_HasExited;
     DWORD m_ExitCode;
     HANDLE m_WaitHandle;
+    std::atomic_bool m_ProcessExited;
 };
 
 } // namespace Core

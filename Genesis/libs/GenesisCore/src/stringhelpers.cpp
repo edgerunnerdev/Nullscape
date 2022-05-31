@@ -56,11 +56,32 @@ int CountLines(const std::string& text)
     return lines;
 }
 
-bool StringEndsWith(const std::string& text, const std::string& substring)
+bool StringStartsWith(const std::string& text, const std::string& startsWith)
 {
     const size_t textLength = text.length();
-    const size_t substringLength = substring.length();
-    return (textLength >= substringLength && text.substr(textLength - substringLength) == substring);
+    const size_t startsWithLength = startsWith.length();
+    return (textLength >= startsWithLength) && (text.substr(0, startsWithLength) == startsWith);
+}
+
+bool StringStartsWith(const std::wstring& text, const std::wstring& startsWith)
+{
+    const size_t textLength = text.length();
+    const size_t startsWithLength = startsWith.length();
+    return (textLength >= startsWithLength) && (text.substr(0, startsWithLength) == startsWith);
+}
+
+bool StringEndsWith(const std::string& text, const std::string& endsWith)
+{
+    const size_t textLength = text.length();
+    const size_t endsWithLength = endsWith.length();
+    return (textLength >= endsWithLength) && (text.substr(textLength - endsWithLength) == endsWith);
+}
+
+bool StringEndsWith(const std::wstring& text, const std::wstring& endsWith)
+{
+    const size_t textLength = text.length();
+    const size_t endsWithLength = endsWith.length();
+    return (textLength >= endsWithLength) && (text.substr(textLength - endsWithLength) == endsWith);
 }
 
 std::vector<std::string> Split(const std::string& text, char delim)

@@ -68,28 +68,9 @@ Log::Stream Log::Error()
 void Log::LogInternal(const std::string& text, Log::Level level)
 {
     std::lock_guard<std::mutex> lock(m_Mutex);
-    std::string prefix;
-    if (level == Log::Level::Info)
-    {
-
-        prefix = "[INFO] ";
-    }
-    else if (level == Log::Level::Warning)
-    {
-
-        prefix = "[WARNING] ";
-    }
-    else if (level == Log::Level::Error)
-    {
-
-        prefix = "[ERROR] ";
-    }
-
-    std::ostringstream msg;
-    msg << prefix << text;
     for (auto& pTarget : m_Targets)
     {
-        pTarget->Log(msg.str(), level);
+        pTarget->Log(text, level);
     }
 }
 
@@ -108,13 +89,25 @@ Log::Stream::~Stream()
 }
 
 //////////////////////////////////////////////////////////////////////////
+// ILogTarget
+// Prints the message to the console.
+//////////////////////////////////////////////////////////////////////////
+
+const std::string& ILogTarget::GetPrefix(Log::Level level)
+{
+    static std::string prefixes[static_cast<size_t>(Log::Level::Count)] = {"[INFO] ", "[WARNING] ", "[ERROR] "};
+
+    return prefixes[static_cast<size_t>(level)];
+}
+
+//////////////////////////////////////////////////////////////////////////
 // TTYLogger
 // Prints the message to the console.
 //////////////////////////////////////////////////////////////////////////
 
 void TTYLogger::Log(const std::string& text, Log::Level type)
 {
-    std::cout << text << std::endl;
+    std::cout << GetPrefix(type) << text << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -138,7 +131,7 @@ void FileLogger::Log(const std::string& text, Log::Level type)
 {
     if (m_File.is_open())
     {
-        m_File << text << std::endl;
+        m_File << GetPrefix(type) << text << std::endl;
         m_File.flush();
     }
 }
@@ -167,9 +160,8 @@ void VisualStudioLogger::Log(const std::string& text, Log::Level type)
 {
 #if _MSC_VER
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wideText = converter.from_bytes(text);
     std::wostringstream ss;
-    ss << wideText << std::endl;
+    ss << converter.from_bytes(GetPrefix(type)) << converter.from_bytes(text) << std::endl;
     OutputDebugStringW(ss.str().c_str());
 #endif
 }

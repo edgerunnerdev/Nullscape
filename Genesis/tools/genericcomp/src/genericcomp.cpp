@@ -18,6 +18,8 @@
 #pragma once
 
 #include <log.hpp>
+#include <json.hpp>
+#include <fstream>
 #include "genericcomp.hpp"
 
 namespace Genesis
@@ -30,11 +32,47 @@ GenericComp::~GenericComp() {}
 
 int GenericComp::Run()
 {
-    Core::Log::Info() << "Assets dir: " << GetAssetsDir();
-    Core::Log::Info() << "Data dir: " << GetDataDir();
-    Core::Log::Info() << "File: " << GetFile();
-    OnAssetCompilationFailed(GetFile(), "Not implemented.");
-    return -1;
+    std::filesystem::path targetPath = GetDataDir() / std::filesystem::relative(GetFile(), GetAssetsDir()).remove_filename();
+    std::filesystem::create_directories(targetPath);
+
+    using namespace nlohmann;
+    json j;
+
+    std::filesystem::path sourceFile;
+    std::ifstream file(GetFile());
+    if (file.good())
+    {
+        json j;
+        file >> j;
+
+        json::iterator it = j.find("source");
+        if (it != j.end() && it->is_string())
+        {
+            std::filesystem::path filePath(GetFile());
+            sourceFile = filePath.remove_filename() / it->get<std::string>();
+        }
+        file.close();
+    }
+
+    if (std::filesystem::exists(sourceFile) == false)
+    {
+        Core::Log::Error() << "Source file " << sourceFile << "doesn't exist.";
+        return -1;
+    }
+
+    std::filesystem::path targetFile = targetPath / sourceFile.filename();
+    bool fileCopied = std::filesystem::copy_file(sourceFile, targetFile, std::filesystem::copy_options::overwrite_existing);
+    if (fileCopied)
+    {
+        OnResourceBuilt(GetFile(), targetFile);
+        OnAssetCompiled(GetFile());
+        return 0;
+    }
+    else
+    {
+        OnAssetCompilationFailed(GetFile(), "File copy failed.");
+        return -1;
+    }
 }
 
 } // namespace ResComp

@@ -191,6 +191,7 @@ void Forge::CompileAssets()
 
     for (Asset& asset : m_KnownAssets)
     {
+        Core::Log::Info() << "Compiling " << asset.GetPath() << "...";
         CompilersMap::iterator it = m_CompilersMap.find(asset.GetCompiler());
         if (it == m_CompilersMap.end())
         {
@@ -214,17 +215,17 @@ void Forge::CompileAssets()
 
 void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource)
 {
-    Core::Log::Info() << asset << ": build resource " << resource;
+    Core::Log::Info() << asset << ": built resource " << resource;
 }
 
 void Forge::OnAssetCompiled(const std::filesystem::path& asset)
 {
-    Core::Log::Info() << "Compiled asset " << asset;
+    Core::Log::Info() << "Compiled " << asset;
 }
 
 void Forge::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason)
 {
-    Core::Log::Error() << "Failed to compile asset " << asset << ": " << reason;
+    Core::Log::Error() << "Failed to compile " << asset << ": " << reason;
 }
 
 } // namespace ResComp

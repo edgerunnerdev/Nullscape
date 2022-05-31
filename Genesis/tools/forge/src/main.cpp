@@ -27,6 +27,7 @@ int main(int argc, char** argv)
 
     Log::AddLogTarget(std::make_shared<VisualStudioLogger>());
     Log::AddLogTarget(std::make_shared<TTYLogger>());
+    Log::AddLogTarget(std::make_shared<FileLogger>("forge.log"));
 
     Log::Info() << "Running Forge...";
 

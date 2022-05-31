@@ -8,6 +8,7 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
+find_package(json REQUIRED)
 find_package(rpc REQUIRED)
 
 include_directories(
@@ -15,6 +16,7 @@ include_directories(
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GENESISRESCOMP_INCLUDE_DIRS}
+    ${JSON_INCLUDE_DIRS}
     ${RPC_INCLUDE_DIRS}
 )
 

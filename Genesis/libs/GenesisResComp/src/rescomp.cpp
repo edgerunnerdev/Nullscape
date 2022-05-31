@@ -25,6 +25,7 @@
 // clang-format on
 
 #include <log.hpp>
+#include <stringhelpers.hpp>
 #include "forgelogger.hpp"
 
 namespace Genesis
@@ -78,6 +79,12 @@ bool ResComp::Initialize(int argc, char** argv)
     m_DataDir = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("d")));
     m_File = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("f")));
 
+    if (Core::StringStartsWith(m_File, m_AssetsDir) == false)
+    {
+        Core::Log::Error() << "File " << m_File << " it not in " << m_AssetsDir;
+        return false;
+    }
+
     return true;
 }
 
@@ -108,21 +115,26 @@ bool ResComp::IsUsingForge() const
 
 void ResComp::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource)
 {
-    //Core::Log::Info() << asset << ": build resource " << resource;
+    if (IsUsingForge())
+    {
+        m_pRPCClient->send("cache", asset.generic_string(), resource.generic_string());
+    }
 }
 
 void ResComp::OnAssetCompiled(const std::filesystem::path& asset)
 {
     if (IsUsingForge())
     {
-        m_pRPCClient->send("success", asset.lexically_normal().generic_string());
+        m_pRPCClient->send("success", asset.generic_string());
     }
-    //Core::Log::Info() << "Compiled asset " << asset;
 }
 
 void ResComp::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason)
 {
-    //Core::Log::Error() << "Failed to compile asset " << asset << ": " << reason;
+    if (IsUsingForge())
+    {
+        m_pRPCClient->send("failed", asset.generic_string(), reason);
+    }
 }
 
 } // namespace ResComp

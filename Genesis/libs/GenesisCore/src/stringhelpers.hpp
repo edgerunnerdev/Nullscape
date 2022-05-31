@@ -27,9 +27,13 @@ namespace Core
 
 std::string ToLower(const std::string& text);
 int CountLines(const std::string& text);
-bool StringEndsWith(const std::string& text, const std::string& substring);
 std::vector<std::string> Split(const std::string& text, char delim);
 std::wstring ToWString(const std::string& text);
+
+bool StringStartsWith(const std::string& text, const std::string& startsWith);
+bool StringStartsWith(const std::wstring& text, const std::wstring& startsWith);
+bool StringEndsWith(const std::string& text, const std::string& endsWith);
+bool StringEndsWith(const std::wstring& text, const std::wstring& endsWith);
 
 } // namespace Core
 } // namespace Genesis

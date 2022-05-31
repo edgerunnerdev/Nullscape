@@ -11,11 +11,11 @@ find_package(SDL2 REQUIRED)
 find_package(rpc REQUIRED)
 
 include_directories(
-  src/
-  ${CMDPARSER_INCLUDE_DIRS}
-  ${GENESISCORE_INCLUDE_DIRS}
-  ${SDL2_INCLUDE_DIRS}
-  ${RPC_INCLUDE_DIRS}
+    src/
+    ${CMDPARSER_INCLUDE_DIRS}
+    ${GENESISCORE_INCLUDE_DIRS}
+    ${SDL2_INCLUDE_DIRS}
+    ${RPC_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})

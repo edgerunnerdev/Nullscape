@@ -51,7 +51,9 @@ public:
     {
         Info,
         Warning,
-        Error
+        Error,
+
+        Count
     };
 
     class Stream
@@ -104,6 +106,9 @@ class ILogTarget
 public:
     virtual ~ILogTarget() {}
     virtual void Log(const std::string& text, Log::Level level) = 0;
+
+protected:
+    static const std::string& GetPrefix(Log::Level level);
 };
 
 //////////////////////////////////////////////////////////////////////////

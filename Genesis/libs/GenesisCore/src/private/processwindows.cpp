@@ -33,7 +33,7 @@ namespace Core
 void CALLBACK WaitOrTimerCallback(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 {
     ProcessWindows* pProcess = reinterpret_cast<ProcessWindows*>(lpParameter);
-    pProcess->Wait();
+    pProcess->WaitOrTimerCallback();
 }
 
 ProcessWindows::ProcessWindows(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback, ProcessOnOutputCallback outputCallback)
@@ -43,6 +43,7 @@ ProcessWindows::ProcessWindows(const std::filesystem::path& executable, const st
     m_HandlesValid = false;
     m_HasExited = false;
     m_ExitCode = 0;
+    m_ProcessExited = false;
 }
 
 ProcessWindows::~ProcessWindows()
@@ -52,7 +53,6 @@ ProcessWindows::~ProcessWindows()
         CloseHandle(m_ProcessInformation.hProcess);
         CloseHandle(m_ProcessInformation.hThread);
         UnregisterWait(m_WaitHandle);
-        m_HandlesValid = false;
     }
 }
 
@@ -70,13 +70,16 @@ void ProcessWindows::Run()
     }
     else
     {
-        RegisterWaitForSingleObject(&m_WaitHandle, m_ProcessInformation.hProcess, &WaitOrTimerCallback, this, INFINITE, WT_EXECUTEONLYONCE);
+        RegisterWaitForSingleObject(&m_WaitHandle, m_ProcessInformation.hProcess, &Genesis::Core::WaitOrTimerCallback, this, INFINITE, WT_EXECUTEONLYONCE);
+        m_HandlesValid = true;
     }
 }
 
 void ProcessWindows::Wait()
 {
-    WaitForSingleObject(m_ProcessInformation.hProcess, INFINITE);
+    DWORD result = WaitForSingleObject(m_ProcessInformation.hProcess, INFINITE);
+    while (m_ProcessExited == false) {}
+
     GetExitCodeProcess(m_ProcessInformation.hProcess, &m_ExitCode);
     CloseHandle(m_ProcessInformation.hProcess);
     CloseHandle(m_ProcessInformation.hThread);
@@ -87,6 +90,11 @@ void ProcessWindows::Wait()
     {
         OnCompletion(GetExitCode());
     }
+}
+
+void ProcessWindows::WaitOrTimerCallback() 
+{
+    m_ProcessExited = true;
 }
 
 uint32_t ProcessWindows::GetExitCode() const
