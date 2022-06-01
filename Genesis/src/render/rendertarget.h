@@ -25,9 +25,6 @@
 namespace Genesis
 {
 
-class RenderTarget;
-using RenderTargetUniquePtr = std::unique_ptr<RenderTarget>;
-
 class RenderTarget
 {
 public:

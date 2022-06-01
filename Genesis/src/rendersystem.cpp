@@ -30,6 +30,7 @@
 #include "memory.h"
 #include "render/gldebugmessagecallback.h"
 #include "render/rendertarget.h"
+#include "render/viewport.hpp"
 #include "rendersystem.fwd.h"
 #include "rendersystem.h"
 #include "resourcemanager.h"
@@ -501,7 +502,7 @@ void RenderSystem::SetRenderTarget(RenderTarget* pRenderTarget)
 
 void RenderSystem::RenderScene()
 {
-    FrameWork::GetScene()->Render();
+    FrameWork::GetScene()->Render(nullptr); // TODO: create a primary viewport.
 }
 
 void RenderSystem::RenderGlow()
@@ -530,6 +531,12 @@ TaskStatus RenderSystem::Update(float delta)
     ClearAll();
     ViewPerspective();
     RenderScene();
+
+    for (auto& pViewport : m_Viewports)
+    {
+        pViewport->Render();
+    }
+
     RenderGlow();
 
     SetRenderTarget(RenderTargetId::None);
@@ -553,22 +560,35 @@ TaskStatus RenderSystem::Update(float delta)
     return TaskStatus::Continue;
 }
 
-void RenderSystem::ViewOrtho()
+void RenderSystem::ViewOrtho(int width /* = 0 */, int height /* = 0 */)
 {
+    if (width == 0)
+    {
+        width = m_ScreenWidth;
+    }
+
+    if (height == 0)
+    {
+        height = m_ScreenHeight;
+    }
+
     m_ViewMatrix = glm::mat4();
-    m_ProjectionMatrix = glm::ortho(0.0f, static_cast<float>(m_ScreenWidth), static_cast<float>(m_ScreenHeight), 0.0f, -1.0f, 1.0f);
+    m_ProjectionMatrix = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
 }
 
-void RenderSystem::ViewPerspective()
+void RenderSystem::ViewPerspective(int width /* = 0 */, int height /* = 0 */, Scene* pScene /* = nullptr */)
 {
-    Scene* scene = FrameWork::GetScene();
-    Camera* camera = scene->GetCamera();
+    width = (width == 0) ? m_ScreenWidth : width;
+    height = (height == 0) ? m_ScreenHeight : height;
+    pScene = (pScene == nullptr) ? FrameWork::GetScene() : pScene;
+
+    Camera* camera = pScene->GetCamera();
     glm::vec3 cPos = camera->GetPosition();
     glm::vec3 cTgt = camera->GetTargetPosition();
 
     m_ViewMatrix = glm::lookAt(glm::vec3(cPos.x, cPos.y, cPos.z), glm::vec3(cTgt.x, cTgt.y, cTgt.z), glm::vec3(0.0f, 1.0f, 0.0f));
 
-    m_ProjectionMatrix = glm::perspective(45.0f, static_cast<float>(m_ScreenWidth) / static_cast<float>(m_ScreenHeight), 1.0f, 1000.0f);
+    m_ProjectionMatrix = glm::perspective(45.0f, static_cast<float>(width) / static_cast<float>(height), 1.0f, 1000.0f);
 }
 
 IntersectionResult RenderSystem::LinePlaneIntersection(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result)
@@ -781,6 +801,16 @@ void RenderSystem::EnablePostProcessEffect(PostProcessEffect effect, bool enable
     const size_t idx = static_cast<size_t>(effect);
     m_ActivePostProcessEffects[idx] = enable;
     m_PostProcessShaderUniforms[idx]->Set(enable);
+}
+
+void RenderSystem::AddViewport(const ViewportSharedPtr& pViewport) 
+{ 
+    m_Viewports.push_back(pViewport); 
+}
+
+void RenderSystem::RemoveViewport(const ViewportSharedPtr& pViewport) 
+{
+    m_Viewports.remove(pViewport);
 }
 
 } // namespace Genesis

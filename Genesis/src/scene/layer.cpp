@@ -17,6 +17,7 @@
 
 #include "layer.h"
 
+#include "render/viewport.hpp"
 #include "../genesis.h"
 #include "../rendersystem.h"
 #include "sceneobject.h"
@@ -84,19 +85,24 @@ void Layer::Update(float delta)
 }
 
 // Render all objects in this layer
-void Layer::Render()
+void Layer::Render(Viewport* pViewport)
 {
     if (IsMarkedForDeletion())
         return;
 
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
+
+    Scene* pScene = pViewport ? pViewport->GetScene() : nullptr;
+    int width = pViewport ? pViewport->GetWidth() : 0;
+    int height = pViewport ? pViewport->GetHeight() : 0;
+
     if (IsBackground())
     {
-        pRenderSystem->ViewOrtho();
+        pRenderSystem->ViewOrtho(width, height);
     }
     else
     {
-        pRenderSystem->ViewPerspective();
+        pRenderSystem->ViewPerspective(width, height, pScene);
     }
 
     LayerObjectList::const_iterator itEnd = mObjectList.end();

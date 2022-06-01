@@ -109,6 +109,7 @@ bool FrameWork::Initialize()
     gResourceManager = new ResourceManager();
 
     // Initialize the task manager, as well as all the related tasks
+    gTaskManager = new TaskManager();
     gTaskManager->AddTask("InputManager", gInputManager, (TaskFunc)&InputManager::Update, TaskPriority::System);
     gTaskManager->AddTask("EventHandler", gEventHandler, (TaskFunc)&EventHandler::Update, TaskPriority::System);
 

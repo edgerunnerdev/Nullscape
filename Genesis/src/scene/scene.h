@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "coredefines.h"
+#include "rendersystem.fwd.h"
 #include "../taskmanager.h"
 #include "layer.h"
 
@@ -39,7 +41,7 @@ public:
     Scene();
     virtual ~Scene();
     TaskStatus Update(float delta);
-    void Render();
+    void Render(Viewport* pViewport);
     LayerSharedPtr AddLayer(uint32_t depth, bool isBackground = false);
     void RemoveLayer(uint32_t depth);
     void SetLayerMask(uint32_t mask); // Allows only layers which match this mask to be rendered
@@ -54,6 +56,7 @@ private:
     Camera* mCamera;
     uint32_t mMask;
 };
+GENESIS_DECLARE_SMART_PTR(Scene);
 
 inline Camera* Scene::GetCamera() const
 {

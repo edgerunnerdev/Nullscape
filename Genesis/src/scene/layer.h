@@ -18,6 +18,7 @@
 #pragma once
 
 #include "coredefines.h"
+#include "rendersystem.fwd.h"
 
 #include <SDL.h>
 #include <list>
@@ -42,7 +43,7 @@ public:
     Layer(uint32_t depth, bool isBackground);
     ~Layer();
     void Update(float delta);
-    void Render();
+    void Render(Viewport* pViewport);
     void AddSceneObject(SceneObject* object, bool hasOwnership = true);
     void RemoveSceneObject(SceneObject* object);
     uint32_t GetLayerDepth() const;

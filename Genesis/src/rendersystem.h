@@ -28,11 +28,13 @@
 
 #include <array>
 #include <bitset>
+#include <memory>
 #include <vector>
 
 namespace Genesis
 {
 
+class Scene;
 class ShaderCache;
 class VertexBuffer;
 
@@ -47,14 +49,15 @@ public:
     virtual ~RenderSystem();
     TaskStatus Update(float delta);
     void Initialize(GLuint screenWidth, GLuint screenHeight);
-    void ViewOrtho();
-    void ViewPerspective();
+    void ViewOrtho(int width = 0, int height = 0);
+    void ViewPerspective(int width = 0, int height = 0, Scene* pScene = nullptr);
     ShaderCache* GetShaderCache() const;
 
     glm::vec3 Raycast(const glm::vec2& screenCoordinates);
 
     inline float GetShaderTimer() const;
     void SetRenderTarget(RenderTargetId renderTargetId);
+    void SetRenderTarget(RenderTarget* pRenderTarget);
 
     bool IsScreenshotScheduled() const;
     void BeginCapture();
@@ -84,6 +87,9 @@ public:
     void EnablePostProcessEffect(PostProcessEffect effect, bool enable);
     bool IsPostProcessEffectEnabled(PostProcessEffect effect);
 
+    void AddViewport(const ViewportSharedPtr& pViewport);
+    void RemoveViewport(const ViewportSharedPtr& pViewport);
+
 private:
     void CreateRenderTargets();
     void ClearAll();
@@ -99,7 +105,6 @@ private:
 
     bool GetScreenshotFilename(std::string& filename) const;
     SDL_Surface* FlipSurfaceVertical(SDL_Surface* pSurface) const;
-    void SetRenderTarget(RenderTarget* pRenderTarget);
     void TakeScreenshot();
     void TakeScreenshotAux(bool immediate);
     void Capture();
@@ -150,6 +155,8 @@ private:
     using PostProcessBitSet = std::bitset<static_cast<size_t>(PostProcessEffect::Count)>;
     PostProcessBitSet m_ActivePostProcessEffects;
     std::array<ShaderUniform*, static_cast<size_t>(PostProcessEffect::Count)> m_PostProcessShaderUniforms;
+
+    std::list<ViewportSharedPtr> m_Viewports;
 };
 
 inline ShaderCache* RenderSystem::GetShaderCache() const

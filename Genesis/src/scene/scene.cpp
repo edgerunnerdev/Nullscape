@@ -31,14 +31,14 @@ TaskStatus Scene::Update(float delta)
     return TaskStatus::Continue;
 }
 
-void Scene::Render()
+void Scene::Render(Viewport* pViewport)
 {
     for (auto& pLayer : mLayerList)
     {
         if (pLayer->GetLayerDepth() & GetLayerMask())
         {
             glClear(GL_DEPTH_BUFFER_BIT);
-            pLayer->Render();
+            pLayer->Render(pViewport);
         }
     }
 

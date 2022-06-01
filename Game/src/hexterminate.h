@@ -18,27 +18,26 @@
 #pragma once
 
 #include <filesystem>
+#include <list>
 #include <memory>
 #include <string>
+#include <taskmanager.h>
 #include <thread>
 #include <vector>
-#include <list>
-
-#include <taskmanager.h>
 
 #if USE_STEAM
 #include "beginexternalheaders.h"
-#include "steam/steam_api.h"
 #include "endexternalheaders.h"
+#include "steam/steam_api.h"
 #endif
 
+#include "blackboard.h"
 #include "faction/faction.h"
 #include "menus/cursortype.h"
 #include "menus/musictitle.h"
 #include "sector/events/sectorevent.h"
 #include "sector/galaxycreationinfo.h"
 #include "ship/ship.h"
-#include "blackboard.h"
 
 static const int HEXTERMINATE_BUILD = 19;
 
@@ -50,27 +49,33 @@ class ResourceSound;
 
 namespace Gui
 {
-    class Text;
-	class Video;
-}
+class Text;
+class Video;
+} // namespace Gui
 
 namespace Physics
 {
-	class Simulation;
+class Simulation;
 }
 
 } // namespace Genesis
 
-namespace Hexterminate 
+namespace Hexterminate
 {
 
 namespace UI
 {
-    class Editor;
-    using EditorUniquePtr = std::unique_ptr<Editor>;
-    class RootElement;
-    using RootElementUniquePtr = std::unique_ptr<RootElement>;
-}
+namespace Debug
+{
+class ModelViewer;
+using ModelViewerUniquePtr = std::unique_ptr<ModelViewer>;
+} // namespace Debug
+
+class Editor;
+using EditorUniquePtr = std::unique_ptr<Editor>;
+class RootElement;
+using RootElementUniquePtr = std::unique_ptr<RootElement>;
+} // namespace UI
 
 class Sector;
 class Game;
@@ -97,7 +102,7 @@ class AchievementsManager;
 class SaveGameStorage;
 class ShipOutline;
 class Hyperscape;
-GENESIS_DECLARE_SMART_PTR( SaveGameHeader );
+GENESIS_DECLARE_SMART_PTR(SaveGameHeader);
 
 extern Game* g_pGame;
 
@@ -109,33 +114,31 @@ using ShipOutlineUniquePtr = std::unique_ptr<ShipOutline>;
 
 struct NewGameParameters;
 
-
 enum class GameCharacter
 {
-	FleetIntelligence,
-	NavarreHexer,
-	HarkonStormchaser,
-	JeroenLightbringer,
-	AeliseGloriam,
-	Chrysamere,
+    FleetIntelligence,
+    NavarreHexer,
+    HarkonStormchaser,
+    JeroenLightbringer,
+    AeliseGloriam,
+    Chrysamere,
 
-	Count
+    Count
 };
 
 enum class Difficulty
 {
-	Easy,
-	Normal,
-	Hardcore
+    Easy,
+    Normal,
+    Hardcore
 };
 
 enum class GameMode
 {
-	Campaign,
-	InfiniteWar,
-	Hyperscape
+    Campaign,
+    InfiniteWar,
+    Hyperscape
 };
-
 
 ///////////////////////////////////////////////////////////////////////////
 // Game
@@ -143,285 +146,286 @@ enum class GameMode
 
 enum class GameState
 {
-	Intro = 0,
-	LoadResources,
-	Menu,
-	GalaxyView,
-	HyperscapeView,
-	Shipyard,
-	Combat,
-	Unknown
+    Intro = 0,
+    LoadResources,
+    Menu,
+    GalaxyView,
+    HyperscapeView,
+    Shipyard,
+    Combat,
+    Unknown
 };
 
-class Game: public Genesis::Task 
+class Game : public Genesis::Task
 {
 public:
-						Game();
-						~Game();
-	void				Initialise();
-	Genesis::TaskStatus Update( float delta );
+    Game();
+    ~Game();
+    void Initialise();
+    Genesis::TaskStatus Update(float delta);
 
-	Genesis::Physics::Simulation* GetPhysicsSimulation() const;
-	Sector*				GetCurrentSector() const;
-	ModuleInfoManager*	GetModuleInfoManager() const;
-	ShipInfoManager*	GetShipInfoManager() const;
-	Faction*			GetFaction( const std::string& name ) const;
-	Faction*			GetFaction( FactionId faction ) const;
-	Faction*			GetPlayerFaction() const;
-	Player*				GetPlayer() const;
-	FleetWeakPtr		GetPlayerFleet() const;
-	Galaxy*				GetGalaxy() const;
-	IntelWindow*		GetIntelWindow() const;
-	Popup*				GetPopup() const;
-	TutorialWindow*		GetTutorialWindow() const;
-	RequestManager*		GetRequestManager() const;
-	SectorInfo*			FindSpawnSector() const;
-	BlackboardSharedPtr	GetBlackboard() const;
-    Perks*              GetNPCPerks() const;
-	AchievementsManager* GetAchievementsManager() const;
-	SaveGameStorage*	GetSaveGameStorage() const;
-	ShipOutline*		GetShipOutline() const;
-	Difficulty			GetDifficulty() const;
-	void				SetDifficulty( Difficulty difficulty );
-	GameMode			GetGameMode() const;
-	void				SetGameMode( GameMode mode );
+    Genesis::Physics::Simulation* GetPhysicsSimulation() const;
+    Sector* GetCurrentSector() const;
+    ModuleInfoManager* GetModuleInfoManager() const;
+    ShipInfoManager* GetShipInfoManager() const;
+    Faction* GetFaction(const std::string& name) const;
+    Faction* GetFaction(FactionId faction) const;
+    Faction* GetPlayerFaction() const;
+    Player* GetPlayer() const;
+    FleetWeakPtr GetPlayerFleet() const;
+    Galaxy* GetGalaxy() const;
+    IntelWindow* GetIntelWindow() const;
+    Popup* GetPopup() const;
+    TutorialWindow* GetTutorialWindow() const;
+    RequestManager* GetRequestManager() const;
+    SectorInfo* FindSpawnSector() const;
+    BlackboardSharedPtr GetBlackboard() const;
+    Perks* GetNPCPerks() const;
+    AchievementsManager* GetAchievementsManager() const;
+    SaveGameStorage* GetSaveGameStorage() const;
+    ShipOutline* GetShipOutline() const;
+    Difficulty GetDifficulty() const;
+    void SetDifficulty(Difficulty difficulty);
+    GameMode GetGameMode() const;
+    void SetGameMode(GameMode mode);
 
-	void				RaiseInteractiveWarning( const std::string& text ) const;
-    void                SetCursorType( CursorType type );
-    CursorType          GetCursorType() const;
-    void                ShowCursor( bool state );
-	
-	void				EnterSector( SectorInfo* pSectorInfo );
-	void				ExitSector();
+    void RaiseInteractiveWarning(const std::string& text) const;
+    void SetCursorType(CursorType type);
+    CursorType GetCursorType() const;
+    void ShowCursor(bool state);
 
-	void				StartNewLegacyGame( const ShipCustomisationData& customisationData, const std::string& companionShipTemplate, bool tutorial, const GalaxyCreationInfo& galaxyCreationInfo );
-	void				StartNewHyperscapeGame( const ShipCustomisationData& customisationData, bool tutorial );
-	void				EndGame();
-	void				KillSaveGame();
-	bool				SaveGame();
-	void				LoadGame( SaveGameHeaderWeakPtr pSaveGameHeader );
-	void				LoadToState( GameState state );
-	void				SetState( GameState state );
-	GameState			GetState() const;
+    void EnterSector(SectorInfo* pSectorInfo);
+    void ExitSector();
 
-	void				AddFleetCommandIntel( const std::string& text, ModuleInfo* pModuleInfo = nullptr );
-	void				AddIntel( GameCharacter character, const std::string& text, bool canBeQueued = true );
-	float				GetPlayedTime() const;
-	void				SetPlayedTime( float time );
+    void StartNewLegacyGame(const ShipCustomisationData& customisationData, const std::string& companionShipTemplate, bool tutorial, const GalaxyCreationInfo& galaxyCreationInfo);
+    void StartNewHyperscapeGame(const ShipCustomisationData& customisationData, bool tutorial);
+    void EndGame();
+    void KillSaveGame();
+    bool SaveGame();
+    void LoadGame(SaveGameHeaderWeakPtr pSaveGameHeader);
+    void LoadToState(GameState state);
+    void SetState(GameState state);
+    GameState GetState() const;
 
-	void				InitialiseSectorEvents();
-	const SectorEventVector& GetSectorEvents();
+    void AddFleetCommandIntel(const std::string& text, ModuleInfo* pModuleInfo = nullptr);
+    void AddIntel(GameCharacter character, const std::string& text, bool canBeQueued = true);
+    float GetPlayedTime() const;
+    void SetPlayedTime(float time);
 
-	bool				IsDevelopmentModeActive() const;
-	bool				IsShipCaptureModeActive() const;
-	bool				IsTutorialActive() const;
-	bool				IsFirstTimeInCombat() const;
-    bool                AreContextualTipsEnabled() const;
+    void InitialiseSectorEvents();
+    const SectorEventVector& GetSectorEvents();
 
-	bool				RequisitionShip( const ShipInfo* pShipInfo );
-	bool				ReturnShip( const ShipInfo* pShipInfo );
+    bool IsDevelopmentModeActive() const;
+    bool IsShipCaptureModeActive() const;
+    bool IsTutorialActive() const;
+    bool IsFirstTimeInCombat() const;
+    bool AreContextualTipsEnabled() const;
 
-	void				Pause();
-	void				Unpause();
-	bool				IsPaused() const;
+    bool RequisitionShip(const ShipInfo* pShipInfo);
+    bool ReturnShip(const ShipInfo* pShipInfo);
 
-	void				SetInputBlocked( bool state );
-	bool				IsInputBlocked() const;
+    void Pause();
+    void Unpause();
+    bool IsPaused() const;
 
-	const BackgroundInfoVector& GetBackgrounds() const;
+    void SetInputBlocked(bool state);
+    bool IsInputBlocked() const;
 
-	void				Quit();
-	bool				IsQuitRequested() const;
+    const BackgroundInfoVector& GetBackgrounds() const;
 
-    UI::RootElement*    GetUIRoot() const;
+    void Quit();
+    bool IsQuitRequested() const;
+
+    UI::RootElement* GetUIRoot() const;
 
 private:
-	void				SetupFactions();
-	void				SetupNewGameTutorial();
-	void				LoadResourcesAsync();
-	void				LoaderThreadMain();
-	void				EndGameAux();
-	void				SetupBackgrounds();
-	void				LoadGameAux();
-	void				ToggleImGui();
+    void SetupFactions();
+    void SetupNewGameTutorial();
+    void LoadResourcesAsync();
+    void LoaderThreadMain();
+    void EndGameAux();
+    void SetupBackgrounds();
+    void LoadGameAux();
+    void ToggleImGui();
 
-	MainMenu*			m_pMainMenu;
-	Console*			m_pConsole;
-	AudioDebug*			m_pAudioDebug;
-	ModuleInfoManager*	m_pModuleInfoManager;
-	ShipInfoManager*	m_pShipInfoManager;
-	Sector*				m_pSector;
-	Player*				m_pPlayer;
-	Galaxy*				m_pGalaxy;
-	MusicTitle*			m_pMusicTitle;
-	TutorialWindow*		m_pTutorialWindow;
-	GameState			m_State;
-	IntelWindow*		m_pIntelWindow;
-	LoadingScreenUniquePtr m_pLoadingScreen;
-	AchievementsManager* m_pAchievementsManager;
-	ShipOutlineUniquePtr m_pShipOutline;
+    MainMenu* m_pMainMenu;
+    Console* m_pConsole;
+    AudioDebug* m_pAudioDebug;
+    ModuleInfoManager* m_pModuleInfoManager;
+    ShipInfoManager* m_pShipInfoManager;
+    Sector* m_pSector;
+    Player* m_pPlayer;
+    Galaxy* m_pGalaxy;
+    MusicTitle* m_pMusicTitle;
+    TutorialWindow* m_pTutorialWindow;
+    GameState m_State;
+    IntelWindow* m_pIntelWindow;
+    LoadingScreenUniquePtr m_pLoadingScreen;
+    AchievementsManager* m_pAchievementsManager;
+    ShipOutlineUniquePtr m_pShipOutline;
 
-	Faction*			m_pFaction[ static_cast<unsigned int>( FactionId::Count ) ];
-	float				m_PlayedTime;
-	bool				m_EndGame;
-	bool				m_FirstTimeInCombat;
+    Faction* m_pFaction[static_cast<unsigned int>(FactionId::Count)];
+    float m_PlayedTime;
+    bool m_EndGame;
+    bool m_FirstTimeInCombat;
 
-	Popup*				m_pPopup;
+    Popup* m_pPopup;
 
-	SectorEventVector	m_SectorEvents;
+    SectorEventVector m_SectorEvents;
 
-	bool				m_IsPaused;
-	bool				m_IsInputBlocked;
-	float				m_InputBlockedTimer;
+    bool m_IsPaused;
+    bool m_IsInputBlocked;
+    float m_InputBlockedTimer;
 
-	BlackboardSharedPtr	m_pBlackboard;
-	BackgroundInfoVector m_Backgrounds;
+    BlackboardSharedPtr m_pBlackboard;
+    BackgroundInfoVector m_Backgrounds;
 
-    Perks*              m_pNPCPerks;
+    Perks* m_pNPCPerks;
 
     Genesis::Gui::Text* m_pFrameText;
-    bool                m_ContextualTipsEnabled;
-	bool				m_QuitRequested;
-	Genesis::Gui::Video* m_pVideoElement;
-    CursorType          m_CursorType;
-	GameState			m_LoadToState;
-	std::filesystem::path m_GameToLoad;
+    bool m_ContextualTipsEnabled;
+    bool m_QuitRequested;
+    Genesis::Gui::Video* m_pVideoElement;
+    CursorType m_CursorType;
+    GameState m_LoadToState;
+    std::filesystem::path m_GameToLoad;
 
-	Genesis::InputCallbackToken m_ImGuiToggleToken;
-	Genesis::Physics::Simulation* m_pPhysicsSimulation;
+    Genesis::InputCallbackToken m_ImGuiToggleToken;
+    Genesis::Physics::Simulation* m_pPhysicsSimulation;
 
-	std::unique_ptr< SaveGameStorage > m_pSaveGameStorage;
-	Difficulty m_Difficulty;
-	GameMode m_GameMode;
-	bool m_KillSave;
+    std::unique_ptr<SaveGameStorage> m_pSaveGameStorage;
+    Difficulty m_Difficulty;
+    GameMode m_GameMode;
+    bool m_KillSave;
 
     UI::RootElementUniquePtr m_pUIRootElement;
     UI::EditorUniquePtr m_pUIEditor;
+    UI::Debug::ModelViewerUniquePtr m_pModelViewer;
     bool m_ShowImguiTestWindow;
 
-	std::unique_ptr<Hyperscape> m_pHyperscape;
-	std::thread m_LoaderThread;
-	std::atomic_bool m_AllResourcesLoaded;
+    std::unique_ptr<Hyperscape> m_pHyperscape;
+    std::thread m_LoaderThread;
+    std::atomic_bool m_AllResourcesLoaded;
 };
 
 inline Genesis::Physics::Simulation* Game::GetPhysicsSimulation() const
 {
-	return m_pPhysicsSimulation;
+    return m_pPhysicsSimulation;
 }
 
 inline Sector* Game::GetCurrentSector() const
 {
-	return m_pSector;
+    return m_pSector;
 }
 
 inline ModuleInfoManager* Game::GetModuleInfoManager() const
 {
-	return m_pModuleInfoManager;
+    return m_pModuleInfoManager;
 }
 
 inline ShipInfoManager* Game::GetShipInfoManager() const
 {
-	return m_pShipInfoManager;
+    return m_pShipInfoManager;
 }
 
 inline AchievementsManager* Game::GetAchievementsManager() const
 {
-	return m_pAchievementsManager;
+    return m_pAchievementsManager;
 }
 
 inline ShipOutline* Game::GetShipOutline() const
 {
-	return m_pShipOutline.get();
+    return m_pShipOutline.get();
 }
 
 inline Player* Game::GetPlayer() const
 {
-	return m_pPlayer;
+    return m_pPlayer;
 }
 
 inline Galaxy* Game::GetGalaxy() const
 {
-	return m_pGalaxy;
+    return m_pGalaxy;
 }
 
-inline Faction* Game::GetFaction( FactionId id ) const
+inline Faction* Game::GetFaction(FactionId id) const
 {
-	return m_pFaction[ static_cast<int>( id ) ];
+    return m_pFaction[static_cast<int>(id)];
 }
 
 inline GameState Game::GetState() const
 {
-	return m_State;
+    return m_State;
 }
 
 inline IntelWindow* Game::GetIntelWindow() const
 {
-	return m_pIntelWindow;
+    return m_pIntelWindow;
 }
 
 inline float Game::GetPlayedTime() const
 {
-	return m_PlayedTime;
+    return m_PlayedTime;
 }
 
-inline void Game::SetPlayedTime( float time )
+inline void Game::SetPlayedTime(float time)
 {
-	m_PlayedTime = time;
+    m_PlayedTime = time;
 }
 
 inline Difficulty Game::GetDifficulty() const
 {
-	return m_Difficulty;
+    return m_Difficulty;
 }
 
-inline void Game::SetDifficulty( Difficulty difficulty )
+inline void Game::SetDifficulty(Difficulty difficulty)
 {
-	m_Difficulty = difficulty;
+    m_Difficulty = difficulty;
 }
 
 inline GameMode Game::GetGameMode() const
 {
-	return m_GameMode;
+    return m_GameMode;
 }
 
-inline void Game::SetGameMode( GameMode mode )
+inline void Game::SetGameMode(GameMode mode)
 {
-	m_GameMode = mode;
+    m_GameMode = mode;
 }
 
 inline bool Game::IsFirstTimeInCombat() const
 {
-	return m_FirstTimeInCombat;
+    return m_FirstTimeInCombat;
 }
 
 inline const SectorEventVector& Game::GetSectorEvents()
 {
-	return m_SectorEvents;
+    return m_SectorEvents;
 }
 
 inline Popup* Game::GetPopup() const
 {
-	return m_pPopup;
+    return m_pPopup;
 }
 
 inline TutorialWindow* Game::GetTutorialWindow() const
 {
-	return m_pTutorialWindow;
+    return m_pTutorialWindow;
 }
 
 inline bool Game::IsPaused() const
 {
-	return m_IsPaused;
+    return m_IsPaused;
 }
 
 inline BlackboardSharedPtr Game::GetBlackboard() const
 {
-	return m_pBlackboard;
+    return m_pBlackboard;
 }
 
 inline const BackgroundInfoVector& Game::GetBackgrounds() const
 {
-	return m_Backgrounds;
+    return m_Backgrounds;
 }
 
 inline Perks* Game::GetNPCPerks() const
@@ -436,12 +440,12 @@ inline bool Game::AreContextualTipsEnabled() const
 
 inline void Game::Quit()
 {
-	m_QuitRequested = true;
+    m_QuitRequested = true;
 }
 
 inline bool Game::IsQuitRequested() const
 {
-	return m_QuitRequested;
+    return m_QuitRequested;
 }
 
 inline CursorType Game::GetCursorType() const

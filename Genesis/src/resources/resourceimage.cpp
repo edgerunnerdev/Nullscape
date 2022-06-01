@@ -58,8 +58,26 @@ bool ResourceImage::Load()
         }
         else if (extension == "png")
         {
-            GLenum format = (m_pTemporarySurface->format->BitsPerPixel == 24) ? GL_RGB : GL_RGBA;
-            CreateTexture(format, format);
+            const Uint8 bpp = m_pTemporarySurface->format->BitsPerPixel;
+            if (bpp == 8)
+            {
+                CreateTexture(GL_R, GL_R);
+            }
+            else if (bpp == 24)
+            {
+                CreateTexture(GL_RGB, GL_RGB);
+            }
+            else if (bpp == 32)
+            {
+                CreateTexture(GL_RGBA, GL_RGBA);
+            }
+            else
+            {
+                Core::Log::Error() << "Failed to create texture for " << GetFilename().GetFullPath() << "', don't know how to handle " << bpp << " bits per pixel.";
+                SDL_FreeSurface(m_pTemporarySurface);
+                m_State = ResourceState::Unloaded;
+                return false;            
+            }
         }
         else if (extension == "tga")
         {

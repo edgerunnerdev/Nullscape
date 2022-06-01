@@ -81,6 +81,7 @@
 #include "sector/events/corsairfleet.h"
 #include "sector/events/orbitaldefenses.h"
 #include "sector/events/neutralflagship.h"
+#include "ui/debug/modelviewer.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
 #include "menus/mainmenu.h"
@@ -294,6 +295,7 @@ void Game::Initialise()
 	m_pShipOutline = std::make_unique<ShipOutline>();
     m_pUIRootElement = std::make_unique<UI::RootElement>();
     m_pUIEditor = std::make_unique<UI::Editor>();
+	m_pModelViewer = std::make_unique<UI::Debug::ModelViewer>();
 
 	SetState( GameState::Intro );
 }
@@ -336,6 +338,7 @@ Genesis::TaskStatus Game::Update( float delta )
 
 	m_pUIRootElement->Update();
     m_pUIEditor->UpdateDebugUI();
+	m_pModelViewer->UpdateDebugUI();
 	GetBlackboard()->UpdateDebugUI();
 	GetSaveGameStorage()->UpdateDebugUI();
 	ShaderTweaksDebugWindow::Update();
@@ -1429,12 +1432,7 @@ void Game::LoaderThreadMain()
 
 bool Game::IsDevelopmentModeActive() const
 {
-#ifdef DEV_MODE_ALLOWED
-	static bool sActive = Genesis::FrameWork::GetCommandLineParameters()->HasParameter( "--dev" );
-	return sActive;
-#else
-	return false;
-#endif
+	return true;
 }
 
 bool Game::IsShipCaptureModeActive() const

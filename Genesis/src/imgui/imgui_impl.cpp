@@ -72,6 +72,7 @@ void ImGuiImpl::Initialise()
     io.SetClipboardTextFn = ImGui_ImplSDL2_SetClipboardText;
     io.GetClipboardTextFn = ImGui_ImplSDL2_GetClipboardText;
     io.ClipboardUserData = nullptr;
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
 
     CreateFontsTexture();
 

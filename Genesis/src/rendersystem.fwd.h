@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "coredefines.h"
+
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
 #include <SDL.h>
@@ -24,6 +26,9 @@
 
 namespace Genesis
 {
+
+GENESIS_DECLARE_SMART_PTR(RenderTarget);
+GENESIS_DECLARE_SMART_PTR(Viewport);
 
 enum class BlendMode
 {
