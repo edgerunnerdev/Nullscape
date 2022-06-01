@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <render/debugrender.h>
 #include <render/viewport.hpp>
 #include <scene/layer.h>
 #include <rendersystem.fwd.h>
@@ -41,8 +42,9 @@ private:
     Genesis::ViewportSharedPtr m_pViewport;
     Genesis::LayerSharedPtr m_pBackgroundLayer;
     Genesis::LayerSharedPtr m_pMainLayer;
+    Genesis::Render::DebugRender* m_pDebugRender;
     float m_RotX;
-    float m_RotY;
+    float m_RotZ;
     float m_Distance;
 };
 

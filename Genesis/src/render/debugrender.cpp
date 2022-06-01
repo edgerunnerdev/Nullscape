@@ -84,12 +84,12 @@ void DebugRender::RenderLines()
     m_pVertexBuffer->CopyPositions(posData);
     m_pVertexBuffer->CopyColours(colourData);
 
-    RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    pRenderSystem->SetBlendMode(BlendMode::Blend);
+    //RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
+    //pRenderSystem->SetBlendMode(BlendMode::Blend);
 
     m_pShader->Use();
 
-    pRenderSystem->SetRenderTarget(RenderTargetId::Default);
+    //pRenderSystem->SetRenderTarget(RenderTargetId::Default);
     m_pVertexBuffer->Draw(m_Lines.size() * 2);
 
     m_Lines.clear();
@@ -129,12 +129,12 @@ void DebugRender::RenderCircles()
     m_pVertexBuffer->CopyPositions(posData);
     m_pVertexBuffer->CopyColours(colourData);
 
-    RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    pRenderSystem->SetBlendMode(BlendMode::Blend);
+    //RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
+    //pRenderSystem->SetBlendMode(BlendMode::Blend);
 
     m_pShader->Use();
 
-    pRenderSystem->SetRenderTarget(RenderTargetId::Default);
+    //pRenderSystem->SetRenderTarget(RenderTargetId::Default);
     m_pVertexBuffer->Draw(m_Circles.size() * DEBUG_RENDER_CIRCLE_SIDES * 2);
 
     m_Circles.clear();

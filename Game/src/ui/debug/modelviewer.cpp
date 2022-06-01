@@ -34,6 +34,9 @@ namespace Hexterminate::UI::Debug
 
 ModelViewer::ModelViewer()
     : m_IsOpen(false)
+    , m_RotX(0.0f)
+    , m_RotZ(0.0f)
+    , m_Distance(200.0f)
 {
     using namespace Genesis;
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
@@ -51,6 +54,9 @@ ModelViewer::ModelViewer()
 
     ModelViewerBackground* pBackground = new ModelViewerBackground(512, 512);
     m_pBackgroundLayer->AddSceneObject(pBackground, true);
+
+    m_pDebugRender = new Render::DebugRender();
+    m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 
     ModelViewerObject* pModelObject = new ModelViewerObject();
     m_pMainLayer->AddSceneObject(pModelObject);
@@ -78,9 +84,22 @@ void ModelViewer::UpdateDebugUI()
         if (ImGui::IsItemHovered())
         {
             UpdateCamera();
+
+            
+        }
+
+        ImGui::Text("RotX: %.2f", m_RotX);
+        ImGui::Text("Mouse delta: %.2f %.2f", ImGui::GetIO().MouseDelta.x, ImGui::GetIO().MouseDelta.y);
+        for (int i = 0; i < 5; ++i)
+        {
+            ImGui::Text("Mouse down duration %d: %.2f", i, ImGui::GetIO().MouseDownDuration[i]);
         }
 
         ImGui::End();
+
+        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     }
 }
 
@@ -94,8 +113,10 @@ void ModelViewer::UpdateCamera()
         m_RotX += ImGui::GetIO().MouseDelta.x;
     //}
 
-    glm::mat4 m = glm::rotate(glm::mat4(1.0), m_RotX, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::translate(glm::vec3(0.0f, 0.0f, 200.0f));
-    pCamera->SetPosition(m[3].x, m[3].y, m[3].z);
+    //glm::mat4 m = glm::rotate(glm::mat4(1.0), glm::radians(m_RotX), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::translate(glm::vec3(0.0f, 0.0f, 200.0f));
+    glm::mat4 m = glm::translate(glm::vec3(200.0f, 200.0f, 200.0f));
+    pCamera->SetPosition(200.0f, 200.0f, 200.0f);
+    pCamera->SetTargetPosition(0.0f, 0.0f, 0.0f);
 }
 
 } // namespace Hexterminate::UI::Debug

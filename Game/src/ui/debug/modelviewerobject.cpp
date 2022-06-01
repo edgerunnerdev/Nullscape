@@ -33,15 +33,18 @@ namespace Hexterminate
 
 ModelViewerObject::ModelViewerObject()
     : m_pShader(nullptr)
-    , m_pVertexBuffer(nullptr)
+    , m_pVertexBufferX(nullptr)
+    , m_pVertexBufferY(nullptr)
 {
     using namespace Genesis;
 
     m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( "data/models/misc/shipyard/model.tmf" );
 
     m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("untextured_vertex_coloured");
-    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
-    m_pVertexBuffer->CreateUntexturedQuad(-10.0f, -10.0f, 20.0f, 20.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    m_pVertexBufferX = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
+    m_pVertexBufferX->CreateUntexturedQuad(0.0f, 0.0f, 50.0f, 5.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    m_pVertexBufferY = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
+    m_pVertexBufferY->CreateUntexturedQuad(0.0f, 0.0f, 5.0f, 50.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 ModelViewerObject::~ModelViewerObject()
@@ -56,7 +59,8 @@ void ModelViewerObject::Update(float delta)
 void ModelViewerObject::Render()
 {
     m_pShader->Use();
-    m_pVertexBuffer->Draw();
+    //m_pVertexBufferX->Draw();
+    //m_pVertexBufferY->Draw();
     m_pModel->Render(glm::mat4());
 }
 

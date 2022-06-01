@@ -586,7 +586,7 @@ void RenderSystem::ViewPerspective(int width /* = 0 */, int height /* = 0 */, Sc
     glm::vec3 cPos = camera->GetPosition();
     glm::vec3 cTgt = camera->GetTargetPosition();
 
-    m_ViewMatrix = glm::lookAt(glm::vec3(cPos.x, cPos.y, cPos.z), glm::vec3(cTgt.x, cTgt.y, cTgt.z), glm::vec3(0.0f, 1.0f, 0.0f));
+    m_ViewMatrix = glm::lookAt(glm::vec3(cPos.x, cPos.y, cPos.z), glm::vec3(cTgt.x, cTgt.y, cTgt.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
     m_ProjectionMatrix = glm::perspective(45.0f, static_cast<float>(width) / static_cast<float>(height), 1.0f, 1000.0f);
 }

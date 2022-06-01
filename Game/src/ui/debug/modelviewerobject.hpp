@@ -41,7 +41,8 @@ public:
 
 private:
     Genesis::Shader* m_pShader;
-    Genesis::VertexBuffer* m_pVertexBuffer;
+    Genesis::VertexBuffer* m_pVertexBufferX;
+    Genesis::VertexBuffer* m_pVertexBufferY;
     Genesis::ResourceModel* m_pModel;
 };
 
