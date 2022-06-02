@@ -34,25 +34,24 @@ namespace Hexterminate::UI::Debug
 
 ModelViewer::ModelViewer()
     : m_IsOpen(false)
-    , m_RotX(0.0f)
-    , m_RotZ(0.0f)
-    , m_Distance(200.0f)
+    , m_Pitch(0.0f)
+    , m_Yaw(-90.0f)
+    , m_Position(0.0f, 0.0f, 200.0f)
 {
     using namespace Genesis;
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
 
-    m_pViewport = std::make_shared<Genesis::Viewport>(512, 512);
+    static int sViewportWidth = 800;
+    static int sViewportHeight = 800;
+
+    m_pViewport = std::make_shared<Genesis::Viewport>(sViewportWidth, sViewportHeight);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
 
     Scene* pScene = m_pViewport->GetScene();
     m_pBackgroundLayer = pScene->AddLayer(1, true);
     m_pMainLayer = pScene->AddLayer(2);
 
-    Camera* pCamera = pScene->GetCamera();
-    pCamera->SetPosition(0.0f, 0.0f, 200.0f);
-    pCamera->SetTargetPosition(0.0f, 0.0f, 0.0f);
-
-    ModelViewerBackground* pBackground = new ModelViewerBackground(512, 512);
+    ModelViewerBackground* pBackground = new ModelViewerBackground(sViewportWidth, sViewportHeight);
     m_pBackgroundLayer->AddSceneObject(pBackground, true);
 
     m_pDebugRender = new Render::DebugRender();
@@ -71,29 +70,19 @@ void ModelViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        ImGui::Begin("Model viewer", &m_IsOpen);
+        ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
         Genesis::RenderTarget* pRenderTarget = m_pViewport->GetRenderTarget();
         ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
-                     ImVec2(static_cast<float>(pRenderTarget->GetWidth()), static_cast<float>(pRenderTarget->GetHeight())), ImVec2(0, 0), // UV1
-                     ImVec2(1, 1),                                                                                                        // UV2
+                     ImVec2(static_cast<float>(pRenderTarget->GetWidth()), static_cast<float>(pRenderTarget->GetHeight())), ImVec2(0, 1), // UV1
+                     ImVec2(1, 0),                                                                                                        // UV2
                      ImVec4(1, 1, 1, 1),                                                                                                  // Tint
                      ImVec4(1, 1, 1, 1)                                                                                                   // Border
         );
 
-        if (ImGui::IsItemHovered())
-        {
-            UpdateCamera();
+        UpdateCamera(ImGui::IsItemHovered());
 
-            
-        }
-
-        ImGui::Text("RotX: %.2f", m_RotX);
-        ImGui::Text("Mouse delta: %.2f %.2f", ImGui::GetIO().MouseDelta.x, ImGui::GetIO().MouseDelta.y);
-        for (int i = 0; i < 5; ++i)
-        {
-            ImGui::Text("Mouse down duration %d: %.2f", i, ImGui::GetIO().MouseDownDuration[i]);
-        }
+        ImGui::Text("Position: %.2f %.2f %.2f", m_Position.x, m_Position.y, m_Position.z);
 
         ImGui::End();
 
@@ -103,20 +92,50 @@ void ModelViewer::UpdateDebugUI()
     }
 }
 
-void ModelViewer::UpdateCamera() 
+void ModelViewer::UpdateCamera(bool acceptInput) 
 {
     using namespace Genesis;
     Camera* pCamera = m_pViewport->GetScene()->GetCamera();
     
-    //if (ImGui::GetIO().MouseDownDuration[0] > 0.25f)
-    //{
-        m_RotX += ImGui::GetIO().MouseDelta.x;
-    //}
+    ImGuiIO& io = ImGui::GetIO();
+    if (acceptInput && io.MouseDownDuration[0] > 0.05f)
+    {
+        static const float sMouseDeltaScale = 0.2f;
+        m_Yaw += io.MouseDelta.x * sMouseDeltaScale;
+        m_Pitch -= io.MouseDelta.y * sMouseDeltaScale;
+    }
+    
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+    direction.y = sin(glm::radians(m_Pitch));
+    direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
 
-    //glm::mat4 m = glm::rotate(glm::mat4(1.0), glm::radians(m_RotX), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::translate(glm::vec3(0.0f, 0.0f, 200.0f));
-    glm::mat4 m = glm::translate(glm::vec3(200.0f, 200.0f, 200.0f));
-    pCamera->SetPosition(200.0f, 200.0f, 200.0f);
-    pCamera->SetTargetPosition(0.0f, 0.0f, 0.0f);
+    if (acceptInput)
+    {
+        const float speed = io.KeyShift ? 100.0f : 10.0f;;
+
+        if (io.KeysDown[SDLK_w])
+        {
+            m_Position += direction * io.DeltaTime * speed;
+        }
+        else if (io.KeysDown[SDLK_s])
+        {
+            m_Position -= direction * io.DeltaTime * speed;
+        }
+
+        const glm::vec3 right = glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f));
+        if (io.KeysDown[SDLK_a])
+        {
+            m_Position -= right * io.DeltaTime * speed;
+        }
+        else if (io.KeysDown[SDLK_d])
+        {
+            m_Position += right * io.DeltaTime * speed;
+        }
+    }
+
+    pCamera->SetPosition(m_Position);
+    pCamera->SetTargetPosition(m_Position + direction);
 }
 
 } // namespace Hexterminate::UI::Debug

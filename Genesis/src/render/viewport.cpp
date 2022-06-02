@@ -45,7 +45,11 @@ void Viewport::Render()
 {
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
     pRenderSystem->SetRenderTarget(m_pRenderTarget.get());
+    m_pRenderTarget->Clear();
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_DEPTH_TEST);
     m_pScene->Render(this);
+    glDisable(GL_DEPTH_TEST);
     pRenderSystem->SetRenderTarget(RenderTargetId::Default);
 }
 

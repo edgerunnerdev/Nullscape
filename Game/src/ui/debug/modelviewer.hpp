@@ -36,16 +36,16 @@ public:
     void UpdateDebugUI();
 
 private:
-    void UpdateCamera();
+    void UpdateCamera(bool acceptInput);
 
     bool m_IsOpen;
     Genesis::ViewportSharedPtr m_pViewport;
     Genesis::LayerSharedPtr m_pBackgroundLayer;
     Genesis::LayerSharedPtr m_pMainLayer;
     Genesis::Render::DebugRender* m_pDebugRender;
-    float m_RotX;
-    float m_RotZ;
-    float m_Distance;
+    float m_Pitch;
+    float m_Yaw;
+    glm::vec3 m_Position;
 };
 
 } // namespace Hexterminate::UI::Debug
