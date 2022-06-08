@@ -9,6 +9,7 @@ find_package(assimp REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
+find_package(json REQUIRED)
 find_package(rpc REQUIRED)
 
 include_directories(
@@ -17,6 +18,7 @@ include_directories(
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GENESISRESCOMP_INCLUDE_DIRS}
+    ${JSON_INCLUDE_DIRS}
     ${RPC_INCLUDE_DIRS}
 )
 
@@ -27,7 +29,7 @@ if(WIN32)
     target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
-    target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<CONFIG:Debug>,assimp-vc142-mtd,assimp-vc142-mt>)
+    target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<CONFIG:Debug>,assimp-vc142-mtd,assimp-vc142-mt> $<IF:$<CONFIG:Debug>,zlibstaticd,zlibstatic>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_LIBRARY_DIRS}/SDL2.dll ${OUTPUT_DIRECTORY})
 else()
 	add_executable(${PROJECT_NAME} ${SOURCE_FILES})

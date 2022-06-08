@@ -202,6 +202,8 @@ void Forge::CompileAssets()
             std::stringstream arguments;
             arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << asset.GetPath() << " -m forge";
 
+            Core::Log::Info() << it->second << " " << arguments.str();
+
             Core::Process process(it->second, arguments.str());
             process.Run();
             process.Wait();

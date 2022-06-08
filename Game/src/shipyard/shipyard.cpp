@@ -135,26 +135,26 @@ void Shipyard::InitialiseModels()
 {
 	using namespace Genesis;
 
-	m_pBaseModel = (ResourceModel*)FrameWork::GetResourceManager()->GetResource( "data/models/misc/dockhex/module.tmf" );
-	SDL_assert_release( m_pBaseModel != nullptr );
-	m_pBaseModel->SetFlipAxis( false );
+	//m_pBaseModel = (ResourceModel*)FrameWork::GetResourceManager()->GetResource( "data/models/misc/dockhex/module.tmf" );
+	//SDL_assert_release( m_pBaseModel != nullptr );
+	//m_pBaseModel->SetFlipAxis( false );
 
-	m_pShipyardModel = (ResourceModel*)FrameWork::GetResourceManager()->GetResource( "data/models/misc/shipyard/model.tmf" );
-	SDL_assert_release( m_pShipyardModel != nullptr );
-	m_pShipyardModel->SetFlipAxis( false );
-	
-	MaterialList& shipyardMaterials = m_pShipyardModel->GetMaterials();
-	for ( Material* pMaterial : shipyardMaterials )
-	{
-		// Sets the ambient colour for all the shipyard's materials
-		// This needs to match the behaviour of the ship's modules to achieve a consistent illumination across the scene.
-		ShaderUniform* pAmbientUniform = pMaterial->shader->RegisterUniform( "k_a", ShaderUniformType::FloatVector4, false );
-		if ( pAmbientUniform != nullptr )
-		{
-			const Background* pBackground = g_pGame->GetCurrentSector()->GetBackground();
-			pAmbientUniform->Set( pBackground->GetAmbientColour() );
-		}
-	}
+	//m_pShipyardModel = (ResourceModel*)FrameWork::GetResourceManager()->GetResource( "data/models/misc/shipyard/model.tmf" );
+	//SDL_assert_release( m_pShipyardModel != nullptr );
+	//m_pShipyardModel->SetFlipAxis( false );
+	//
+	//MaterialList& shipyardMaterials = m_pShipyardModel->GetMaterials();
+	//for ( Material* pMaterial : shipyardMaterials )
+	//{
+	//	// Sets the ambient colour for all the shipyard's materials
+	//	// This needs to match the behaviour of the ship's modules to achieve a consistent illumination across the scene.
+	//	ShaderUniform* pAmbientUniform = pMaterial->shader->RegisterUniform( "k_a", ShaderUniformType::FloatVector4, false );
+	//	if ( pAmbientUniform != nullptr )
+	//	{
+	//		const Background* pBackground = g_pGame->GetCurrentSector()->GetBackground();
+	//		pAmbientUniform->Set( pBackground->GetAmbientColour() );
+	//	}
+	//}
 }
 
 void Shipyard::SetConstructionDimensions()

@@ -21,6 +21,7 @@ build/
 Genesis/libs/GenesisCore/lib/
 Genesis/libs/GenesisResComp/lib/
 Genesis/libs/Genesis/
+Game/bin/data/models/
 Game/bin/config.xml
 Game/bin/Hyperscape.exe
 Game/bin/Hyperscape.ilk

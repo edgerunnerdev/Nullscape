@@ -19,6 +19,13 @@
 
 #include "modelcomp.hpp"
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <fstream>
+#include <json.hpp>
+#include <log.hpp>
+
 namespace Genesis
 {
 namespace ResComp
@@ -29,8 +36,54 @@ ModelComp::~ModelComp() {}
 
 int ModelComp::Run()
 {
-    OnAssetCompilationFailed(GetFile(), "Not implemented.");
+    std::filesystem::path sourceModelPath;
+    if (GetSourceModelPath(GetFile(), sourceModelPath) == false)
+    {
+        OnAssetCompilationFailed(GetFile(), "Invalid source model path.");
+        return -1;
+    }
+    else if (std::filesystem::exists(sourceModelPath) == false)
+    {
+        OnAssetCompilationFailed(GetFile(), "Model file doesn't exist.");
+        return -1;
+    }
+
+    Assimp::Importer importer;
+    const int flags = aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_JoinIdenticalVertices | aiProcess_FixInfacingNormals | aiProcess_SortByPType |
+                      aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph;
+    const aiScene* pScene = importer.ReadFile(sourceModelPath.generic_string(), flags);
+    if (pScene == nullptr)
+    {
+        OnAssetCompilationFailed(GetFile(), importer.GetErrorString());
+    }
+
     return -1;
+}
+
+bool ModelComp::GetSourceModelPath(const std::filesystem::path& assetPath, std::filesystem::path& sourceModelPath) const
+{
+    using namespace nlohmann;
+    std::ifstream file(assetPath);
+    if (file.good())
+    {
+        json j;
+        file >> j;
+        file.close();
+
+        json::iterator it = j.find("source");
+        if (it != j.end() && it->is_string())
+        {
+            sourceModelPath = assetPath;
+            sourceModelPath = sourceModelPath.remove_filename() / it->get<std::string>();
+            return true;
+        }
+        else
+        {
+            Core::Log::Error() << "Couldn't find required 'source' field in asset " << assetPath;
+            return false;
+        }
+    }
+    return false;
 }
 
 } // namespace ResComp

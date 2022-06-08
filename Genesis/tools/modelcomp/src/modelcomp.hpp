@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <rescomp.hpp>
 
 namespace Genesis
@@ -31,6 +32,9 @@ public:
     virtual ~ModelComp() override;
 
     virtual int Run() override;
+
+private:
+    bool GetSourceModelPath(const std::filesystem::path& assetPath, std::filesystem::path& sourceModelPath) const;
 };
 
 } // namespace ResComp
