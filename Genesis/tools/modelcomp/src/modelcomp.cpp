@@ -55,9 +55,17 @@ int ModelComp::Run()
     if (pScene == nullptr)
     {
         OnAssetCompilationFailed(GetFile(), importer.GetErrorString());
+        return -1;
     }
 
-    return -1;
+    std::filesystem::path targetModelPath;
+    if (GetTargetModelPath(sourceModelPath, targetModelPath) == false)
+    {
+        OnAssetCompilationFailed(GetFile(), "Couldn't identify target file.");
+        return -1;
+    }
+
+    return Compile(pScene, targetModelPath) ? 0 : -1;
 }
 
 bool ModelComp::GetSourceModelPath(const std::filesystem::path& assetPath, std::filesystem::path& sourceModelPath) const
@@ -84,6 +92,52 @@ bool ModelComp::GetSourceModelPath(const std::filesystem::path& assetPath, std::
         }
     }
     return false;
+}
+
+bool ModelComp::GetTargetModelPath(const std::filesystem::path& sourceModelPath, std::filesystem::path& targetModelPath) const
+{
+    std::filesystem::path targetPath = GetDataDir() / std::filesystem::relative(GetFile(), GetAssetsDir()).remove_filename();
+    std::filesystem::create_directories(targetPath);
+    const std::string targetFileName = sourceModelPath.stem().string() + ".gmdl";
+    targetModelPath = targetPath / targetFileName;
+    return true;
+}
+
+bool ModelComp::Compile(const aiScene* pScene, std::filesystem::path& targetModelPath)
+{
+    std::ofstream file(targetModelPath, std::ios::out | std::ios::trunc);
+    if (file.good())
+    {
+        WriteHeader(file, pScene);
+        WriteMeshes(file, pScene);
+        file.close();
+        return false;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void ModelComp::WriteHeader(std::ofstream& file, const aiScene* pScene) 
+{
+    file << "GMDL";
+    file << static_cast<uint8_t>(1); // Version
+    file << static_cast<uint8_t>(pScene->mNumMeshes);
+}
+
+void ModelComp::WriteMeshes(std::ofstream& file, const aiScene* pScene) 
+{
+    for (unsigned int i = 0; i < pScene->mNumMeshes; ++i)
+    {
+        const aiMesh* pMesh = pScene->mMeshes[i];
+        WriteMeshHeader(file, pMesh);
+    }
+}
+
+void ModelComp::WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh) 
+{
+    file << static_cast<uint8_t>(pMesh->mMaterialIndex); 
 }
 
 } // namespace ResComp

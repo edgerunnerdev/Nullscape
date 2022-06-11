@@ -18,7 +18,11 @@
 #pragma once
 
 #include <filesystem>
+#include <fstream>
 #include <rescomp.hpp>
+
+struct aiMesh;
+struct aiScene;
 
 namespace Genesis
 {
@@ -35,6 +39,11 @@ public:
 
 private:
     bool GetSourceModelPath(const std::filesystem::path& assetPath, std::filesystem::path& sourceModelPath) const;
+    bool GetTargetModelPath(const std::filesystem::path& sourceModelPath, std::filesystem::path& targetModelPath) const;
+    bool Compile(const aiScene* pScene, std::filesystem::path& targetModelPath);
+    void WriteHeader(std::ofstream& file, const aiScene* pScene);
+    void WriteMeshes(std::ofstream& file, const aiScene* pScene);
+    void WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh);
 };
 
 } // namespace ResComp
