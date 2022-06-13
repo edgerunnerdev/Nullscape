@@ -64,8 +64,7 @@ int GenericComp::Run()
     bool fileCopied = std::filesystem::copy_file(sourceFile, targetFile, std::filesystem::copy_options::overwrite_existing);
     if (fileCopied)
     {
-        OnResourceBuilt(GetFile(), targetFile);
-        OnAssetCompiled(GetFile());
+        OnResourceBuilt(GetFile(), sourceFile, targetFile);
         return 0;
     }
     else

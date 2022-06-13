@@ -20,6 +20,7 @@
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <rpc/client.h>
+#include <rpc/rpc_error.h>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -47,8 +48,7 @@ public:
     const std::filesystem::path& GetDataDir() const;
     const std::filesystem::path& GetFile() const;
     bool IsUsingForge() const;
-    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource);
-    void OnAssetCompiled(const std::filesystem::path& asset);
+    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile);
     void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
 
 private:

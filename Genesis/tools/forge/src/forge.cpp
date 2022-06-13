@@ -147,15 +147,9 @@ void Forge::InitializeRPCServer()
     Log::Info() << "Initialized RPC server on port " << port << ".";
 
     m_pRPCServer->bind("cache",
-                       [this](const std::string& asset, const std::string& resource)
+                       [this](const std::string& asset, const std::string& sourceFile, const std::string& destinationFile)
                        {
-                           OnResourceBuilt(asset, resource);
-                       });
-
-    m_pRPCServer->bind("success",
-                       [this](const std::string& asset)
-                       {
-                           OnAssetCompiled(asset);
+                           OnResourceBuilt(asset, sourceFile, destinationFile);
                        });
 
     m_pRPCServer->bind("failed",
@@ -201,7 +195,7 @@ bool Forge::CompileAssets()
             std::stringstream arguments;
             arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << asset.GetPath() << " -m forge";
 
-            // Core::Log::Info() << it->second << " " << arguments.str();
+            //Core::Log::Info() << it->second << " " << arguments.str();
 
             Core::Process process(it->second, arguments.str());
             process.Run();
@@ -217,14 +211,9 @@ bool Forge::CompileAssets()
     return errors == 0;
 }
 
-void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource)
+void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile)
 {
-    Core::Log::Info() << asset << " built resource " << resource;
-}
-
-void Forge::OnAssetCompiled(const std::filesystem::path& asset)
-{
-    Core::Log::Info() << "Compiled " << asset;
+    Core::Log::Info() << asset << ": " << sourceFile << " -> " << destinationFile;
 }
 
 void Forge::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason)

@@ -17,16 +17,22 @@
 
 #include "rescomp.hpp"
 
+#include <chrono>
+#include <platform.hpp>
+#include <log.hpp>
+#include <stringhelpers.hpp>
+#include <thread>
+#include "forgelogger.hpp"
+
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <cmdparser.hpp>
 #include <SDL.h>
+#ifdef TARGET_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
 #include <externalheadersend.hpp>
 // clang-format on
-
-#include <log.hpp>
-#include <stringhelpers.hpp>
-#include "forgelogger.hpp"
 
 namespace Genesis
 {
@@ -38,16 +44,36 @@ ResComp::ResComp()
 {
 }
 
-ResComp::~ResComp() {}
+ResComp::~ResComp() 
+{
+    if (m_pRPCClient)
+    {
+        m_pRPCClient->wait_all_responses();
+    }
+}
 
 bool ResComp::Initialize(int argc, char** argv)
 {
     cli::Parser parser(argc, argv);
+#ifdef TARGET_PLATFORM_WINDOWS
+    parser.set_optional<bool>("w", "wait-for-debugger", false, "Wait for the debugger to be connected.");
+#endif
     parser.set_optional<std::string>("m", "mode", "standalone", "Mode for the compiler to run in. Can be 'standalone' or 'forge'.");
     parser.set_required<std::string>("a", "assets-dir", "Assets directory, containing all assets to be converted.");
     parser.set_required<std::string>("d", "data-dir", "Data directory, to which compiled resources will be written to.");
     parser.set_required<std::string>("f", "file", "File to compile.");
     parser.run_and_exit_if_error();
+
+#ifdef TARGET_PLATFORM_WINDOWS
+    if (parser.get<bool>("w"))
+    {
+        using namespace std::chrono_literals;
+        while (IsDebuggerPresent() == false)
+        {
+            std::this_thread::sleep_for(1000ms);
+        }
+    }
+#endif
 
     std::string modeArg = parser.get<std::string>("m");
     if (modeArg == "standalone")
@@ -113,19 +139,11 @@ bool ResComp::IsUsingForge() const
     return m_UsingForge;
 }
 
-void ResComp::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource)
+void ResComp::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile)
 {
     if (IsUsingForge())
     {
-        m_pRPCClient->send("cache", asset.generic_string(), resource.generic_string());
-    }
-}
-
-void ResComp::OnAssetCompiled(const std::filesystem::path& asset)
-{
-    if (IsUsingForge())
-    {
-        m_pRPCClient->send("success", asset.generic_string());
+        m_pRPCClient->send("cache", asset.generic_string(), sourceFile.generic_string(), destinationFile.generic_string());
     }
 }
 

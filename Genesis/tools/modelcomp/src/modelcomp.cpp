@@ -72,8 +72,7 @@ int ModelComp::Run()
 
     if (Compile(pScene, targetModelPath))
     {
-        OnResourceBuilt(GetFile(), targetModelPath);
-        OnAssetCompiled(GetFile());
+        OnResourceBuilt(GetFile(), sourceModelPath, targetModelPath);
         return 0;
     }
     else

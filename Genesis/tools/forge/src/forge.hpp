@@ -54,8 +54,7 @@ public:
     bool Run();
 
 private:
-    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource);
-    void OnAssetCompiled(const std::filesystem::path& asset);
+    void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile);
     void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
 
     void InitializeRPCServer();
