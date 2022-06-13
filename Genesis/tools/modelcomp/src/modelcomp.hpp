@@ -44,6 +44,7 @@ private:
     void WriteHeader(std::ofstream& file, const aiScene* pScene);
     void WriteMeshes(std::ofstream& file, const aiScene* pScene);
     void WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh);
+    void WriteMesh(std::ofstream& file, const aiMesh* pMesh);
 };
 
 } // namespace ResComp

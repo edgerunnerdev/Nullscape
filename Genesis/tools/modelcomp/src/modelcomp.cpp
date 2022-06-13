@@ -19,11 +19,16 @@
 
 #include "modelcomp.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <fstream>
 #include <json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include <fstream>
 #include <log.hpp>
 
 namespace Genesis
@@ -65,7 +70,17 @@ int ModelComp::Run()
         return -1;
     }
 
-    return Compile(pScene, targetModelPath) ? 0 : -1;
+    if (Compile(pScene, targetModelPath))
+    {
+        OnResourceBuilt(GetFile(), targetModelPath);
+        OnAssetCompiled(GetFile());
+        return 0;
+    }
+    else
+    {
+        OnAssetCompilationFailed(GetFile(), "Failed to compile file.");
+        return -1;
+    }
 }
 
 bool ModelComp::GetSourceModelPath(const std::filesystem::path& assetPath, std::filesystem::path& sourceModelPath) const
@@ -111,7 +126,7 @@ bool ModelComp::Compile(const aiScene* pScene, std::filesystem::path& targetMode
         WriteHeader(file, pScene);
         WriteMeshes(file, pScene);
         file.close();
-        return false;
+        return true;
     }
     else
     {
@@ -119,25 +134,63 @@ bool ModelComp::Compile(const aiScene* pScene, std::filesystem::path& targetMode
     }
 }
 
-void ModelComp::WriteHeader(std::ofstream& file, const aiScene* pScene) 
+void ModelComp::WriteHeader(std::ofstream& file, const aiScene* pScene)
 {
     file << "GMDL";
     file << static_cast<uint8_t>(1); // Version
     file << static_cast<uint8_t>(pScene->mNumMeshes);
 }
 
-void ModelComp::WriteMeshes(std::ofstream& file, const aiScene* pScene) 
+void ModelComp::WriteMeshes(std::ofstream& file, const aiScene* pScene)
 {
     for (unsigned int i = 0; i < pScene->mNumMeshes; ++i)
     {
         const aiMesh* pMesh = pScene->mMeshes[i];
         WriteMeshHeader(file, pMesh);
+        WriteMesh(file, pMesh);
     }
 }
 
-void ModelComp::WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh) 
+void ModelComp::WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh)
 {
-    file << static_cast<uint8_t>(pMesh->mMaterialIndex); 
+    file << static_cast<uint8_t>(pMesh->mMaterialIndex);
+    file << static_cast<uint32_t>(pMesh->mNumVertices);
+    file << static_cast<uint32_t>(pMesh->mNumFaces);
+    file << static_cast<uint32_t>(pMesh->GetNumUVChannels());
+    // file << static_cast<uint32_t>(pMesh->mNumBones); // Not currently implemented.
+}
+
+void ModelComp::WriteMesh(std::ofstream& file, const aiMesh* pMesh)
+{
+    for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
+    {
+        const aiVector3D& vertex = pMesh->mVertices[i];
+        file << vertex.x << vertex.y << vertex.z;
+    }
+
+    for (uint32_t i = 0; i < pMesh->mNumFaces; ++i)
+    {
+        const aiFace& face = pMesh->mFaces[i];
+        for (uint32_t j = 0; j < face.mNumIndices; ++j)
+        {
+            file << static_cast<uint32_t>(face.mIndices[j]);
+        }
+    }
+
+    for (uint32_t i = 0; i < pMesh->GetNumUVChannels(); ++i)
+    {
+        for (uint32_t j = 0; j < pMesh->mNumVertices; ++j)
+        {
+            const aiVector3D& uvw = pMesh->mTextureCoords[i][j];
+            file << uvw.x << uvw.y;
+        }
+    }
+
+    for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
+    {
+        const aiVector3D& normal = pMesh->mNormals[i];
+        file << normal.x << normal.y << normal.z;
+    }
 }
 
 } // namespace ResComp

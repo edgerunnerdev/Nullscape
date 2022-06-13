@@ -71,9 +71,7 @@ bool Forge::Run()
         Log::Info() << "Compiler found: " << compiler.first;
     }
 
-    CompileAssets();
-
-    return false;
+    return CompileAssets();
 }
 
 bool Forge::InitializeDirectories()
@@ -185,9 +183,10 @@ void Forge::InitializeRPCServer()
                        });
 }
 
-void Forge::CompileAssets()
+bool Forge::CompileAssets()
 {
     Core::Log::Info() << "Compiling assets...";
+    int errors = 0;
 
     for (Asset& asset : m_KnownAssets)
     {
@@ -202,7 +201,7 @@ void Forge::CompileAssets()
             std::stringstream arguments;
             arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << asset.GetPath() << " -m forge";
 
-            Core::Log::Info() << it->second << " " << arguments.str();
+            // Core::Log::Info() << it->second << " " << arguments.str();
 
             Core::Process process(it->second, arguments.str());
             process.Run();
@@ -210,14 +209,17 @@ void Forge::CompileAssets()
             if (process.GetExitCode() != 0)
             {
                 Core::Log::Error() << "Failed to compile " << asset.GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
+                errors++;
             }
         }
     }
+
+    return errors == 0;
 }
 
 void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& resource)
 {
-    Core::Log::Info() << asset << ": built resource " << resource;
+    Core::Log::Info() << asset << " built resource " << resource;
 }
 
 void Forge::OnAssetCompiled(const std::filesystem::path& asset)
