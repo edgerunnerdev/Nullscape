@@ -123,6 +123,7 @@ bool ModelComp::Compile(const aiScene* pScene, std::filesystem::path& targetMode
     if (file.good())
     {
         WriteHeader(file, pScene);
+        WriteMaterials(file, pScene);
         WriteMeshes(file, pScene);
         file.close();
         return true;
@@ -137,7 +138,16 @@ void ModelComp::WriteHeader(std::ofstream& file, const aiScene* pScene)
 {
     file << "GMDL";
     file << static_cast<uint8_t>(1); // Version
+    file << static_cast<uint8_t>(pScene->mNumMaterials);
     file << static_cast<uint8_t>(pScene->mNumMeshes);
+}
+
+void ModelComp::WriteMaterials(std::ofstream& file, const aiScene* pScene) 
+{
+    for (unsigned int i = 0; i < pScene->mNumMaterials; ++i)
+    {
+        file << pScene->mMaterials[i]->GetName().C_Str();
+    }
 }
 
 void ModelComp::WriteMeshes(std::ofstream& file, const aiScene* pScene)

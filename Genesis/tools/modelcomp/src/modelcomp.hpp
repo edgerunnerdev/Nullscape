@@ -42,6 +42,7 @@ private:
     bool GetTargetModelPath(const std::filesystem::path& sourceModelPath, std::filesystem::path& targetModelPath) const;
     bool Compile(const aiScene* pScene, std::filesystem::path& targetModelPath);
     void WriteHeader(std::ofstream& file, const aiScene* pScene);
+    void WriteMaterials(std::ofstream& file, const aiScene* pScene);
     void WriteMeshes(std::ofstream& file, const aiScene* pScene);
     void WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh);
     void WriteMesh(std::ofstream& file, const aiMesh* pMesh);
