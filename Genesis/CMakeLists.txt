@@ -1,6 +1,8 @@
 ﻿cmake_minimum_required(VERSION 3.15)
 project(Genesis)
 
+include(ExternalLibraries)
+
 add_subdirectory("libs/imgui")
 add_subdirectory("libs/GenesisCore")
 add_subdirectory("libs/GenesisResComp")
@@ -10,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
-
+	
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(imgui REQUIRED)
@@ -33,6 +35,8 @@ include_directories(
     ${SDL2_IMAGE_INCLUDE_DIRS}
     ${VPX_INCLUDE_DIRS}
 )
+
+BuildExternalLibraries()
 
 add_library(Genesis STATIC ${SOURCE_FILES})
 set_target_properties(Genesis PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/libs/Genesis/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/${CMAKE_BUILD_TYPE})

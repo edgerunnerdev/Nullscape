@@ -44,7 +44,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     rpc
 )
 
-add_dependencies(${PROJECT_NAME} GenesisCore)
+add_dependencies(${PROJECT_NAME} GenesisCore rpclib)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Final>:NDEBUG _FINAL>)
 
