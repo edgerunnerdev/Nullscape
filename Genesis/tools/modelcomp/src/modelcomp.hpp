@@ -19,7 +19,9 @@
 
 #include <filesystem>
 #include <fstream>
+#include <memory>
 #include <rescomp.hpp>
+#include <unordered_map>
 
 struct aiMesh;
 struct aiScene;
@@ -28,6 +30,9 @@ namespace Genesis
 {
 namespace ResComp
 {
+
+class Material;
+using MaterialUniquePtr = std::unique_ptr<Material>;
 
 class ModelComp : public ResComp
 {
@@ -38,14 +43,19 @@ public:
     virtual int Run() override;
 
 private:
-    bool GetSourceModelPath(const std::filesystem::path& assetPath, std::filesystem::path& sourceModelPath) const;
-    bool GetTargetModelPath(const std::filesystem::path& sourceModelPath, std::filesystem::path& targetModelPath) const;
+    bool ReadAsset(const std::filesystem::path& assetPath);
+    bool ValidateMaterials(const aiScene* pScene);
+    std::filesystem::path GetTargetModelPath(const std::filesystem::path& sourceModelPath) const;
     bool Compile(const aiScene* pScene, std::filesystem::path& targetModelPath);
     void WriteHeader(std::ofstream& file, const aiScene* pScene);
     void WriteMaterials(std::ofstream& file, const aiScene* pScene);
     void WriteMeshes(std::ofstream& file, const aiScene* pScene);
     void WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh);
     void WriteMesh(std::ofstream& file, const aiMesh* pMesh);
+
+    using MaterialMap = std::unordered_map<std::string, MaterialUniquePtr>;
+    MaterialMap m_Materials;
+    std::filesystem::path m_SourceModelPath;
 };
 
 } // namespace ResComp

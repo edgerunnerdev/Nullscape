@@ -1,4 +1,32 @@
 {
   "source": "model.fbx",
-  "compiler": "ModelComp"
+  "compiler": "ModelComp",
+  "materials": [
+    {
+      "name": "Material",
+      "shader": "pbr",
+      "bindings": [
+        {
+          "name": "ColorSampler",
+          "filename": "model_Material_BaseColor.png"
+        },
+        {
+          "name": "HeightSampler",
+          "filename": "model_Material_Height.png"
+        },
+        {
+          "name": "MetallicSampler",
+          "filename": "model_Material_Metallic.png"
+        },
+        {
+          "name": "NormalSampler",
+          "filename": "model_Material_Normal.png"
+        },
+        {
+          "name": "RoughnessSampler",
+          "filename": "model_Material_Roughness.png"
+        }
+      ]
+    }
+  ]
 }
