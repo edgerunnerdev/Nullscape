@@ -33,8 +33,6 @@ namespace Hexterminate
 
 ModelViewerObject::ModelViewerObject()
     : m_pShader(nullptr)
-    , m_pVertexBufferX(nullptr)
-    , m_pVertexBufferY(nullptr)
 {
     using namespace Genesis;
 
@@ -42,10 +40,6 @@ ModelViewerObject::ModelViewerObject()
     m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource("data/models/ships/corvettes/dagger/exported/model.gmdl");
 
     m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("untextured_vertex_coloured");
-    m_pVertexBufferX = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
-    m_pVertexBufferX->CreateUntexturedQuad(0.0f, 0.0f, 50.0f, 5.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-    m_pVertexBufferY = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
-    m_pVertexBufferY->CreateUntexturedQuad(0.0f, 0.0f, 5.0f, 50.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 ModelViewerObject::~ModelViewerObject()
@@ -59,13 +53,8 @@ void ModelViewerObject::Update(float delta)
 
 void ModelViewerObject::Render()
 {
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
     m_pShader->Use();
-    //m_pVertexBufferX->Draw();
-    //m_pVertexBufferY->Draw();
     m_pModel->Render(glm::mat4());
-    glDisable(GL_DEPTH_TEST);
 }
 
 } // namespace Hexterminate

@@ -31,10 +31,11 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
-#include <fstream>
-#include <log.hpp>
 #include "material.hpp"
 #include "modelserialization.hpp"
+
+#include <fstream>
+#include <log.hpp>
 
 namespace Genesis
 {
@@ -51,7 +52,7 @@ int ModelComp::Run()
         OnAssetCompilationFailed(GetFile(), "Invalid model asset file.");
         return -1;
     }
-    
+
     if (std::filesystem::exists(m_SourceModelPath) == false)
     {
         OnAssetCompilationFailed(GetFile(), "Model file doesn't exist.");
@@ -87,7 +88,7 @@ int ModelComp::Run()
     }
 }
 
-bool ModelComp::ReadAsset(const std::filesystem::path& assetPath) 
+bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
 {
     using namespace nlohmann;
     std::ifstream file(assetPath);
@@ -173,7 +174,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
                         bindings[bindingName] = bindingFilename;
                     }
                 }
-                
+
                 m_Materials[pMaterial->GetName()] = std::move(pMaterial);
             }
         }
@@ -183,7 +184,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
     return false;
 }
 
-bool ModelComp::ValidateMaterials(const aiScene* pScene) 
+bool ModelComp::ValidateMaterials(const aiScene* pScene)
 {
     bool mismatch = false;
     if (m_Materials.size() != pScene->mNumMaterials)
@@ -270,7 +271,7 @@ void ModelComp::WriteHeader(Serialization::Model& model, const aiScene* pImporte
     model.header.meshes = static_cast<uint8_t>(pImportedScene->mNumMeshes);
 }
 
-void ModelComp::WriteMaterials(Serialization::Model& model) 
+void ModelComp::WriteMaterials(Serialization::Model& model)
 {
     for (auto& materialPair : m_Materials)
     {
@@ -305,10 +306,13 @@ void ModelComp::WriteMeshHeader(Serialization::Mesh& mesh, const aiMesh* pImport
 
 void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh)
 {
+    aiMatrix4x4 rotX;
+    aiMatrix4x4::RotationX(-AI_MATH_HALF_PI, rotX);
+
     mesh.vertices.reserve(mesh.header.vertices);
     for (uint32_t i = 0; i < mesh.header.vertices; ++i)
     {
-        const aiVector3D& vertex = pImportedMesh->mVertices[i];
+        aiVector3D vertex = rotX * pImportedMesh->mVertices[i];
         mesh.vertices.push_back({vertex.x, vertex.y, vertex.z});
     }
 
@@ -334,7 +338,7 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
     mesh.normals.reserve(mesh.header.vertices);
     for (uint32_t i = 0; i < mesh.header.vertices; ++i)
     {
-        const aiVector3D& normal = pImportedMesh->mNormals[i];
+        aiVector3D normal = rotX * pImportedMesh->mNormals[i];
         mesh.normals.push_back({normal.x, normal.y, normal.z});
     }
 }
