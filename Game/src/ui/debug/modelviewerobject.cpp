@@ -38,7 +38,7 @@ ModelViewerObject::ModelViewerObject()
 {
     using namespace Genesis;
 
-    m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( "data/models/misc/shipyard/model.tmf" );
+    m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource("data/models/ships/corvettes/dagger/exported/model.gmdl");
 
     m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("untextured_vertex_coloured");
     m_pVertexBufferX = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);

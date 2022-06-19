@@ -23,6 +23,8 @@
 #include <rescomp.hpp>
 #include <unordered_map>
 
+#include "modelserialization.hpp"
+
 struct aiMesh;
 struct aiScene;
 
@@ -44,14 +46,14 @@ public:
 
 private:
     bool ReadAsset(const std::filesystem::path& assetPath);
-    bool ValidateMaterials(const aiScene* pScene);
+    bool ValidateMaterials(const aiScene* pImportedScene);
     std::filesystem::path GetTargetModelPath(const std::filesystem::path& sourceModelPath) const;
-    bool Compile(const aiScene* pScene, std::filesystem::path& targetModelPath);
-    void WriteHeader(std::ofstream& file, const aiScene* pScene);
-    void WriteMaterials(std::ofstream& file, const aiScene* pScene);
-    void WriteMeshes(std::ofstream& file, const aiScene* pScene);
-    void WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh);
-    void WriteMesh(std::ofstream& file, const aiMesh* pMesh);
+    bool Compile(const aiScene* pImportedScene, std::filesystem::path& targetModelPath);
+    void WriteHeader(Serialization::Model& model, const aiScene* pImportedScene);
+    void WriteMaterials(Serialization::Model& model);
+    void WriteMeshes(Serialization::Model& model, const aiScene* pImportedScene);
+    void WriteMeshHeader(Serialization::Mesh& mesh, const aiMesh* pImportedMesh);
+    void WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh);
 
     using MaterialMap = std::unordered_map<std::string, MaterialUniquePtr>;
     MaterialMap m_Materials;

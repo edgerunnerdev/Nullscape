@@ -1,6 +1,7 @@
 include(ExternalProject)
 
 function(BuildExternalLibraries)
+
   ExternalProject_Add(rpclib
     PREFIX ${CMAKE_CURRENT_LIST_DIR}/ext/rpclib
     GIT_REPOSITORY https://github.com/edgerunnerdev/rpclib.git
@@ -8,4 +9,12 @@ function(BuildExternalLibraries)
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DRPCLIB_MSVC_STATIC_RUNTIME=ON
 	UPDATE_COMMAND ""
   )
+
+  ExternalProject_Add(bitsery
+    PREFIX ${CMAKE_CURRENT_LIST_DIR}/ext/bitsery
+    GIT_REPOSITORY https://github.com/fraillt/bitsery.git
+	GIT_TAG v5.2.2
+    UPDATE_COMMAND "" CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_COMMAND ""
+  )
+
 endfunction()

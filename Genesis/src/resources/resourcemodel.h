@@ -17,40 +17,32 @@
 
 #pragma once
 
-#include "../rendersystem.h"
-#include "../resourcemanager.h"
-#include "../shaderuniforminstance.h"
-#include "../vertexbuffer.h"
-#include "resourceimage.h"
+#include "rendersystem.h"
+#include "resourcemanager.h"
+#include "shaderuniforminstance.h"
+#include "vertexbuffer.h"
+#include "resources/resourceimage.h"
+#include "render/material.hpp"
 
 #include <array>
+#include <fstream>
 #include <map>
 #include <stdio.h>
 #include <vector>
 
 namespace Genesis
 {
-struct Material;
 class Mesh;
-class ResourceImage;
 class TMFObject;
 class VertexBuffer;
 
-static const short MODEL_VERSION = 91;
+static const short MODEL_VERSION = 1;
 
-typedef std::vector<Material*> MaterialList;
+using Materials = std::vector<MaterialSharedPtr>;
+using ResourceImages = std::vector<ResourceImage*>;
+
 typedef std::map<std::string, glm::vec3> DummyMap;
 typedef std::vector<TMFObject*> TMFObjectList;
-typedef std::array<ResourceImage*, 32> ResourceImages;
-
-// Materials
-struct Material
-{
-    std::string name;
-    Shader* shader;
-    ResourceImages resources;
-    ShaderUniformInstances uniforms;
-};
 
 ///////////////////////////////////////////////////////
 // TMFObject
@@ -64,7 +56,7 @@ public:
 
     void Preload(FILE* fp);
     void Load();
-    void Render(const glm::mat4& modelTransform, const MaterialList& materialList);
+    void Render(const glm::mat4& modelTransform, const Materials& materials);
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial);
 
 private:
@@ -115,12 +107,11 @@ public:
     ResourceModel(const Filename& filename);
     virtual ~ResourceModel();
     virtual ResourceType GetType() const override;
-    virtual void Preload() override;
     virtual bool Load() override;
 
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr);
     bool GetDummy(const std::string& name, glm::vec3* pPosition) const;
-    MaterialList& GetMaterials();
+    Materials& GetMaterials();
     void SetFlipAxis(bool value);
 
 private:
@@ -128,15 +119,23 @@ private:
     void AddTMFObject(FILE* fp);
     void LoadMaterialLibrary(const std::string& filename);
 
-    MaterialList mMaterialList;
+    bool ReadHeader(std::ifstream& file);
+    bool ReadMaterials(std::ifstream& file);
+
+    std::string Read(std::ifstream& file, size_t count);
+
+    Materials m_Materials;
     TMFObjectList mObjectList;
     DummyMap mDummyMap;
     bool mFlipAxis;
+
+    uint8_t m_NumMaterials;
+    uint8_t m_NumMeshes;
 };
 
-inline MaterialList& ResourceModel::GetMaterials()
+inline Materials& ResourceModel::GetMaterials()
 {
-    return mMaterialList;
+    return m_Materials;
 }
 
 inline void ResourceModel::SetFlipAxis(bool value)

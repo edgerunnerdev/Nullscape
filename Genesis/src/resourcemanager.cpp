@@ -68,7 +68,7 @@ ResourceManager::ResourceManager()
     ResourceFactoryFunction fCreateResourceModel = [](const Filename& filename) {
         return new ResourceModel(filename);
     };
-    RegisterExtension("tmf", fCreateResourceModel);
+    RegisterExtension("gmdl", fCreateResourceModel);
 
     ResourceFactoryFunction fCreateResourceSound = [](const Filename& filename) {
         return new ResourceSound(filename);

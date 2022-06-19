@@ -24,6 +24,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <bitsery/bitsery.h>
+#include <bitsery/adapter/stream.h>
+#include <bitsery/traits/string.h>
 #include <json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
@@ -31,6 +34,7 @@
 #include <fstream>
 #include <log.hpp>
 #include "material.hpp"
+#include "modelserialization.hpp"
 
 namespace Genesis
 {
@@ -235,14 +239,20 @@ std::filesystem::path ModelComp::GetTargetModelPath(const std::filesystem::path&
     return targetPath / targetFileName;
 }
 
-bool ModelComp::Compile(const aiScene* pScene, std::filesystem::path& targetModelPath)
+bool ModelComp::Compile(const aiScene* pImportedScene, std::filesystem::path& targetModelPath)
 {
-    std::ofstream file(targetModelPath, std::ios::out | std::ios::trunc);
+    std::ofstream file(targetModelPath, std::ios::out | std::ios::trunc | std::ios::binary);
     if (file.good())
     {
-        WriteHeader(file, pScene);
-        WriteMaterials(file, pScene);
-        WriteMeshes(file, pScene);
+        Serialization::Model model;
+        WriteHeader(model, pImportedScene);
+        WriteMaterials(model);
+        WriteMeshes(model, pImportedScene);
+
+        bitsery::Serializer<bitsery::OutputBufferedStreamAdapter> ser{file};
+        ser.object(model);
+        ser.adapter().flush();
+
         file.close();
         return true;
     }
@@ -252,80 +262,83 @@ bool ModelComp::Compile(const aiScene* pScene, std::filesystem::path& targetMode
     }
 }
 
-void ModelComp::WriteHeader(std::ofstream& file, const aiScene* pScene)
+void ModelComp::WriteHeader(Serialization::Model& model, const aiScene* pImportedScene)
 {
-    file << "GMDL";
-    file << static_cast<uint8_t>(1); // Version
-    file << static_cast<uint8_t>(pScene->mNumMaterials);
-    file << static_cast<uint8_t>(pScene->mNumMeshes);
+    model.header.format = "GMDL";
+    model.header.version = 1;
+    model.header.materials = static_cast<uint8_t>(pImportedScene->mNumMaterials);
+    model.header.meshes = static_cast<uint8_t>(pImportedScene->mNumMeshes);
 }
 
-void ModelComp::WriteMaterials(std::ofstream& file, const aiScene* pScene) 
+void ModelComp::WriteMaterials(Serialization::Model& model) 
 {
     for (auto& materialPair : m_Materials)
     {
         Material* pMaterial = materialPair.second.get();
-        file << pMaterial->GetName();
-        file << pMaterial->GetShader();
-        Material::Bindings& bindings = pMaterial->GetBindings();
-        file << bindings.size();
-        for (auto& binding : bindings)
-        {
-            file << binding.first;
-            file << binding.second;
-        }
+        Serialization::ModelMaterial material;
+        material.name = pMaterial->GetName();
+        material.shader = pMaterial->GetShader();
+        material.bindings = pMaterial->GetBindings();
+        model.materials.push_back(std::move(material));
     }
 }
 
-void ModelComp::WriteMeshes(std::ofstream& file, const aiScene* pScene)
+void ModelComp::WriteMeshes(Serialization::Model& model, const aiScene* pImportedScene)
 {
-    for (unsigned int i = 0; i < pScene->mNumMeshes; ++i)
+    for (unsigned int i = 0; i < pImportedScene->mNumMeshes; ++i)
     {
-        const aiMesh* pMesh = pScene->mMeshes[i];
-        WriteMeshHeader(file, pMesh);
-        WriteMesh(file, pMesh);
+        const aiMesh* pImportedMesh = pImportedScene->mMeshes[i];
+        Serialization::Mesh mesh;
+        WriteMeshHeader(mesh, pImportedMesh);
+        WriteMesh(mesh, pImportedMesh);
+        model.meshes.push_back(std::move(mesh));
     }
 }
 
-void ModelComp::WriteMeshHeader(std::ofstream& file, const aiMesh* pMesh)
+void ModelComp::WriteMeshHeader(Serialization::Mesh& mesh, const aiMesh* pImportedMesh)
 {
-    file << static_cast<uint8_t>(pMesh->mMaterialIndex);
-    file << static_cast<uint32_t>(pMesh->mNumVertices);
-    file << static_cast<uint32_t>(pMesh->mNumFaces);
-    file << static_cast<uint32_t>(pMesh->GetNumUVChannels());
-    // file << static_cast<uint32_t>(pMesh->mNumBones); // Not currently implemented.
+    mesh.header.materialIndex = pImportedMesh->mMaterialIndex;
+    mesh.header.vertices = pImportedMesh->mNumVertices;
+    mesh.header.faces = pImportedMesh->mNumFaces;
+    mesh.header.uvChannels = pImportedMesh->GetNumUVChannels();
 }
 
-void ModelComp::WriteMesh(std::ofstream& file, const aiMesh* pMesh)
+void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh)
 {
-    for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
+    mesh.vertices.reserve(mesh.header.vertices);
+    for (uint32_t i = 0; i < mesh.header.vertices; ++i)
     {
-        const aiVector3D& vertex = pMesh->mVertices[i];
-        file << vertex.x << vertex.y << vertex.z;
+        const aiVector3D& vertex = pImportedMesh->mVertices[i];
+        mesh.vertices.push_back({vertex.x, vertex.y, vertex.z});
     }
 
-    for (uint32_t i = 0; i < pMesh->mNumFaces; ++i)
+    mesh.faces.reserve(mesh.header.faces);
+    for (uint32_t i = 0; i < mesh.header.faces; ++i)
     {
-        const aiFace& face = pMesh->mFaces[i];
-        for (uint32_t j = 0; j < face.mNumIndices; ++j)
+        const aiFace& face = pImportedMesh->mFaces[i];
+        for (uint32_t j = 0; j < 3; ++j)
         {
-            file << static_cast<uint32_t>(face.mIndices[j]);
+            mesh.faces.push_back({face.mIndices[0], face.mIndices[1], face.mIndices[2]});
         }
     }
 
-    for (uint32_t i = 0; i < pMesh->GetNumUVChannels(); ++i)
+    mesh.uvChannels.reserve(mesh.header.uvChannels);
+    for (uint32_t i = 0; i < mesh.header.uvChannels; ++i)
     {
-        for (uint32_t j = 0; j < pMesh->mNumVertices; ++j)
+        Serialization::UVChannel uvChannel;
+        for (uint32_t j = 0; j < mesh.header.vertices; ++j)
         {
-            const aiVector3D& uvw = pMesh->mTextureCoords[i][j];
-            file << uvw.x << uvw.y;
+            const aiVector3D& uv = pImportedMesh->mTextureCoords[i][j];
+            uvChannel.uvs.push_back({uv.x, uv.y});
         }
+        mesh.uvChannels.push_back(std::move(uvChannel));
     }
 
-    for (uint32_t i = 0; i < pMesh->mNumVertices; ++i)
+    mesh.normals.reserve(mesh.header.vertices);
+    for (uint32_t i = 0; i < mesh.header.vertices; ++i)
     {
-        const aiVector3D& normal = pMesh->mNormals[i];
-        file << normal.x << normal.y << normal.z;
+        const aiVector3D& normal = pImportedMesh->mNormals[i];
+        mesh.normals.push_back({normal.x, normal.y, normal.z});
     }
 }
 

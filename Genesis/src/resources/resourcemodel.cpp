@@ -143,16 +143,16 @@ void TMFObject::BuildVertexBufferData()
     }
 }
 
-void TMFObject::Render(const glm::mat4& modelTransform, const MaterialList& materials)
+void TMFObject::Render(const glm::mat4& modelTransform, const Materials& materials)
 {
-    Material* pMaterial = materials[m_MaterialIndex];
-    pMaterial->shader->Use(modelTransform, &pMaterial->uniforms);
+    Material* pMaterial = materials[m_MaterialIndex].get();
+    pMaterial->GetShader()->Use(modelTransform, &pMaterial->GetShaderUniformInstances());
     m_pVertexBuffer->Draw();
 }
 
 void TMFObject::Render(const glm::mat4& modelTransform, Material* pOverrideMaterial)
 {
-    pOverrideMaterial->shader->Use(modelTransform, &pOverrideMaterial->uniforms);
+    pOverrideMaterial->GetShader()->Use(modelTransform, &pOverrideMaterial->GetShaderUniformInstances());
     m_pVertexBuffer->Draw();
 }
 
@@ -163,6 +163,8 @@ void TMFObject::Render(const glm::mat4& modelTransform, Material* pOverrideMater
 ResourceModel::ResourceModel(const Filename& filename)
     : ResourceGeneric(filename)
     , mFlipAxis(true)
+    , m_NumMaterials(0)
+    , m_NumMeshes(0)
 {
 }
 
@@ -172,74 +174,110 @@ ResourceModel::~ResourceModel()
     {
         delete pObject;
     }
-
-    for (auto& pMaterial : mMaterialList)
-    {
-        delete pMaterial;
-    }
-}
-
-void ResourceModel::Preload()
-{
-    struct TMFHEADER
-    {
-        uint8_t id[4];     // should be TMF
-        uint16_t version;  // version, multiplied by 100
-        uint16_t nobj;     // number of geometry objects
-        uint16_t nhelpers; // number of helper objects
-    } TMFHeader;
-    memset(&TMFHeader, 0, sizeof(TMFHEADER));
-
-    FILE* fp = 0;
-#ifdef _WIN32
-    fopen_s(&fp, GetFilename().GetFullPath().c_str(), "rb");
-#else
-    fp = fopen(GetFilename().GetFullPath().c_str(), "rb");
-#endif
-    if (fp == nullptr)
-    {
-        return;
-    }
-
-    // Check if it is a TMF file
-    fread(TMFHeader.id, sizeof(uint8_t), 3, fp);
-    if (TMFHeader.id[0] != 'T' || TMFHeader.id[1] != 'M' || TMFHeader.id[2] != 'F')
-    {
-        return;
-    }
-
-    fread(&TMFHeader.version, sizeof(uint16_t), 1, fp);
-
-    SDL_assert(TMFHeader.version == MODEL_VERSION);
-
-    fread(&TMFHeader.nobj, sizeof(uint16_t), 1, fp);
-    fread(&TMFHeader.nhelpers, sizeof(uint16_t), 1, fp);
-
-    for (int i = 0; i < TMFHeader.nhelpers; i++)
-    {
-        AddTMFDummy(fp);
-    }
-
-    for (int i = 0; i < TMFHeader.nobj; i++)
-    {
-        AddTMFObject(fp);
-    }
-
-    fclose(fp);
 }
 
 bool ResourceModel::Load()
 {
-    LoadMaterialLibrary(GetFilename().GetFullPath());
-
-    for (auto& pObject : mObjectList)
+    std::ifstream file(GetFilename().GetFullPath(), std::ios::in | std::ios::binary);
+    if (file.good() == false)
     {
-        pObject->Load();
+        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath();
+        return false;
+    }
+    else if (ReadHeader(file) == false)
+    {
+        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read header.";
+        file.close();
+        return false;
+    }
+    else if (ReadMaterials(file) == false)
+    {
+        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read materials.";
+        file.close();
+        return false;
+    }
+    else
+    {
+        file.close();
+        // Core::Log::Info() << "Model '" << GetFilename().GetFullPath() << "': " << mObjectList.size() << " objects, " << mMaterialList.size() << " materials.";
+        m_State = ResourceState::Loaded;
+        return true;
+    }
+}
+
+bool ResourceModel::ReadHeader(std::ifstream& file) 
+{
+    std::string format = Read(file, 4);
+    if (format != "GMDL" || !file.good())
+    {
+        return false;
     }
 
-    Core::Log::Info() << "Model '" << GetFilename().GetFullPath() << "': " << mObjectList.size() << " objects, " << mMaterialList.size() << " materials.";
-    m_State = ResourceState::Loaded;
-    return true;
+    uint8_t version;
+    file >> version >> m_NumMaterials >> m_NumMeshes;
+
+    return file.good();
+}
+
+bool ResourceModel::ReadMaterials(std::ifstream& file) 
+{
+    for (uint8_t i = 0; i < m_NumMaterials; ++i)
+    {
+        MaterialSharedPtr pMaterial = std::make_shared<Material>();
+        uint32_t count;
+        file >> count;
+        pMaterial->SetName(Read(file, count));
+
+        file >> count;
+        std::string shaderName = Read(file, count);
+        Shader* pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load(shaderName);
+        if (pShader == nullptr)
+        {
+            Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": invalid shader " << shaderName;
+            return false;
+        }
+        else
+        {
+            pMaterial->SetShader(pShader);
+        }
+
+        uint32_t numBindings;
+        file >> numBindings;
+        for (uint32_t j = 0; j < numBindings; ++j)
+        {
+            file >> count;
+            std::string name = Read(file, count);
+            file >> count;
+            std::string filename = Read(file, count);
+
+            ShaderUniform* pShaderUniform = pShader->RegisterUniform(name.c_str(), ShaderUniformType::Texture);
+            if (pShaderUniform == nullptr)
+            {
+                Core::Log::Error() << "Model '" << GetFilename().GetFullPath() << "', shader '" << shaderName << "', couldn't find texture uniform named '" << name << "'.";
+                return false;
+            }
+
+            ResourceImage* pResourceImage = FrameWork::GetResourceManager()->GetResource<ResourceImage*>("");
+
+            //else
+            //{
+            //    ShaderUniformInstance instance(pShaderUniform);
+            //    instance.Set(pImage, GL_TEXTURE0 + numTextureMap);
+            //    currentMaterial->uniforms.push_back(instance);
+            //    currentMaterial->resources[numTextureMap] = pImage;
+            //}
+        }
+
+        m_Materials.push_back(std::move(pMaterial));
+    }
+    return file.good();
+}
+
+std::string ResourceModel::Read(std::ifstream& file, size_t count) 
+{
+    std::string result(count, ' ');
+    file.read(result.data(), count);
+    return result;
 }
 
 bool ResourceModel::GetDummy(const std::string& name, glm::vec3* pPosition) const
@@ -311,197 +349,197 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
 
 void ResourceModel::LoadMaterialLibrary(const std::string& filename)
 {
-    std::string materialFilename = filename;
-    std::string path = filename.substr(0, filename.find_last_of("\\/") + 1); // We keep the final dash
-    // Replace the last character of the extension - tmf becomes tml
-    materialFilename[filename.size() - 1] = 'l';
-
-    std::ifstream fp;
-    fp.open(materialFilename.c_str(), std::ios::in);
-
-    if (!fp.is_open())
-    {
-        Core::Log::Error() << "Couldn't load material library for " << filename;
-        return;
-    }
-
-    Material* currentMaterial = nullptr;
-
-    char buffer[256];
-    char shaderName[64];
-    char parameterType[16];
-    char parameterName[64];
-    char parameterValue[64];
-    memset(shaderName, 0, sizeof(shaderName));
-    memset(parameterType, 0, sizeof(parameterType));
-    memset(parameterName, 0, sizeof(parameterName));
-    memset(parameterValue, 0, sizeof(parameterValue));
-    int numTextureMap = 0;
-    while (fp.getline(buffer, sizeof(buffer)))
-    {
-#ifdef _WIN32
-        sscanf_s(buffer, "  %s", parameterType, static_cast<unsigned int>(sizeof(parameterType)));
-#else
-        sscanf(buffer, "  %s", parameterType);
-#endif
-        std::string sparameterType(parameterType);
-
-        if (sparameterType == "INT")
-        {
-            int v = 0;
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s %d", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v);
-#else
-            sscanf(buffer, "%*s %s %d", parameterName, &v);
-#endif
-
-            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Integer);
-            if (pShaderUniform == nullptr)
-            {
-                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Integer named '" << parameterName << "'.";
-            }
-            else
-            {
-                ShaderUniformInstance instance(pShaderUniform);
-                instance.Set(v);
-                currentMaterial->uniforms.push_back(instance);
-            }
-        }
-        else if (sparameterType == "FLOAT")
-        {
-            float v = 0.0f;
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v);
-#else
-            sscanf(buffer, "%*s %s %f", parameterName, &v);
-#endif
-
-            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Float);
-            if (pShaderUniform == nullptr)
-            {
-                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Float named '" << parameterName << "'.";
-            }
-            else
-            {
-                ShaderUniformInstance instance(pShaderUniform);
-                instance.Set(v);
-                currentMaterial->uniforms.push_back(instance);
-            }
-        }
-        else if (sparameterType == "FLOAT2")
-        {
-            float v1, v2;
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2);
-#else
-            sscanf(buffer, "%*s %s %f %f", parameterName, &v1, &v2);
-#endif
-
-            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector2);
-            if (pShaderUniform == nullptr)
-            {
-                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector2 named '" << parameterName << "'.";
-            }
-            else
-            {
-                ShaderUniformInstance instance(pShaderUniform);
-                instance.Set(glm::vec2(v1, v2));
-                currentMaterial->uniforms.push_back(instance);
-            }
-        }
-        else if (sparameterType == "FLOAT3")
-        {
-            float v1, v2, v3;
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s %f %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2, &v3);
-#else
-            sscanf(buffer, "%*s %s %f %f %f", parameterName, &v1, &v2, &v3);
-#endif
-
-            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector3);
-            if (pShaderUniform == nullptr)
-            {
-                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector3 named '" << parameterName << "'.";
-            }
-            else
-            {
-                ShaderUniformInstance instance(pShaderUniform);
-                instance.Set(glm::vec3(v1, v2, v3));
-                currentMaterial->uniforms.push_back(instance);
-            }
-        }
-        else if (sparameterType == "FLOAT4")
-        {
-            float v1, v2, v3, v4;
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s %f %f %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2, &v3, &v4);
-#else
-            sscanf(buffer, "%*s %s %f %f %f %f", parameterName, &v1, &v2, &v3, &v4);
-#endif
-
-            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector4);
-            if (pShaderUniform == nullptr)
-            {
-                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector4 named '" << parameterName << "'.";
-            }
-            else
-            {
-                ShaderUniformInstance instance(pShaderUniform);
-                instance.Set(glm::vec4(v1, v2, v3, v4));
-                currentMaterial->uniforms.push_back(instance);
-            }
-        }
-        else if (sparameterType == "TEXTUREMAP")
-        {
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s", parameterName, static_cast<unsigned int>(sizeof(parameterName)));
-#else
-            sscanf(buffer, "%*s %s", parameterName);
-#endif
-            std::string textureFileName(path);
-            textureFileName += parameterName;
-            ResourceImage* pImage = (ResourceImage*)FrameWork::GetResourceManager()->GetResource(textureFileName);
-
-            std::stringstream uniformName;
-            uniformName << "k_sampler" << numTextureMap;
-
-            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(uniformName.str().c_str(), ShaderUniformType::Texture);
-            if (pShaderUniform == nullptr)
-            {
-                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Texture named '" << parameterName << "'.";
-            }
-            else
-            {
-                ShaderUniformInstance instance(pShaderUniform);
-                instance.Set(pImage, GL_TEXTURE0 + numTextureMap);
-                currentMaterial->uniforms.push_back(instance);
-                currentMaterial->resources[numTextureMap] = pImage;
-            }
-
-            numTextureMap++;
-        }
-        else if (sparameterType == "SHADER")
-        {
-#ifdef _WIN32
-            sscanf_s(buffer, "%*s %s", shaderName, static_cast<unsigned int>(sizeof(parameterName)));
-#else
-            sscanf(buffer, "%*s %s", shaderName);
-#endif
-
-            numTextureMap = 0;
-
-            std::string shaderNameNoExtension(shaderName);
-            shaderNameNoExtension = shaderNameNoExtension.substr(0, shaderNameNoExtension.find_last_of('.'));
-
-            currentMaterial = new Material();
-            currentMaterial->shader = FrameWork::GetRenderSystem()->GetShaderCache()->Load(shaderNameNoExtension);
-            currentMaterial->name = shaderNameNoExtension;
-            currentMaterial->resources.fill(nullptr);
-
-            mMaterialList.push_back(currentMaterial);
-        }
-    }
-
-    fp.close();
+//    std::string materialFilename = filename;
+//    std::string path = filename.substr(0, filename.find_last_of("\\/") + 1); // We keep the final dash
+//    // Replace the last character of the extension - tmf becomes tml
+//    materialFilename[filename.size() - 1] = 'l';
+//
+//    std::ifstream fp;
+//    fp.open(materialFilename.c_str(), std::ios::in);
+//
+//    if (!fp.is_open())
+//    {
+//        Core::Log::Error() << "Couldn't load material library for " << filename;
+//        return;
+//    }
+//
+//    Material* currentMaterial = nullptr;
+//
+//    char buffer[256];
+//    char shaderName[64];
+//    char parameterType[16];
+//    char parameterName[64];
+//    char parameterValue[64];
+//    memset(shaderName, 0, sizeof(shaderName));
+//    memset(parameterType, 0, sizeof(parameterType));
+//    memset(parameterName, 0, sizeof(parameterName));
+//    memset(parameterValue, 0, sizeof(parameterValue));
+//    int numTextureMap = 0;
+//    while (fp.getline(buffer, sizeof(buffer)))
+//    {
+//#ifdef _WIN32
+//        sscanf_s(buffer, "  %s", parameterType, static_cast<unsigned int>(sizeof(parameterType)));
+//#else
+//        sscanf(buffer, "  %s", parameterType);
+//#endif
+//        std::string sparameterType(parameterType);
+//
+//        if (sparameterType == "INT")
+//        {
+//            int v = 0;
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s %d", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v);
+//#else
+//            sscanf(buffer, "%*s %s %d", parameterName, &v);
+//#endif
+//
+//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Integer);
+//            if (pShaderUniform == nullptr)
+//            {
+//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Integer named '" << parameterName << "'.";
+//            }
+//            else
+//            {
+//                ShaderUniformInstance instance(pShaderUniform);
+//                instance.Set(v);
+//                currentMaterial->uniforms.push_back(instance);
+//            }
+//        }
+//        else if (sparameterType == "FLOAT")
+//        {
+//            float v = 0.0f;
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v);
+//#else
+//            sscanf(buffer, "%*s %s %f", parameterName, &v);
+//#endif
+//
+//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Float);
+//            if (pShaderUniform == nullptr)
+//            {
+//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Float named '" << parameterName << "'.";
+//            }
+//            else
+//            {
+//                ShaderUniformInstance instance(pShaderUniform);
+//                instance.Set(v);
+//                currentMaterial->uniforms.push_back(instance);
+//            }
+//        }
+//        else if (sparameterType == "FLOAT2")
+//        {
+//            float v1, v2;
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2);
+//#else
+//            sscanf(buffer, "%*s %s %f %f", parameterName, &v1, &v2);
+//#endif
+//
+//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector2);
+//            if (pShaderUniform == nullptr)
+//            {
+//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector2 named '" << parameterName << "'.";
+//            }
+//            else
+//            {
+//                ShaderUniformInstance instance(pShaderUniform);
+//                instance.Set(glm::vec2(v1, v2));
+//                currentMaterial->uniforms.push_back(instance);
+//            }
+//        }
+//        else if (sparameterType == "FLOAT3")
+//        {
+//            float v1, v2, v3;
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s %f %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2, &v3);
+//#else
+//            sscanf(buffer, "%*s %s %f %f %f", parameterName, &v1, &v2, &v3);
+//#endif
+//
+//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector3);
+//            if (pShaderUniform == nullptr)
+//            {
+//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector3 named '" << parameterName << "'.";
+//            }
+//            else
+//            {
+//                ShaderUniformInstance instance(pShaderUniform);
+//                instance.Set(glm::vec3(v1, v2, v3));
+//                currentMaterial->uniforms.push_back(instance);
+//            }
+//        }
+//        else if (sparameterType == "FLOAT4")
+//        {
+//            float v1, v2, v3, v4;
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s %f %f %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2, &v3, &v4);
+//#else
+//            sscanf(buffer, "%*s %s %f %f %f %f", parameterName, &v1, &v2, &v3, &v4);
+//#endif
+//
+//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector4);
+//            if (pShaderUniform == nullptr)
+//            {
+//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector4 named '" << parameterName << "'.";
+//            }
+//            else
+//            {
+//                ShaderUniformInstance instance(pShaderUniform);
+//                instance.Set(glm::vec4(v1, v2, v3, v4));
+//                currentMaterial->uniforms.push_back(instance);
+//            }
+//        }
+//        else if (sparameterType == "TEXTUREMAP")
+//        {
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s", parameterName, static_cast<unsigned int>(sizeof(parameterName)));
+//#else
+//            sscanf(buffer, "%*s %s", parameterName);
+//#endif
+//            std::string textureFileName(path);
+//            textureFileName += parameterName;
+//            ResourceImage* pImage = (ResourceImage*)FrameWork::GetResourceManager()->GetResource(textureFileName);
+//
+//            std::stringstream uniformName;
+//            uniformName << "k_sampler" << numTextureMap;
+//
+//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(uniformName.str().c_str(), ShaderUniformType::Texture);
+//            if (pShaderUniform == nullptr)
+//            {
+//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Texture named '" << parameterName << "'.";
+//            }
+//            else
+//            {
+//                ShaderUniformInstance instance(pShaderUniform);
+//                instance.Set(pImage, GL_TEXTURE0 + numTextureMap);
+//                currentMaterial->uniforms.push_back(instance);
+//                currentMaterial->resources[numTextureMap] = pImage;
+//            }
+//
+//            numTextureMap++;
+//        }
+//        else if (sparameterType == "SHADER")
+//        {
+//#ifdef _WIN32
+//            sscanf_s(buffer, "%*s %s", shaderName, static_cast<unsigned int>(sizeof(parameterName)));
+//#else
+//            sscanf(buffer, "%*s %s", shaderName);
+//#endif
+//
+//            numTextureMap = 0;
+//
+//            std::string shaderNameNoExtension(shaderName);
+//            shaderNameNoExtension = shaderNameNoExtension.substr(0, shaderNameNoExtension.find_last_of('.'));
+//
+//            currentMaterial = new Material();
+//            currentMaterial->shader = FrameWork::GetRenderSystem()->GetShaderCache()->Load(shaderNameNoExtension);
+//            currentMaterial->name = shaderNameNoExtension;
+//            currentMaterial->resources.fill(nullptr);
+//
+//            mMaterialList.push_back(currentMaterial);
+//        }
+//    }
+//
+//    fp.close();
 }
 } // namespace Genesis
