@@ -316,10 +316,7 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
     for (uint32_t i = 0; i < mesh.header.faces; ++i)
     {
         const aiFace& face = pImportedMesh->mFaces[i];
-        for (uint32_t j = 0; j < 3; ++j)
-        {
-            mesh.faces.push_back({face.mIndices[0], face.mIndices[1], face.mIndices[2]});
-        }
+        mesh.faces.push_back({face.mIndices[0], face.mIndices[1], face.mIndices[2]});
     }
 
     mesh.uvChannels.reserve(mesh.header.uvChannels);
@@ -329,7 +326,7 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
         for (uint32_t j = 0; j < mesh.header.vertices; ++j)
         {
             const aiVector3D& uv = pImportedMesh->mTextureCoords[i][j];
-            uvChannel.uvs.push_back({uv.x, uv.y});
+            uvChannel.uvs.push_back({uv.x, 1.0f - uv.y});
         }
         mesh.uvChannels.push_back(std::move(uvChannel));
     }

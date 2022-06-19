@@ -38,6 +38,7 @@ ModelViewerObject::ModelViewerObject()
 {
     using namespace Genesis;
 
+    //m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource("data/models/test/cube/exported/model.gmdl");
     m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource("data/models/ships/corvettes/dagger/exported/model.gmdl");
 
     m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("untextured_vertex_coloured");
@@ -58,10 +59,13 @@ void ModelViewerObject::Update(float delta)
 
 void ModelViewerObject::Render()
 {
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
     m_pShader->Use();
     //m_pVertexBufferX->Draw();
     //m_pVertexBufferY->Draw();
     m_pModel->Render(glm::mat4());
+    glDisable(GL_DEPTH_TEST);
 }
 
 } // namespace Hexterminate

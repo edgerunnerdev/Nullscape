@@ -2,7 +2,7 @@
 
 in vec2 UV;
 
-out vec3 color;
+out vec4 color;
 
 uniform sampler2D ColorSampler;
 uniform sampler2D HeightSampler;
@@ -12,9 +12,10 @@ uniform sampler2D RoughnessSampler;
 
 void main()
 {
-	color = texture(ColorSampler, UV).rgb;
-	color += texture(HeightSampler, UV).rgb * 0.01;
-	color += texture(MetallicSampler, UV).rgb * 0.01;
-	color += texture(NormalSampler, UV).rgb * 0.01;
-	color += texture(RoughnessSampler, UV).rgb * 0.01;
+	vec3 c = texture(ColorSampler, UV).rgb;
+	c += texture(HeightSampler, UV).rgb * 0.01;
+	c += texture(MetallicSampler, UV).rgb * 0.01;
+	c += texture(NormalSampler, UV).rgb * 0.01;
+	c += texture(RoughnessSampler, UV).rgb * 0.01;
+	color = vec4(c, 1);
 }

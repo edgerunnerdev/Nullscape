@@ -1,0 +1,16 @@
+{
+  "source": "model.fbx",
+  "compiler": "ModelComp",
+  "materials": [
+    {
+      "name": "Material",
+      "shader": "diffuse",
+      "bindings": [
+        {
+          "name": "k_sampler0",
+          "filename": "diffuse.png"
+        }
+      ]
+    }
+  ]
+}

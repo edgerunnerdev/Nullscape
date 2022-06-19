@@ -52,7 +52,7 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
     , m_pVertexBuffer(nullptr)
     , m_MaterialIndex(pMesh->header.materialIndex)
 {
-    #if 0
+    #if 1
     size_t numVertices = m_NumTriangles * 3;
 
     m_VertexBufferPosData.reserve(numVertices);
