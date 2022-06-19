@@ -32,6 +32,8 @@
 namespace Genesis::Serialization
 {
 
+static const size_t sMaxEntries = 1000000;
+
 struct ModelHeader
 {
     std::string format;
@@ -57,13 +59,13 @@ struct ModelMaterial
 
 template <typename S> void serialize(S& s, ModelMaterial& material)
 {
-    s.text1b(material.name, material.name.size());
-    s.text1b(material.shader, material.shader.size());
-    s.ext(material.bindings, bitsery::ext::StdMap{material.bindings.size()},
+    s.text1b(material.name, 256);
+    s.text1b(material.shader, 256);
+    s.ext(material.bindings, bitsery::ext::StdMap{256},
           [](S& s, std::string& key, std::string& value)
           {
-              s.text1b(key, key.size());
-              s.text1b(value, value.size());
+              s.text1b(key, 256);
+              s.text1b(value, 256);
           });
 }
 
@@ -130,7 +132,7 @@ struct UVChannel
 
 template <typename S> void serialize(S& s, UVChannel& uvChannel)
 {
-    s.container(uvChannel.uvs, uvChannel.uvs.size());
+    s.container(uvChannel.uvs, sMaxEntries);
 }
 
 struct Normal
@@ -159,10 +161,10 @@ struct Mesh
 template <typename S> void serialize(S& s, Mesh& mesh)
 {
     s.object(mesh.header);
-    s.container(mesh.vertices, mesh.vertices.size());
-    s.container(mesh.faces, mesh.faces.size());
-    s.container(mesh.uvChannels, mesh.uvChannels.size());
-    s.container(mesh.normals, mesh.normals.size());
+    s.container(mesh.vertices, sMaxEntries);
+    s.container(mesh.faces, sMaxEntries);
+    s.container(mesh.uvChannels, 256);
+    s.container(mesh.normals, sMaxEntries);
 }
 
 struct Model
@@ -175,8 +177,8 @@ struct Model
 template <typename S> void serialize(S& s, Model& model)
 {
     s.object(model.header);
-    s.container(model.materials, model.materials.size());
-    s.container(model.meshes, model.meshes.size());
+    s.container(model.materials, 256);
+    s.container(model.meshes, 256);
 }
 
 } // namespace Genesis::Serialization

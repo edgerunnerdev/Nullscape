@@ -62,7 +62,6 @@ Module::Module( ModuleInfo* pInfo )
 	m_pInfo = pInfo;
 	m_pOwner = nullptr;
 	m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( pInfo->GetModel() );
-	m_pModel->SetFlipAxis( false );
 	m_HexGridSlotX = -1;
 	m_HexGridSlotY = -1;
 	m_pDamageParticleEmitter = nullptr;

@@ -72,7 +72,6 @@ void Missile::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f */ )
 	Ammo::Create( pWeapon, additionalRotation );
 
 	m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( GetResourceName() );
-	m_pModel->SetFlipAxis( false );
 
 	m_pTrail = CreateTrail();
 

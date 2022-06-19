@@ -17,10 +17,19 @@
 
 #include "resourcemodel.h"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <bitsery/bitsery.h>
+#include <bitsery/adapter/stream.h>
+#include <bitsery/traits/string.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include "../genesis.h"
 #include "../rendersystem.h"
 #include "../shadercache.h"
 #include "../shaderuniform.h"
+#include "modelserialization.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -33,124 +42,107 @@ namespace Genesis
 {
 
 ///////////////////////////////////////////////////////
-// TMFObject
+// Mesh
 ///////////////////////////////////////////////////////
 
-TMFObject::TMFObject()
-    : m_NumVertices(0)
-    , m_NumUVs(0)
-    , m_NumTriangles(0)
+Mesh::Mesh(const Serialization::Mesh* pMesh)
+    : m_NumVertices(pMesh->header.vertices)
+    , m_NumUVs(pMesh->uvChannels[0].uvs.size())
+    , m_NumTriangles(pMesh->header.faces)
     , m_pVertexBuffer(nullptr)
-    , m_MaterialIndex(0u)
+    , m_MaterialIndex(pMesh->header.materialIndex)
 {
-}
+    #if 0
+    size_t numVertices = m_NumTriangles * 3;
 
-TMFObject::~TMFObject()
-{
-    delete m_pVertexBuffer;
-}
-
-// Preload is not called on the main thread, so it can't operate on OpenGL directly.
-// We can load the TMFObject prepare the data for the vertex buffer, but the actual
-// create of the VB / copy can only happen in Load().
-void TMFObject::Preload(FILE* fp)
-{
-    Serialise(fp);
-    BuildVertexBufferData();
-}
-
-void TMFObject::Load()
-{
-    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL);
-    m_pVertexBuffer->CopyPositions(m_VertexBufferPosData);
-    m_pVertexBuffer->CopyNormals(m_VertexBufferNormalData);
-    m_pVertexBuffer->CopyUVs(m_VertexBufferUvData);
-}
-
-bool TMFObject::Serialise(FILE* fp)
-{
-    // Read the object header
-    Uint32 materialIndex;
-    fread(&materialIndex, sizeof(Uint32), 1, fp);
-    fread(&m_NumVertices, sizeof(Uint32), 1, fp);
-    fread(&m_NumUVs, sizeof(Uint32), 1, fp);
-    fread(&m_NumTriangles, sizeof(Uint32), 1, fp);
-
-    // Allocate space for our data
-    m_VertexList.reserve(m_NumVertices);
-    m_UvList.reserve(m_NumUVs);
-    m_TriangleList.reserve(m_NumTriangles);
-
-    m_MaterialIndex = materialIndex - 1;
-
-    // Read the vertexes
-    glm::vec3 vertex;
-    for (uint32_t i = 0; i < m_NumVertices; i++)
-    {
-        fread(&vertex.x, sizeof(float), 3, fp);
-        m_VertexList.push_back(vertex);
-    }
-
-    // Read the UVs
-    glm::vec2 uv;
-    for (uint32_t i = 0; i < m_NumUVs; i++)
-    {
-        fread(&uv, sizeof(float), 2, fp);
-
-        // WARNING:
-        // SDL_Image and OpenGL interpret the UVs in different ways.
-        // Therefore, SDL_Images are apparently loaded upside down.
-        // So we invert the UV's here - it will appear correctly
-        // when rendering.
-        uv.y = 1.0f - uv.y;
-
-        m_UvList.push_back(uv);
-    }
-
-    // Read the triangles and their normals
-    Triangle triangle;
-    for (uint32_t i = 0; i < m_NumTriangles; i++)
-    {
-        fread(&triangle.vertex, sizeof(uint32_t), 3, fp);
-        fread(&triangle.uv, sizeof(uint32_t), 3, fp);
-        fread(&triangle.normal[0], sizeof(float), 9, fp);
-        m_TriangleList.push_back(triangle);
-    }
-
-    return true;
-}
-
-void TMFObject::BuildVertexBufferData()
-{
-    const unsigned int numVertices = m_NumTriangles * 3;
     m_VertexBufferPosData.reserve(numVertices);
     m_VertexBufferNormalData.reserve(numVertices);
     m_VertexBufferUvData.reserve(numVertices);
 
-    for (Uint32 i = 0; i < m_NumTriangles; i++)
+    IndexData indices;
+    indices.reserve(m_NumTriangles);
+    for (uint32_t i = 0; i < m_NumTriangles; i++)
     {
-        m_VertexBufferPosData.push_back(m_VertexList[m_TriangleList[i].vertex.v1]);
-        m_VertexBufferPosData.push_back(m_VertexList[m_TriangleList[i].vertex.v2]);
-        m_VertexBufferPosData.push_back(m_VertexList[m_TriangleList[i].vertex.v3]);
-
-        m_VertexBufferNormalData.push_back(m_TriangleList[i].normal[0]);
-        m_VertexBufferNormalData.push_back(m_TriangleList[i].normal[1]);
-        m_VertexBufferNormalData.push_back(m_TriangleList[i].normal[2]);
-
-        m_VertexBufferUvData.push_back(m_UvList[m_TriangleList[i].uv.v1]);
-        m_VertexBufferUvData.push_back(m_UvList[m_TriangleList[i].uv.v2]);
-        m_VertexBufferUvData.push_back(m_UvList[m_TriangleList[i].uv.v3]);
+        indices.push_back(pMesh->faces[i].v1);
+        indices.push_back(pMesh->faces[i].v2);
+        indices.push_back(pMesh->faces[i].v3);
     }
+
+    size_t offset = 0;
+    for (uint32_t i = 0; i < m_NumTriangles; i++)
+    {
+        const Serialization::Vertex& v1 = pMesh->vertices[pMesh->faces[i].v1];
+        m_VertexBufferPosData.push_back(glm::vec3(v1.x, v1.y, v1.z));
+        const Serialization::Vertex& v2 = pMesh->vertices[pMesh->faces[i].v2];
+        m_VertexBufferPosData.push_back(glm::vec3(v2.x, v2.y, v2.z));
+        const Serialization::Vertex& v3 = pMesh->vertices[pMesh->faces[i].v3];
+        m_VertexBufferPosData.push_back(glm::vec3(v3.x, v3.y, v3.z));
+
+        const Serialization::Normal& n1 = pMesh->normals[pMesh->faces[i].v1];
+        m_VertexBufferNormalData.push_back(glm::vec3(n1.x, n1.y, n1.z));
+        const Serialization::Normal& n2 = pMesh->normals[pMesh->faces[i].v2];
+        m_VertexBufferNormalData.push_back(glm::vec3(n2.x, n2.y, n2.z));
+        const Serialization::Normal& n3 = pMesh->normals[pMesh->faces[i].v3];
+        m_VertexBufferNormalData.push_back(glm::vec3(n3.x, n3.y, n3.z));
+
+        const Serialization::UV& t1 = pMesh->uvChannels[0].uvs[pMesh->faces[i].v1];
+        m_VertexBufferUvData.push_back(glm::vec2(t1.u, t1.v));
+        const Serialization::UV& t2 = pMesh->uvChannels[0].uvs[pMesh->faces[i].v2];
+        m_VertexBufferUvData.push_back(glm::vec2(t2.u, t2.v));
+        const Serialization::UV& t3 = pMesh->uvChannels[0].uvs[pMesh->faces[i].v3];
+        m_VertexBufferUvData.push_back(glm::vec2(t3.u, t3.v));
+    }
+
+    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL);
+    m_pVertexBuffer->CopyPositions(m_VertexBufferPosData);
+    m_pVertexBuffer->CopyNormals(m_VertexBufferNormalData);
+    m_pVertexBuffer->CopyUVs(m_VertexBufferUvData);
+
+    #else
+
+    m_VertexBufferPosData.reserve(m_NumVertices);
+    m_VertexBufferNormalData.reserve(m_NumVertices);
+    m_VertexBufferUvData.reserve(m_NumVertices);
+
+    IndexData indices;
+    indices.reserve(m_NumTriangles);
+    for (uint32_t i = 0; i < m_NumTriangles; i++)
+    {
+        indices.push_back(pMesh->faces[i].v1);
+        indices.push_back(pMesh->faces[i].v2);
+        indices.push_back(pMesh->faces[i].v3);
+    }
+
+    for (uint32_t i = 0; i < m_NumVertices; i++)
+    {
+        m_VertexBufferPosData.push_back(glm::vec3(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z));
+        m_VertexBufferNormalData.push_back(glm::vec3(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z));
+        m_VertexBufferUvData.push_back(glm::vec2(pMesh->uvChannels[0].uvs[i].u, pMesh->uvChannels[0].uvs[i].v));
+    }
+
+    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_INDEX);
+    m_pVertexBuffer->CopyPositions(m_VertexBufferPosData);
+    m_pVertexBuffer->CopyNormals(m_VertexBufferNormalData);
+    m_pVertexBuffer->CopyUVs(m_VertexBufferUvData);
+    m_pVertexBuffer->CopyIndices(indices);
+
+    #endif
+
 }
 
-void TMFObject::Render(const glm::mat4& modelTransform, const Materials& materials)
+Mesh::~Mesh()
+{
+    delete m_pVertexBuffer;
+}
+
+void Mesh::Render(const glm::mat4& modelTransform, const Materials& materials)
 {
     Material* pMaterial = materials[m_MaterialIndex].get();
     pMaterial->GetShader()->Use(modelTransform, &pMaterial->GetShaderUniformInstances());
     m_pVertexBuffer->Draw();
 }
 
-void TMFObject::Render(const glm::mat4& modelTransform, Material* pOverrideMaterial)
+void Mesh::Render(const glm::mat4& modelTransform, Material* pOverrideMaterial)
 {
     pOverrideMaterial->GetShader()->Use(modelTransform, &pOverrideMaterial->GetShaderUniformInstances());
     m_pVertexBuffer->Draw();
@@ -162,18 +154,12 @@ void TMFObject::Render(const glm::mat4& modelTransform, Material* pOverrideMater
 
 ResourceModel::ResourceModel(const Filename& filename)
     : ResourceGeneric(filename)
-    , mFlipAxis(true)
-    , m_NumMaterials(0)
-    , m_NumMeshes(0)
 {
 }
 
 ResourceModel::~ResourceModel()
 {
-    for (auto& pObject : mObjectList)
-    {
-        delete pObject;
-    }
+
 }
 
 bool ResourceModel::Load()
@@ -184,52 +170,60 @@ bool ResourceModel::Load()
         Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath();
         return false;
     }
-    else if (ReadHeader(file) == false)
+
+    Serialization::Model model;
+    auto state = bitsery::quickDeserialization<bitsery::InputStreamAdapter>(file, model);
+    file.close();
+    if (state.first != bitsery::ReaderError::NoError || state.second != true)
     {
-        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read header.";
-        file.close();
+        Core::Log::Error() << "Failed to deserialize " << GetFilename().GetFullPath();
         return false;
     }
-    else if (ReadMaterials(file) == false)
+
+    if (ReadHeader(&model) == false)
+    {
+        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read header.";
+        return false;
+    }
+    else if (ReadMaterials(&model) == false)
     {
         Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read materials.";
-        file.close();
+        return false;
+    }
+    else if (ReadMeshes(&model) == false)
+    {
+        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read meshes.";
         return false;
     }
     else
     {
-        file.close();
-        // Core::Log::Info() << "Model '" << GetFilename().GetFullPath() << "': " << mObjectList.size() << " objects, " << mMaterialList.size() << " materials.";
+        Core::Log::Info() << "Loaded model " << GetFilename().GetFullPath() << ": " << model.header.meshes << " meshes, " << model.header.materials << " materials.";
         m_State = ResourceState::Loaded;
         return true;
     }
 }
 
-bool ResourceModel::ReadHeader(std::ifstream& file) 
+bool ResourceModel::ReadHeader(const Serialization::Model* pModel)
 {
-    std::string format = Read(file, 4);
-    if (format != "GMDL" || !file.good())
+    if (pModel->header.format != "GMDL")
     {
+        Core::Log::Error() << "Header error: not a GMDL file.";
         return false;
     }
-
-    uint8_t version;
-    file >> version >> m_NumMaterials >> m_NumMeshes;
-
-    return file.good();
+    else
+    {
+        return true;
+    }
 }
 
-bool ResourceModel::ReadMaterials(std::ifstream& file) 
+bool ResourceModel::ReadMaterials(const Serialization::Model* pModel)
 {
-    for (uint8_t i = 0; i < m_NumMaterials; ++i)
+    for (uint8_t i = 0; i < pModel->header.materials; ++i)
     {
+        const Serialization::ModelMaterial& serializationMaterial = pModel->materials[i];
         MaterialSharedPtr pMaterial = std::make_shared<Material>();
-        uint32_t count;
-        file >> count;
-        pMaterial->SetName(Read(file, count));
-
-        file >> count;
-        std::string shaderName = Read(file, count);
+        pMaterial->SetName(serializationMaterial.name);
+        const std::string shaderName = serializationMaterial.shader;
         Shader* pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load(shaderName);
         if (pShader == nullptr)
         {
@@ -241,14 +235,11 @@ bool ResourceModel::ReadMaterials(std::ifstream& file)
             pMaterial->SetShader(pShader);
         }
 
-        uint32_t numBindings;
-        file >> numBindings;
-        for (uint32_t j = 0; j < numBindings; ++j)
+        int textureMap = 0;
+        for (auto& binding : serializationMaterial.bindings)
         {
-            file >> count;
-            std::string name = Read(file, count);
-            file >> count;
-            std::string filename = Read(file, count);
+            const std::string& name = binding.first;
+            const std::string filename = GetFilename().GetDirectory() + binding.second;
 
             ShaderUniform* pShaderUniform = pShader->RegisterUniform(name.c_str(), ShaderUniformType::Texture);
             if (pShaderUniform == nullptr)
@@ -257,35 +248,44 @@ bool ResourceModel::ReadMaterials(std::ifstream& file)
                 return false;
             }
 
-            ResourceImage* pResourceImage = FrameWork::GetResourceManager()->GetResource<ResourceImage*>("");
-
-            //else
-            //{
-            //    ShaderUniformInstance instance(pShaderUniform);
-            //    instance.Set(pImage, GL_TEXTURE0 + numTextureMap);
-            //    currentMaterial->uniforms.push_back(instance);
-            //    currentMaterial->resources[numTextureMap] = pImage;
-            //}
+            ResourceImage* pResourceImage = FrameWork::GetResourceManager()->GetResource<ResourceImage*>(filename);
+            if (pResourceImage == nullptr)
+            {
+                Core::Log::Error() << "Unable to load " << filename;
+                return false;
+            }
+            else
+            {
+                ShaderUniformInstance instance(pShaderUniform);
+                instance.Set(pResourceImage, GL_TEXTURE0 + textureMap);
+                pMaterial->GetShaderUniformInstances().push_back(instance);
+                pMaterial->GetResourceImages().push_back(pResourceImage);
+                textureMap++;
+            }
         }
 
         m_Materials.push_back(std::move(pMaterial));
     }
-    return file.good();
+    return true;
 }
 
-std::string ResourceModel::Read(std::ifstream& file, size_t count) 
+bool ResourceModel::ReadMeshes(const Serialization::Model* pModel) 
 {
-    std::string result(count, ' ');
-    file.read(result.data(), count);
-    return result;
+    for (const Serialization::Mesh& serializationMesh : pModel->meshes)
+    {
+        m_Meshes.emplace_back(&serializationMesh);
+    }
+    return true;
 }
 
 bool ResourceModel::GetDummy(const std::string& name, glm::vec3* pPosition) const
 {
     std::string nameLowerCase(name);
-    std::transform(nameLowerCase.begin(), nameLowerCase.end(), nameLowerCase.begin(), [](char c) -> char {
-        return static_cast<char>(std::tolower(c));
-    });
+    std::transform(nameLowerCase.begin(), nameLowerCase.end(), nameLowerCase.begin(),
+                   [](char c) -> char
+                   {
+                       return static_cast<char>(std::tolower(c));
+                   });
 
     DummyMap::const_iterator it = mDummyMap.find(nameLowerCase);
     if (it == mDummyMap.end())
@@ -312,9 +312,11 @@ void ResourceModel::AddTMFDummy(FILE* fp)
     fread(&pos.z, sizeof(float), 1, fp);
 
     std::string dummyName(pBuffer);
-    std::transform(dummyName.begin(), dummyName.end(), dummyName.begin(), [](char c) -> char {
-        return static_cast<char>(std::tolower(c));
-    });
+    std::transform(dummyName.begin(), dummyName.end(), dummyName.begin(),
+                   [](char c) -> char
+                   {
+                       return static_cast<char>(std::tolower(c));
+                   });
 
     mDummyMap[dummyName] = pos;
 
@@ -323,9 +325,7 @@ void ResourceModel::AddTMFDummy(FILE* fp)
 
 void ResourceModel::AddTMFObject(FILE* fp)
 {
-    TMFObject* pObject = new TMFObject();
-    pObject->Preload(fp);
-    mObjectList.push_back(pObject);
+
 }
 
 // You can optionally pass an override material to be used instead of the normal materials this model would use.
@@ -333,213 +333,18 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
 {
     if (pOverrideMaterial == nullptr)
     {
-        for (auto& pObject : mObjectList)
+        for (auto& mesh : m_Meshes)
         {
-            pObject->Render(modelTransform, GetMaterials());
+            mesh.Render(modelTransform, GetMaterials());
         }
     }
     else
     {
-        for (auto& pObject : mObjectList)
+        for (auto& mesh : m_Meshes)
         {
-            pObject->Render(modelTransform, pOverrideMaterial);
+            mesh.Render(modelTransform, pOverrideMaterial);
         }
     }
 }
 
-void ResourceModel::LoadMaterialLibrary(const std::string& filename)
-{
-//    std::string materialFilename = filename;
-//    std::string path = filename.substr(0, filename.find_last_of("\\/") + 1); // We keep the final dash
-//    // Replace the last character of the extension - tmf becomes tml
-//    materialFilename[filename.size() - 1] = 'l';
-//
-//    std::ifstream fp;
-//    fp.open(materialFilename.c_str(), std::ios::in);
-//
-//    if (!fp.is_open())
-//    {
-//        Core::Log::Error() << "Couldn't load material library for " << filename;
-//        return;
-//    }
-//
-//    Material* currentMaterial = nullptr;
-//
-//    char buffer[256];
-//    char shaderName[64];
-//    char parameterType[16];
-//    char parameterName[64];
-//    char parameterValue[64];
-//    memset(shaderName, 0, sizeof(shaderName));
-//    memset(parameterType, 0, sizeof(parameterType));
-//    memset(parameterName, 0, sizeof(parameterName));
-//    memset(parameterValue, 0, sizeof(parameterValue));
-//    int numTextureMap = 0;
-//    while (fp.getline(buffer, sizeof(buffer)))
-//    {
-//#ifdef _WIN32
-//        sscanf_s(buffer, "  %s", parameterType, static_cast<unsigned int>(sizeof(parameterType)));
-//#else
-//        sscanf(buffer, "  %s", parameterType);
-//#endif
-//        std::string sparameterType(parameterType);
-//
-//        if (sparameterType == "INT")
-//        {
-//            int v = 0;
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s %d", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v);
-//#else
-//            sscanf(buffer, "%*s %s %d", parameterName, &v);
-//#endif
-//
-//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Integer);
-//            if (pShaderUniform == nullptr)
-//            {
-//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Integer named '" << parameterName << "'.";
-//            }
-//            else
-//            {
-//                ShaderUniformInstance instance(pShaderUniform);
-//                instance.Set(v);
-//                currentMaterial->uniforms.push_back(instance);
-//            }
-//        }
-//        else if (sparameterType == "FLOAT")
-//        {
-//            float v = 0.0f;
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v);
-//#else
-//            sscanf(buffer, "%*s %s %f", parameterName, &v);
-//#endif
-//
-//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::Float);
-//            if (pShaderUniform == nullptr)
-//            {
-//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Float named '" << parameterName << "'.";
-//            }
-//            else
-//            {
-//                ShaderUniformInstance instance(pShaderUniform);
-//                instance.Set(v);
-//                currentMaterial->uniforms.push_back(instance);
-//            }
-//        }
-//        else if (sparameterType == "FLOAT2")
-//        {
-//            float v1, v2;
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2);
-//#else
-//            sscanf(buffer, "%*s %s %f %f", parameterName, &v1, &v2);
-//#endif
-//
-//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector2);
-//            if (pShaderUniform == nullptr)
-//            {
-//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector2 named '" << parameterName << "'.";
-//            }
-//            else
-//            {
-//                ShaderUniformInstance instance(pShaderUniform);
-//                instance.Set(glm::vec2(v1, v2));
-//                currentMaterial->uniforms.push_back(instance);
-//            }
-//        }
-//        else if (sparameterType == "FLOAT3")
-//        {
-//            float v1, v2, v3;
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s %f %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2, &v3);
-//#else
-//            sscanf(buffer, "%*s %s %f %f %f", parameterName, &v1, &v2, &v3);
-//#endif
-//
-//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector3);
-//            if (pShaderUniform == nullptr)
-//            {
-//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector3 named '" << parameterName << "'.";
-//            }
-//            else
-//            {
-//                ShaderUniformInstance instance(pShaderUniform);
-//                instance.Set(glm::vec3(v1, v2, v3));
-//                currentMaterial->uniforms.push_back(instance);
-//            }
-//        }
-//        else if (sparameterType == "FLOAT4")
-//        {
-//            float v1, v2, v3, v4;
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s %f %f %f %f", parameterName, static_cast<unsigned int>(sizeof(parameterName)), &v1, &v2, &v3, &v4);
-//#else
-//            sscanf(buffer, "%*s %s %f %f %f %f", parameterName, &v1, &v2, &v3, &v4);
-//#endif
-//
-//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(parameterName, ShaderUniformType::FloatVector4);
-//            if (pShaderUniform == nullptr)
-//            {
-//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::FloatVector4 named '" << parameterName << "'.";
-//            }
-//            else
-//            {
-//                ShaderUniformInstance instance(pShaderUniform);
-//                instance.Set(glm::vec4(v1, v2, v3, v4));
-//                currentMaterial->uniforms.push_back(instance);
-//            }
-//        }
-//        else if (sparameterType == "TEXTUREMAP")
-//        {
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s", parameterName, static_cast<unsigned int>(sizeof(parameterName)));
-//#else
-//            sscanf(buffer, "%*s %s", parameterName);
-//#endif
-//            std::string textureFileName(path);
-//            textureFileName += parameterName;
-//            ResourceImage* pImage = (ResourceImage*)FrameWork::GetResourceManager()->GetResource(textureFileName);
-//
-//            std::stringstream uniformName;
-//            uniformName << "k_sampler" << numTextureMap;
-//
-//            ShaderUniform* pShaderUniform = currentMaterial->shader->RegisterUniform(uniformName.str().c_str(), ShaderUniformType::Texture);
-//            if (pShaderUniform == nullptr)
-//            {
-//                Core::Log::Warning() << "Model '" << filename << "', shader '" << shaderName << "', couldn't find uniform ShaderUniformType::Texture named '" << parameterName << "'.";
-//            }
-//            else
-//            {
-//                ShaderUniformInstance instance(pShaderUniform);
-//                instance.Set(pImage, GL_TEXTURE0 + numTextureMap);
-//                currentMaterial->uniforms.push_back(instance);
-//                currentMaterial->resources[numTextureMap] = pImage;
-//            }
-//
-//            numTextureMap++;
-//        }
-//        else if (sparameterType == "SHADER")
-//        {
-//#ifdef _WIN32
-//            sscanf_s(buffer, "%*s %s", shaderName, static_cast<unsigned int>(sizeof(parameterName)));
-//#else
-//            sscanf(buffer, "%*s %s", shaderName);
-//#endif
-//
-//            numTextureMap = 0;
-//
-//            std::string shaderNameNoExtension(shaderName);
-//            shaderNameNoExtension = shaderNameNoExtension.substr(0, shaderNameNoExtension.find_last_of('.'));
-//
-//            currentMaterial = new Material();
-//            currentMaterial->shader = FrameWork::GetRenderSystem()->GetShaderCache()->Load(shaderNameNoExtension);
-//            currentMaterial->name = shaderNameNoExtension;
-//            currentMaterial->resources.fill(nullptr);
-//
-//            mMaterialList.push_back(currentMaterial);
-//        }
-//    }
-//
-//    fp.close();
-}
 } // namespace Genesis

@@ -61,7 +61,7 @@ bool ResourceImage::Load()
             const Uint8 bpp = m_pTemporarySurface->format->BitsPerPixel;
             if (bpp == 8)
             {
-                CreateTexture(GL_R, GL_R);
+                CreateTexture(GL_RED, GL_RED);
             }
             else if (bpp == 24)
             {

@@ -38,7 +38,6 @@ void Projectile::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f */ 
 	Ammo::Create( pWeapon, additionalRotation );
 
 	m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( "data/models/ammo/projectile.tmf" );
-	m_pModel->SetFlipAxis( false );
 
 	m_IsGlowSource = true;
 

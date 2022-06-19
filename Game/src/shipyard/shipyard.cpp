@@ -137,11 +137,9 @@ void Shipyard::InitialiseModels()
 
 	//m_pBaseModel = (ResourceModel*)FrameWork::GetResourceManager()->GetResource( "data/models/misc/dockhex/module.tmf" );
 	//SDL_assert_release( m_pBaseModel != nullptr );
-	//m_pBaseModel->SetFlipAxis( false );
 
 	//m_pShipyardModel = (ResourceModel*)FrameWork::GetResourceManager()->GetResource( "data/models/misc/shipyard/model.tmf" );
 	//SDL_assert_release( m_pShipyardModel != nullptr );
-	//m_pShipyardModel->SetFlipAxis( false );
 	//
 	//MaterialList& shipyardMaterials = m_pShipyardModel->GetMaterials();
 	//for ( Material* pMaterial : shipyardMaterials )

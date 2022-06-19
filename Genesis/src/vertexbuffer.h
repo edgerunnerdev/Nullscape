@@ -35,12 +35,15 @@ static const unsigned int VBO_POSITION = 1;
 static const unsigned int VBO_UV = 1 << 1;
 static const unsigned int VBO_NORMAL = 1 << 2;
 static const unsigned int VBO_COLOUR = 1 << 3;
-static const unsigned int VB_2D = 1 << 4;
+static const unsigned int VBO_INDEX = 1 << 4;
+static const unsigned int VB_2D = 1 << 5;
 
 typedef std::vector<glm::vec3> PositionData;
 typedef std::vector<glm::vec2> UVData;
 typedef std::vector<glm::vec3> NormalData;
 typedef std::vector<glm::vec4> ColourData;
+
+using IndexData = std::vector<uint32_t>;
 
 enum class GeometryType
 {
@@ -63,6 +66,7 @@ public:
     void CopyNormals(const NormalData& data, size_t count);
     void CopyColours(const ColourData& data);
     void CopyColours(const ColourData& data, size_t count);
+    void CopyIndices(const IndexData& data);
     void CopyData(const float* pData, size_t count, unsigned int destination);
 
     void Draw(size_t numVertices = 0); // Draw the vertex buffer. Passing 0 to this function will draw the entire buffer.
@@ -83,6 +87,7 @@ private:
     GLuint m_UV;
     GLuint m_Normal;
     GLuint m_Colour;
+    GLuint m_Index;
     std::array<size_t, 4> m_Size;
     GLenum m_Mode;
 };

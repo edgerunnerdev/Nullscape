@@ -64,10 +64,6 @@ void HyperspaceGate::Initialise()
 	{
         Genesis::Core::Log::Error() << "Couldn't find required hyperspace model.";
 	}
-	else
-	{
-		m_pModel->SetFlipAxis( false );
-	}
 
 	CalculateBoundingBox();
 

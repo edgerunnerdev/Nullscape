@@ -34,6 +34,7 @@ VertexBuffer::VertexBuffer(GeometryType type, unsigned int flags)
     , m_UV(0)
     , m_Normal(0)
     , m_Colour(0)
+    , m_Index(0)
     , m_Mode(GL_TRIANGLES)
 {
     m_Size.fill(0);
@@ -60,6 +61,11 @@ VertexBuffer::VertexBuffer(GeometryType type, unsigned int flags)
         glGenBuffers(1, &m_Colour);
     }
 
+    if (flags & VBO_INDEX)
+    {
+        glGenBuffers(1, &m_Index);
+    }
+
     SetModeFromGeometryType(type);
 }
 
@@ -83,6 +89,11 @@ VertexBuffer::~VertexBuffer()
     if (m_Colour != -1)
     {
         glDeleteBuffers(1, &m_Colour);
+    }
+
+    if (m_Index != -1)
+    {
+        glDeleteBuffers(1, &m_Index);
     }
 
     glDeleteVertexArrays(1, &m_VAO);
@@ -191,6 +202,13 @@ void VertexBuffer::CopyColours(const ColourData& data, size_t count)
     CopyData(&data[0][0], count * 4, VBO_COLOUR);
 }
 
+void VertexBuffer::CopyIndices(const IndexData& data)
+{
+    SDL_assert(m_Flags & VBO_INDEX);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Index);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * 3, data.data(), GL_DYNAMIC_DRAW);
+}
+
 void VertexBuffer::CopyData(const float* pData, size_t size, unsigned int destination)
 {
     size *= sizeof(float);
@@ -214,6 +232,10 @@ void VertexBuffer::CopyData(const float* pData, size_t size, unsigned int destin
     {
         SDL_assert(m_Flags & VBO_COLOUR);
         glBindBuffer(GL_ARRAY_BUFFER, m_Colour);
+    }
+    else
+    {
+        SDL_assert(false); // Not implemented.
     }
 
     const unsigned int idx = GetSizeIndex(destination);
@@ -280,13 +302,14 @@ void VertexBuffer::Draw(size_t startVertex, size_t numVertices, void* pIndices /
         glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
     }
 
-    if (pIndices == nullptr)
+    if (m_Flags & VBO_INDEX)
     {
-        glDrawArrays(m_Mode, static_cast<GLint>(startVertex), static_cast<GLsizei>(numVertices));
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Index);
+        glDrawElements(m_Mode, static_cast<GLsizei>(numVertices), GL_UNSIGNED_INT, 0);
     }
     else
     {
-        glDrawElements(m_Mode, static_cast<GLsizei>(numVertices), GL_UNSIGNED_SHORT, pIndices);
+        glDrawArrays(m_Mode, static_cast<GLint>(startVertex), static_cast<GLsizei>(numVertices));
     }
 
     if (m_Flags & VBO_POSITION)

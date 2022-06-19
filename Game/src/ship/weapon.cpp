@@ -68,7 +68,6 @@ m_SiegebreakerStacks( 0 )
 	if ( pInfo->GetWeaponModel() != "" )
 	{
 		m_pWeaponModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( pInfo->GetWeaponModel() );
-		m_pWeaponModel->SetFlipAxis( false );
 	}
 
 	SetupMuzzles();
