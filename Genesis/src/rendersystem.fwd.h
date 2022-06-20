@@ -28,6 +28,7 @@ namespace Genesis
 {
 
 GENESIS_DECLARE_SMART_PTR(RenderTarget);
+GENESIS_DECLARE_SMART_PTR(VertexBuffer);
 GENESIS_DECLARE_SMART_PTR(Viewport);
 
 enum class BlendMode

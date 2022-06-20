@@ -40,7 +40,6 @@ struct Model;
 }
 
 class Mesh;
-class TMFObject;
 class VertexBuffer;
 
 static const short MODEL_VERSION = 1;
@@ -49,7 +48,6 @@ using Materials = std::vector<MaterialSharedPtr>;
 using ResourceImages = std::vector<ResourceImage*>;
 
 typedef std::map<std::string, glm::vec3> DummyMap;
-typedef std::vector<TMFObject*> TMFObjectList;
 
 
 ///////////////////////////////////////////////////////
@@ -69,38 +67,11 @@ public:
     size_t GetTriangleCount() const;
 
 private:
-    struct Index3
-    {
-        uint32_t v1, v2, v3;
-    };
-
-    struct Triangle
-    {
-        Index3 vertex;
-        Index3 uv;
-        glm::vec3 normal[3];
-    };
-
-    typedef std::vector<glm::vec3> VertexList;
-    typedef std::vector<glm::vec2> UVList;
-    typedef std::vector<Triangle> TriangleList;
-
     uint32_t m_NumVertices;
     uint32_t m_NumUVs;
     uint32_t m_NumTriangles;
-
-    // Serialisation data (temporary, gets released after VBOs are created)
-    VertexList m_VertexList;
-    UVList m_UvList;
-    TriangleList m_TriangleList;
-
-    PositionData m_VertexBufferPosData;
-    NormalData m_VertexBufferNormalData;
-    UVData m_VertexBufferUvData;
-
-    VertexBuffer* m_pVertexBuffer;
-
-    unsigned int m_MaterialIndex;
+    uint32_t m_MaterialIndex;
+    VertexBufferSharedPtr m_pVertexBuffer;
 };
 
 
@@ -125,7 +96,6 @@ public:
 
 private:
     void AddTMFDummy(FILE* fp);
-    void AddTMFObject(FILE* fp);
 
     bool ReadHeader(const Serialization::Model* pModel);
     bool ReadMaterials(const Serialization::Model* pModel);

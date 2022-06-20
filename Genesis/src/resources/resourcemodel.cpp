@@ -48,40 +48,44 @@ namespace Genesis
 Mesh::Mesh(const Serialization::Mesh* pMesh)
     : m_NumVertices(pMesh->header.vertices)
     , m_NumUVs(pMesh->uvChannels[0].uvs.size())
-    , m_NumTriangles(pMesh->header.faces)
-    , m_pVertexBuffer(nullptr)
+    , m_NumTriangles(pMesh->header.triangles)
     , m_MaterialIndex(pMesh->header.materialIndex)
 {
-    m_VertexBufferPosData.reserve(m_NumVertices);
-    m_VertexBufferNormalData.reserve(m_NumVertices);
-    m_VertexBufferUvData.reserve(m_NumVertices);
-
     IndexData indices;
-    indices.reserve(m_NumTriangles);
+    indices.reserve(m_NumTriangles * 3);
     for (uint32_t i = 0; i < m_NumTriangles; i++)
     {
-        indices.push_back(pMesh->faces[i].v1);
-        indices.push_back(pMesh->faces[i].v2);
-        indices.push_back(pMesh->faces[i].v3);
+        indices.push_back(pMesh->triangles[i].v1);
+        indices.push_back(pMesh->triangles[i].v2);
+        indices.push_back(pMesh->triangles[i].v3);
     }
+
+    PositionData positions;
+    positions.reserve(m_NumVertices);
+
+    NormalData normals;
+    normals.reserve(m_NumVertices);
+
+    UVData uvs;
+    uvs.reserve(m_NumVertices);
 
     for (uint32_t i = 0; i < m_NumVertices; i++)
     {
-        m_VertexBufferPosData.push_back(glm::vec3(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z));
-        m_VertexBufferNormalData.push_back(glm::vec3(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z));
-        m_VertexBufferUvData.push_back(glm::vec2(pMesh->uvChannels[0].uvs[i].u, pMesh->uvChannels[0].uvs[i].v));
+        positions.emplace_back(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z);
+        normals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
+        uvs.emplace_back(pMesh->uvChannels[0].uvs[i].u, pMesh->uvChannels[0].uvs[i].v);
     }
 
-    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_INDEX);
-    m_pVertexBuffer->CopyPositions(m_VertexBufferPosData);
-    m_pVertexBuffer->CopyNormals(m_VertexBufferNormalData);
-    m_pVertexBuffer->CopyUVs(m_VertexBufferUvData);
+    m_pVertexBuffer = std::make_shared<VertexBuffer>(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_INDEX);
+    m_pVertexBuffer->CopyPositions(positions);
+    m_pVertexBuffer->CopyNormals(normals);
+    m_pVertexBuffer->CopyUVs(uvs);
     m_pVertexBuffer->CopyIndices(indices);
 }
 
 Mesh::~Mesh()
 {
-    delete m_pVertexBuffer;
+
 }
 
 void Mesh::Render(const glm::mat4& modelTransform, const Materials& materials)
@@ -280,11 +284,6 @@ void ResourceModel::AddTMFDummy(FILE* fp)
     mDummyMap[dummyName] = pos;
 
     delete[] pBuffer;
-}
-
-void ResourceModel::AddTMFObject(FILE* fp)
-{
-
 }
 
 // You can optionally pass an override material to be used instead of the normal materials this model would use.

@@ -73,7 +73,7 @@ struct MeshHeader
 {
     uint8_t materialIndex;
     uint32_t vertices;
-    uint32_t faces;
+    uint32_t triangles;
     uint32_t uvChannels;
 };
 
@@ -81,7 +81,7 @@ template <typename S> void serialize(S& s, MeshHeader& meshHeader)
 {
     s.value1b(meshHeader.materialIndex);
     s.value4b(meshHeader.vertices);
-    s.value4b(meshHeader.faces);
+    s.value4b(meshHeader.triangles);
     s.value4b(meshHeader.uvChannels);
 }
 
@@ -99,18 +99,18 @@ template <typename S> void serialize(S& s, Vertex& vertex)
     s.value4b(vertex.z);
 }
 
-struct Face
+struct Triangle
 {
     uint32_t v1;
     uint32_t v2;
     uint32_t v3;
 };
 
-template <typename S> void serialize(S& s, Face& face)
+template <typename S> void serialize(S& s, Triangle& triangle)
 {
-    s.value4b(face.v1);
-    s.value4b(face.v2);
-    s.value4b(face.v3);
+    s.value4b(triangle.v1);
+    s.value4b(triangle.v2);
+    s.value4b(triangle.v3);
 }
 
 struct UV
@@ -153,7 +153,7 @@ struct Mesh
 {
     MeshHeader header;
     std::vector<Vertex> vertices;
-    std::vector<Face> faces;
+    std::vector<Triangle> triangles;
     std::vector<UVChannel> uvChannels;
     std::vector<Normal> normals;
 };
@@ -162,7 +162,7 @@ template <typename S> void serialize(S& s, Mesh& mesh)
 {
     s.object(mesh.header);
     s.container(mesh.vertices, sMaxEntries);
-    s.container(mesh.faces, sMaxEntries);
+    s.container(mesh.triangles, sMaxEntries);
     s.container(mesh.uvChannels, 256);
     s.container(mesh.normals, sMaxEntries);
 }

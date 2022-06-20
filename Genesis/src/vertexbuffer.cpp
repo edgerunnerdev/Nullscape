@@ -27,6 +27,10 @@ namespace Genesis
 // VertexBuffer
 ///////////////////////////////////////////////////////////////////////////////
 
+VertexBuffer::VertexBuffer() 
+{
+}
+
 VertexBuffer::VertexBuffer(GeometryType type, unsigned int flags)
     : m_Flags(flags)
     , m_VAO(0)
@@ -256,7 +260,7 @@ void VertexBuffer::Draw(size_t numVertices /* = 0 */)
     Draw(0, numVertices);
 }
 
-void VertexBuffer::Draw(size_t startVertex, size_t numVertices, void* pIndices /* = nullptr */)
+void VertexBuffer::Draw(size_t startVertex, size_t numVertices)
 {
     glBindVertexArray(m_VAO);
 

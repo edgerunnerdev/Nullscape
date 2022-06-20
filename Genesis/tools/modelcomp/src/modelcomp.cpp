@@ -300,7 +300,7 @@ void ModelComp::WriteMeshHeader(Serialization::Mesh& mesh, const aiMesh* pImport
 {
     mesh.header.materialIndex = pImportedMesh->mMaterialIndex;
     mesh.header.vertices = pImportedMesh->mNumVertices;
-    mesh.header.faces = pImportedMesh->mNumFaces;
+    mesh.header.triangles = pImportedMesh->mNumFaces;
     mesh.header.uvChannels = pImportedMesh->GetNumUVChannels();
 }
 
@@ -316,11 +316,11 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
         mesh.vertices.push_back({vertex.x, vertex.y, vertex.z});
     }
 
-    mesh.faces.reserve(mesh.header.faces);
-    for (uint32_t i = 0; i < mesh.header.faces; ++i)
+    mesh.triangles.reserve(mesh.header.triangles);
+    for (uint32_t i = 0; i < mesh.header.triangles; ++i)
     {
         const aiFace& face = pImportedMesh->mFaces[i];
-        mesh.faces.push_back({face.mIndices[0], face.mIndices[1], face.mIndices[2]});
+        mesh.triangles.push_back({face.mIndices[0], face.mIndices[1], face.mIndices[2]});
     }
 
     mesh.uvChannels.reserve(mesh.header.uvChannels);

@@ -38,11 +38,10 @@ static const unsigned int VBO_COLOUR = 1 << 3;
 static const unsigned int VBO_INDEX = 1 << 4;
 static const unsigned int VB_2D = 1 << 5;
 
-typedef std::vector<glm::vec3> PositionData;
-typedef std::vector<glm::vec2> UVData;
-typedef std::vector<glm::vec3> NormalData;
-typedef std::vector<glm::vec4> ColourData;
-
+using PositionData = std::vector<glm::vec3>;
+using UVData = std::vector<glm::vec2>;
+using NormalData = std::vector<glm::vec3>;
+using ColourData = std::vector<glm::vec4>;
 using IndexData = std::vector<uint32_t>;
 
 enum class GeometryType
@@ -55,6 +54,7 @@ enum class GeometryType
 class VertexBuffer
 {
 public:
+    VertexBuffer();
     VertexBuffer(GeometryType type, unsigned int flags);
     ~VertexBuffer();
 
@@ -70,7 +70,7 @@ public:
     void CopyData(const float* pData, size_t count, unsigned int destination);
 
     void Draw(size_t numVertices = 0); // Draw the vertex buffer. Passing 0 to this function will draw the entire buffer.
-    void Draw(size_t startVertex, size_t numVertices, void* pIndices = nullptr);
+    void Draw(size_t startVertex, size_t numVertices);
 
     void CreateUntexturedQuad(float x, float y, float width, float height);
     void CreateUntexturedQuad(float x, float y, float width, float height, const glm::vec4& colour);
