@@ -52,54 +52,6 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
     , m_pVertexBuffer(nullptr)
     , m_MaterialIndex(pMesh->header.materialIndex)
 {
-    #if 1
-    size_t numVertices = m_NumTriangles * 3;
-
-    m_VertexBufferPosData.reserve(numVertices);
-    m_VertexBufferNormalData.reserve(numVertices);
-    m_VertexBufferUvData.reserve(numVertices);
-
-    IndexData indices;
-    indices.reserve(m_NumTriangles);
-    for (uint32_t i = 0; i < m_NumTriangles; i++)
-    {
-        indices.push_back(pMesh->faces[i].v1);
-        indices.push_back(pMesh->faces[i].v2);
-        indices.push_back(pMesh->faces[i].v3);
-    }
-
-    size_t offset = 0;
-    for (uint32_t i = 0; i < m_NumTriangles; i++)
-    {
-        const Serialization::Vertex& v1 = pMesh->vertices[pMesh->faces[i].v1];
-        m_VertexBufferPosData.push_back(glm::vec3(v1.x, v1.y, v1.z));
-        const Serialization::Vertex& v2 = pMesh->vertices[pMesh->faces[i].v2];
-        m_VertexBufferPosData.push_back(glm::vec3(v2.x, v2.y, v2.z));
-        const Serialization::Vertex& v3 = pMesh->vertices[pMesh->faces[i].v3];
-        m_VertexBufferPosData.push_back(glm::vec3(v3.x, v3.y, v3.z));
-
-        const Serialization::Normal& n1 = pMesh->normals[pMesh->faces[i].v1];
-        m_VertexBufferNormalData.push_back(glm::vec3(n1.x, n1.y, n1.z));
-        const Serialization::Normal& n2 = pMesh->normals[pMesh->faces[i].v2];
-        m_VertexBufferNormalData.push_back(glm::vec3(n2.x, n2.y, n2.z));
-        const Serialization::Normal& n3 = pMesh->normals[pMesh->faces[i].v3];
-        m_VertexBufferNormalData.push_back(glm::vec3(n3.x, n3.y, n3.z));
-
-        const Serialization::UV& t1 = pMesh->uvChannels[0].uvs[pMesh->faces[i].v1];
-        m_VertexBufferUvData.push_back(glm::vec2(t1.u, t1.v));
-        const Serialization::UV& t2 = pMesh->uvChannels[0].uvs[pMesh->faces[i].v2];
-        m_VertexBufferUvData.push_back(glm::vec2(t2.u, t2.v));
-        const Serialization::UV& t3 = pMesh->uvChannels[0].uvs[pMesh->faces[i].v3];
-        m_VertexBufferUvData.push_back(glm::vec2(t3.u, t3.v));
-    }
-
-    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL);
-    m_pVertexBuffer->CopyPositions(m_VertexBufferPosData);
-    m_pVertexBuffer->CopyNormals(m_VertexBufferNormalData);
-    m_pVertexBuffer->CopyUVs(m_VertexBufferUvData);
-
-    #else
-
     m_VertexBufferPosData.reserve(m_NumVertices);
     m_VertexBufferNormalData.reserve(m_NumVertices);
     m_VertexBufferUvData.reserve(m_NumVertices);
@@ -125,9 +77,6 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
     m_pVertexBuffer->CopyNormals(m_VertexBufferNormalData);
     m_pVertexBuffer->CopyUVs(m_VertexBufferUvData);
     m_pVertexBuffer->CopyIndices(indices);
-
-    #endif
-
 }
 
 Mesh::~Mesh()

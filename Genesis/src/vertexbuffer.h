@@ -88,7 +88,7 @@ private:
     GLuint m_Normal;
     GLuint m_Colour;
     GLuint m_Index;
-    std::array<size_t, 4> m_Size;
+    std::array<size_t, 5> m_Size;
     GLenum m_Mode;
 };
 GENESIS_DECLARE_SMART_PTR(VertexBuffer);

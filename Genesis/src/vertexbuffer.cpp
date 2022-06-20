@@ -206,7 +206,8 @@ void VertexBuffer::CopyIndices(const IndexData& data)
 {
     SDL_assert(m_Flags & VBO_INDEX);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Index);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * 3, data.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(uint32_t), data.data(), GL_DYNAMIC_DRAW);
+    m_Size[GetSizeIndex(VBO_INDEX)] = data.size();
 }
 
 void VertexBuffer::CopyData(const float* pData, size_t size, unsigned int destination)
@@ -259,9 +260,18 @@ void VertexBuffer::Draw(size_t startVertex, size_t numVertices, void* pIndices /
 {
     glBindVertexArray(m_VAO);
 
-    size_t maxVertices = m_Size[GetSizeIndex(VBO_POSITION)] / ((m_Flags & VB_2D) ? 2 : 3) / sizeof(float);
+    size_t maxVertices = 0;
+    if (m_Flags & VBO_INDEX)
+    {
+        SDL_assert(numVertices == 0);
+        maxVertices = m_Size[GetSizeIndex(VBO_INDEX)];
+    }
+    else
+    {
+        maxVertices = m_Size[GetSizeIndex(VBO_POSITION)] / ((m_Flags & VB_2D) ? 2 : 3) / sizeof(float);
+        SDL_assert(startVertex + numVertices <= maxVertices);
+    }
     SDL_assert(maxVertices > 0);
-    SDL_assert(startVertex + numVertices <= maxVertices);
 
     if (numVertices == 0)
     {
