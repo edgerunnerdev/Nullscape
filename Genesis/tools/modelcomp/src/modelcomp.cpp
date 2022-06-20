@@ -68,8 +68,12 @@ int ModelComp::Run()
         OnAssetCompilationFailed(GetFile(), importer.GetErrorString());
         return -1;
     }
-
-    if (ValidateMaterials(pScene) == false)
+    else if (ValidateImport(pScene) == false)
+    {
+        OnAssetCompilationFailed(GetFile(), "Import validation failed.");
+        return -1;
+    }
+    else if (ValidateMaterials(pScene) == false)
     {
         OnAssetCompilationFailed(GetFile(), "Material validation failed.");
         return -1;
@@ -182,6 +186,57 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
         return true;
     }
     return false;
+}
+
+bool ModelComp::ValidateImport(const aiScene* pScene) 
+{
+    if (pScene->HasMeshes() == false)
+    {
+        Core::Log::Error() << "Model has no meshes.";
+        return false;
+    }
+
+    for (int i = 0; i < pScene->mNumMeshes; ++i)
+    {
+        aiMesh* pMesh = pScene->mMeshes[i];
+        if (pMesh->HasPositions() == false)
+        {
+            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no vertex positions.";
+            return false;
+        }
+        else if (pMesh->HasNormals() == false)
+        {
+            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no normals.";
+            return false;
+        }
+        else if (pMesh->HasTextureCoords(0) == false)
+        {
+            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no texture coordinate set 0.";
+            return false;
+        }
+        else if (pMesh->HasTangentsAndBitangents() == false)
+        {
+            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no tangents / bitangents.";
+            return false;
+        }
+        else if (pMesh->HasFaces() == false)
+        {
+            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no faces.";
+            return false;
+        }
+
+        for (int j = 0; j < pMesh->mNumFaces; ++j)
+        {
+            const aiFace& face = pMesh->mFaces[j];
+            if (face.mNumIndices != 3)
+            {
+                Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " is not triangulated.";
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 bool ModelComp::ValidateMaterials(const aiScene* pScene)

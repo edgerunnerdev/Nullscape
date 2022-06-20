@@ -85,14 +85,14 @@ template <typename S> void serialize(S& s, MeshHeader& meshHeader)
     s.value4b(meshHeader.uvChannels);
 }
 
-struct Vertex
+struct Vector3
 {
     float x;
     float y;
     float z;
 };
 
-template <typename S> void serialize(S& s, Vertex& vertex)
+template <typename S> void serialize(S& s, Vector3& vertex)
 {
     s.value4b(vertex.x);
     s.value4b(vertex.y);
@@ -135,27 +135,15 @@ template <typename S> void serialize(S& s, UVChannel& uvChannel)
     s.container(uvChannel.uvs, sMaxEntries);
 }
 
-struct Normal
-{
-    float x;
-    float y;
-    float z;
-};
-
-template <typename S> void serialize(S& s, Normal& normal)
-{
-    s.value4b(normal.x);
-    s.value4b(normal.y);
-    s.value4b(normal.z);
-}
-
 struct Mesh
 {
     MeshHeader header;
-    std::vector<Vertex> vertices;
+    std::vector<Vector3> vertices;
     std::vector<Triangle> triangles;
     std::vector<UVChannel> uvChannels;
-    std::vector<Normal> normals;
+    std::vector<Vector3> normals;
+    std::vector<Vector3> tangents;
+    std::vector<Vector3> bitangents;
 };
 
 template <typename S> void serialize(S& s, Mesh& mesh)
@@ -165,6 +153,8 @@ template <typename S> void serialize(S& s, Mesh& mesh)
     s.container(mesh.triangles, sMaxEntries);
     s.container(mesh.uvChannels, 256);
     s.container(mesh.normals, sMaxEntries);
+    s.container(mesh.tangents, sMaxEntries);
+    s.container(mesh.bitangents, sMaxEntries);
 }
 
 struct Model

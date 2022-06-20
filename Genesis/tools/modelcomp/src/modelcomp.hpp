@@ -46,6 +46,7 @@ public:
 
 private:
     bool ReadAsset(const std::filesystem::path& assetPath);
+    bool ValidateImport(const aiScene* pImportedScene);
     bool ValidateMaterials(const aiScene* pImportedScene);
     std::filesystem::path GetTargetModelPath(const std::filesystem::path& sourceModelPath) const;
     bool Compile(const aiScene* pImportedScene, std::filesystem::path& targetModelPath);
