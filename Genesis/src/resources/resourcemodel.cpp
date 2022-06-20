@@ -148,6 +148,16 @@ void Mesh::Render(const glm::mat4& modelTransform, Material* pOverrideMaterial)
     m_pVertexBuffer->Draw();
 }
 
+size_t Mesh::GetVertexCount() const 
+{
+    return static_cast<size_t>(m_NumVertices);
+}
+
+size_t Mesh::GetTriangleCount() const 
+{
+    return static_cast<size_t>(m_NumTriangles);
+}
+
 ///////////////////////////////////////////////////////
 // ResourceModel
 ///////////////////////////////////////////////////////
@@ -345,6 +355,26 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
             mesh.Render(modelTransform, pOverrideMaterial);
         }
     }
+}
+
+size_t ResourceModel::GetVertexCount() const
+{
+    size_t count = 0;
+    for (auto& mesh : m_Meshes)
+    {
+        count += mesh.GetVertexCount();
+    }
+    return count;
+}
+
+size_t ResourceModel::GetTriangleCount() const
+{
+    size_t count = 0;
+    for (auto& mesh : m_Meshes)
+    {
+        count += mesh.GetTriangleCount();
+    }
+    return count;
 }
 
 } // namespace Genesis

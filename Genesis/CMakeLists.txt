@@ -18,6 +18,7 @@ find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(imgui REQUIRED)
+find_package(imgui-filebrowser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
@@ -32,6 +33,7 @@ include_directories(
     ${BULLET3_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${IMGUI_INCLUDE_DIRS}
+    ${IMGUIFILEBROWSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}

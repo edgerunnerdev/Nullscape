@@ -41,6 +41,7 @@
 #include <resources/resourcesound.h>
 #include <resources/resourcevideo.h>
 #include <sound/soundmanager.h>
+#include <viewers/modelviewer/modelviewer.hpp>
 #include <shadercache.h>
 #include <rendersystem.h>
 #include <log.hpp>
@@ -81,7 +82,6 @@
 #include "sector/events/corsairfleet.h"
 #include "sector/events/orbitaldefenses.h"
 #include "sector/events/neutralflagship.h"
-#include "ui/debug/modelviewer.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
 #include "menus/mainmenu.h"
@@ -295,7 +295,7 @@ void Game::Initialise()
 	m_pShipOutline = std::make_unique<ShipOutline>();
     m_pUIRootElement = std::make_unique<UI::RootElement>();
     m_pUIEditor = std::make_unique<UI::Editor>();
-	m_pModelViewer = std::make_unique<UI::Debug::ModelViewer>();
+	m_pModelViewer = std::make_unique<Genesis::ModelViewer>();
 
 	SetState( GameState::Intro );
 }

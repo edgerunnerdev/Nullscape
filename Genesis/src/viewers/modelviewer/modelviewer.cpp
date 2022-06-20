@@ -1,50 +1,54 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hexterminate.
+// This file is part of Genesis.
 //
-// Hexterminate is free software: you can redistribute it and/or modify
+// Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hexterminate is distributed in the hope that it will be useful,
+// Genesis is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
+// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include "ui/debug/modelviewer.hpp"
-#include "ui/debug/modelviewerbackground.hpp"
-#include "ui/debug/modelviewerobject.hpp"
+#include "viewers/modelviewer/modelviewer.hpp"
 
-#include "hexterminate.h"
-
-#include <genesis.h>
+#include "viewers/modelviewer/modelviewerbackground.hpp"
+#include "viewers/modelviewer/modelviewerobject.hpp"
+#include "resources/resourcemodel.h"
+#include "genesis.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
-#include <render/rendertarget.h>
-#include <render/viewport.hpp>
-#include <rendersystem.h>
-#include <scene/scene.h>
+#include <imfilebrowser.h>
+#include "render/rendertarget.h"
+#include "render/viewport.hpp"
+#include "rendersystem.h"
+#include "scene/scene.h"
 
-namespace Hexterminate::UI::Debug
+namespace Genesis
 {
+
+static const int sViewportWidth = 800;
+static const int sViewportHeight = 800;
+static ImGui::FileBrowser sFileBrowser;
 
 ModelViewer::ModelViewer()
     : m_IsOpen(false)
     , m_Pitch(0.0f)
     , m_Yaw(-90.0f)
     , m_Position(0.0f, 0.0f, 200.0f)
+    , m_pModel(nullptr)
 {
-    using namespace Genesis;
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
 
-    static int sViewportWidth = 800;
-    static int sViewportHeight = 800;
+    sFileBrowser.SetTitle("Open model file");
+    sFileBrowser.SetTypeFilters({".gmdl"});
 
-    m_pViewport = std::make_shared<Genesis::Viewport>(sViewportWidth, sViewportHeight);
+    m_pViewport = std::make_shared<Viewport>(sViewportWidth, sViewportHeight);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
 
     Scene* pScene = m_pViewport->GetScene();
@@ -56,23 +60,34 @@ ModelViewer::ModelViewer()
 
     m_pDebugRender = new Render::DebugRender();
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
-
-    ModelViewerObject* pModelObject = new ModelViewerObject();
-    m_pMainLayer->AddSceneObject(pModelObject);
 }
 
 ModelViewer::~ModelViewer()
 {
-    Genesis::FrameWork::GetRenderSystem()->RemoveViewport(m_pViewport);
+    FrameWork::GetRenderSystem()->RemoveViewport(m_pViewport);
 }
 
 void ModelViewer::UpdateDebugUI()
 {
-    if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
+    if (ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
 
-        Genesis::RenderTarget* pRenderTarget = m_pViewport->GetRenderTarget();
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {    
+                if (ImGui::MenuItem("Open"))
+                {
+                    sFileBrowser.Open();
+                }
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenuBar();
+        }
+
+        RenderTarget* pRenderTarget = m_pViewport->GetRenderTarget();
         ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
                      ImVec2(static_cast<float>(pRenderTarget->GetWidth()), static_cast<float>(pRenderTarget->GetHeight())), ImVec2(0, 1), // UV1
                      ImVec2(1, 0),                                                                                                        // UV2
@@ -80,21 +95,34 @@ void ModelViewer::UpdateDebugUI()
                      ImVec4(1, 1, 1, 1)                                                                                                   // Border
         );
 
-        UpdateCamera(ImGui::IsItemHovered());
-
-        ImGui::Text("Position: %.2f %.2f %.2f", m_Position.x, m_Position.y, m_Position.z);
-
-        ImGui::End();
-
         m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        UpdateCamera(ImGui::IsItemHovered());
+
+        ImGui::SameLine();
+
+        ImGui::BeginGroup();
+        ShowStats();
+
+        ImGui::Text("Position: %.2f %.2f %.2f", m_Position.x, m_Position.y, m_Position.z);
+        ImGui::EndGroup();
+
+        ImGui::End();
+
+        sFileBrowser.Display();
+
+        if (sFileBrowser.HasSelected())
+        {
+            LoadModel(sFileBrowser.GetSelected());
+            sFileBrowser.ClearSelected();
+        }
     }
 }
 
 void ModelViewer::UpdateCamera(bool acceptInput) 
 {
-    using namespace Genesis;
     Camera* pCamera = m_pViewport->GetScene()->GetCamera();
     
     ImGuiIO& io = ImGui::GetIO();
@@ -138,4 +166,27 @@ void ModelViewer::UpdateCamera(bool acceptInput)
     pCamera->SetTargetPosition(m_Position + direction);
 }
 
-} // namespace Hexterminate::UI::Debug
+void ModelViewer::LoadModel(const std::filesystem::path& path) 
+{
+    if (m_pModel != nullptr)
+    {
+        m_pMainLayer->RemoveSceneObject(m_pModel);
+    }
+
+    m_pModel = new ModelViewerObject(path);
+    m_pMainLayer->AddSceneObject(m_pModel);
+}
+
+void ModelViewer::ShowStats() 
+{
+    if (ImGui::CollapsingHeader("Statistics"))
+    {
+        size_t triangleCount = m_pModel ? m_pModel->GetTriangleCount() : 0;
+        ImGui::Text("Triangles: %u", triangleCount);
+
+        size_t vertexCount = m_pModel ? m_pModel->GetVertexCount() : 0;
+        ImGui::Text("Vertices: %u", vertexCount);
+    }
+}
+
+} // namespace Genesis

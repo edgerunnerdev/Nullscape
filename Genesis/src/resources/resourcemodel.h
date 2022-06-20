@@ -65,6 +65,9 @@ public:
     void Render(const glm::mat4& modelTransform, const Materials& materials);
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial);
 
+    size_t GetVertexCount() const;
+    size_t GetTriangleCount() const;
+
 private:
     struct Index3
     {
@@ -100,6 +103,7 @@ private:
     unsigned int m_MaterialIndex;
 };
 
+
 ///////////////////////////////////////////////////////
 // ResourceModel
 ///////////////////////////////////////////////////////
@@ -115,6 +119,9 @@ public:
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr);
     bool GetDummy(const std::string& name, glm::vec3* pPosition) const;
     Materials& GetMaterials();
+
+    size_t GetVertexCount() const;
+    size_t GetTriangleCount() const;
 
 private:
     void AddTMFDummy(FILE* fp);

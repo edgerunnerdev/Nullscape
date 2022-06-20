@@ -46,6 +46,8 @@ namespace Genesis
 
 struct Material;
 class ResourceSound;
+class ModelViewer;
+using ModelViewerUniquePtr = std::unique_ptr<ModelViewer>;
 
 namespace Gui
 {
@@ -65,12 +67,6 @@ namespace Hexterminate
 
 namespace UI
 {
-namespace Debug
-{
-class ModelViewer;
-using ModelViewerUniquePtr = std::unique_ptr<ModelViewer>;
-} // namespace Debug
-
 class Editor;
 using EditorUniquePtr = std::unique_ptr<Editor>;
 class RootElement;
@@ -300,7 +296,7 @@ private:
 
     UI::RootElementUniquePtr m_pUIRootElement;
     UI::EditorUniquePtr m_pUIEditor;
-    UI::Debug::ModelViewerUniquePtr m_pModelViewer;
+    Genesis::ModelViewerUniquePtr m_pModelViewer;
     bool m_ShowImguiTestWindow;
 
     std::unique_ptr<Hyperscape> m_pHyperscape;
