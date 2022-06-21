@@ -24,6 +24,7 @@
 #include "inputmanager.h"
 #include "memory.h"
 #include "render/debugrender.h"
+#include "render/viewport.hpp"
 #include "rendersystem.h"
 #include "resourcemanager.h"
 #include "scene/scene.h"
@@ -50,7 +51,6 @@ EventHandler* gEventHandler = nullptr;
 Window* gWindow = nullptr;
 RenderSystem* gRenderSystem = nullptr;
 ResourceManager* gResourceManager = nullptr;
-Scene* gScene = nullptr;
 Gui::GuiManager* gGuiManager = nullptr;
 Sound::SoundManager* gSoundManager = nullptr;
 VideoPlayer* gVideoPlayer = nullptr;
@@ -119,9 +119,6 @@ bool FrameWork::Initialize()
     gGuiManager = new Gui::GuiManager();
     gTaskManager->AddTask("GUIManager", gGuiManager, (TaskFunc)&Gui::GuiManager::Update, TaskPriority::GameLogic);
 
-    gScene = new Scene();
-    gTaskManager->AddTask("Scene", gScene, (TaskFunc)&Scene::Update, TaskPriority::GameLogic);
-
     gSoundManager = new Sound::SoundManager();
     gTaskManager->AddTask("SoundManager", gSoundManager, (TaskFunc)&Sound::SoundManager::Update, TaskPriority::System);
 
@@ -156,9 +153,6 @@ void FrameWork::Shutdown()
 
     delete gSoundManager;
     gSoundManager = nullptr;
-
-    delete gScene;
-    gScene = nullptr;
 
     delete gWindow;
     gWindow = nullptr;
@@ -240,7 +234,7 @@ ResourceManager* FrameWork::GetResourceManager()
 
 Scene* FrameWork::GetScene()
 {
-    return gScene;
+    return gRenderSystem->GetPrimaryViewport()->GetScene();
 }
 
 Gui::GuiManager* FrameWork::GetGuiManager()

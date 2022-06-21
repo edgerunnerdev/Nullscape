@@ -29,13 +29,16 @@
 namespace Genesis
 {
 
-Viewport::Viewport(int width, int height)
+Viewport::Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil)
+    : m_Width(width)
+    , m_Height(height)
+    , m_Name(name)
 {
     SDL_assert(width > 0);
     SDL_assert(height > 0);
     m_Width = width;
     m_Height = height;
-    m_pRenderTarget = RenderTarget::Create("ModelViewer", width, height, true, false);
+    m_pRenderTarget = RenderTarget::Create(name, width, height, hasDepth, hasStencil);
     m_pScene = std::make_shared<Genesis::Scene>();
 }
 
@@ -69,6 +72,11 @@ int Viewport::GetWidth()
 int Viewport::GetHeight()
 {
     return m_Height;
+}
+
+const std::string& Viewport::GetName() const 
+{
+    return m_Name;
 }
 
 } // namespace Genesis

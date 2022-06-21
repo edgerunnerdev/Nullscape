@@ -31,16 +31,19 @@ class Scene;
 class Viewport
 {
 public:
-    Viewport(int width, int height);
+    Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil);
     ~Viewport();
 
     void Render();
+
+    const std::string& GetName() const;
     RenderTarget* GetRenderTarget();
     Scene* GetScene();
     int GetWidth();
     int GetHeight();
 
 private:
+    std::string m_Name;
     RenderTargetUniquePtr m_pRenderTarget;
     SceneSharedPtr m_pScene;
     int m_Width;

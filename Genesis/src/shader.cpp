@@ -40,6 +40,7 @@ Shader::Shader(const std::string& programName, GLuint programHandle)
     , m_pViewInverseUniform(nullptr)
     , m_pTimeUniform(nullptr)
     , m_pResolutionUniform(nullptr)
+    , m_pCameraPositionUniform(nullptr)
 {
     RegisterCoreUniforms();
 }
@@ -63,6 +64,7 @@ void Shader::RegisterCoreUniforms()
     m_pViewInverseUniform = RegisterUniform("k_viewInverse", ShaderUniformType::FloatMatrix44);
     m_pTimeUniform = RegisterUniform("k_time", ShaderUniformType::Float);
     m_pResolutionUniform = RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
+    m_pCameraPositionUniform = RegisterUniform("k_cameraPosition", ShaderUniformType::FloatVector3);
 }
 
 ShaderUniform* Shader::RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride /*= true */)
@@ -147,6 +149,11 @@ void Shader::UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstanc
     if (m_pResolutionUniform != nullptr)
     {
         m_pResolutionUniform->Set(glm::vec2((float)Configuration::GetScreenWidth(), (float)Configuration::GetScreenHeight()));
+    }
+
+    if (m_pCameraPositionUniform != nullptr)
+    {
+        
     }
 
     if (pShaderUniformInstances != nullptr)

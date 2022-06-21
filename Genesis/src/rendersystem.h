@@ -89,6 +89,7 @@ public:
 
     void AddViewport(const ViewportSharedPtr& pViewport);
     void RemoveViewport(const ViewportSharedPtr& pViewport);
+    Viewport* GetPrimaryViewport() const;
 
 private:
     void CreateRenderTargets();
@@ -96,7 +97,6 @@ private:
     void DrawDebugWindow();
     void InitializePostProcessing();
     void InitializeGlowChain();
-    void RenderScene();
     void RenderGlow();
     RenderTarget* GetRenderTarget(RenderTargetId id);
     void ScreenPosToWorldRay(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin,
@@ -126,7 +126,6 @@ private:
     // Used for post-processing effects
     Shader* m_pPostProcessShader;
     VertexBuffer* m_pPostProcessVertexBuffer;
-    RenderTargetUniquePtr m_ScreenRenderTarget;
 
     Shader* m_pGlowShader;
     ShaderUniform* m_pGlowShaderSampler;
@@ -157,6 +156,7 @@ private:
     std::array<ShaderUniform*, static_cast<size_t>(PostProcessEffect::Count)> m_PostProcessShaderUniforms;
 
     std::list<ViewportSharedPtr> m_Viewports;
+    ViewportSharedPtr m_pPrimaryViewport;
 };
 
 inline ShaderCache* RenderSystem::GetShaderCache() const
@@ -222,6 +222,11 @@ inline BlendMode RenderSystem::GetBlendMode() const
 inline bool RenderSystem::IsPostProcessEffectEnabled(PostProcessEffect effect)
 {
     return m_ActivePostProcessEffects[static_cast<size_t>(effect)];
+}
+
+inline Viewport* RenderSystem::GetPrimaryViewport() const 
+{
+    return m_pPrimaryViewport.get();
 }
 
 ///////////////////////////////////////////////////////////////////////////

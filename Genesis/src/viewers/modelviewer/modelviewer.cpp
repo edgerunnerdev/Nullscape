@@ -44,7 +44,7 @@ ModelViewer::ModelViewer()
 {
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
 
-    m_pViewport = std::make_shared<Viewport>(sViewportWidth, sViewportHeight);
+    m_pViewport = std::make_shared<Viewport>("Model viewer", sViewportWidth, sViewportHeight, true, false);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
 
     Scene* pScene = m_pViewport->GetScene();

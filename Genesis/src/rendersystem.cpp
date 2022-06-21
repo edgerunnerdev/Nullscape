@@ -153,6 +153,9 @@ void RenderSystem::Initialize(GLuint screenWidth, GLuint screenHeight)
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_DEPTH_TEST);
 
+    m_pPrimaryViewport = std::make_shared<Viewport>("Primary viewport", m_ScreenWidth, m_ScreenHeight, true, true);
+    AddViewport(m_pPrimaryViewport);
+
     m_pShaderCache = new ShaderCache();
 
     CreateRenderTargets();
@@ -165,8 +168,6 @@ void RenderSystem::Initialize(GLuint screenWidth, GLuint screenHeight)
 
 void RenderSystem::CreateRenderTargets()
 {
-    m_ScreenRenderTarget = RenderTarget::Create("Internal fullscreen", m_ScreenWidth, m_ScreenHeight, true, true);
-
     // The glow effect is done in four stages:
     // 1) The desired geometry is rendered into the Glow render target during the normal scene render.
     // 2) The Glow render target is then used as source to create a horizontal blur.
@@ -279,7 +280,7 @@ RenderTarget* RenderSystem::GetRenderTarget(RenderTargetId id)
 {
     if (id == RenderTargetId::Default)
     {
-        return m_ScreenRenderTarget.get();
+        return m_pPrimaryViewport->GetRenderTarget();
     }
     else if (id == RenderTargetId::Glow)
     {
@@ -310,15 +311,15 @@ void RenderSystem::InitializePostProcessing()
     m_pPostProcessShader = GetShaderCache()->Load("postprocessing");
 
     ShaderUniform* pBaseSampler = m_pPostProcessShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
-    pBaseSampler->Set(m_ScreenRenderTarget->GetColor(), GL_TEXTURE0);
+    pBaseSampler->Set(m_pPrimaryViewport->GetRenderTarget()->GetColor(), GL_TEXTURE0);
 
     // RenderTargetId::GlowBlurVertical contains the final result of the glow effect.
     ShaderUniform* pGlowSampler = m_pPostProcessShader->RegisterUniform("k_sampler1", ShaderUniformType::Texture);
     pGlowSampler->Set(GetRenderTarget(RenderTargetId::GlowBlurVertical)->GetColor(), GL_TEXTURE1);
 
     ShaderUniform* pResolution = m_pPostProcessShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
-    const float w = (float)m_ScreenRenderTarget->GetWidth();
-    const float h = (float)m_ScreenRenderTarget->GetHeight();
+    const float w = static_cast<float>(m_pPrimaryViewport->GetWidth());
+    const float h = static_cast<float>(m_pPrimaryViewport->GetHeight());
     if (pResolution != nullptr)
     {
         pResolution->Set(glm::vec2(w, h));
@@ -500,11 +501,6 @@ void RenderSystem::SetRenderTarget(RenderTarget* pRenderTarget)
     m_pCurrentRenderTarget = pRenderTarget;
 }
 
-void RenderSystem::RenderScene()
-{
-    FrameWork::GetScene()->Render(nullptr); // TODO: create a primary viewport.
-}
-
 void RenderSystem::RenderGlow()
 {
     RenderTarget* pGlowRenderTarget = GetRenderTarget(RenderTargetId::Glow);
@@ -530,7 +526,6 @@ TaskStatus RenderSystem::Update(float delta)
 
     ClearAll();
     ViewPerspective();
-    RenderScene();
 
     for (auto& pViewport : m_Viewports)
     {
