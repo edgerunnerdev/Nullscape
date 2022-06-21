@@ -25,6 +25,7 @@
 #include <locale>
 #include <memory>
 #include <mutex>
+#include <regex>
 #include <sstream>
 #include <string>
 
@@ -67,6 +68,16 @@ public:
             m_Collector << value;
             return *this;
         }
+
+        #ifdef _WIN32
+        Stream& operator<<(const std::filesystem::path& value)
+        {
+            // Cleanup all the slashes and display them in Windows' standard format ('\').
+            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+            m_Collector << std::regex_replace(converter.to_bytes(value), std::regex("(\\\\|/)"), "\\");
+            return *this;
+        }
+        #endif
 
         Stream& operator<<(const std::wstring& value)
         {
