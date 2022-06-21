@@ -18,41 +18,37 @@
 #pragma once
 
 #include <filesystem>
-
-#include "render/debugrender.h"
-#include "render/viewport.hpp"
-#include "scene/layer.h"
-#include "rendersystem.fwd.h"
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace Genesis
 {
 
-class FileViewer;
-class ModelViewerObject;
-
-class ModelViewer
+class FileViewer
 {
 public:
-    ModelViewer();
-    virtual ~ModelViewer();
-
-    void UpdateDebugUI();
+    FileViewer(int width, int height, const std::string& extension);
+    void Render();
+    bool HasSelected() const;
+    const std::filesystem::path& GetSelected() const;
 
 private:
-    void LoadModel(const std::filesystem::path& path);
-    void UpdateCamera(bool acceptInput);
-    void ShowStats();
+    struct Node
+    {
+        Node(const std::filesystem::path& p) : path(p) {}
+        std::filesystem::path path;
+        std::vector<Node> children;
+    };
 
-    bool m_IsOpen;
-    ViewportSharedPtr m_pViewport;
-    LayerSharedPtr m_pBackgroundLayer;
-    LayerSharedPtr m_pMainLayer;
-    Render::DebugRender* m_pDebugRender;
-    float m_Pitch;
-    float m_Yaw;
-    glm::vec3 m_Position;
-    ModelViewerObject* m_pModel;
-    std::unique_ptr<FileViewer> m_pFileViewer;
+    void ProcessNode(Node& node);
+    void RenderNode(const Node& node);
+
+    std::unique_ptr<Node> m_pRootNode;
+    int m_Width;
+    int m_Height;
+    std::string m_Extension;
+    std::filesystem::path m_Selected;
 };
 
 } // namespace Genesis

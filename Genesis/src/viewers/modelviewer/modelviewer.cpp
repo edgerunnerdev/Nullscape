@@ -17,13 +17,13 @@
 
 #include "viewers/modelviewer/modelviewer.hpp"
 
+#include "viewers/fileviewer/fileviewer.hpp"
 #include "viewers/modelviewer/modelviewerbackground.hpp"
 #include "viewers/modelviewer/modelviewerobject.hpp"
 #include "resources/resourcemodel.h"
 #include "genesis.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
-#include <imfilebrowser.h>
 #include "render/rendertarget.h"
 #include "render/viewport.hpp"
 #include "rendersystem.h"
@@ -34,7 +34,6 @@ namespace Genesis
 
 static const int sViewportWidth = 800;
 static const int sViewportHeight = 800;
-static ImGui::FileBrowser sFileBrowser;
 
 ModelViewer::ModelViewer()
     : m_IsOpen(false)
@@ -44,9 +43,6 @@ ModelViewer::ModelViewer()
     , m_pModel(nullptr)
 {
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
-
-    sFileBrowser.SetTitle("Open model file");
-    sFileBrowser.SetTypeFilters({".gmdl"});
 
     m_pViewport = std::make_shared<Viewport>(sViewportWidth, sViewportHeight);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
@@ -60,6 +56,8 @@ ModelViewer::ModelViewer()
 
     m_pDebugRender = new Render::DebugRender();
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
+
+    m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, ".gmdl");
 }
 
 ModelViewer::~ModelViewer()
@@ -71,21 +69,10 @@ void ModelViewer::UpdateDebugUI()
 {
     if (ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
+        ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {    
-                if (ImGui::MenuItem("Open"))
-                {
-                    sFileBrowser.Open();
-                }
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMenuBar();
-        }
+        m_pFileViewer->Render();
+        ImGui::SameLine();
 
         RenderTarget* pRenderTarget = m_pViewport->GetRenderTarget();
         ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
@@ -111,12 +98,9 @@ void ModelViewer::UpdateDebugUI()
 
         ImGui::End();
 
-        sFileBrowser.Display();
-
-        if (sFileBrowser.HasSelected())
+        if (m_pFileViewer->HasSelected())
         {
-            LoadModel(sFileBrowser.GetSelected());
-            sFileBrowser.ClearSelected();
+            LoadModel(m_pFileViewer->GetSelected());
         }
     }
 }
