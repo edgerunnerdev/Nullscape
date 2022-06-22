@@ -15,38 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "filehash.hpp"
 
-#include <filesystem>
-#include <memory>
-#include <string>
+#include <fstream>
+#include <vector>
+#include <xxhash64.h>
 
 namespace Genesis::ResComp
 {
 
-class Compiler;
-class Forge;
-using CompilerSharedPtr = std::shared_ptr<Compiler>;
-
-class Asset
+uint64_t CalculateFileHash(const std::filesystem::path& path)
 {
-public:
-    Asset(Forge* pForge, const std::filesystem::path& path);
+    uint64_t hash = 0;
+    std::ifstream file(path, std::ifstream::binary);
+    if (file.good())
+    {
+        file.seekg(0, file.end);
+        size_t length = static_cast<size_t>(file.tellg());
+        file.seekg(0, file.beg);
+        std::vector<char> buffer;
+        buffer.reserve(length);
+        file.read(buffer.data(), length);
+        file.close();
 
-    bool IsValid() const;
-    const std::filesystem::path& GetPath() const;
-    CompilerSharedPtr GetCompiler() const;
-    const std::string& GetSource() const;
-    uint64_t GetHash() const;
-
-private:
-    void CalculateHash();
-
-    bool m_IsValid;
-    std::filesystem::path m_Path;
-    CompilerSharedPtr m_pCompiler;
-    std::string m_Source;
-    uint64_t m_Hash;
-};
+        hash = XXHash64::hash(buffer.data(), length, 0);
+    }
+    return hash;
+}
 
 } // namespace Genesis::ResComp

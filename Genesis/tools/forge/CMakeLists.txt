@@ -9,6 +9,7 @@ find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(json REQUIRED)
 find_package(rpc REQUIRED)
+find_package(xxhash REQUIRED)
 
 include_directories(
     src/
@@ -16,6 +17,7 @@ include_directories(
     ${GENESISCORE_INCLUDE_DIRS}
     ${JSON_INCLUDE_DIRS}
     ${RPC_INCLUDE_DIRS}
+    ${XXHASH_INCLUDE_DIRS}
 )
 
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin)

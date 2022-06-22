@@ -20,6 +20,8 @@
 #include "forge.hpp"
 
 #include "asset.hpp"
+#include "cache.hpp"
+#include "compiler.hpp"
 
 #include <filesystem>
 #include <log.hpp>
@@ -64,6 +66,7 @@ bool Forge::Run()
     AggregateCompilers();
     AggregateKnownAssets();
 
+    InitializeCache();
     InitializeRPCServer();
 
     for (auto& compiler : m_CompilersMap)
@@ -72,6 +75,12 @@ bool Forge::Run()
     }
 
     return CompileAssets();
+}
+
+CompilerSharedPtr Forge::FindCompiler(const std::string& compilerName) const 
+{
+    CompilersMap::const_iterator it = m_CompilersMap.find(compilerName);
+    return (it == m_CompilersMap.end()) ? nullptr : it->second;
 }
 
 bool Forge::InitializeDirectories()
@@ -122,7 +131,8 @@ void Forge::AggregateCompilers()
         const bool isCompiler = Genesis::Core::StringEndsWith(fileName, "Comp");
         if (isExecutable && isCompiler)
         {
-            m_CompilersMap[fileName] = path;
+            CompilerSharedPtr pCompiler = std::make_shared<Compiler>(path);
+            m_CompilersMap[pCompiler->GetName()] = pCompiler;
         }
     }
 }
@@ -133,9 +143,14 @@ void Forge::AggregateKnownAssets()
     {
         if (dirEntry.is_regular_file() && dirEntry.path().extension() == ".asset")
         {
-            m_KnownAssets.emplace_back(dirEntry);
+            m_KnownAssets.emplace_back(this, dirEntry);
         }
     }
+}
+
+void Forge::InitializeCache() 
+{
+    m_pCache = std::make_unique<Cache>(m_IntermediatesDir);
 }
 
 void Forge::InitializeRPCServer()
@@ -181,23 +196,26 @@ bool Forge::CompileAssets()
 {
     Core::Log::Info() << "Compiling assets...";
     int errors = 0;
+    int compiled = 0;
+    int cached = 0;
 
     for (Asset& asset : m_KnownAssets)
     {
-        Core::Log::Info() << "Compiling " << asset.GetPath() << "...";
-        CompilersMap::iterator it = m_CompilersMap.find(asset.GetCompiler());
-        if (it == m_CompilersMap.end())
+        if (asset.IsValid() == false)
         {
-            Core::Log::Error() << "Unable to compile '" << asset.GetPath() << "', can't find compiler '" << asset.GetCompiler() << "'.";
+            Core::Log::Error() << "Failed to compile " << asset.GetPath() << ": Invalid asset.";
+            errors++;
         }
-        else
+        else if (m_pCache->NeedsRebuild(&asset))
         {
+            Core::Log::Info() << "Compiling " << asset.GetPath() << "...";
+
             std::stringstream arguments;
             arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << asset.GetPath() << " -m forge";
 
             //Core::Log::Info() << it->second << " " << arguments.str();
 
-            Core::Process process(it->second, arguments.str());
+            Core::Process process(asset.GetCompiler()->GetPath(), arguments.str());
             process.Run();
             process.Wait();
             if (process.GetExitCode() != 0)
@@ -205,8 +223,18 @@ bool Forge::CompileAssets()
                 Core::Log::Error() << "Failed to compile " << asset.GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
                 errors++;
             }
+            else
+            {
+                compiled++;
+            }
+        }
+        else
+        {
+            cached++;
         }
     }
+
+    Core::Log::Info() << "Forge asset compilation completed, " << compiled << " compiled, " << cached << " cached, " << errors << " errors.";
 
     return errors == 0;
 }
@@ -214,6 +242,14 @@ bool Forge::CompileAssets()
 void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile)
 {
     Core::Log::Info() << asset << ": " << sourceFile << " -> " << destinationFile;
+    for (Asset& knownAsset : m_KnownAssets)
+    {
+        if (knownAsset.GetPath() == asset)
+        {
+            m_pCache->Add(&knownAsset);
+            break;
+        }
+    }
 }
 
 void Forge::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason)

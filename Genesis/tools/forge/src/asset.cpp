@@ -17,36 +17,65 @@
 
 #include "asset.hpp"
 
+#include "compiler.hpp"
+#include "filehash.hpp"
+#include "forge.hpp"
+
 #include <fstream>
 #include <json.hpp>
+#include <vector>
+#include <xxhash64.h>
 
 namespace Genesis
 {
 namespace ResComp
 {
 
-Asset::Asset(const std::filesystem::path& path)
-    : m_Path(path)
+Asset::Asset(Forge* pForge, const std::filesystem::path& path)
+    : m_IsValid(false)
+    , m_Path(path)
+    , m_Hash(0)
 {
     using namespace nlohmann;
     std::ifstream file(path);
     if (file.good())
     {
+        bool errors = false;
         json j;
         file >> j;
+        file.close();
 
+        std::string compilerToFind("GenericComp");
         json::iterator it = j.find("compiler");
         if (it != j.end() && it->is_string())
         {
-            m_Compiler = it->get<std::string>();
+            compilerToFind = it->get<std::string>();
+        }
+
+        m_pCompiler = pForge->FindCompiler(compilerToFind);
+        if (m_pCompiler == nullptr)
+        {
+            errors = true;
+        }
+
+        it = j.find("source");
+        if (it != j.end() && it->is_string())
+        {
+            m_Source = it->get<std::string>();
+            CalculateHash();
         }
         else
         {
-            m_Compiler = "GenericComp";
+            errors = true;
         }
 
-        file.close();
+        m_IsValid = !errors;
     }
+}
+
+bool Asset::IsValid() const
+{
+    return m_IsValid;
 }
 
 const std::filesystem::path& Asset::GetPath() const
@@ -54,9 +83,28 @@ const std::filesystem::path& Asset::GetPath() const
     return m_Path;
 }
 
-const std::string& Asset::GetCompiler() const
+CompilerSharedPtr Asset::GetCompiler() const
 {
-    return m_Compiler;
+    return m_pCompiler;
+}
+
+const std::string& Asset::GetSource() const
+{
+    return m_Source;
+}
+
+uint64_t Asset::GetHash() const
+{
+    return m_Hash;
+}
+
+void Asset::CalculateHash() 
+{
+    std::vector<uint64_t> hashes;
+    hashes.push_back(m_pCompiler->GetHash());
+    hashes.push_back(CalculateFileHash(m_Path));
+    hashes.push_back(CalculateFileHash(std::filesystem::path(m_Path).remove_filename() / m_Source));
+    m_Hash = XXHash64::hash(hashes.data(), sizeof(uint64_t) * hashes.size(), 0);
 }
 
 } // namespace ResComp

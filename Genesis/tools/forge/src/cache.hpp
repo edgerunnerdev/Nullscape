@@ -18,35 +18,26 @@
 #pragma once
 
 #include <filesystem>
-#include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace Genesis::ResComp
 {
 
-class Compiler;
-class Forge;
-using CompilerSharedPtr = std::shared_ptr<Compiler>;
+class Asset;
 
-class Asset
+class Cache
 {
 public:
-    Asset(Forge* pForge, const std::filesystem::path& path);
+	Cache(const std::filesystem::path& intermediatesDir);
+	~Cache();
 
-    bool IsValid() const;
-    const std::filesystem::path& GetPath() const;
-    CompilerSharedPtr GetCompiler() const;
-    const std::string& GetSource() const;
-    uint64_t GetHash() const;
+	void Add(Asset* pAsset);
+	bool NeedsRebuild(Asset* pAsset);
 
 private:
-    void CalculateHash();
-
-    bool m_IsValid;
-    std::filesystem::path m_Path;
-    CompilerSharedPtr m_pCompiler;
-    std::string m_Source;
-    uint64_t m_Hash;
+	std::filesystem::path m_CachePath;
+	std::unordered_map<std::string, uint64_t> m_Cache;
 };
 
 } // namespace Genesis::ResComp

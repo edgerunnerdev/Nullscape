@@ -35,8 +35,13 @@ namespace ResComp
 {
 
 class Asset;
+class Cache;
+class Compiler;
+
 using AssetVector = std::vector<Asset>;
-using CompilersMap = std::unordered_map<std::string, std::filesystem::path>;
+using CacheUniquePtr = std::unique_ptr<Cache>;
+using CompilerSharedPtr = std::shared_ptr<Compiler>;
+using CompilersMap = std::unordered_map<std::string, CompilerSharedPtr>;
 using RPCServerUniquePtr = std::unique_ptr<rpc::server>;
 
 class Forge
@@ -53,10 +58,13 @@ public:
 
     bool Run();
 
+    CompilerSharedPtr FindCompiler(const std::string& compilerName) const;
+
 private:
     void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile);
     void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
 
+    void InitializeCache();
     void InitializeRPCServer();
     bool InitializeDirectories();
     void AggregateKnownAssets();
@@ -71,6 +79,7 @@ private:
     AssetVector m_KnownAssets;
     CompilersMap m_CompilersMap;
     RPCServerUniquePtr m_pRPCServer;
+    CacheUniquePtr m_pCache;
 };
 
 } // namespace ResComp

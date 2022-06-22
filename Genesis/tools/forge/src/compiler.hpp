@@ -18,34 +18,23 @@
 #pragma once
 
 #include <filesystem>
-#include <memory>
 #include <string>
 
 namespace Genesis::ResComp
 {
 
-class Compiler;
-class Forge;
-using CompilerSharedPtr = std::shared_ptr<Compiler>;
-
-class Asset
+class Compiler
 {
 public:
-    Asset(Forge* pForge, const std::filesystem::path& path);
+    Compiler(const std::filesystem::path& path);
 
-    bool IsValid() const;
     const std::filesystem::path& GetPath() const;
-    CompilerSharedPtr GetCompiler() const;
-    const std::string& GetSource() const;
+    const std::string& GetName() const;
     uint64_t GetHash() const;
 
 private:
-    void CalculateHash();
-
-    bool m_IsValid;
     std::filesystem::path m_Path;
-    CompilerSharedPtr m_pCompiler;
-    std::string m_Source;
+    std::string m_Name;
     uint64_t m_Hash;
 };
 
