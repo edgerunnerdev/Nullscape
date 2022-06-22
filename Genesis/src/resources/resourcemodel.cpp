@@ -63,23 +63,33 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
     PositionData positions;
     positions.reserve(m_NumVertices);
 
+    UVData uvs;
+    uvs.reserve(m_NumVertices);
+
     NormalData normals;
     normals.reserve(m_NumVertices);
 
-    UVData uvs;
-    uvs.reserve(m_NumVertices);
+    TangentData tangents;
+    tangents.reserve(m_NumVertices);
+
+    BitangentData bitangents;
+    bitangents.reserve(m_NumVertices);
 
     for (uint32_t i = 0; i < m_NumVertices; i++)
     {
         positions.emplace_back(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z);
-        normals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
         uvs.emplace_back(pMesh->uvChannels[0].uvs[i].u, pMesh->uvChannels[0].uvs[i].v);
+        normals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
+        tangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
+        bitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
     }
 
-    m_pVertexBuffer = std::make_shared<VertexBuffer>(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_INDEX);
+    m_pVertexBuffer = std::make_shared<VertexBuffer>(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_TANGENT | VBO_BITANGENT | VBO_INDEX);
     m_pVertexBuffer->CopyPositions(positions);
-    m_pVertexBuffer->CopyNormals(normals);
     m_pVertexBuffer->CopyUVs(uvs);
+    m_pVertexBuffer->CopyNormals(normals);
+    m_pVertexBuffer->CopyTangents(tangents);
+    m_pVertexBuffer->CopyBitangents(bitangents);
     m_pVertexBuffer->CopyIndices(indices);
 }
 

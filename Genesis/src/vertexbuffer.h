@@ -34,13 +34,17 @@ namespace Genesis
 static const unsigned int VBO_POSITION = 1;
 static const unsigned int VBO_UV = 1 << 1;
 static const unsigned int VBO_NORMAL = 1 << 2;
-static const unsigned int VBO_COLOUR = 1 << 3;
-static const unsigned int VBO_INDEX = 1 << 4;
-static const unsigned int VB_2D = 1 << 5;
+static const unsigned int VBO_TANGENT = 1 << 3;
+static const unsigned int VBO_BITANGENT = 1 << 4;
+static const unsigned int VBO_COLOUR = 1 << 5;
+static const unsigned int VBO_INDEX = 1 << 6;
+static const unsigned int VB_2D = 1 << 7;
 
 using PositionData = std::vector<glm::vec3>;
 using UVData = std::vector<glm::vec2>;
 using NormalData = std::vector<glm::vec3>;
+using TangentData = std::vector<glm::vec3>;
+using BitangentData = std::vector<glm::vec3>;
 using ColourData = std::vector<glm::vec4>;
 using IndexData = std::vector<uint32_t>;
 
@@ -63,7 +67,8 @@ public:
     void CopyUVs(const UVData& data);
     void CopyUVs(const UVData& data, size_t count);
     void CopyNormals(const NormalData& data);
-    void CopyNormals(const NormalData& data, size_t count);
+    void CopyTangents(const TangentData& data);
+    void CopyBitangents(const BitangentData& data);
     void CopyColours(const ColourData& data);
     void CopyColours(const ColourData& data, size_t count);
     void CopyIndices(const IndexData& data);
@@ -86,9 +91,11 @@ private:
     GLuint m_Position;
     GLuint m_UV;
     GLuint m_Normal;
+    GLuint m_Tangent;
+    GLuint m_Bitangent;
     GLuint m_Colour;
     GLuint m_Index;
-    std::array<size_t, 5> m_Size;
+    std::array<size_t, 7> m_Size;
     GLenum m_Mode;
 };
 GENESIS_DECLARE_SMART_PTR(VertexBuffer);

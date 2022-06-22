@@ -37,6 +37,8 @@ VertexBuffer::VertexBuffer(GeometryType type, unsigned int flags)
     , m_Position(0)
     , m_UV(0)
     , m_Normal(0)
+    , m_Tangent(0)
+    , m_Bitangent(0)
     , m_Colour(0)
     , m_Index(0)
     , m_Mode(GL_TRIANGLES)
@@ -65,6 +67,16 @@ VertexBuffer::VertexBuffer(GeometryType type, unsigned int flags)
         glGenBuffers(1, &m_Colour);
     }
 
+    if (flags & VBO_TANGENT)
+    {
+        glGenBuffers(1, &m_Tangent);
+    }
+
+    if (flags & VBO_BITANGENT)
+    {
+        glGenBuffers(1, &m_Bitangent);
+    }
+
     if (flags & VBO_INDEX)
     {
         glGenBuffers(1, &m_Index);
@@ -75,30 +87,13 @@ VertexBuffer::VertexBuffer(GeometryType type, unsigned int flags)
 
 VertexBuffer::~VertexBuffer()
 {
-    if (m_Position != -1)
-    {
-        glDeleteBuffers(1, &m_Position);
-    }
-
-    if (m_UV != -1)
-    {
-        glDeleteBuffers(1, &m_UV);
-    }
-
-    if (m_Normal != -1)
-    {
-        glDeleteBuffers(1, &m_Normal);
-    }
-
-    if (m_Colour != -1)
-    {
-        glDeleteBuffers(1, &m_Colour);
-    }
-
-    if (m_Index != -1)
-    {
-        glDeleteBuffers(1, &m_Index);
-    }
+    glDeleteBuffers(1, &m_Position);
+    glDeleteBuffers(1, &m_UV);
+    glDeleteBuffers(1, &m_Normal);
+    glDeleteBuffers(1, &m_Colour);
+    glDeleteBuffers(1, &m_Tangent);
+    glDeleteBuffers(1, &m_Bitangent);
+    glDeleteBuffers(1, &m_Index);
 
     glDeleteVertexArrays(1, &m_VAO);
 }
@@ -188,12 +183,23 @@ void VertexBuffer::CopyUVs(const UVData& data, size_t count)
 
 void VertexBuffer::CopyNormals(const NormalData& data)
 {
-    CopyData(&data[0][0], data.size() * 3, VBO_NORMAL);
+    SDL_assert(m_Flags & VBO_NORMAL);
+    glBindBuffer(GL_ARRAY_BUFFER, m_Normal);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * data.size(), data.data(), GL_DYNAMIC_DRAW);
 }
 
-void VertexBuffer::CopyNormals(const NormalData& data, size_t count)
+void VertexBuffer::CopyTangents(const TangentData& data)
 {
-    CopyData(&data[0][0], count * 3, VBO_NORMAL);
+    SDL_assert(m_Flags & VBO_TANGENT);
+    glBindBuffer(GL_ARRAY_BUFFER, m_Tangent);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * data.size(), data.data(), GL_DYNAMIC_DRAW);
+}
+
+void VertexBuffer::CopyBitangents(const BitangentData& data)
+{
+    SDL_assert(m_Flags & VBO_BITANGENT);
+    glBindBuffer(GL_ARRAY_BUFFER, m_Bitangent);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * data.size(), data.data(), GL_DYNAMIC_DRAW);
 }
 
 void VertexBuffer::CopyColours(const ColourData& data)
@@ -227,11 +233,6 @@ void VertexBuffer::CopyData(const float* pData, size_t size, unsigned int destin
     {
         SDL_assert(m_Flags & VBO_UV);
         glBindBuffer(GL_ARRAY_BUFFER, m_UV);
-    }
-    else if (destination == VBO_NORMAL)
-    {
-        SDL_assert(m_Flags & VBO_NORMAL);
-        glBindBuffer(GL_ARRAY_BUFFER, m_Normal);
     }
     else if (destination == VBO_COLOUR)
     {
@@ -282,44 +283,59 @@ void VertexBuffer::Draw(size_t startVertex, size_t numVertices)
         numVertices = maxVertices;
     }
 
+    static const int sAttribIndexPosition = 0;
+    static const int sAttribIndexUV = 1;
+    static const int sAttribIndexNormal = 2;
+    static const int sAttribIndexColor = 3;
+    static const int sAttribIndexTangent = 4;
+    static const int sAttribIndexBitangent = 5;
+
     if (m_Flags & VBO_POSITION)
     {
-        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(sAttribIndexPosition);
         glBindBuffer(GL_ARRAY_BUFFER, m_Position);
-        glVertexAttribPointer(0,                         // attribute 0
-                              (m_Flags & VB_2D) ? 2 : 3, // size
-                              GL_FLOAT,
-                              GL_FALSE, // normalised?
-                              0,
-                              (void*)0 // array buffer offset
-        );
+        glVertexAttribPointer(sAttribIndexPosition, (m_Flags & VB_2D) ? 2 : 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
     if (m_Flags & VBO_UV)
     {
-        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(sAttribIndexUV);
         glBindBuffer(GL_ARRAY_BUFFER, m_UV);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glVertexAttribPointer(sAttribIndexUV, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
     if (m_Flags & VBO_NORMAL)
     {
-        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(sAttribIndexNormal);
         glBindBuffer(GL_ARRAY_BUFFER, m_Normal);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glVertexAttribPointer(sAttribIndexNormal, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
     }
 
     if (m_Flags & VBO_COLOUR)
     {
-        glEnableVertexAttribArray(3);
+        glEnableVertexAttribArray(sAttribIndexColor);
         glBindBuffer(GL_ARRAY_BUFFER, m_Colour);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glVertexAttribPointer(sAttribIndexColor, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
+    if (m_Flags & VBO_TANGENT)
+    {
+        glEnableVertexAttribArray(sAttribIndexTangent);
+        glBindBuffer(GL_ARRAY_BUFFER, m_Tangent);
+        glVertexAttribPointer(sAttribIndexTangent, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
+    }
+
+    if (m_Flags & VBO_BITANGENT)
+    {
+        glEnableVertexAttribArray(sAttribIndexBitangent);
+        glBindBuffer(GL_ARRAY_BUFFER, m_Bitangent);
+        glVertexAttribPointer(sAttribIndexBitangent, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
     }
 
     if (m_Flags & VBO_INDEX)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Index);
-        glDrawElements(m_Mode, static_cast<GLsizei>(numVertices), GL_UNSIGNED_INT, 0);
+        glDrawElements(m_Mode, static_cast<GLsizei>(numVertices), GL_UNSIGNED_INT, nullptr);
     }
     else
     {
@@ -328,22 +344,32 @@ void VertexBuffer::Draw(size_t startVertex, size_t numVertices)
 
     if (m_Flags & VBO_POSITION)
     {
-        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(sAttribIndexPosition);
     }
 
     if (m_Flags & VBO_UV)
     {
-        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(sAttribIndexUV);
     }
 
     if (m_Flags & VBO_NORMAL)
     {
-        glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(sAttribIndexNormal);
     }
 
     if (m_Flags & VBO_COLOUR)
     {
-        glDisableVertexAttribArray(3);
+        glDisableVertexAttribArray(sAttribIndexColor);
+    }
+
+    if (m_Flags & VBO_TANGENT)
+    {
+        glDisableVertexAttribArray(sAttribIndexTangent);
+    }
+
+    if (m_Flags & VBO_BITANGENT)
+    {
+        glDisableVertexAttribArray(sAttribIndexBitangent);
     }
 
     FrameWork::GetRenderSystem()->IncreaseDrawCallCount();

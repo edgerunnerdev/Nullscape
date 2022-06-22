@@ -391,10 +391,18 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
     }
 
     mesh.normals.reserve(mesh.header.vertices);
+    mesh.tangents.reserve(mesh.header.vertices);
+    mesh.bitangents.reserve(mesh.header.vertices);
     for (uint32_t i = 0; i < mesh.header.vertices; ++i)
     {
         aiVector3D normal = rotX * pImportedMesh->mNormals[i];
         mesh.normals.push_back({normal.x, normal.y, normal.z});
+        
+        aiVector3D tangent = rotX * pImportedMesh->mTangents[i];
+        mesh.tangents.push_back({tangent.x, tangent.y, tangent.z});
+
+        aiVector3D bitangent = rotX * pImportedMesh->mBitangents[i];
+        mesh.bitangents.push_back({bitangent.x, bitangent.y, bitangent.z});
     }
 }
 
