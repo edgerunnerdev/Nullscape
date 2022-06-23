@@ -529,9 +529,11 @@ TaskStatus RenderSystem::Update(float delta)
 
     for (auto& pViewport : m_Viewports)
     {
+        m_pCurrentViewport = pViewport;
         pViewport->Render();
     }
 
+    m_pCurrentViewport = m_pPrimaryViewport;
     RenderGlow();
 
     SetRenderTarget(RenderTargetId::None);
@@ -544,6 +546,7 @@ TaskStatus RenderSystem::Update(float delta)
     DrawDebugWindow();
     ImGui::Render();
     ImGuiImpl::Render();
+    m_pCurrentViewport = nullptr;
 
     FrameWork::GetWindow()->Present();
 

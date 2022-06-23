@@ -3,28 +3,28 @@
   "compiler": "ModelComp",
   "materials": [
     {
-      "name": "Material",
-      "shader": "pbr",
+      "name": "DefaultMaterial",
+      "shader": "normaltest",
       "bindings": [
         {
           "name": "ColorSampler",
-          "filename": "model_Material_BaseColor.png"
+          "filename": "model_DefaultMaterial_BaseColor.png"
         },
         {
           "name": "HeightSampler",
-          "filename": "model_Material_Height.png"
+          "filename": "model_DefaultMaterial_Height.png"
         },
         {
           "name": "MetallicSampler",
-          "filename": "model_Material_Metallic.png"
+          "filename": "model_DefaultMaterial_Metallic.png"
         },
         {
           "name": "NormalSampler",
-          "filename": "model_Material_Normal.png"
+          "filename": "model_DefaultMaterial_Normal.png"
         },
         {
           "name": "RoughnessSampler",
-          "filename": "model_Material_Roughness.png"
+          "filename": "model_DefaultMaterial_Roughness.png"
         }
       ]
     }

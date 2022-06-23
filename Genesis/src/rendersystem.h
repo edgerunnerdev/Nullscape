@@ -90,6 +90,7 @@ public:
     void AddViewport(const ViewportSharedPtr& pViewport);
     void RemoveViewport(const ViewportSharedPtr& pViewport);
     Viewport* GetPrimaryViewport() const;
+    Viewport* GetCurrentViewport() const;
 
 private:
     void CreateRenderTargets();
@@ -157,6 +158,7 @@ private:
 
     std::list<ViewportSharedPtr> m_Viewports;
     ViewportSharedPtr m_pPrimaryViewport;
+    ViewportSharedPtr m_pCurrentViewport;
 };
 
 inline ShaderCache* RenderSystem::GetShaderCache() const
@@ -227,6 +229,11 @@ inline bool RenderSystem::IsPostProcessEffectEnabled(PostProcessEffect effect)
 inline Viewport* RenderSystem::GetPrimaryViewport() const 
 {
     return m_pPrimaryViewport.get();
+}
+
+inline Viewport* RenderSystem::GetCurrentViewport() const 
+{
+    return m_pCurrentViewport.get();
 }
 
 ///////////////////////////////////////////////////////////////////////////

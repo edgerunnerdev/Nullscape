@@ -33,6 +33,11 @@
 namespace Genesis
 {
 
+namespace Render
+{
+class DebugRender;
+}
+
 namespace Serialization
 {
 struct Mesh;
@@ -62,6 +67,7 @@ public:
 
     void Render(const glm::mat4& modelTransform, const Materials& materials);
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial);
+    void DebugRender(Render::DebugRender* pDebugRender);
 
     size_t GetVertexCount() const;
     size_t GetTriangleCount() const;
@@ -72,6 +78,11 @@ private:
     uint32_t m_NumTriangles;
     uint32_t m_MaterialIndex;
     VertexBufferSharedPtr m_pVertexBuffer;
+
+    std::vector<glm::vec3> m_DebugPositions;
+    std::vector<glm::vec3> m_DebugNormals;
+    std::vector<glm::vec3> m_DebugTangents;
+    std::vector<glm::vec3> m_DebugBitangents;
 };
 
 
@@ -88,6 +99,7 @@ public:
     virtual bool Load() override;
 
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr);
+    void DebugRender(Render::DebugRender* pDebugRender);
     bool GetDummy(const std::string& name, glm::vec3* pPosition) const;
     Materials& GetMaterials();
 

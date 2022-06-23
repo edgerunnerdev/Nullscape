@@ -17,34 +17,28 @@
 
 #pragma once
 
-#include <filesystem>
-
-#include "scene/sceneobject.h"
+#include <glm/vec3.hpp>
 
 namespace Genesis
 {
 
-namespace Render
-{
-class DebugRender;
-}
-
-class ResourceModel;
-
-class ModelViewerObject : public SceneObject
+class Light
 {
 public:
-    ModelViewerObject(const std::filesystem::path& path);
-    virtual ~ModelViewerObject() override;
-    virtual void Update(float delta) override;
-    virtual void Render() override;
-    void DebugRender(Render::DebugRender* pDebugRender);
+    Light();
+    Light(const glm::vec3& position, const glm::vec3& color);
+    
+    void SetPosition(const glm::vec3& position);
+    const glm::vec3& GetPosition() const;
 
-    size_t GetVertexCount() const;
-    size_t GetTriangleCount() const;   
+    void SetColor(const glm::vec3& color);
+    const glm::vec3& GetColor() const;
+
+    void DebugDraw();
 
 private:
-    ResourceModel* m_pModel;
+    glm::vec3 m_Position;
+    glm::vec3 m_Color;
 };
 
 } // namespace Genesis

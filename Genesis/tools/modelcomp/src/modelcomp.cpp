@@ -363,6 +363,7 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
 {
     aiMatrix4x4 rotX;
     aiMatrix4x4::RotationX(-AI_MATH_HALF_PI, rotX);
+    //aiMatrix4x4::RotationX(0.0f, rotX);
 
     mesh.vertices.reserve(mesh.header.vertices);
     for (uint32_t i = 0; i < mesh.header.vertices; ++i)

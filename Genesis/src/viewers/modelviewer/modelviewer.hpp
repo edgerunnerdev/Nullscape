@@ -41,7 +41,9 @@ public:
 private:
     void LoadModel(const std::filesystem::path& path);
     void UpdateCamera(bool acceptInput);
+    void DrawDebugLights();
     void ShowStats();
+    void ShowLights();
 
     bool m_IsOpen;
     ViewportSharedPtr m_pViewport;

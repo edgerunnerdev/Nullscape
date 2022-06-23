@@ -78,7 +78,8 @@ private:
     ShaderUniform* m_pViewInverseUniform;
     ShaderUniform* m_pTimeUniform;
     ShaderUniform* m_pResolutionUniform;
-    ShaderUniform* m_pCameraPositionUniform;
+    ShaderUniform* m_pLightPositionUniform;
+    ShaderUniform* m_pLightColorUniform;
 
     ShaderUniforms m_Uniforms;
 };

@@ -24,7 +24,7 @@ void main()
 	gl_Position = k_worldViewProj * vec4( position, 1 );
 	vout.UV = UV;
 	vout.position = vec4( k_world * vec4( position, 1 ) ).xyz;
-	vout.tangentBasis = mat3(k_world) * mat3(tangent, bitangent, normal);
+	vout.tangentBasis = mat3(k_world) * mat3(bitangent, tangent, normal);
 	vec4 po = vec4( gl_Position.xyz , 1 );
 	vec3 pw = vec4( k_worldInverseTranspose * po ).xyz;
 	vout.viewDir = normalize( vec3( k_viewInverse[0].w, k_viewInverse[1].w, k_viewInverse[2].w ) - pw );

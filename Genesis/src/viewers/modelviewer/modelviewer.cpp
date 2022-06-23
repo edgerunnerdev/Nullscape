@@ -27,6 +27,7 @@
 #include "render/rendertarget.h"
 #include "render/viewport.hpp"
 #include "rendersystem.h"
+#include "scene/light.h"
 #include "scene/scene.h"
 
 namespace Genesis
@@ -51,6 +52,9 @@ ModelViewer::ModelViewer()
     m_pBackgroundLayer = pScene->AddLayer(1, true);
     m_pMainLayer = pScene->AddLayer(2);
 
+    Light& light = pScene->GetLight();
+    light.SetPosition({100.0f, 100.0f, 100.0f});
+
     ModelViewerBackground* pBackground = new ModelViewerBackground(sViewportWidth, sViewportHeight);
     m_pBackgroundLayer->AddSceneObject(pBackground, true);
 
@@ -58,6 +62,8 @@ ModelViewer::ModelViewer()
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 
     m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, ".gmdl");
+
+    LoadModel("data/models/test/cube/exported/model.gmdl");
 }
 
 ModelViewer::~ModelViewer()
@@ -81,10 +87,14 @@ void ModelViewer::UpdateDebugUI()
                      ImVec4(1, 1, 1, 1),                                                                                                  // Tint
                      ImVec4(1, 1, 1, 1)                                                                                                   // Border
         );
+        
+        //m_pModel->DebugRender(m_pDebugRender);
 
         m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        DrawDebugLights();
 
         UpdateCamera(ImGui::IsItemHovered());
 
@@ -92,8 +102,8 @@ void ModelViewer::UpdateDebugUI()
 
         ImGui::BeginGroup();
         ShowStats();
+        ShowLights();
 
-        ImGui::Text("Position: %.2f %.2f %.2f", m_Position.x, m_Position.y, m_Position.z);
         ImGui::EndGroup();
 
         ImGui::End();
@@ -103,6 +113,12 @@ void ModelViewer::UpdateDebugUI()
             LoadModel(m_pFileViewer->GetSelected());
         }
     }
+}
+
+void ModelViewer::DrawDebugLights() 
+{
+    const Light& light = m_pViewport->GetScene()->GetLight();
+    m_pDebugRender->DrawLine(light.GetPosition(), glm::vec3(0.0f), light.GetColor());
 }
 
 void ModelViewer::UpdateCamera(bool acceptInput) 
@@ -170,6 +186,14 @@ void ModelViewer::ShowStats()
 
         size_t vertexCount = m_pModel ? m_pModel->GetVertexCount() : 0;
         ImGui::Text("Vertices: %u", vertexCount);
+    }
+}
+
+void ModelViewer::ShowLights() 
+{
+    if (ImGui::CollapsingHeader("Lights"))
+    {
+        m_pViewport->GetScene()->GetLight().DebugDraw();
     }
 }
 

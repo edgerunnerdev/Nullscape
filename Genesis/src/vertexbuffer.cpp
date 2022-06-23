@@ -308,7 +308,7 @@ void VertexBuffer::Draw(size_t startVertex, size_t numVertices)
     {
         glEnableVertexAttribArray(sAttribIndexNormal);
         glBindBuffer(GL_ARRAY_BUFFER, m_Normal);
-        glVertexAttribPointer(sAttribIndexNormal, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
+        glVertexAttribPointer(sAttribIndexNormal, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
     if (m_Flags & VBO_COLOUR)
@@ -322,14 +322,14 @@ void VertexBuffer::Draw(size_t startVertex, size_t numVertices)
     {
         glEnableVertexAttribArray(sAttribIndexTangent);
         glBindBuffer(GL_ARRAY_BUFFER, m_Tangent);
-        glVertexAttribPointer(sAttribIndexTangent, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
+        glVertexAttribPointer(sAttribIndexTangent, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
     if (m_Flags & VBO_BITANGENT)
     {
         glEnableVertexAttribArray(sAttribIndexBitangent);
         glBindBuffer(GL_ARRAY_BUFFER, m_Bitangent);
-        glVertexAttribPointer(sAttribIndexBitangent, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
+        glVertexAttribPointer(sAttribIndexBitangent, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
     if (m_Flags & VBO_INDEX)

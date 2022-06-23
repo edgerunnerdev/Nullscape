@@ -17,10 +17,11 @@
 
 #pragma once
 
-#include "coredefines.h"
-#include "rendersystem.fwd.h"
 #include "../taskmanager.h"
+#include "coredefines.h"
 #include "layer.h"
+#include "rendersystem.fwd.h"
+#include "scene/light.h"
 
 #include <SDL.h>
 #include <glm/vec3.hpp>
@@ -47,6 +48,8 @@ public:
     void SetLayerMask(uint32_t mask); // Allows only layers which match this mask to be rendered
     uint32_t GetLayerMask() const;
     Camera* GetCamera() const;
+    const Light& GetLight() const;
+    Light& GetLight();
 
 private:
     using LayerList = std::list<LayerSharedPtr>;
@@ -55,6 +58,7 @@ private:
     LayerList mLayersToDelete;
     Camera* mCamera;
     uint32_t mMask;
+    Light m_Light;
 };
 GENESIS_DECLARE_SMART_PTR(Scene);
 
@@ -71,6 +75,15 @@ inline void Scene::SetLayerMask(uint32_t mask)
 inline uint32_t Scene::GetLayerMask() const
 {
     return mMask;
+}
+
+inline const Light& Scene::GetLight() const
+{
+    return m_Light;
+}
+inline Light& Scene::GetLight()
+{
+    return m_Light;
 }
 
 //---------------------------------------------------------------

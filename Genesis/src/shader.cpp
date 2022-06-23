@@ -17,6 +17,9 @@
 
 #include "shader.h"
 
+#include "render/viewport.hpp"
+#include "scene/light.h"
+#include "scene/scene.h"
 #include "configuration.h"
 #include "genesis.h"
 #include "memory.h"
@@ -40,7 +43,8 @@ Shader::Shader(const std::string& programName, GLuint programHandle)
     , m_pViewInverseUniform(nullptr)
     , m_pTimeUniform(nullptr)
     , m_pResolutionUniform(nullptr)
-    , m_pCameraPositionUniform(nullptr)
+    , m_pLightPositionUniform(nullptr)
+    , m_pLightColorUniform(nullptr)
 {
     RegisterCoreUniforms();
 }
@@ -64,7 +68,8 @@ void Shader::RegisterCoreUniforms()
     m_pViewInverseUniform = RegisterUniform("k_viewInverse", ShaderUniformType::FloatMatrix44);
     m_pTimeUniform = RegisterUniform("k_time", ShaderUniformType::Float);
     m_pResolutionUniform = RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
-    m_pCameraPositionUniform = RegisterUniform("k_cameraPosition", ShaderUniformType::FloatVector3);
+    m_pLightPositionUniform = RegisterUniform("LightPosition", ShaderUniformType::FloatVector3);
+    m_pLightColorUniform = RegisterUniform("LightColor", ShaderUniformType::FloatVector3);
 }
 
 ShaderUniform* Shader::RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride /*= true */)
@@ -108,6 +113,8 @@ void Shader::Use(const glm::mat4& modelMatrix, ShaderUniformInstances* pShaderUn
 void Shader::UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstances* pShaderUniformInstances)
 {
     RenderSystem* renderSystem = FrameWork::GetRenderSystem();
+    Viewport* pViewport = renderSystem->GetCurrentViewport();
+    SDL_assert(pViewport != nullptr);
 
     if (m_pModelViewProjectionUniform != nullptr)
     {
@@ -148,12 +155,19 @@ void Shader::UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstanc
 
     if (m_pResolutionUniform != nullptr)
     {
-        m_pResolutionUniform->Set(glm::vec2((float)Configuration::GetScreenWidth(), (float)Configuration::GetScreenHeight()));
+        m_pResolutionUniform->Set(glm::vec2(static_cast<float>(pViewport->GetWidth()), static_cast<float>(pViewport->GetHeight())));
     }
 
-    if (m_pCameraPositionUniform != nullptr)
+    if (m_pLightPositionUniform != nullptr)
     {
-        
+        const Light& light = pViewport->GetScene()->GetLight();
+        m_pLightPositionUniform->Set(light.GetPosition());
+    }
+
+    if (m_pLightColorUniform != nullptr)
+    {
+        const Light& light = pViewport->GetScene()->GetLight();
+        m_pLightColorUniform->Set(light.GetColor());
     }
 
     if (pShaderUniformInstances != nullptr)

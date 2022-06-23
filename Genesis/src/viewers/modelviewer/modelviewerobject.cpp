@@ -47,6 +47,14 @@ void ModelViewerObject::Render()
     }
 }
 
+void ModelViewerObject::DebugRender(Render::DebugRender* pDebugRender) 
+{
+    if (m_pModel != nullptr)
+    {
+        m_pModel->DebugRender(pDebugRender);
+    }
+}
+
 size_t ModelViewerObject::GetVertexCount() const 
 { 
     return m_pModel ? m_pModel->GetVertexCount() : 0; 

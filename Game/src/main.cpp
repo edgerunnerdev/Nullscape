@@ -1412,16 +1412,16 @@ void Game::LoaderThreadMain()
 	const GLuint64 timeout = 5000000000; // 5 second timeout
 	while( true )
 	{
-		GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
-		if ( result == GL_WAIT_FAILED )
-		{
-			Genesis::Core::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
-			exit( -1 );
-		}
-		else if ( result != GL_TIMEOUT_EXPIRED )
-		{
-			break;
-		}
+		//GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
+		//if ( result == GL_WAIT_FAILED )
+		//{
+		//	Genesis::Core::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
+		//	exit( -1 );
+		//}
+		//else if ( result != GL_TIMEOUT_EXPIRED )
+		//{
+		//	break;
+		//}
 	}
 
 	Genesis::Core::Log::Info() << "All resources loaded.";

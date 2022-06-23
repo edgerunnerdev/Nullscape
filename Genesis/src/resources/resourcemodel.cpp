@@ -29,6 +29,7 @@
 #include "../rendersystem.h"
 #include "../shadercache.h"
 #include "../shaderuniform.h"
+#include "render/debugrender.h"
 #include "modelserialization.hpp"
 
 #include <algorithm>
@@ -82,6 +83,11 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
         normals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
         tangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
         bitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
+
+        m_DebugPositions.emplace_back(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z);
+        m_DebugNormals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
+        m_DebugTangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
+        m_DebugBitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
     }
 
     m_pVertexBuffer = std::make_shared<VertexBuffer>(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_TANGENT | VBO_BITANGENT | VBO_INDEX);
@@ -103,6 +109,17 @@ void Mesh::Render(const glm::mat4& modelTransform, const Materials& materials)
     Material* pMaterial = materials[m_MaterialIndex].get();
     pMaterial->GetShader()->Use(modelTransform, &pMaterial->GetShaderUniformInstances());
     m_pVertexBuffer->Draw();
+}
+
+void Mesh::DebugRender(Render::DebugRender* pDebugRender) 
+{
+    size_t c = m_DebugPositions.size();
+    for (size_t i = 0; i < c; ++i)
+    {
+        pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugNormals[i], glm::vec3(1, 0, 0));
+        //pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugTangents[i], glm::vec3(0, 1, 0));
+        //pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugBitangents[i], glm::vec3(0, 0, 1));
+    }
 }
 
 void Mesh::Render(const glm::mat4& modelTransform, Material* pOverrideMaterial)
@@ -312,6 +329,14 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
         {
             mesh.Render(modelTransform, pOverrideMaterial);
         }
+    }
+}
+
+void ResourceModel::DebugRender(Render::DebugRender* pDebugRender) 
+{
+    for (auto& mesh : m_Meshes)
+    {
+        mesh.DebugRender(pDebugRender);
     }
 }
 
