@@ -17,6 +17,7 @@
 
 #include "viewers/modelviewer/modelviewer.hpp"
 
+#include <sstream>
 #include "viewers/fileviewer/fileviewer.hpp"
 #include "viewers/modelviewer/modelviewerbackground.hpp"
 #include "viewers/modelviewer/modelviewerobject.hpp"
@@ -52,8 +53,10 @@ ModelViewer::ModelViewer()
     m_pBackgroundLayer = pScene->AddLayer(1, true);
     m_pMainLayer = pScene->AddLayer(2);
 
-    Light& light = pScene->GetLight();
-    light.SetPosition({100.0f, 100.0f, 100.0f});
+    LightArray& lights = pScene->GetLights();
+    lights[0].SetPosition({100.0f, 100.0f, 100.0f});
+    lights[1].SetPosition({100.0f, 0.0f, 0.0f});
+    lights[2].SetPosition({-100.0f, 100.0f, -100.0f});
 
     ModelViewerBackground* pBackground = new ModelViewerBackground(sViewportWidth, sViewportHeight);
     m_pBackgroundLayer->AddSceneObject(pBackground, true);
@@ -117,8 +120,10 @@ void ModelViewer::UpdateDebugUI()
 
 void ModelViewer::DrawDebugLights() 
 {
-    const Light& light = m_pViewport->GetScene()->GetLight();
-    m_pDebugRender->DrawLine(light.GetPosition(), glm::vec3(0.0f), light.GetColor());
+    for (const Light& light : m_pViewport->GetScene()->GetLights())
+    {
+        m_pDebugRender->DrawLine(light.GetPosition(), glm::vec3(0.0f), light.GetColor());
+    }
 }
 
 void ModelViewer::UpdateCamera(bool acceptInput) 
@@ -179,7 +184,7 @@ void ModelViewer::LoadModel(const std::filesystem::path& path)
 
 void ModelViewer::ShowStats() 
 {
-    if (ImGui::CollapsingHeader("Statistics"))
+    if (ImGui::CollapsingHeader("Statistics", ImGuiTreeNodeFlags_DefaultOpen))
     {
         size_t triangleCount = m_pModel ? m_pModel->GetTriangleCount() : 0;
         ImGui::Text("Triangles: %u", triangleCount);
@@ -191,9 +196,19 @@ void ModelViewer::ShowStats()
 
 void ModelViewer::ShowLights() 
 {
-    if (ImGui::CollapsingHeader("Lights"))
+    if (ImGui::CollapsingHeader("Lights", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        m_pViewport->GetScene()->GetLight().DebugDraw();
+        LightArray& lights = m_pViewport->GetScene()->GetLights();
+        size_t numLights = lights.size();
+        for (size_t i = 0; i < numLights; ++i)
+        {
+            std::stringstream ss;
+            ss << "Light #" << i + 1;
+            if (ImGui::CollapsingHeader(ss.str().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                lights[i].DebugDraw();
+            }
+        }
     }
 }
 

@@ -23,6 +23,7 @@
 #include "rendersystem.fwd.h"
 #include "scene/light.h"
 
+#include <array>
 #include <SDL.h>
 #include <glm/vec3.hpp>
 #include <list>
@@ -36,6 +37,8 @@ class Camera;
 // Scene
 //---------------------------------------------------------------
 
+using LightArray = std::array<Light, 3>;
+
 class Scene : public Task
 {
 public:
@@ -48,8 +51,8 @@ public:
     void SetLayerMask(uint32_t mask); // Allows only layers which match this mask to be rendered
     uint32_t GetLayerMask() const;
     Camera* GetCamera() const;
-    const Light& GetLight() const;
-    Light& GetLight();
+    const LightArray& GetLights() const;
+    LightArray& GetLights();
 
 private:
     using LayerList = std::list<LayerSharedPtr>;
@@ -58,7 +61,7 @@ private:
     LayerList mLayersToDelete;
     Camera* mCamera;
     uint32_t mMask;
-    Light m_Light;
+    LightArray m_Lights;
 };
 GENESIS_DECLARE_SMART_PTR(Scene);
 
@@ -77,13 +80,13 @@ inline uint32_t Scene::GetLayerMask() const
     return mMask;
 }
 
-inline const Light& Scene::GetLight() const
+inline const LightArray& Scene::GetLights() const
 {
-    return m_Light;
+    return m_Lights;
 }
-inline Light& Scene::GetLight()
+inline LightArray& Scene::GetLights()
 {
-    return m_Light;
+    return m_Lights;
 }
 
 //---------------------------------------------------------------

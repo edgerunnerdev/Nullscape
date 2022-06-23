@@ -160,14 +160,14 @@ void Shader::UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstanc
 
     if (m_pLightPositionUniform != nullptr)
     {
-        const Light& light = pViewport->GetScene()->GetLight();
-        m_pLightPositionUniform->Set(light.GetPosition());
+        const LightArray& lights = pViewport->GetScene()->GetLights();
+        m_pLightPositionUniform->Set(lights[0].GetPosition());
     }
 
     if (m_pLightColorUniform != nullptr)
     {
-        const Light& light = pViewport->GetScene()->GetLight();
-        m_pLightColorUniform->Set(light.GetColor());
+        const LightArray& lights = pViewport->GetScene()->GetLights();
+        m_pLightColorUniform->Set(lights[0].GetColor());
     }
 
     if (pShaderUniformInstances != nullptr)

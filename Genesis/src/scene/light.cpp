@@ -38,7 +38,7 @@ Light::Light(const glm::vec3& position, const glm::vec3& color)
 
 void Light::SetPosition(const glm::vec3& position)
 {
-    m_Position = m_Position;
+    m_Position = position;
 }
 
 const glm::vec3& Light::GetPosition() const
