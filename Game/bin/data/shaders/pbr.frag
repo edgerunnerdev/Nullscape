@@ -127,7 +127,7 @@ void main()
 	vec3 ambientLighting;
 	{
 		// Sample diffuse irradiance at normal direction.
-		vec3 irradiance = vec3(0.25); //texture(irradianceTexture, N).rgb;
+		vec3 irradiance = vec3(0.1, 0.3, 0.6); //texture(irradianceTexture, N).rgb;
 
 		// Calculate Fresnel term for ambient lighting.
 		// Since we use pre-filtered cubemap(s) and irradiance is coming from many directions
