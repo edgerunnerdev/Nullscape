@@ -3,10 +3,10 @@
 enum class ResourceType
 {
     Texture,
-    Texture3D,
     Font,
     Sound,
     Video,
+    Shader,
 
     Unknown
 };
