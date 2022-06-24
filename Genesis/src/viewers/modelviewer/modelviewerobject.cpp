@@ -17,7 +17,6 @@
 
 #include "viewers/modelviewer/modelviewerobject.hpp"
 
-#include "resources/resourcemodel.h"
 #include "resourcemanager.h"
 #include "genesis.h"
 #include "rendersystem.h"
@@ -47,11 +46,11 @@ void ModelViewerObject::Render()
     }
 }
 
-void ModelViewerObject::DebugRender(Render::DebugRender* pDebugRender) 
+void ModelViewerObject::DebugRender(Render::DebugRender* pDebugRender, ResourceModel::DebugRenderFlags flags) 
 {
     if (m_pModel != nullptr)
     {
-        m_pModel->DebugRender(pDebugRender);
+        m_pModel->DebugRender(pDebugRender, flags);
     }
 }
 

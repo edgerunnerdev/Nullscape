@@ -68,11 +68,11 @@ void Shader::RegisterCoreUniforms()
     m_pViewInverseUniform = RegisterUniform("k_viewInverse", ShaderUniformType::FloatMatrix44);
     m_pTimeUniform = RegisterUniform("k_time", ShaderUniformType::Float);
     m_pResolutionUniform = RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
-    m_pLightPositionUniform = RegisterUniform("LightPosition", ShaderUniformType::FloatVector3);
-    m_pLightColorUniform = RegisterUniform("LightColor", ShaderUniformType::FloatVector3);
+    m_pLightPositionUniform = RegisterUniform("LightPosition", ShaderUniformType::FloatVector3, false, 3);
+    m_pLightColorUniform = RegisterUniform("LightColor", ShaderUniformType::FloatVector3, false, 3);
 }
 
-ShaderUniform* Shader::RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride /*= true */)
+ShaderUniform* Shader::RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride /* = true */, size_t count /* = 1*/)
 {
     GLuint handle = glGetUniformLocation(m_ProgramHandle, pUniformName);
     for (auto& pUniform : m_Uniforms)
@@ -91,7 +91,7 @@ ShaderUniform* Shader::RegisterUniform(const char* pUniformName, ShaderUniformTy
     ShaderUniform* pUniform = nullptr;
     if (handle != -1)
     {
-        pUniform = new ShaderUniform(handle, type, allowInstancingOverride);
+        pUniform = new ShaderUniform(handle, type, allowInstancingOverride, count);
         m_Uniforms.push_back(pUniform);
     }
     return pUniform;
@@ -161,13 +161,15 @@ void Shader::UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstanc
     if (m_pLightPositionUniform != nullptr)
     {
         const LightArray& lights = pViewport->GetScene()->GetLights();
-        m_pLightPositionUniform->Set(lights[0].GetPosition());
+        std::vector<glm::vec3> positions = { lights[0].GetPosition(), lights[1].GetPosition(), lights[2].GetPosition() };
+        m_pLightPositionUniform->Set(positions);
     }
 
     if (m_pLightColorUniform != nullptr)
     {
         const LightArray& lights = pViewport->GetScene()->GetLights();
-        m_pLightColorUniform->Set(lights[0].GetColor());
+         std::vector<glm::vec3> colors = { lights[0].GetColor(), lights[1].GetColor(), lights[2].GetColor() };
+        m_pLightColorUniform->Set(colors);
     }
 
     if (pShaderUniformInstances != nullptr)

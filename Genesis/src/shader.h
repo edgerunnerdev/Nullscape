@@ -60,7 +60,7 @@ public:
     void Use(ShaderUniformInstances* pShaderUniformInstances = nullptr);
     void Use(const glm::mat4& modelTransform, ShaderUniformInstances* pShaderUniformInstances = nullptr);
 
-    ShaderUniform* RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride = true);
+    ShaderUniform* RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride = true, size_t count = 1);
 
 private:
     void RegisterCoreUniforms();

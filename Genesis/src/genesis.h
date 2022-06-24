@@ -17,10 +17,18 @@
 
 #pragma once
 
-#include "SDL.h"
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <SDL.h>
+#include <magic_enum.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
 
 #include <string>
 #include <vector>
+
+using namespace magic_enum;
+using namespace magic_enum::bitwise_operators;
 
 namespace Genesis
 {

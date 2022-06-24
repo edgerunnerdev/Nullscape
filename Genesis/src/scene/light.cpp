@@ -58,9 +58,13 @@ const glm::vec3& Light::GetColor() const
 
 void Light::DebugDraw() 
 {
-    float pos[3] = { m_Position[0], m_Position[1], m_Position[2] };
+    float pos[3] = { m_Position.x, m_Position.y, m_Position.z };
     ImGui::InputFloat3("Position", pos);
     m_Position = glm::vec3(pos[0], pos[1], pos[2]);
+
+    float color[3] = { m_Color.r, m_Color.g, m_Color.b };
+    ImGui::ColorEdit3("Color", color);
+    m_Color = glm::vec3(color[0], color[1], color[2]);
 }
 
 } // namespace Genesis

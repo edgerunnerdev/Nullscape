@@ -50,7 +50,6 @@ void FileViewer::ProcessNode(Node& node)
 
 void FileViewer::Render()
 {
-    ImGui::BeginChild("FileViewer", ImVec2(300, 800), false);
     m_Selected.clear();
 
     if (ImGui::CollapsingHeader("Files", ImGuiTreeNodeFlags_DefaultOpen))
@@ -60,8 +59,6 @@ void FileViewer::Render()
             RenderNode(node);
         }
     }
-
-    ImGui::EndChild();
 }
 
 void FileViewer::RenderNode(const Node& node)

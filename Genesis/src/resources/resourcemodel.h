@@ -54,6 +54,61 @@ using ResourceImages = std::vector<ResourceImage*>;
 
 typedef std::map<std::string, glm::vec3> DummyMap;
 
+GENESIS_DECLARE_SMART_PTR(Mesh);
+
+
+///////////////////////////////////////////////////////
+// ResourceModel
+///////////////////////////////////////////////////////
+
+class ResourceModel : public ResourceGeneric
+{
+public:
+    enum DebugRenderFlags
+    {
+        None = 0,
+        Normals = 1,
+        Tangents = 2,
+        Bitangents = 4
+    };
+
+    ResourceModel(const Filename& filename);
+    virtual ~ResourceModel();
+    virtual ResourceType GetType() const override;
+    virtual bool Load() override;
+
+    void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr);
+    void DebugRender(Render::DebugRender* pDebugRender, DebugRenderFlags flags);
+    bool GetDummy(const std::string& name, glm::vec3* pPosition) const;
+    Materials& GetMaterials();
+
+    size_t GetVertexCount() const;
+    size_t GetTriangleCount() const;
+
+private:
+    void AddTMFDummy(FILE* fp);
+
+    bool ReadHeader(const Serialization::Model* pModel);
+    bool ReadMaterials(const Serialization::Model* pModel);
+    bool ReadMeshes(const Serialization::Model* pModel);
+
+    using Meshes = std::vector<MeshUniquePtr>;
+
+    Materials m_Materials;
+    Meshes m_Meshes;
+    DummyMap mDummyMap;
+};
+
+inline Materials& ResourceModel::GetMaterials()
+{
+    return m_Materials;
+}
+
+inline ResourceType ResourceModel::GetType() const
+{
+    return ResourceType::Texture;
+}
+
 
 ///////////////////////////////////////////////////////
 // Mesh
@@ -67,7 +122,7 @@ public:
 
     void Render(const glm::mat4& modelTransform, const Materials& materials);
     void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial);
-    void DebugRender(Render::DebugRender* pDebugRender);
+    void DebugRender(Render::DebugRender* pDebugRender, ResourceModel::DebugRenderFlags flags);
 
     size_t GetVertexCount() const;
     size_t GetTriangleCount() const;
@@ -85,48 +140,4 @@ private:
     std::vector<glm::vec3> m_DebugBitangents;
 };
 
-
-///////////////////////////////////////////////////////
-// ResourceModel
-///////////////////////////////////////////////////////
-
-class ResourceModel : public ResourceGeneric
-{
-public:
-    ResourceModel(const Filename& filename);
-    virtual ~ResourceModel();
-    virtual ResourceType GetType() const override;
-    virtual bool Load() override;
-
-    void Render(const glm::mat4& modelTransform, Material* pOverrideMaterial = nullptr);
-    void DebugRender(Render::DebugRender* pDebugRender);
-    bool GetDummy(const std::string& name, glm::vec3* pPosition) const;
-    Materials& GetMaterials();
-
-    size_t GetVertexCount() const;
-    size_t GetTriangleCount() const;
-
-private:
-    void AddTMFDummy(FILE* fp);
-
-    bool ReadHeader(const Serialization::Model* pModel);
-    bool ReadMaterials(const Serialization::Model* pModel);
-    bool ReadMeshes(const Serialization::Model* pModel);
-
-    using Meshes = std::vector<Mesh>;
-
-    Materials m_Materials;
-    Meshes m_Meshes;
-    DummyMap mDummyMap;
-};
-
-inline Materials& ResourceModel::GetMaterials()
-{
-    return m_Materials;
-}
-
-inline ResourceType ResourceModel::GetType() const
-{
-    return ResourceType::Texture;
-}
 } // namespace Genesis

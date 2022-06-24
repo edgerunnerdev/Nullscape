@@ -41,8 +41,11 @@ public:
 private:
     void LoadModel(const std::filesystem::path& path);
     void UpdateCamera(bool acceptInput);
-    void DrawDebugLights();
+    void DrawAxis();
+    void DrawLights();
+    void DrawDebugModel();
     void ShowStats();
+    void ShowOverlays();
     void ShowLights();
 
     bool m_IsOpen;
@@ -55,6 +58,11 @@ private:
     glm::vec3 m_Position;
     ModelViewerObject* m_pModel;
     std::unique_ptr<FileViewer> m_pFileViewer;
+    bool m_DrawLights;
+    bool m_DrawAxis;
+    bool m_DrawNormals;
+    bool m_DrawTangents;
+    bool m_DrawBitangents;
 };
 
 } // namespace Genesis

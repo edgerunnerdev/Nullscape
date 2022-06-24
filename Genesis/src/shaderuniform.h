@@ -22,6 +22,7 @@
 #include "shaderuniformtype.h"
 
 #include <glm/gtx/transform.hpp>
+#include <vector>
 
 namespace Genesis
 {
@@ -33,28 +34,26 @@ namespace Genesis
 class ShaderUniform
 {
 public:
-    ShaderUniform(GLuint handle, ShaderUniformType type, bool allowInstancingOverride = true);
+    ShaderUniform(GLuint handle, ShaderUniformType type, bool allowInstancingOverride = true, size_t count = 1);
     ~ShaderUniform();
 
     void Apply();
 
     void Set(bool value);
     void Set(int value);
+    void Set(const std::vector<int>& values);
     void Set(float value);
+    void Set(const std::vector<float>& values);
     void Set(const glm::vec2& value);
+    void Set(const std::vector<glm::vec2>& values);
     void Set(const glm::vec3& value);
+    void Set(const std::vector<glm::vec3>& values);
     void Set(const glm::vec4& value);
+    void Set(const std::vector<glm::vec4>& values);
     void Set(const glm::mat4& value);
+    void Set(const std::vector<glm::mat4>& values);
     void Set(ResourceImage* pTexture, GLenum textureSlot);
     void Set(GLuint textureID, GLenum textureSlot);
-
-    void Get(bool* pValue) const;
-    void Get(int* pValue) const;
-    void Get(float* pValue) const;
-    void Get(glm::vec2* pValue) const;
-    void Get(glm::vec3* pValue) const;
-    void Get(glm::vec4* pValue) const;
-    void Get(glm::mat4* pValue) const;
 
     void AllowInstancingOverride(bool state);
     bool IsInstancingOverrideAllowed() const;
@@ -65,107 +64,108 @@ public:
 private:
     GLuint m_Handle;
     ShaderUniformType m_Type;
-    void* m_pData;
     GLenum m_Slot;
     bool m_InstancingOverride;
+    std::vector<uint8_t> m_Data;
+    size_t m_Count;
 };
 
 inline void ShaderUniform::Set(bool value)
 {
     SDL_assert(m_Type == ShaderUniformType::Boolean);
-    *(bool*)m_pData = value;
+    *(bool*)m_Data.data() = value;
 }
 
 inline void ShaderUniform::Set(int value)
 {
     SDL_assert(m_Type == ShaderUniformType::Integer);
-    *(int*)m_pData = value;
+    *(int*)m_Data.data() = value;
+}
+
+inline void ShaderUniform::Set(const std::vector<int>& values)
+{
+    SDL_assert(m_Type == ShaderUniformType::Integer);
+    SDL_assert(m_Count == values.size());
+    memcpy(m_Data.data(), values.data(), sizeof(int) * m_Count);
 }
 
 inline void ShaderUniform::Set(float value)
 {
     SDL_assert(m_Type == ShaderUniformType::Float);
-    *(float*)m_pData = value;
+    *(float*)m_Data.data() = value;
+}
+
+inline void ShaderUniform::Set(const std::vector<float>& values)
+{
+    SDL_assert(m_Type == ShaderUniformType::Float);
+    SDL_assert(m_Count == values.size());
+    memcpy(m_Data.data(), values.data(), sizeof(float) * m_Count);
 }
 
 inline void ShaderUniform::Set(const glm::vec2& value)
 {
     SDL_assert(m_Type == ShaderUniformType::FloatVector2);
-    *(glm::vec2*)m_pData = value;
+    *(glm::vec2*)m_Data.data() = value;
+}
+
+inline void ShaderUniform::Set(const std::vector<glm::vec2>& values)
+{
+    SDL_assert(m_Type == ShaderUniformType::FloatVector2);
+    SDL_assert(m_Count == values.size());
+    memcpy(m_Data.data(), values.data(), sizeof(glm::vec2) * m_Count);
 }
 
 inline void ShaderUniform::Set(const glm::vec3& value)
 {
     SDL_assert(m_Type == ShaderUniformType::FloatVector3);
-    *(glm::vec3*)m_pData = value;
+    *(glm::vec3*)m_Data.data() = value;
+}
+
+inline void ShaderUniform::Set(const std::vector<glm::vec3>& values)
+{
+    SDL_assert(m_Type == ShaderUniformType::FloatVector3);
+    SDL_assert(m_Count == values.size());
+    memcpy(m_Data.data(), values.data(), sizeof(glm::vec3) * m_Count);
 }
 
 inline void ShaderUniform::Set(const glm::vec4& value)
 {
     SDL_assert(m_Type == ShaderUniformType::FloatVector4);
-    *(glm::vec4*)m_pData = value;
+    *(glm::vec4*)m_Data.data() = value;
+}
+
+inline void ShaderUniform::Set(const std::vector<glm::vec4>& values)
+{
+    SDL_assert(m_Type == ShaderUniformType::FloatVector4);
+    SDL_assert(m_Count == values.size());
+    memcpy(m_Data.data(), values.data(), sizeof(glm::vec4) * m_Count);
 }
 
 inline void ShaderUniform::Set(const glm::mat4& value)
 {
     SDL_assert(m_Type == ShaderUniformType::FloatMatrix44);
-    *(glm::mat4*)m_pData = value;
+    *(glm::mat4*)m_Data.data() = value;
+}
+
+inline void ShaderUniform::Set(const std::vector<glm::mat4>& values)
+{
+    SDL_assert(m_Type == ShaderUniformType::FloatMatrix44);
+    SDL_assert(m_Count == values.size());
+    memcpy(m_Data.data(), values.data(), sizeof(glm::mat4) * m_Count);
 }
 
 inline void ShaderUniform::Set(ResourceImage* pImage, GLenum textureSlot)
 {
     SDL_assert(m_Type == ShaderUniformType::Texture);
-    *(GLuint*)m_pData = pImage->GetTexture();
+    *(GLuint*)m_Data.data() = pImage->GetTexture();
     m_Slot = textureSlot;
 }
 
 inline void ShaderUniform::Set(GLuint textureID, GLenum textureSlot)
 {
     SDL_assert(m_Type == ShaderUniformType::Texture);
-    *(GLuint*)m_pData = textureID;
+    *(GLuint*)m_Data.data() = textureID;
     m_Slot = textureSlot;
-}
-
-inline void ShaderUniform::Get(bool* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::Boolean);
-    *pValue = *(bool*)m_pData;
-}
-
-inline void ShaderUniform::Get(int* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::Integer);
-    *pValue = *(int*)m_pData;
-}
-
-inline void ShaderUniform::Get(float* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::Float);
-    *pValue = *(float*)m_pData;
-}
-
-inline void ShaderUniform::Get(glm::vec2* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::FloatVector2);
-    *pValue = *(glm::vec2*)m_pData;
-}
-
-inline void ShaderUniform::Get(glm::vec3* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::FloatVector3);
-    *pValue = *(glm::vec3*)m_pData;
-}
-
-inline void ShaderUniform::Get(glm::vec4* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::FloatVector4);
-    *pValue = *(glm::vec4*)m_pData;
-}
-
-inline void ShaderUniform::Get(glm::mat4* pValue) const
-{
-    SDL_assert(m_Type == ShaderUniformType::FloatMatrix44);
-    *pValue = *(glm::mat4*)m_pData;
 }
 
 inline GLuint ShaderUniform::GetHandle() const

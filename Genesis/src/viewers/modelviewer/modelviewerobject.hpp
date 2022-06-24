@@ -19,6 +19,7 @@
 
 #include <filesystem>
 
+#include "resources/resourcemodel.h"
 #include "scene/sceneobject.h"
 
 namespace Genesis
@@ -29,8 +30,6 @@ namespace Render
 class DebugRender;
 }
 
-class ResourceModel;
-
 class ModelViewerObject : public SceneObject
 {
 public:
@@ -38,7 +37,7 @@ public:
     virtual ~ModelViewerObject() override;
     virtual void Update(float delta) override;
     virtual void Render() override;
-    void DebugRender(Render::DebugRender* pDebugRender);
+    void DebugRender(Render::DebugRender* pDebugRender, ResourceModel::DebugRenderFlags flags);
 
     size_t GetVertexCount() const;
     size_t GetTriangleCount() const;   

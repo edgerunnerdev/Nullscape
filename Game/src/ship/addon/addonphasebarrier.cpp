@@ -284,21 +284,21 @@ void AddonPhaseBarrier::Render( const glm::mat4& /*moduleModelTransform*/ )
 
 	ShipShaderUniforms* pShipShaderUniforms = GetModule()->GetOwner()->GetShipShaderUniforms();
 
-	int clipActive;
-	pShipShaderUniforms->Get( ShipShaderUniform::ClipActive )->Get( &clipActive );
-	m_pClipActiveUniform->Set( clipActive );
+	//int clipActive;
+	//pShipShaderUniforms->Get( ShipShaderUniform::ClipActive )->Get( &clipActive );
+	//m_pClipActiveUniform->Set( clipActive );
 
-	glm::vec4 clip;
-	pShipShaderUniforms->Get( ShipShaderUniform::Clip )->Get( &clip );
-	m_pClipUniform->Set( clip );
+	//glm::vec4 clip;
+	//pShipShaderUniforms->Get( ShipShaderUniform::Clip )->Get( &clip );
+	//m_pClipUniform->Set( clip );
 
-	glm::vec4 clipForward;
-	pShipShaderUniforms->Get( ShipShaderUniform::ClipForward )->Get( &clipForward );
-	m_pClipForwardUniform->Set( clipForward );
+	//glm::vec4 clipForward;
+	//pShipShaderUniforms->Get( ShipShaderUniform::ClipForward )->Get( &clipForward );
+	//m_pClipForwardUniform->Set( clipForward );
 
-	glm::vec4 ambientColour;
-	pShipShaderUniforms->Get( ShipShaderUniform::AmbientColour )->Get( &ambientColour );
-	m_pAmbientColourUniform->Set( ambientColour );
+	//glm::vec4 ambientColour;
+	//pShipShaderUniforms->Get( ShipShaderUniform::AmbientColour )->Get( &ambientColour );
+	//m_pAmbientColourUniform->Set( ambientColour );
 
 	m_pActiveUniform->Set( IsActive() ? 1.0f : 0.0f );
 

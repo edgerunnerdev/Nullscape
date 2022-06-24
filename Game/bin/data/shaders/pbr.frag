@@ -22,8 +22,8 @@ uniform sampler2D MetallicSampler;
 uniform sampler2D NormalSampler;
 uniform sampler2D RoughnessSampler;
 
-uniform vec3 LightPosition;
-uniform vec3 LightColor;
+uniform vec3 LightPosition[3];
+uniform vec3 LightColor[3];
 
 // GGX/Towbridge-Reitz normal distribution function.
 // Uses Disney's reparametrization of alpha = roughness^2.
@@ -83,15 +83,11 @@ void main()
 	// Direct lighting calculation for analytical lights.
 	int NumLights = 3;
 	vec3 directLighting = vec3(0);
-	vec3 lightPos[3];
-	lightPos[0] = LightPosition;
-	lightPos[1] = vec3(100, 0, 0);
-	lightPos[2] = vec3(-100, 100, -100);
 	for(int i=0; i<NumLights; ++i)
 	{
-		vec3 lightDir = normalize(lightPos[i] - vin.position);
+		vec3 lightDir = normalize(LightPosition[i] - vin.position);
 		vec3 Li = lightDir;
-		vec3 Lradiance = LightColor;
+		vec3 Lradiance = LightColor[i];
 
 		// Half-vector between Li and Lo.
 		vec3 Lh = normalize(Li + Lo);

@@ -111,14 +111,35 @@ void Mesh::Render(const glm::mat4& modelTransform, const Materials& materials)
     m_pVertexBuffer->Draw();
 }
 
-void Mesh::DebugRender(Render::DebugRender* pDebugRender) 
+void Mesh::DebugRender(Render::DebugRender* pDebugRender, ResourceModel::DebugRenderFlags flags) 
 {
-    size_t c = m_DebugPositions.size();
-    for (size_t i = 0; i < c; ++i)
+    if (flags != ResourceModel::DebugRenderFlags::None)
     {
-        pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugNormals[i], glm::vec3(1, 0, 0));
-        //pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugTangents[i], glm::vec3(0, 1, 0));
-        //pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugBitangents[i], glm::vec3(0, 0, 1));
+        const size_t c = m_DebugPositions.size();
+
+        if (flags & ResourceModel::DebugRenderFlags::Normals)
+        {
+            for (size_t i = 0; i < c; ++i)
+            {
+                pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugNormals[i], glm::vec3(1, 0, 0));
+            }
+        }
+        
+        if (flags & ResourceModel::DebugRenderFlags::Tangents)
+        {
+            for (size_t i = 0; i < c; ++i)
+            {
+                pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugTangents[i], glm::vec3(0, 1, 0));
+            }
+        }
+        
+        if (flags & ResourceModel::DebugRenderFlags::Bitangents)
+        {
+            for (size_t i = 0; i < c; ++i)
+            {
+                pDebugRender->DrawLine(m_DebugPositions[i], m_DebugPositions[i] + m_DebugBitangents[i], glm::vec3(0, 0, 1));
+            }
+        }
     }
 }
 
@@ -263,7 +284,8 @@ bool ResourceModel::ReadMeshes(const Serialization::Model* pModel)
 {
     for (const Serialization::Mesh& serializationMesh : pModel->meshes)
     {
-        m_Meshes.emplace_back(&serializationMesh);
+        MeshUniquePtr pMesh = std::make_unique<Mesh>(&serializationMesh);
+        m_Meshes.push_back(std::move(pMesh));
     }
     return true;
 }
@@ -318,34 +340,34 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
 {
     if (pOverrideMaterial == nullptr)
     {
-        for (auto& mesh : m_Meshes)
+        for (auto& pMesh : m_Meshes)
         {
-            mesh.Render(modelTransform, GetMaterials());
+            pMesh->Render(modelTransform, GetMaterials());
         }
     }
     else
     {
-        for (auto& mesh : m_Meshes)
+        for (auto& pMesh : m_Meshes)
         {
-            mesh.Render(modelTransform, pOverrideMaterial);
+            pMesh->Render(modelTransform, pOverrideMaterial);
         }
     }
 }
 
-void ResourceModel::DebugRender(Render::DebugRender* pDebugRender) 
+void ResourceModel::DebugRender(Render::DebugRender* pDebugRender, DebugRenderFlags flags) 
 {
-    for (auto& mesh : m_Meshes)
+    for (auto& pMesh : m_Meshes)
     {
-        mesh.DebugRender(pDebugRender);
+        pMesh->DebugRender(pDebugRender, flags);
     }
 }
 
 size_t ResourceModel::GetVertexCount() const
 {
     size_t count = 0;
-    for (auto& mesh : m_Meshes)
+    for (auto& pMesh : m_Meshes)
     {
-        count += mesh.GetVertexCount();
+        count += pMesh->GetVertexCount();
     }
     return count;
 }
@@ -353,9 +375,9 @@ size_t ResourceModel::GetVertexCount() const
 size_t ResourceModel::GetTriangleCount() const
 {
     size_t count = 0;
-    for (auto& mesh : m_Meshes)
+    for (auto& pMesh : m_Meshes)
     {
-        count += mesh.GetTriangleCount();
+        count += pMesh->GetTriangleCount();
     }
     return count;
 }

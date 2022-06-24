@@ -43,6 +43,11 @@ ModelViewer::ModelViewer()
     , m_Yaw(-90.0f)
     , m_Position(0.0f, 0.0f, 200.0f)
     , m_pModel(nullptr)
+    , m_DrawLights(false)
+    , m_DrawAxis(true)
+    , m_DrawNormals(false)
+    , m_DrawTangents(false)
+    , m_DrawBitangents(false)
 {
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
 
@@ -65,8 +70,6 @@ ModelViewer::ModelViewer()
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 
     m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, ".gmdl");
-
-    LoadModel("data/models/test/cube/exported/model.gmdl");
 }
 
 ModelViewer::~ModelViewer()
@@ -80,7 +83,10 @@ void ModelViewer::UpdateDebugUI()
     {
         ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
+        ImGui::BeginChild("File viewer", ImVec2(300, sViewportHeight), true);
         m_pFileViewer->Render();
+        ImGui::EndChild();
+
         ImGui::SameLine();
 
         RenderTarget* pRenderTarget = m_pViewport->GetRenderTarget();
@@ -91,23 +97,19 @@ void ModelViewer::UpdateDebugUI()
                      ImVec4(1, 1, 1, 1)                                                                                                   // Border
         );
         
-        //m_pModel->DebugRender(m_pDebugRender);
-
-        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        DrawDebugLights();
+        DrawAxis();
+        DrawDebugModel();
+        DrawLights();
 
         UpdateCamera(ImGui::IsItemHovered());
 
         ImGui::SameLine();
 
-        ImGui::BeginGroup();
+        ImGui::BeginChild("Properties", ImVec2(300, sViewportHeight), true);
         ShowStats();
+        ShowOverlays();
         ShowLights();
-
-        ImGui::EndGroup();
+        ImGui::EndChild();
 
         ImGui::End();
 
@@ -118,11 +120,45 @@ void ModelViewer::UpdateDebugUI()
     }
 }
 
-void ModelViewer::DrawDebugLights() 
+void ModelViewer::DrawAxis() 
 {
-    for (const Light& light : m_pViewport->GetScene()->GetLights())
+    if (m_DrawAxis)
     {
-        m_pDebugRender->DrawLine(light.GetPosition(), glm::vec3(0.0f), light.GetColor());
+        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+}
+
+void ModelViewer::DrawDebugModel() 
+{
+    if (m_pModel)
+    {
+        ResourceModel::DebugRenderFlags flags = ResourceModel::DebugRenderFlags::None;
+        if (m_DrawNormals)
+        {
+            flags |= ResourceModel::DebugRenderFlags::Normals;
+        }
+        if (m_DrawTangents)
+        {
+            flags |= ResourceModel::DebugRenderFlags::Tangents;
+        }
+        if (m_DrawBitangents)
+        {
+            flags |= ResourceModel::DebugRenderFlags::Bitangents;
+        }
+        m_pModel->DebugRender(m_pDebugRender, flags);
+    }
+}
+
+void ModelViewer::DrawLights() 
+{
+    if (m_DrawLights)
+    {
+        for (const Light& light : m_pViewport->GetScene()->GetLights())
+        {
+            m_pDebugRender->DrawLine(light.GetPosition(), glm::vec3(0.0f), light.GetColor());
+        }
     }
 }
 
@@ -194,19 +230,33 @@ void ModelViewer::ShowStats()
     }
 }
 
+void ModelViewer::ShowOverlays() 
+{
+    if (ImGui::CollapsingHeader("Overlays", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::Checkbox("Draw axis", &m_DrawAxis);
+        ImGui::Checkbox("Draw normals", &m_DrawNormals);
+        ImGui::Checkbox("Draw tangents", &m_DrawTangents);
+        ImGui::Checkbox("Draw bitangents", &m_DrawBitangents);
+    }
+}
+
 void ModelViewer::ShowLights() 
 {
     if (ImGui::CollapsingHeader("Lights", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        ImGui::Checkbox("Draw lights", &m_DrawLights);
+
         LightArray& lights = m_pViewport->GetScene()->GetLights();
         size_t numLights = lights.size();
         for (size_t i = 0; i < numLights; ++i)
         {
             std::stringstream ss;
-            ss << "Light #" << i + 1;
-            if (ImGui::CollapsingHeader(ss.str().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+            ss << "Directional light " << i + 1;
+            if (ImGui::TreeNode(ss.str().c_str()))
             {
                 lights[i].DebugDraw();
+                ImGui::TreePop();
             }
         }
     }
