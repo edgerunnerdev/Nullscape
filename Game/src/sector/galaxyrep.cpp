@@ -150,12 +150,6 @@ m_InputTimer( 0u )
 	m_pSectorInhibitorVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
 	m_pSectorHomeworldVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
 
-    ResourceImage* pSectorCrossImage = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/sector_cross.png") );
-    m_pSectorCrossShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "diffuse_alpha" );
-    ShaderUniformInstance sectorCrossSamplerUniform = m_pSectorCrossShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-	sectorCrossSamplerUniform.Set( pSectorCrossImage, GL_TEXTURE0 );
-    m_SectorCrossUniforms.push_back( sectorCrossSamplerUniform );
-
 	m_pSectorCrossVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
 
 	m_pSectorThreatShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_threat" );
@@ -168,13 +162,13 @@ m_InputTimer( 0u )
 	threatImages[ static_cast<size_t>( ThreatRating::Challenging ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_challenging.png" ) );
 	threatImages[ static_cast<size_t>( ThreatRating::Overpowering ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_overpowering.png" ) );
 
-	for ( size_t i = 0; i < static_cast<size_t>( ThreatRating::Count ); ++i )
-	{
-		ResourceImage* pImage = threatImages[ i ];
-		ShaderUniformInstance uniform = m_pSectorThreatShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-		uniform.Set( pImage, GL_TEXTURE0 );
-		m_pSectorThreatUniforms[ i ].push_back( uniform );
-	}
+	//for ( size_t i = 0; i < static_cast<size_t>( ThreatRating::Count ); ++i )
+	//{
+	//	ResourceImage* pImage = threatImages[ i ];
+	//	ShaderUniformInstance uniform = m_pSectorThreatShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	//	uniform.Set( pImage, GL_TEXTURE0 );
+	//	m_pSectorThreatUniforms[ i ].push_back( uniform );
+	//}
 
 	m_LeftMouseButtonDownToken = FrameWork::GetInputManager()->AddMouseCallback( std::bind( &GalaxyRep::OnLeftMouseButtonDown, this ), MouseButton::Left, ButtonState::Pressed );
 }

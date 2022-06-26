@@ -38,7 +38,7 @@ typedef std::vector<ShaderUniformInstance> ShaderUniformInstances;
 class ShaderUniformInstance
 {
 public:
-    ShaderUniformInstance(ShaderUniform* pShaderUniform);
+    ShaderUniformInstance(ShaderUniformSharedPtr pShaderUniform);
 
     void Apply();
 
@@ -51,7 +51,7 @@ public:
     void Set(ResourceImage* pTexture, GLenum textureSlot);
 
 private:
-    ShaderUniform* m_pShaderUniform;
+    ShaderUniformSharedPtr m_pShaderUniform;
     int m_Integer;
     float m_Float;
     glm::vec4 m_Vector;

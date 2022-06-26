@@ -26,7 +26,7 @@ namespace Genesis
 {
 
 class ResourceImage;
-class Shader;
+class ResourceShader;
 class ShaderUniformInstance;
 
 using ResourceImages = std::vector<ResourceImage*>;
@@ -40,8 +40,8 @@ public:
 
     const std::string& GetName() const;
     void SetName(const std::string& name);
-    void SetShader(Shader* pShader);
-    Shader* GetShader() const;
+    void SetShader(ResourceShader* pShader);
+    ResourceShader* GetShader() const;
     ResourceImages& GetResourceImages();
     const ResourceImages& GetResourceImages() const;
     ShaderUniformInstances& GetShaderUniformInstances();
@@ -49,7 +49,7 @@ public:
 
 private:
     std::string m_Name;
-    Shader* m_pShader;
+    ResourceShader* m_pShader;
     ResourceImages m_Resources;
     ShaderUniformInstances m_Uniforms;
 };
@@ -68,12 +68,12 @@ inline void Material::SetName(const std::string& name)
     m_Name = name;
 }
 
-inline void Material::SetShader(Shader* pShader)
+inline void Material::SetShader(ResourceShader* pShader)
 {
     m_pShader = pShader;
 }
 
-inline Shader* Material::GetShader() const
+inline ResourceShader* Material::GetShader() const
 {
     return m_pShader;
 }

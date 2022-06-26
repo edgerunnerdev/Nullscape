@@ -22,6 +22,7 @@
 #include "resources/resourcefont.h"
 #include "resources/resourceimage.h"
 #include "resources/resourcemodel.h"
+#include "resources/resourceshader.hpp"
 #include "resources/resourcesound.h"
 #include "resources/resourcevideo.h"
 
@@ -69,6 +70,12 @@ ResourceManager::ResourceManager()
         return new ResourceModel(filename);
     };
     RegisterExtension("gmdl", fCreateResourceModel);
+
+    ResourceFactoryFunction fCreateResourceShader = [](const Filename& filename)
+    {
+        return new ResourceShader(filename);
+    };
+    RegisterExtension("glsl", fCreateResourceShader);
 
     ResourceFactoryFunction fCreateResourceSound = [](const Filename& filename) {
         return new ResourceSound(filename);

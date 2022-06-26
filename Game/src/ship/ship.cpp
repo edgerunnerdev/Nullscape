@@ -989,69 +989,69 @@ void Ship::RenderModuleHexGridOutline(const glm::mat4& modelTransform)
 
 void Ship::SetSharedShaderParameters(Module* pModule, Genesis::Material* pMaterial)
 {
-    using namespace Genesis;
+    //using namespace Genesis;
 
-    if (pMaterial->GetShader() == m_pUniforms->GetShader())
-    {
-        const Colour& primaryColour = IsFlagship() ? GetFaction()->GetColour(FactionColourId::PrimaryFlagship) : GetFaction()->GetColour(FactionColourId::Primary);
-        m_pUniforms->Set(ShipShaderUniform::PrimaryPaint, primaryColour.glm());
+    //if (pMaterial->GetShader() == m_pUniforms->GetShader())
+    //{
+    //    const Colour& primaryColour = IsFlagship() ? GetFaction()->GetColour(FactionColourId::PrimaryFlagship) : GetFaction()->GetColour(FactionColourId::Primary);
+    //    m_pUniforms->Set(ShipShaderUniform::PrimaryPaint, primaryColour.glm());
 
-        const Colour& secondaryColour = IsFlagship() ? GetFaction()->GetColour(FactionColourId::SecondaryFlagship) : GetFaction()->GetColour(FactionColourId::Secondary);
-        m_pUniforms->Set(ShipShaderUniform::SecondaryPaint, secondaryColour.glm());
+    //    const Colour& secondaryColour = IsFlagship() ? GetFaction()->GetColour(FactionColourId::SecondaryFlagship) : GetFaction()->GetColour(FactionColourId::Secondary);
+    //    m_pUniforms->Set(ShipShaderUniform::SecondaryPaint, secondaryColour.glm());
 
-        const float healthRatio = pModule->GetHealth() / pModule->GetModuleInfo()->GetHealth(this);
-        m_pUniforms->Set(ShipShaderUniform::Health, healthRatio);
+    //    const float healthRatio = pModule->GetHealth() / pModule->GetModuleInfo()->GetHealth(this);
+    //    m_pUniforms->Set(ShipShaderUniform::Health, healthRatio);
 
-        const float repairEdgeAlpha = pModule->IsDestroyed() ? 0.0f : (m_RepairTimer > 0.0f ? 1.0f : 0.0f);
-        m_pUniforms->Set(ShipShaderUniform::RepairEdgeAlpha, repairEdgeAlpha);
+    //    const float repairEdgeAlpha = pModule->IsDestroyed() ? 0.0f : (m_RepairTimer > 0.0f ? 1.0f : 0.0f);
+    //    m_pUniforms->Set(ShipShaderUniform::RepairEdgeAlpha, repairEdgeAlpha);
 
-        const float repairEdgeOffset = pModule->IsDestroyed() ? 0.0f : (m_RepairTimer / RepairDuration) * 0.4f;
-        m_pUniforms->Set(ShipShaderUniform::RepairEdgeOffset, repairEdgeOffset);
+    //    const float repairEdgeOffset = pModule->IsDestroyed() ? 0.0f : (m_RepairTimer / RepairDuration) * 0.4f;
+    //    m_pUniforms->Set(ShipShaderUniform::RepairEdgeOffset, repairEdgeOffset);
 
-        const int isJumping = (m_pHyperspaceCore != nullptr && m_pHyperspaceCore->IsJumping()) ? 1 : 0;
-        m_pUniforms->Set(ShipShaderUniform::ClipActive, isJumping);
+    //    const int isJumping = (m_pHyperspaceCore != nullptr && m_pHyperspaceCore->IsJumping()) ? 1 : 0;
+    //    m_pUniforms->Set(ShipShaderUniform::ClipActive, isJumping);
 
-        if (isJumping)
-        {
-            glm::vec3 hyperspaceClipPosition(m_pHyperspaceCore->GetHyperspaceGate()->GetGatePosition());
-            m_pUniforms->Set(ShipShaderUniform::Clip, glm::vec4(hyperspaceClipPosition, 0.0f));
+    //    if (isJumping)
+    //    {
+    //        glm::vec3 hyperspaceClipPosition(m_pHyperspaceCore->GetHyperspaceGate()->GetGatePosition());
+    //        m_pUniforms->Set(ShipShaderUniform::Clip, glm::vec4(hyperspaceClipPosition, 0.0f));
 
-            glm::vec4 hyperspaceClipDirection = glm::column(GetRigidBody()->GetWorldTransform(), 1);
-            m_pUniforms->Set(ShipShaderUniform::ClipForward, hyperspaceClipDirection);
-        }
+    //        glm::vec4 hyperspaceClipDirection = glm::column(GetRigidBody()->GetWorldTransform(), 1);
+    //        m_pUniforms->Set(ShipShaderUniform::ClipForward, hyperspaceClipDirection);
+    //    }
 
-        const Background* pBackground = g_pGame->GetCurrentSector()->GetBackground();
-        const glm::vec4& ambient = pBackground->GetAmbientColour();
-        m_pUniforms->Set(ShipShaderUniform::AmbientColour, ambient);
+    //    const Background* pBackground = g_pGame->GetCurrentSector()->GetBackground();
+    //    const glm::vec4& ambient = pBackground->GetAmbientColour();
+    //    m_pUniforms->Set(ShipShaderUniform::AmbientColour, ambient);
 
-        const Genesis::Colour& emissive = GetFaction()->GetColour(FactionColourId::Glow);
-        m_pUniforms->Set(ShipShaderUniform::EmissiveColour, emissive.glm());
+    //    const Genesis::Colour& emissive = GetFaction()->GetColour(FactionColourId::Glow);
+    //    m_pUniforms->Set(ShipShaderUniform::EmissiveColour, emissive.glm());
 
-        const float assemblyPercentage = pModule->GetAssemblyPercentage();
-        if (assemblyPercentage < 1.0f)
-        {
-            const float intensity = 1.0f - assemblyPercentage;
-            glm::vec4 overlayColour(0.0f, 1.0f, 1.0f, intensity);
-            m_pUniforms->Set(ShipShaderUniform::OverlayColour, overlayColour);
-        }
-        else if (pModule->GetModuleInfo()->GetType() == ModuleType::Armour)
-        {
-            ArmourModule* pArmourModule = (ArmourModule*)pModule;
-            m_pUniforms->Set(ShipShaderUniform::OverlayColour, pArmourModule->GetOverlayColour());
-        }
-        else if (pModule->GetModuleInfo()->GetType() == ModuleType::Tower)
-        {
-            TowerModule* pTowerModule = (TowerModule*)pModule;
-            m_pUniforms->Set(ShipShaderUniform::OverlayColour, pTowerModule->GetOverlayColour(this));
-        }
-        else
-        {
-            m_pUniforms->Set(ShipShaderUniform::OverlayColour, glm::vec4(0.0f));
-        }
+    //    const float assemblyPercentage = pModule->GetAssemblyPercentage();
+    //    if (assemblyPercentage < 1.0f)
+    //    {
+    //        const float intensity = 1.0f - assemblyPercentage;
+    //        glm::vec4 overlayColour(0.0f, 1.0f, 1.0f, intensity);
+    //        m_pUniforms->Set(ShipShaderUniform::OverlayColour, overlayColour);
+    //    }
+    //    else if (pModule->GetModuleInfo()->GetType() == ModuleType::Armour)
+    //    {
+    //        ArmourModule* pArmourModule = (ArmourModule*)pModule;
+    //        m_pUniforms->Set(ShipShaderUniform::OverlayColour, pArmourModule->GetOverlayColour());
+    //    }
+    //    else if (pModule->GetModuleInfo()->GetType() == ModuleType::Tower)
+    //    {
+    //        TowerModule* pTowerModule = (TowerModule*)pModule;
+    //        m_pUniforms->Set(ShipShaderUniform::OverlayColour, pTowerModule->GetOverlayColour(this));
+    //    }
+    //    else
+    //    {
+    //        m_pUniforms->Set(ShipShaderUniform::OverlayColour, glm::vec4(0.0f));
+    //    }
 
-        const int empActive = pModule->IsEMPed() ? 1 : 0;
-        m_pUniforms->Set(ShipShaderUniform::EMPActive, empActive);
-    }
+    //    const int empActive = pModule->IsEMPed() ? 1 : 0;
+    //    m_pUniforms->Set(ShipShaderUniform::EMPActive, empActive);
+    //}
 }
 
 bool Ship::ConsumeEnergy(float quantity)

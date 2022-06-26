@@ -25,6 +25,7 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include "resources/resourceshader.hpp"
 #include "../genesis.h"
 #include "../rendersystem.h"
 #include "../shadercache.h"
@@ -235,7 +236,10 @@ bool ResourceModel::ReadMaterials(const Serialization::Model* pModel)
         MaterialSharedPtr pMaterial = std::make_shared<Material>();
         pMaterial->SetName(serializationMaterial.name);
         const std::string shaderName = serializationMaterial.shader;
-        Shader* pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load(shaderName);
+
+        std::stringstream shaderPath;
+        shaderPath << "data/shaders/" << shaderName << ".glsl";
+        ResourceShader* pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>(shaderPath.str());
         if (pShader == nullptr)
         {
             Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": invalid shader " << shaderName;
@@ -252,7 +256,7 @@ bool ResourceModel::ReadMaterials(const Serialization::Model* pModel)
             const std::string& name = binding.first;
             const std::string filename = GetFilename().GetDirectory() + binding.second;
 
-            ShaderUniform* pShaderUniform = pShader->RegisterUniform(name.c_str(), ShaderUniformType::Texture);
+            ShaderUniformSharedPtr pShaderUniform = pShader->RegisterUniform(name.c_str(), ShaderUniformType::Texture);
             if (pShaderUniform == nullptr)
             {
                 Core::Log::Error() << "Model '" << GetFilename().GetFullPath() << "', shader '" << shaderName << "', couldn't find texture uniform named '" << name << "'.";
@@ -269,7 +273,7 @@ bool ResourceModel::ReadMaterials(const Serialization::Model* pModel)
             {
                 ShaderUniformInstance instance(pShaderUniform);
                 instance.Set(pResourceImage, GL_TEXTURE0 + textureMap);
-                pMaterial->GetShaderUniformInstances().push_back(instance);
+                pMaterial->GetShaderUniformInstances().push_back(std::move(instance));
                 pMaterial->GetResourceImages().push_back(pResourceImage);
                 textureMap++;
             }

@@ -27,7 +27,7 @@ namespace Genesis
 // ShaderUniformInstance
 ///////////////////////////////////////////////////////////////////////////////
 
-ShaderUniformInstance::ShaderUniformInstance(ShaderUniform* pShaderUniform)
+ShaderUniformInstance::ShaderUniformInstance(ShaderUniformSharedPtr pShaderUniform)
     : m_pShaderUniform(pShaderUniform)
     , m_Integer(0)
     , m_Float(0.0f)

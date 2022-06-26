@@ -37,17 +37,17 @@ ShipOutline::ShipOutline()
     m_Thickness = 1.15f;
     Genesis::ShaderCache* pShaderCache = Genesis::FrameWork::GetRenderSystem()->GetShaderCache();
 
-    m_pMaterialPlayer = new Genesis::Material();
-    m_pMaterialPlayer->SetName("ship_outline_player");
-    m_pMaterialPlayer->SetShader(pShaderCache->Load("ship_outline_player"));
+    //m_pMaterialPlayer = new Genesis::Material();
+    //m_pMaterialPlayer->SetName("ship_outline_player");
+    //m_pMaterialPlayer->SetShader(pShaderCache->Load("ship_outline_player"));
 
-    m_pMaterialFriendly = new Genesis::Material();
-    m_pMaterialFriendly->SetName("ship_outline_friendly");
-    m_pMaterialFriendly->SetShader(pShaderCache->Load("ship_outline_friendly"));
+    //m_pMaterialFriendly = new Genesis::Material();
+    //m_pMaterialFriendly->SetName("ship_outline_friendly");
+    //m_pMaterialFriendly->SetShader(pShaderCache->Load("ship_outline_friendly"));
 
-    m_pMaterialHostile = new Genesis::Material();
-    m_pMaterialHostile->SetName("ship_outline_hostile");
-    m_pMaterialHostile->SetShader(pShaderCache->Load("ship_outline_hostile"));
+    //m_pMaterialHostile = new Genesis::Material();
+    //m_pMaterialHostile->SetName("ship_outline_hostile");
+    //m_pMaterialHostile->SetShader(pShaderCache->Load("ship_outline_hostile"));
 }
 
 ShipOutline::~ShipOutline()
