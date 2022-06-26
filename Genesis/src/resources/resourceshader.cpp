@@ -57,8 +57,6 @@ ResourceType ResourceShader::GetType() const
 
 bool ResourceShader::Load()
 {
-    std::string programName("pbr");
-
     // Create the shaders
     GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -82,9 +80,9 @@ bool ResourceShader::Load()
         return false;
     }
 
-    Core::Log::Info() << "Compiling shader program: " << programName;
-    const std::string vertexShaderCode = "#version 330\n#define VERTEX_PROGRAM\n" + shaderCode;
-    const std::string fragmentShaderCode = "#version 330\n#define FRAGMENT_PROGRAM\n" + shaderCode;
+    Core::Log::Info() << "Compiling shader program: " << GetFilename().GetName();
+    const std::string vertexShaderCode = "#version 330\n#define VERTEX_PROGRAM\n#line 0\n" + shaderCode;
+    const std::string fragmentShaderCode = "#version 330\n#define FRAGMENT_PROGRAM\n#line 0\n" + shaderCode;
 
     GLint compilationSuccessful = GL_FALSE;
     int infoLogLength = 0;
@@ -100,8 +98,8 @@ bool ResourceShader::Load()
     {
         glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> vertexShaderErrorMessage(infoLogLength + 1);
-        glGetShaderInfoLog(vertexShaderID, infoLogLength, nullptr, &vertexShaderErrorMessage[0]);
-        Core::Log::Error() << "Compiling vertex shader '" << programName << "':" << &vertexShaderErrorMessage[0];
+        glGetShaderInfoLog(vertexShaderID, infoLogLength, nullptr, vertexShaderErrorMessage.data());
+        Core::Log::Error() << "Compiling shader '" << GetFilename().GetName() << "':" << vertexShaderErrorMessage.data();
         return false;
     }
 
@@ -116,8 +114,8 @@ bool ResourceShader::Load()
     {
         glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> fragmentShaderErrorMessage(infoLogLength + 1);
-        glGetShaderInfoLog(fragmentShaderID, infoLogLength, nullptr, &fragmentShaderErrorMessage[0]);
-        Core::Log::Error() << "Compiling fragment shader '" << programName << "':" << &fragmentShaderErrorMessage[0];
+        glGetShaderInfoLog(fragmentShaderID, infoLogLength, nullptr, fragmentShaderErrorMessage.data());
+        Core::Log::Error() << "Compiling shader '" << GetFilename().GetName() << "':" << fragmentShaderErrorMessage.data();
         return false;
     }
 
@@ -144,6 +142,8 @@ bool ResourceShader::Load()
 
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
+
+    m_ProgramHandle = programHandle;
 
     m_State = ResourceState::Loaded;
     return true;
