@@ -63,7 +63,7 @@ bool ShaderComp::Initialize(int argc, char** argv)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    m_pWindow = SDL_CreateWindow("ShaderComp", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 200, 200, SDL_WINDOW_OPENGL);
+    m_pWindow = SDL_CreateWindow("ShaderComp", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 200, 200, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
     m_pContext = SDL_GL_CreateContext(m_pWindow);
 
     GLenum err = glewInit();

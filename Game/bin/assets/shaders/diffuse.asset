@@ -1,0 +1,4 @@
+{
+  "source": "diffuse.glsl",
+  "compiler": "ShaderComp"
+}
