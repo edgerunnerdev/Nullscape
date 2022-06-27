@@ -3,7 +3,7 @@
 #include <iomanip>
 #include "stringaux.h"
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 std::string ToLower( const std::string& str )

@@ -4,14 +4,14 @@
 namespace Xml
 {
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterminate::ModuleRarity& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::ModuleRarity& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	static const std::string rarity[ static_cast<size_t>( ModuleRarity::Count ) ] = 
 	{
@@ -35,14 +35,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterm
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterminate::WeaponBehaviour& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::WeaponBehaviour& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	if ( text == "Fixed" )
@@ -59,14 +59,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterm
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterminate::TowerBonus& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::TowerBonus& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	if ( text == "None" )
@@ -108,14 +108,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterm
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterminate::FleetState& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::FleetState& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	std::string texts[] = { "Idle", "Engaged", "Moving", "Arrived" };
@@ -132,14 +132,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterm
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterminate::Difficulty& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::Difficulty& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	std::string texts[] = { "Easy", "Normal", "Hardcore", "Arrived" };
@@ -156,14 +156,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterm
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hexterminate::GameMode& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::GameMode& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	std::string texts[] = { "Campaign", "Infinite War" };
@@ -202,9 +202,9 @@ void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, c
 	Write( xmlDoc, pRootElement, elementName, content ? std::string("true") : std::string("false") );
 }
 
-void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, Hexterminate::FleetState content )
+void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, Hyperscape::FleetState content )
 {
-	using namespace Hexterminate;
+	using namespace Hyperscape;
 
 	if ( content == FleetState::Idle )
 		Write( xmlDoc, pRootElement, elementName, std::string( "Idle" ) );

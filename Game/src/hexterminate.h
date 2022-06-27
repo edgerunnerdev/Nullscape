@@ -1,19 +1,19 @@
 // Copyright 2015 Pedro Nunes
 //
-// This file is part of Hexterminate.
+// This file is part of Hyperscape.
 //
-// Hexterminate is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hexterminate is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -62,7 +62,7 @@ class Simulation;
 
 } // namespace Genesis
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 namespace UI
@@ -97,7 +97,6 @@ class LoadingScreen;
 class AchievementsManager;
 class SaveGameStorage;
 class ShipOutline;
-class Hyperscape;
 GENESIS_DECLARE_SMART_PTR(SaveGameHeader);
 
 extern Game* g_pGame;
@@ -194,7 +193,6 @@ public:
     void ExitSector();
 
     void StartNewLegacyGame(const ShipCustomisationData& customisationData, const std::string& companionShipTemplate, bool tutorial, const GalaxyCreationInfo& galaxyCreationInfo);
-    void StartNewHyperscapeGame(const ShipCustomisationData& customisationData, bool tutorial);
     void EndGame();
     void KillSaveGame();
     bool SaveGame();
@@ -299,7 +297,6 @@ private:
     Genesis::ModelViewerUniquePtr m_pModelViewer;
     bool m_ShowImguiTestWindow;
 
-    std::unique_ptr<Hyperscape> m_pHyperscape;
     std::thread m_LoaderThread;
     std::atomic_bool m_AllResourcesLoaded;
 };
@@ -454,4 +451,4 @@ inline UI::RootElement* Game::GetUIRoot() const
     return m_pUIRootElement.get();
 }
 
-} // namespace Hexterminate
+} // namespace Hyperscape

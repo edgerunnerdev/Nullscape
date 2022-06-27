@@ -4,7 +4,7 @@
 #include "hexterminate.h"
 #include "globals.h"
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 NeutralFaction::NeutralFaction( const FactionInfo& info ): Faction( info, FactionId::Neutral )

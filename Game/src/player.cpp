@@ -10,7 +10,7 @@
 #include "xmlaux.h"
 
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 Player::Player():

@@ -11,7 +11,7 @@ class ResourceSound;
 
 }
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 class Ship;

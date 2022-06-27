@@ -3,7 +3,7 @@
 #include <memory>
 #include <list>
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 class Fleet;

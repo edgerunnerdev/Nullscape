@@ -1,19 +1,19 @@
 // Copyright 2021 Pedro Nunes
 //
-// This file is part of Hexterminate.
+// This file is part of Hyperscape.
 //
-// Hexterminate is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hexterminate is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include <functional>
 #include <sstream>
@@ -36,7 +36,7 @@
 #include "hexterminate.h"
 #include "savegamestorage.h"
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 NewGameWindow::NewGameWindow() : UI::Window( "New game window" ),
@@ -96,20 +96,6 @@ void NewGameWindow::Update()
 
 		 m_pButtonNext->Enable( canCreate );
 	}
-
-#ifndef _FINAL
-	if ( Genesis::FrameWork::GetCommandLineParameters()->HasParameter("--new-hyperscape") )
-	{
-		static bool sStartHyperscape = true;
-		if ( sStartHyperscape == true )
-		{
-			m_ShipCustomisationData.m_CaptainName = "Unknown";
-			m_ShipCustomisationData.m_ShipName = "Ascension";
-			g_pGame->StartNewHyperscapeGame( m_ShipCustomisationData, false );
-			sStartHyperscape = false;
-		}
-	}
-#endif
 }
 
 void NewGameWindow::Reset()
@@ -200,10 +186,6 @@ void NewGameWindow::StartNewGame()
 	{
 		m_GalaxyCreationInfo = GalaxyCreationInfo( GalaxyCreationInfo::CreationMode::InfiniteWar );
 		g_pGame->StartNewLegacyGame( m_ShipCustomisationData, m_CompanionShipTemplate, m_pTipsCheckbox->IsChecked(), m_GalaxyCreationInfo );
-	}
-	else if ( gameMode == GameMode::Hyperscape )
-	{
-		g_pGame->StartNewHyperscapeGame( m_ShipCustomisationData, m_pTipsCheckbox->IsChecked() );
 	}
 	else
 	{
@@ -469,4 +451,4 @@ void NewGameWindow::OnShipButtonPressed( const std::any& userData )
 	}
 }
 
-} // namespace Hexterminate
+} // namespace Hyperscape

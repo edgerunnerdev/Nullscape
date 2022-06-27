@@ -1,19 +1,19 @@
 // Copyright 2015 Pedro Nunes
 //
-// This file is part of Hexterminate.
+// This file is part of Hyperscape.
 //
-// Hexterminate is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hexterminate is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -59,7 +59,6 @@
 #include "faction/irianifaction.h"
 #include "faction/neutralfaction.h"
 #include "faction/piratefaction.h"
-#include "hyperscape/hyperscape.h"
 #include "misc/gui.h"
 #include "misc/random.h"
 #include "ship/module.h"
@@ -104,7 +103,7 @@
 #include "particles/particlemanager.h"
 #include "particles/particleemitter.h"
 
-namespace Hexterminate {
+namespace Hyperscape {
 
 Game* g_pGame = nullptr;
 
@@ -377,11 +376,6 @@ Genesis::TaskStatus Game::Update( float delta )
 		m_pGalaxy->Update( delta );
 	}
 
-	if ( m_pHyperscape )
-	{
-		m_pHyperscape->Update( delta );
-	}
-
 	if ( m_pPopup )
 	{
 		m_pPopup->Update( delta );
@@ -543,38 +537,6 @@ void Game::StartNewLegacyGame( const ShipCustomisationData& customisationData, c
 	SetState( GameState::GalaxyView );
 }
 
-void Game::StartNewHyperscapeGame( const ShipCustomisationData& customisationData, bool tutorialEnabled )
-{
-	SDL_assert( GetPlayer() == nullptr );
-
-	m_pBlackboard->Clear();
-	m_pGalaxy->Show( false );
-
-	m_FirstTimeInCombat = true;
-	m_pPlayer = new Player( customisationData, "phalanx" );
-	m_pMainMenu->Show( false );
-
-	m_pHyperscape = std::make_unique<Hyperscape>();
-
-	SetPlayedTime( 0.0f );
-
-
-	// TODO: Create a fleet for the player
-
-    m_ContextualTipsEnabled = tutorialEnabled;
-    if ( m_ContextualTipsEnabled )
-    {
-        GetBlackboard()->Add( "#contextual_tips" );
-    }
-
-	if ( tutorialEnabled )
-	{
-		SetupNewGameTutorial();
-	}
-
-	SetState( GameState::HyperscapeView );
-}
-
 void Game::EndGame()
 {
 	m_EndGame = true;
@@ -625,7 +587,7 @@ void Game::SetupNewGameTutorial()
 	if ( GetGameMode() == GameMode::Campaign )
 	{
 		TutorialStep tutorialStep1( 
-			"Welcome to Hexterminate, Captain.\n\n" \
+			"Welcome to Hyperscape, Captain.\n\n" \
 			"This is the galaxy view, where you can see the location of " \
 			"your fleet and decide on your next move.\n\n" \
 			"Your objective is to defeat the other factions, reuniting " \
@@ -1581,5 +1543,5 @@ int Main(Genesis::CommandLineParameters* parameters)
 
 int main(int argc, char* argv[])
 {
-	return Hexterminate::Main(Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
+	return Hyperscape::Main(Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
 }

@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 // If the ShipType enum is changed, update the FleetDoctrine as well.

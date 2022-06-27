@@ -14,7 +14,7 @@
 #include "shipyard/shipyard.h"
 #include "player.h"
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 #ifdef _FINAL

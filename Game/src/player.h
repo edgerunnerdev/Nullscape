@@ -4,7 +4,7 @@
 #include "ship/ship.h"
 #include "serialisable.h"
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 class Inventory;

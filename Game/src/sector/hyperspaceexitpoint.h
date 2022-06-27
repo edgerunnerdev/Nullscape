@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Hexterminate
+namespace Hyperscape
 {
 
 class HyperspaceExitPoint
