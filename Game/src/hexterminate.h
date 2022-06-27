@@ -98,6 +98,7 @@ class SaveGameStorage;
 class ShipOutline;
 
 GENESIS_DECLARE_SMART_PTR(System);
+GENESIS_DECLARE_SMART_PTR(SystemViewer);
 GENESIS_DECLARE_SMART_PTR(SaveGameHeader);
 
 extern Game* g_pGame;
@@ -192,7 +193,7 @@ public:
     void EnterSector(SectorInfo* pSectorInfo);
     void ExitSector();
 
-    void StartNewLegacyGame(const ShipCustomisationData& customisationData, const std::string& companionShipTemplate, bool tutorial, const GalaxyCreationInfo& galaxyCreationInfo);
+    void StartNewGame(const ShipCustomisationData& customisationData);
     void EndGame();
     void KillSaveGame();
     bool SaveGame();
@@ -212,7 +213,6 @@ public:
     bool IsDevelopmentModeActive() const;
     bool IsShipCaptureModeActive() const;
     bool IsTutorialActive() const;
-    bool IsFirstTimeInCombat() const;
     bool AreContextualTipsEnabled() const;
 
     bool RequisitionShip(const ShipInfo* pShipInfo);
@@ -247,6 +247,7 @@ private:
     Sector* m_pSector;
     Player* m_pPlayer;
     SystemSharedPtr m_pSystem;
+    SystemViewerUniquePtr m_pSystemViewer;
     MusicTitle* m_pMusicTitle;
     TutorialWindow* m_pTutorialWindow;
     GameState m_State;
@@ -258,7 +259,6 @@ private:
     Faction* m_pFaction[static_cast<unsigned int>(FactionId::Count)];
     float m_PlayedTime;
     bool m_EndGame;
-    bool m_FirstTimeInCombat;
 
     Popup* m_pPopup;
 
@@ -380,11 +380,6 @@ inline GameMode Game::GetGameMode() const
 inline void Game::SetGameMode(GameMode mode)
 {
     m_GameMode = mode;
-}
-
-inline bool Game::IsFirstTimeInCombat() const
-{
-    return m_FirstTimeInCombat;
 }
 
 inline const SectorEventVector& Game::GetSectorEvents()

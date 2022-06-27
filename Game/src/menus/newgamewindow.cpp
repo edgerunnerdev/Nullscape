@@ -176,24 +176,7 @@ void NewGameWindow::Select( PageId pageId )
 
 void NewGameWindow::StartNewGame()
 {
-	GameMode gameMode = g_pGame->GetGameMode();
-	if ( gameMode == GameMode::Campaign )
-	{
-		m_GalaxyCreationInfo = GalaxyCreationInfo( GalaxyCreationInfo::CreationMode::Campaign );
-		g_pGame->StartNewLegacyGame( m_ShipCustomisationData, m_CompanionShipTemplate, m_pTipsCheckbox->IsChecked(), m_GalaxyCreationInfo );
-	}
-	else if ( gameMode == GameMode::InfiniteWar )
-	{
-		m_GalaxyCreationInfo = GalaxyCreationInfo( GalaxyCreationInfo::CreationMode::InfiniteWar );
-		g_pGame->StartNewLegacyGame( m_ShipCustomisationData, m_CompanionShipTemplate, m_pTipsCheckbox->IsChecked(), m_GalaxyCreationInfo );
-	}
-	else
-	{
-        Genesis::Core::Log::Error() << "Not implemented";
-		return;
-	}
-
-	Reset();
+	g_pGame->StartNewGame(m_ShipCustomisationData);
 }
 
 void NewGameWindow::SetFactionPresence( FactionId factionId, FactionPresence presence )

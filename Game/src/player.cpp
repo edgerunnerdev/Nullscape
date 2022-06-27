@@ -25,12 +25,11 @@ m_PerkPointsParts( 0 )
 	m_pPerks = new Perks();
 }
 
-Player::Player( const ShipCustomisationData& shipCustomisationData, const std::string& companionShipTemplate ):
+Player::Player( const ShipCustomisationData& shipCustomisationData):
 m_ShipCustomisationData( shipCustomisationData ),
 m_pShip( nullptr ),
 m_pPerks( nullptr ),
 m_pInventory( nullptr ),
-m_CompanionShipTemplate( companionShipTemplate ),
 m_Influence( 0 ),
 m_PerkPoints( 0 ),
 m_PerkPointsParts( 0 )
@@ -102,7 +101,6 @@ bool Player::Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootEl
 	Xml::Write( xmlDoc, pElement, "CaptainName", m_ShipCustomisationData.m_CaptainName );
 	Xml::Write( xmlDoc, pElement, "ShipName", m_ShipCustomisationData.m_ShipName );
 	Xml::Write( xmlDoc, pElement, "PlayedTime", g_pGame->GetPlayedTime() );
-	Xml::Write( xmlDoc, pElement, "CompanionShipTemplate", m_CompanionShipTemplate );
 	Xml::Write( xmlDoc, pElement, "RequisitionUnits", m_Influence );
 	Xml::Write( xmlDoc, pElement, "PerkPoints", m_PerkPoints );
 	Xml::Write( xmlDoc, pElement, "PerkPointsParts", m_PerkPointsParts );
@@ -116,15 +114,12 @@ bool Player::Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootEl
 
 bool Player::Read( tinyxml2::XMLElement* pRootElement )
 {
-	m_CompanionShipTemplate = "lancer"; // Fallback for old savegames not containing a CompanionShipTemplate entry
-
 	float playedTime = 0.0f;
 	for ( tinyxml2::XMLElement* pElement = pRootElement->FirstChildElement(); pElement != nullptr; pElement = pElement->NextSiblingElement() ) 
 	{
 		Xml::Serialise( pElement, "CaptainName", m_ShipCustomisationData.m_CaptainName );
 		Xml::Serialise( pElement, "ShipName", m_ShipCustomisationData.m_ShipName );
 		Xml::Serialise( pElement, "PlayedTime", playedTime );
-		Xml::Serialise( pElement, "CompanionShipTemplate", m_CompanionShipTemplate );
 		Xml::Serialise( pElement, "RequisitionUnits", m_Influence );
 		Xml::Serialise( pElement, "PerkPoints", m_PerkPoints );
 		Xml::Serialise( pElement, "PerkPointsParts", m_PerkPointsParts );

@@ -14,7 +14,7 @@ class Player: public Serialisable
 {
 public:
 	Player();
-	Player( const ShipCustomisationData& shipCustomisationData, const std::string& companionShipTemplate );
+	Player( const ShipCustomisationData& shipCustomisationData);
 	~Player();
 
 	Ship*					CreateShip( float spawnPointX, float spawnPointY );
@@ -24,7 +24,6 @@ public:
 	void					UnassignShip()				{ m_pShip = nullptr; }
 	Inventory*				GetInventory() const		{ return m_pInventory; }
 	Perks*					GetPerks() const			{ return m_pPerks; }
-	const std::string&		GetCompanionShipTemplate() const;
 	int						GetInfluence() const;
 	void					SetInfluence( int value );
 	int						GetPerkPoints() const;
@@ -46,16 +45,10 @@ private:
 	Ship*					m_pShip;
 	Perks*					m_pPerks;
 	Inventory*				m_pInventory;
-	std::string				m_CompanionShipTemplate;
 	int						m_Influence;
 	int						m_PerkPoints;
 	int						m_PerkPointsParts;
 };
-
-inline const std::string& Player::GetCompanionShipTemplate() const
-{
-	return m_CompanionShipTemplate;
-}
 
 inline int Player::GetInfluence() const
 {

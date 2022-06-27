@@ -110,4 +110,4 @@ target_compile_options(Game PRIVATE
 
 add_custom_target(BUILD_RESOURCES ALL DEPENDS alwaysrun)
 add_custom_command(TARGET BUILD_RESOURCES POST_BUILD COMMAND ${CMAKE_CURRENT_LIST_DIR}/../Genesis/bin/Forge.exe -m standalone -a ${CMAKE_CURRENT_LIST_DIR}/bin/assets -c ${CMAKE_CURRENT_LIST_DIR}/../Genesis/bin/compilers -d ${CMAKE_CURRENT_LIST_DIR}/bin/data -i ${CMAKE_CURRENT_LIST_DIR}/bin/intermediates)
-add_dependencies(BUILD_RESOURCES Game Forge GenericComp ModelComp ShaderComp)
+add_dependencies(Game BUILD_RESOURCES Forge GenericComp ModelComp ShaderComp)

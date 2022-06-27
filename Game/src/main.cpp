@@ -80,6 +80,7 @@
 #include "sector/events/orbitaldefenses.h"
 #include "sector/events/neutralflagship.h"
 #include "system/system.hpp"
+#include "system/systemviewer.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
 #include "menus/mainmenu.h"
@@ -124,7 +125,6 @@ m_pIntelWindow( nullptr ),
 m_pAchievementsManager ( nullptr ),
 m_PlayedTime( 0.0f ),
 m_EndGame( false ),
-m_FirstTimeInCombat( false ),
 m_IsPaused( false ),
 m_IsInputBlocked( false ),
 m_InputBlockedTimer( 0.0f ),
@@ -291,6 +291,7 @@ void Game::Initialise()
     m_pUIRootElement = std::make_unique<UI::RootElement>();
     m_pUIEditor = std::make_unique<UI::Editor>();
 	m_pModelViewer = std::make_unique<Genesis::ModelViewer>();
+    m_pSystemViewer = std::make_unique<SystemViewer>();
 
 	SetState( GameState::Intro );
 }
@@ -334,6 +335,7 @@ Genesis::TaskStatus Game::Update( float delta )
 	m_pUIRootElement->Update();
     m_pUIEditor->UpdateDebugUI();
 	m_pModelViewer->UpdateDebugUI();
+    m_pSystemViewer->UpdateDebugUI();
 	GetBlackboard()->UpdateDebugUI();
 	GetSaveGameStorage()->UpdateDebugUI();
 	ShaderTweaksDebugWindow::Update();
@@ -443,89 +445,16 @@ Genesis::TaskStatus Game::Update( float delta )
 	return Genesis::TaskStatus::Continue;
 }
 
-void Game::StartNewLegacyGame( const ShipCustomisationData& customisationData, const std::string& companionShipTemplate, bool tutorialEnabled, const GalaxyCreationInfo& galaxyCreationInfo )
+void Game::StartNewGame(const ShipCustomisationData& customisationData)
 {
 	SDL_assert( GetPlayer() == nullptr );
 
-	m_pBlackboard->Clear();
-
-	m_FirstTimeInCombat = true;
-	m_pPlayer = new Player( customisationData, companionShipTemplate );
-	m_pMainMenu->Show( false );
+	m_pPlayer = new Player(customisationData);
+	m_pMainMenu->Show(false);
 
 	SetPlayedTime( 0.0f );
 
-	InitialiseSectorEvents();
-
-	// Create a fleet for the player
-	const SectorInfoVector& controlledSectors = GetFaction( FactionId::Empire )->GetControlledSectors();
-	if ( controlledSectors.empty() )
-	{
-        Genesis::Core::Log::Error() << "Game starting with no sectors controlled by the Empire, can't spawn player's fleet.";
-	}
-	else
-	{
-		SectorInfo* pStartingSector = nullptr;
-		const GameMode gameMode = GetGameMode();
-		for ( auto& pSectorInfo : controlledSectors )
-		{
-			if ( gameMode == GameMode::Campaign )
-			{
-				if ( pSectorInfo->GetName().find( "Tannhauser" ) != std::string::npos )
-				{
-					pStartingSector = pSectorInfo;
-					break;
-				}
-			}
-			else if ( gameMode == GameMode::InfiniteWar )
-			{
-				if ( pSectorInfo->IsHomeworld() )
-				{
-					pStartingSector = pSectorInfo;
-					break;
-				}
-			}
-		}
-
-		FleetSharedPtr pFleet = GetPlayerFaction()->BuildFleet( pStartingSector ).lock();
-
-		// Add two ships to the player's fleet. These are of the same type as the player so they can 
-		// stick together and share the same style of play.
-		const ShipInfo* pCompanionShipInfo = GetShipInfoManager()->Get( GetFaction( FactionId::Empire ), companionShipTemplate );
-		if ( pCompanionShipInfo == nullptr )
-		{
-            Genesis::Core::Log::Warning() << "Couldn't find ship '" << companionShipTemplate << "'.";
-		}
-		else
-		{
-			pFleet->AddShip( pCompanionShipInfo );
-			pFleet->AddShip( pCompanionShipInfo );
-		}
-		
-		if ( GetPlayerFleet().expired() )
-		{
-			Genesis::Core::Log::Error() << "Couldn't find starting sector, can't spawn player's fleet.";
-		}
-	}
-
-    m_ContextualTipsEnabled = tutorialEnabled;
-    if ( m_ContextualTipsEnabled )
-    {
-        GetBlackboard()->Add( "#contextual_tips" );
-    }
-
-	if ( tutorialEnabled )
-	{
-		SetupNewGameTutorial();
-	}
-
-	for ( int i = 0; i < static_cast< int >( FactionId::Count ); ++i )
-	{
-		FactionId factionId = static_cast< FactionId >( i );
-		g_pGame->GetFaction( factionId )->SetInitialPresence( galaxyCreationInfo.GetFactionPresence( factionId ) );
-	}
-
-	SetState( GameState::GalaxyView );
+	SetState(GameState::Combat);
 }
 
 void Game::EndGame()
@@ -780,6 +709,7 @@ void Game::SetState( GameState newState )
 			}
 
 			m_pSystem = std::make_shared<System>("17260877307600676");
+            m_pSystemViewer->View(m_pSystem);
 
 			m_pMainMenu = new MainMenu();
 		}
@@ -1175,8 +1105,6 @@ void Game::ExitSector()
 	SetState( GameState::GalaxyView );
 
 	SaveGame();
-
-	m_FirstTimeInCombat = false;
 }
 
 RequestManager* Game::GetRequestManager() const

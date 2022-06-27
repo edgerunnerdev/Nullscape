@@ -329,40 +329,6 @@ bool Fleet::Read( tinyxml2::XMLElement* pRootElement )
 void Fleet::UpgradeFromVersion( int version )
 {
     Genesis::Core::Log::Info() << "Fleet::UpgradeFromVersion(): " << version << " -> " << GetVersion();
-
-	// From version 1 to version 2 the player ceases to have a fixed fleet of 3 companion ships and starts having 
-	// a dynamic fleet through the Fleet Management system. When loading an older game we give the player those
-	// ships so that the transition is seamless.
-	if ( version == 1 )
-	{
-		if ( m_pFaction == g_pGame->GetPlayerFaction() )
-		{
-			const std::string& companionShipTemplate = g_pGame->GetPlayer()->GetCompanionShipTemplate();
-			const ShipInfo* pShipInfo = g_pGame->GetShipInfoManager()->Get( g_pGame->GetFaction( FactionId::Empire ), companionShipTemplate );
-		
-			if ( pShipInfo != nullptr )
-			{
-				AddShip( pShipInfo );
-				AddShip( pShipInfo );
-				AddShip( pShipInfo );
-			}
-		}
-
-		version = 2;
-	}
-
-	// From version 2 to version 3 the ships that exist in a fleet are now stored in the save game.
-	if ( version == 2 )
-	{
-		if ( m_Points > 0 && m_Ships.empty() && GetFaction()->GetFactionId() != FactionId::Player )
-		{
-			const int pointsToSpend = m_Points;
-			m_Points = 0;
-			GenerateProceduralFleet( pointsToSpend );
-		}
-
-		version = 3;
-	}
 }
 
 void Fleet::SetDestination( float x, float y )		

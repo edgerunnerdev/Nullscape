@@ -94,40 +94,8 @@ bool FleetSpawner::SpawnFleetAI( FleetSharedPtr pFleet, Sector* pSector, ShipVec
 
 bool FleetSpawner::SpawnFleetPlayer( FleetSharedPtr pFleet, Sector* pSector, ShipVector* pSpawnedShips, float spawnPointX, float spawnPointY )
 {
-	const std::string& companionShipTemplate = g_pGame->GetPlayer()->GetCompanionShipTemplate();
-	const ShipInfo* pCompanionShipInfo = g_pGame->GetShipInfoManager()->Get( g_pGame->GetPlayerFaction(), companionShipTemplate );
-	SDL_assert( pCompanionShipInfo != nullptr );
-
-	ShipInfoVector shipsToSpawn;
-	shipsToSpawn.push_back( pCompanionShipInfo ); // The ShipInfo here is irrelevant, it is only used for GetSpawnData() to calculate spawn positions correctly
-
-	const ShipInfoList& shipInfos = pFleet->GetShips();
-	for ( auto& pShipInfo : shipInfos )
-	{
-		shipsToSpawn.push_back( pShipInfo );
-	}
-
-	ShipSpawnDataVector fleetSpawnData;
-	GetSpawnData( shipsToSpawn, spawnPointX, spawnPointY, fleetSpawnData, FleetFormation::Escort );
-
-	FleetCommandUniquePtr pFleetCommand( new FleetCommand );
-
-	// Manually spawn the player's ship, as it will use its own custom hexgrid
 	Ship* pPlayerShip = g_pGame->GetPlayer()->CreateShip( spawnPointX, spawnPointY );
 	pSector->AddShip( pPlayerShip );
-	pFleetCommand->AssignLeader( pPlayerShip );
-
-	int i = 1;
-	for ( auto& pShipInfo : shipInfos )
-	{
-		Ship* pShip = SpawnShip( pSector, pFleet, pShipInfo, fleetSpawnData[i] );
-		pFleetCommand->AssignShip( pShip );
-		i++;
-	}
-
-	pFleetCommand->SetupRelationships();
-	pSector->AddFleetCommand( std::move( pFleetCommand ) );
-
 	return true;
 }
 

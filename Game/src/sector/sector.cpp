@@ -849,13 +849,6 @@ void Sector::IntelStart()
     ContextualTips::Present( ContextualTipType::EnterSector1 );
     ContextualTips::Present( ContextualTipType::EnterSector2 );
 
-    Player* pPlayer = g_pGame->GetPlayer();
-    const std::string& shipTemplate = pPlayer->GetCompanionShipTemplate();
-    if ( shipTemplate == "phalanx" || shipTemplate == "ironclad" )
-    {
-        ContextualTips::Present( ContextualTipType::EnterSectorWithArmourRepairer );
-    }
-
     if ( GetSectorInfo()->HasShipyard() )
     {
         ContextualTips::Present( ContextualTipType::Shipyard );
