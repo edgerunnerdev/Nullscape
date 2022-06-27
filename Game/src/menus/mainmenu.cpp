@@ -110,7 +110,7 @@ void MainMenu::CreateCharacterImage()
 	m_pCharacterImage = std::make_shared<UI::Image>( "Character image", "data/ui/portraits/Chrysamere_large.jpg" );
 	m_pCharacterImage->SetAutoSize( false );
 	m_pCharacterImage->SetBlendMode( UI::Image::BlendMode::Add );
-	m_pCharacterImage->SetShader( "gui_portrait_menu" );
+	m_pCharacterImage->SetShader( "data/shaders/gui_portrait_menu.glsl" );
 	const float ratio = static_cast<float>( m_pCharacterImage->GetWidth() ) / static_cast<float>( m_pCharacterImage->GetHeight() );
 	const int h = static_cast<int>( Genesis::Configuration::GetScreenHeight() );
 	const int w = static_cast<int>( static_cast<float>( h ) * ratio );

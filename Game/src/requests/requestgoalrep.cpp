@@ -18,12 +18,10 @@
 #include "requests/requestgoalrep.h"
 
 #include <resources/resourceimage.h>
+#include <resources/resourceshader.hpp>
 #include <configuration.h>
 #include <genesis.h>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>
-#include <shaderuniform.h>
 
 #include "fleet/fleet.h"
 #include "fleet/fleetrep.h"
@@ -81,8 +79,8 @@ m_pGoalTargetImage( nullptr )
 	Show( g_pGame->GetGalaxy()->GetRepresentation()->IsVisible() );
 
     m_pGoalTargetImage = (Genesis::ResourceImage*)Genesis::FrameWork::GetResourceManager()->GetResource("data/ui/sector/target.png");
-    m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "target" );
-	Genesis::ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/target.glsl");
+	Genesis::ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
 	pSampler->Set( m_pGoalTargetImage, GL_TEXTURE0 );
 
 	glBindTexture( GL_TEXTURE_2D, m_pGoalTargetImage->GetTexture() );

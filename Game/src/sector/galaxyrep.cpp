@@ -28,7 +28,6 @@
 #include <configuration.h>
 #include <shaderuniform.h>
 #include <vertexbuffer.h>
-#include <shadercache.h>
 
 #include "faction/faction.h"
 #include "faction/empirefaction.h"
@@ -98,77 +97,20 @@ m_InputTimer( 0u )
 	ResourceImage* pBackgroundImage = static_cast< ResourceImage* >( pRm->GetResource( "data/backgrounds/galaxy.png" ) );
 	ResourceImage* pBackgroundLine = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/line.png" ) );
 
-	m_pBackgroundShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "galaxy" );
-    ShaderUniform* pBackgroundDiffuseSampler = m_pBackgroundShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	m_pBackgroundShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/galaxy.glsl");
+    ShaderUniformSharedPtr pBackgroundDiffuseSampler = m_pBackgroundShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
     pBackgroundDiffuseSampler->Set( pBackgroundImage, GL_TEXTURE0 );
-	ShaderUniform* pLineSampler = m_pBackgroundShader->RegisterUniform( "lineSampler", ShaderUniformType::Texture );
+	ShaderUniformSharedPtr pLineSampler = m_pBackgroundShader->RegisterUniform( "lineSampler", ShaderUniformType::Texture );
 	pLineSampler->Set( pBackgroundLine, GL_TEXTURE1 );
-	ShaderUniform* pScreenWidth = m_pBackgroundShader->RegisterUniform( "k_screenWidth", ShaderUniformType::Float );
+	ShaderUniformSharedPtr pScreenWidth = m_pBackgroundShader->RegisterUniform( "k_screenWidth", ShaderUniformType::Float );
 	pScreenWidth->Set( (float)Configuration::GetScreenWidth() );
-	ShaderUniform* pScreenHeight = m_pBackgroundShader->RegisterUniform( "k_screenHeight", ShaderUniformType::Float );
+	ShaderUniformSharedPtr pScreenHeight = m_pBackgroundShader->RegisterUniform( "k_screenHeight", ShaderUniformType::Float );
 	pScreenHeight->Set( (float)Configuration::GetScreenHeight() );
 
 	m_pBackgroundVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
 
 	ResourceImage* pSectorImage = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/neutral.png") );
-	m_pSectorShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector" );
-
-	ResourceImage* pSectorShipyardImage = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/shipyard.png") );
-	m_pSectorShipyardShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_shipyard" );
-	ShaderUniform* pSectorShipyardDiffuseSampler = m_pSectorShipyardShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-	pSectorShipyardDiffuseSampler->Set( pSectorShipyardImage, GL_TEXTURE0 );
-
-	ResourceImage* pSectorProbeImage = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/probe.png") );
-	m_pSectorProbeShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_probe" );
-	ShaderUniform* pSectorProbeDiffuseSampler = m_pSectorProbeShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-	pSectorProbeDiffuseSampler->Set( pSectorProbeImage, GL_TEXTURE0 );
-
-	ResourceImage* pSectorStarfortImage = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/starfort.png") );
-	m_pSectorStarfortShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_starfort" );
-	ShaderUniform* pSectorStarfortDiffuseSampler = m_pSectorStarfortShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-	pSectorStarfortDiffuseSampler->Set( pSectorStarfortImage, GL_TEXTURE0 );
-
-	ResourceImage* pSectorInhibitorImage = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/hyperspace_inhibitor.png") );
-	m_pSectorInhibitorShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_inhibitor" );
-	ShaderUniform* pSectorInhibitorDiffuseSampler = m_pSectorInhibitorShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-	pSectorInhibitorDiffuseSampler->Set( pSectorInhibitorImage, GL_TEXTURE0 );
-
-	m_pSectorHomeworldShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_homeworld" );
-	m_pSectorHomeworldDiffuseSampler = m_pSectorHomeworldShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-
-	m_HomeworldImages[ (int)FactionId::Neutral ] = nullptr;
-	m_HomeworldImages[ (int)FactionId::Player ] = nullptr;
-	m_HomeworldImages[ (int)FactionId::Empire ] = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/homeworld/empire.png") );
-	m_HomeworldImages[ (int)FactionId::Ascent ] = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/homeworld/ascent.png") );
-	m_HomeworldImages[ (int)FactionId::Pirate ] = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/homeworld/pirates.png") );
-	m_HomeworldImages[ (int)FactionId::Marauders ] = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/homeworld/marauders.png") );
-	m_HomeworldImages[ (int)FactionId::Iriani ] = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/homeworld/iriani.png") );
-	m_HomeworldImages[ (int)FactionId::Special ] = nullptr;
-	m_HomeworldImages[ (int)FactionId::Hegemon ] = static_cast< ResourceImage* >( pRm->GetResource("data/ui/sector/homeworld/hegemon.png") );
-
-	m_pSectorVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
-	m_pSectorInhibitorVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
-	m_pSectorHomeworldVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
-
-	m_pSectorCrossVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
-
-	m_pSectorThreatShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sector_threat" );
-
-	std::array< ResourceImage*, static_cast<size_t>( ThreatRating::Count ) > threatImages;
-	threatImages[ static_cast<size_t>( ThreatRating::None ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_none.png" ) );
-	threatImages[ static_cast<size_t>( ThreatRating::Trivial ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_trivial.png" ) );
-	threatImages[ static_cast<size_t>( ThreatRating::Easy ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_easy.png" ) );
-	threatImages[ static_cast<size_t>( ThreatRating::Fair ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_fair.png" ) );
-	threatImages[ static_cast<size_t>( ThreatRating::Challenging ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_challenging.png" ) );
-	threatImages[ static_cast<size_t>( ThreatRating::Overpowering ) ] = static_cast< ResourceImage* >( pRm->GetResource( "data/ui/sector/threat_overpowering.png" ) );
-
-	//for ( size_t i = 0; i < static_cast<size_t>( ThreatRating::Count ); ++i )
-	//{
-	//	ResourceImage* pImage = threatImages[ i ];
-	//	ShaderUniformInstance uniform = m_pSectorThreatShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-	//	uniform.Set( pImage, GL_TEXTURE0 );
-	//	m_pSectorThreatUniforms[ i ].push_back( uniform );
-	//}
+	m_pSectorShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/sector.glsl");
 
 	m_LeftMouseButtonDownToken = FrameWork::GetInputManager()->AddMouseCallback( std::bind( &GalaxyRep::OnLeftMouseButtonDown, this ), MouseButton::Left, ButtonState::Pressed );
 }
@@ -606,7 +548,7 @@ void GalaxyRep::DrawSectorsThreatRatings()
 	}
 }
 
-void GalaxyRep::DrawSectors( SectorDrawInfoVector& drawInfoVec, Genesis::Shader* pShader, Genesis::ShaderUniformInstances* pShaderUniforms, bool useFactionColour )
+void GalaxyRep::DrawSectors( SectorDrawInfoVector& drawInfoVec, Genesis::ResourceShader* pShader, Genesis::ShaderUniformInstances* pShaderUniforms, bool useFactionColour )
 {
 	using namespace Genesis;
 
@@ -661,47 +603,7 @@ void GalaxyRep::DrawSectors( SectorDrawInfoVector& drawInfoVec, Genesis::Shader*
 
 void GalaxyRep::DrawGrid()
 {
-	using namespace Genesis;
 
-	if ( m_Show == false )
-	{
-		return;
-	}
-
-	const float sectorSize = GalaxySize / NumSectorsX;
-	const float crossHalfSize = 4.0f;
-
-    PositionData posData;
-	UVData uvData;
-
-	const unsigned int numVertices = NumSectorsX * NumSectorsY * 6;
-	posData.reserve( numVertices );
-	uvData.reserve( numVertices );
-
-	for ( int x = 0; x < NumSectorsX; x++ )
-	{
-		for ( int y = 0; y < NumSectorsY; y++ )
-		{
-			posData.emplace_back( m_OffsetX + sectorSize * x - crossHalfSize, m_OffsetY + sectorSize * y - crossHalfSize, 0.0f ); // 0
-			posData.emplace_back( m_OffsetX + sectorSize * x - crossHalfSize, m_OffsetY + sectorSize * y + crossHalfSize, 0.0f ); // 1
-			posData.emplace_back( m_OffsetX + sectorSize * x + crossHalfSize, m_OffsetY + sectorSize * y + crossHalfSize, 0.0f ); // 2
-			posData.emplace_back( m_OffsetX + sectorSize * x - crossHalfSize, m_OffsetY + sectorSize * y - crossHalfSize, 0.0f ); // 0
-			posData.emplace_back( m_OffsetX + sectorSize * x + crossHalfSize, m_OffsetY + sectorSize * y + crossHalfSize, 0.0f ); // 2
-			posData.emplace_back( m_OffsetX + sectorSize * x + crossHalfSize, m_OffsetY + sectorSize * y - crossHalfSize, 0.0f ); // 3
-
-			uvData.emplace_back( 0.0f, 0.0f ); // 0
-			uvData.emplace_back( 0.0f, 1.0f ); // 1
-			uvData.emplace_back( 1.0f, 1.0f ); // 2
-			uvData.emplace_back( 0.0f, 0.0f ); // 0
-			uvData.emplace_back( 1.0f, 1.0f ); // 2
-			uvData.emplace_back( 1.0f, 0.0f ); // 3
-		}
-	}
-
-	m_pSectorCrossVB->CopyPositions( posData );
-	m_pSectorCrossVB->CopyUVs( uvData );
-    m_pSectorCrossShader->Use( &m_SectorCrossUniforms );
-	m_pSectorCrossVB->Draw();
 }
 
 void GalaxyRep::DrawGoals()

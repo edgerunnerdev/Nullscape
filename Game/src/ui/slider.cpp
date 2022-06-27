@@ -19,6 +19,7 @@
 
 #include <gui/gui.h>
 #include <math/misc.h>
+#include <genesis.h>
 
 #include "ui/panel.h"
 #include "ui/slider.h"

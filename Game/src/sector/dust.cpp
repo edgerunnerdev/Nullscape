@@ -19,12 +19,11 @@
 #include <scene/scene.h>
 
 #include <resources/resourceimage.h>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
 #include <configuration.h>
-#include <vertexbuffer.h>
-#include <shader.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
+#include <vertexbuffer.h>
 #include "dust.h"
 
 namespace Hexterminate
@@ -36,8 +35,8 @@ Dust::Dust()
 
 	m_pDust = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/backgrounds/dust.png");
 
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "textured" );
-	ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/textured.glsl");
+	ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
 	pSampler->Set( m_pDust, GL_TEXTURE0 );
 
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );

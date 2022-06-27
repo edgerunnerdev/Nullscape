@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
+#include <resources/resourceshader.hpp>
 #include <configuration.h>
 #include <genesis.h>
-#include <shadercache.h>
 
 #include "menus/eva.h"
 #include "menus/loadingscreen.h"
@@ -46,7 +46,7 @@ m_ProgressMaxWidth( 395 )
 	m_pBackground->SetBorderMode( Gui::PANEL_BORDER_NONE );
 	m_pBackground->SetTexture( nullptr );
 	m_pBackground->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
-	m_pBackground->SetShader( FrameWork::GetRenderSystem()->GetShaderCache()->Load( "gui_loading" ) );
+	m_pBackground->SetShader(FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_loading.glsl"));
 	m_pBackground->SetDepth( 101 );
 	m_pBackground->Show( false );
 	pGuiManager->AddElement( m_pBackground );

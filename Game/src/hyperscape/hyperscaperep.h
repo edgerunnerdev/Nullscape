@@ -19,8 +19,8 @@
 
 #include <scene/layer.h>
 #include <scene/sceneobject.h>
+#include <resources/resourceshader.hpp>
 #include <inputmanager.h>
-#include <shader.h>
 #include <vertexbuffer.h>
 
 namespace Hexterminate
@@ -59,11 +59,11 @@ private:
 	Hyperscape* m_pHyperscape;
 	bool m_Show;
 
-	Genesis::Shader* m_pBackgroundShader;
+	Genesis::ResourceShader* m_pBackgroundShader;
 	Genesis::VertexBuffer* m_pBackgroundVB;
-	Genesis::Shader* m_pGridShader;
-	Genesis::ShaderUniform* m_pGridDiffuseSampler;
-	Genesis::ShaderUniform* m_pGridParallax;
+	Genesis::ResourceShader* m_pGridShader;
+	Genesis::ShaderUniformSharedPtr m_pGridDiffuseSampler;
+	Genesis::ShaderUniformSharedPtr m_pGridParallax;
 	Genesis::VertexBuffer* m_pGridVB;
 
 	Genesis::LayerSharedPtr m_pLayer;

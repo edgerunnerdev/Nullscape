@@ -19,13 +19,10 @@
 
 #include <genesis.h>
 #include <scene/scene.h>
-
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
 #include <configuration.h>
 #include <vertexbuffer.h>
-#include <shader.h>
-#include <shadercache.h>
-#include <shaderuniform.h>
 #include "hexterminate.h"
 #include "ship/ship.h"
 #include "player.h"
@@ -45,7 +42,7 @@ m_WarningTimer( 0.0f )
 {
 	using namespace Genesis;
 
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "boundary" );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/boundary.glsl");
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
 }
 

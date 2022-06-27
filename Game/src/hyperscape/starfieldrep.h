@@ -20,12 +20,7 @@
 #include <scene/layer.h>
 #include <scene/sceneobject.h>
 #include <vertexbuffer.h>
-
-namespace Genesis
-{
-	class Shader;
-	class ShaderUniform;
-}
+#include <resources/resourceshader.hpp>
 
 namespace Hexterminate
 {
@@ -53,8 +48,8 @@ private:
 
 	Starfield* m_pStarfield;
 
-	Genesis::Shader* m_pStarShader;
-	Genesis::ShaderUniform* m_pStarfieldParallax;
+	Genesis::ResourceShader* m_pStarShader;
+	Genesis::ShaderUniformSharedPtr m_pStarfieldParallax;
 	Genesis::VertexBuffer* m_pStarfieldVB;
 	Genesis::PositionData m_PositionData;
 	Genesis::UVData m_UVData;

@@ -16,6 +16,7 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <cassert>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
 #include "drawutils.h"
 
@@ -27,12 +28,12 @@ namespace Hexterminate
 // DrawUtils
 /////////////////////////////////////////////////////////////////////
 
-void DrawUtils::Rect2D( Genesis::Shader* pShader, int x, int y, int width, int height )
+void DrawUtils::Rect2D( Genesis::ResourceShader* pShader, int x, int y, int width, int height )
 {
 	Rect2D( pShader, (float)x, (float)y, (float)width, (float)height);
 }
 
-void DrawUtils::Rect2D( Genesis::Shader* pShader, float x, float y, float width, float height )
+void DrawUtils::Rect2D( Genesis::ResourceShader* pShader, float x, float y, float width, float height )
 {
 	using namespace Genesis;
 
@@ -59,7 +60,7 @@ void DrawUtils::Rect2D( Genesis::Shader* pShader, float x, float y, float width,
 	glEnd();
 }
 
-void DrawUtils::Rect2DOriented( Genesis::Shader* pShader, int x, int y, int width, int height, float angle )
+void DrawUtils::Rect2DOriented( Genesis::ResourceShader* pShader, int x, int y, int width, int height, float angle )
 {
 	SDL_assert( false ); // TODO: Implement
 }

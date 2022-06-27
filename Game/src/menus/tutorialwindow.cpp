@@ -19,7 +19,6 @@
 #include <genesis.h>
 #include <configuration.h>
 #include <rendersystem.h>
-#include <shadercache.h>
 
 #include "menus/tutorialwindow.h"
 #include "menus/eva.h"
@@ -97,7 +96,7 @@ m_Delay( 0.0f )
 	m_pIcon->SetTexture( nullptr );
 	m_pIcon->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
 	m_pIcon->SetTexture( (ResourceImage*)pRm->GetResource( "data/ui/portraits/FleetIntelligenceOfficer.jpg" ) );
-	m_pIcon->SetShader( FrameWork::GetRenderSystem()->GetShaderCache()->Load( "gui_portrait" ) );
+	m_pIcon->SetShader(FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_portrait.glsl"));
 	m_pMainPanel->AddElement( m_pIcon );
 
 	m_pTitle = new Gui::Text();

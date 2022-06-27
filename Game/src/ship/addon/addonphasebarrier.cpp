@@ -34,7 +34,6 @@
 #include <rendersystem.h>
 #include <render/debugrender.h>
 #include <vertexbuffer.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 
 #include "laser/laser.h"
@@ -87,8 +86,8 @@ m_SphereRadius( 0.0f )
 	m_pTexture->EnableMipMapping( false );
 
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "phasebarrier" );
-	ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/phasebarrier.glsl");
+	ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
     pSampler->Set( m_pTexture, GL_TEXTURE0 );
 
 	m_pShieldStrengthUniform = m_pShader->RegisterUniform( "k_shieldStrength", ShaderUniformType::Float );
@@ -96,7 +95,7 @@ m_SphereRadius( 0.0f )
 
 	// The phase barrier requires additional uniforms which would normally be set up by the ship, but since we use a custom
 	// shader that doesn't work and we need to set them up manually.
-	Shader* pSphereShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "phasebarriersphere" );
+	ResourceShader* pSphereShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/phasebarriersphere.glsl");
 	m_pClipActiveUniform = pSphereShader->RegisterUniform( "k_clipActive", ShaderUniformType::Integer, false );
     m_pClipUniform = pSphereShader->RegisterUniform( "k_clip", ShaderUniformType::FloatVector4, false );
     m_pClipForwardUniform = pSphereShader->RegisterUniform( "k_clipForward", ShaderUniformType::FloatVector4, false );

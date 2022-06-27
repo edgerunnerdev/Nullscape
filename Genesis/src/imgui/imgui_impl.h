@@ -6,11 +6,12 @@
 #include <map>
 #include <string>
 
+#include "resources/resourceshader.hpp"
+
 namespace Genesis
 {
 
 class ResourceImage;
-class Shader;
 class ShaderUniform;
 class VertexBuffer;
 
@@ -35,8 +36,8 @@ private:
     static bool g_MousePressed[3];
     static float g_MouseWheel;
     static GLuint g_FontTexture;
-    static Shader* m_pDiffuseShader;
-    static ShaderUniform* m_pDiffuseSampler;
+    static ResourceShader* m_pDiffuseShader;
+    static ShaderUniformSharedPtr m_pDiffuseSampler;
     static ResourceImage* m_pTexture;
     static VertexBuffer* m_pVertexBuffer;
     static bool m_Initialised;

@@ -22,6 +22,7 @@
 #include "resources/resourceshader.hpp"
 #include "scene/light.h"
 #include "scene/scene.h"
+#include "genesis.h"
 #include "shaderuniform.h"
 #include "shaderuniforminstance.h"
 #include "rendersystem.h"

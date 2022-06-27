@@ -159,7 +159,7 @@ void FleetWindow::PopulateFleetShips()
 		fsi.pReturnButton = std::make_shared<UI::Button>( "Return button", []( std::any userData ){} );
 		fsi.pPanel->Add( fsi.pReturnButton );
 		fsi.pUnavailableIcon = std::make_shared<UI::Image>( "Unavailable icon" );
-		fsi.pUnavailableIcon->SetShader( "gui_textured" );
+		fsi.pUnavailableIcon->SetShader("data/shaders/gui_textured.glsl");
 		fsi.pUnavailableIcon->SetColour( 1.0f, 0.0f, 0.0f, 1.0f );
 		fsi.pPanel->Add( fsi.pUnavailableIcon );
 		fsi.pUnavailableText = std::make_shared<UI::Text>( "Unavailable text" );
@@ -212,12 +212,12 @@ void FleetWindow::PopulateRequisitionShips()
 			rsi.pDefenseText = std::make_shared<UI::Text>( "Defense text" );
 			rsi.pBackground->Add( rsi.pDefenseText );
 			rsi.pInfluenceIcon = std::make_shared<UI::Image>( "Influence icon" );
-			rsi.pInfluenceIcon->SetShader( "gui_textured" );
+			rsi.pInfluenceIcon->SetShader( "data/shaders/gui_textured.glsl" );
 			rsi.pBackground->Add( rsi.pInfluenceIcon );
 			rsi.pInfluenceText = std::make_shared<UI::Text>( "Influence text" );
 			rsi.pBackground->Add( rsi.pInfluenceText );
 			rsi.pPerkIcon = std::make_shared<UI::Image>( "Perk icon" );
-			rsi.pPerkIcon->SetShader( "gui_textured" );
+			rsi.pPerkIcon->SetShader( "data/shaders/gui_textured.glsl" );
 			rsi.pBackground->Add( rsi.pPerkIcon );
 			rsi.pPerkText = std::make_shared<UI::Text>( "Perk text" );
 			rsi.pBackground->Add( rsi.pPerkText );
@@ -289,12 +289,12 @@ void FleetWindow::RefreshRequisitionShips()
 	{
 		if ( CanRequisitionShip( rsi.pShipInfo ) )
 		{
-			rsi.pBackground->SetShader( "gui_textured" );
+			rsi.pBackground->SetShader( "data/shaders/gui_textured.glsl" );
 			rsi.pRequisitionButton->Enable( true );
 		}
 		else
 		{
-			rsi.pBackground->SetShader( "gui_textured_greyscale" );
+			rsi.pBackground->SetShader( "data/shaders/gui_textured_greyscale.glsl" );
 			rsi.pRequisitionButton->Enable( false );
 		}
 	}

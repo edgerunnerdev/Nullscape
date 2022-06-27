@@ -20,10 +20,9 @@
 #include <vector>
 
 #include <colour.h>
+#include <resources/resourceshader.hpp>
 #include <scene/layer.h>
 #include <scene/sceneobject.h>
-#include <shader.h>
-#include <shaderuniforminstance.h>
 
 #include "menus/sectordetails.h"
 #include "misc/mathaux.h"
@@ -109,7 +108,7 @@ private:
 	void						UpdateGoalDrawInfo();
 
 	void						DrawBackground();
-	void						DrawSectors( SectorDrawInfoVector& drawInfoVec, Genesis::Shader* pShader, Genesis::ShaderUniformInstances* pShaderUniforms, bool useFactionColour );
+	void						DrawSectors( SectorDrawInfoVector& drawInfoVec, Genesis::ResourceShader* pShader, Genesis::ShaderUniformInstances* pShaderUniforms, bool useFactionColour );
 	void						DrawSectorsThreatRatings();
 	void						DrawHomeworldSectors();
 	void						DrawGrid();
@@ -123,30 +122,30 @@ private:
 	Galaxy*						m_pGalaxy;
 	bool						m_Show;
 
-	Genesis::Shader*			m_pBackgroundShader;
+	Genesis::ResourceShader*	m_pBackgroundShader;
 	Genesis::VertexBuffer*		m_pBackgroundVB;
 
-	Genesis::Shader*			m_pSectorShader;
-	Genesis::Shader*			m_pSectorShipyardShader;
-	Genesis::Shader*			m_pSectorProbeShader;
-	Genesis::Shader*			m_pSectorStarfortShader;
-	Genesis::Shader*			m_pSectorInhibitorShader;
-	Genesis::Shader*			m_pSectorHomeworldShader;
+	Genesis::ResourceShader*	m_pSectorShader;
+	Genesis::ResourceShader*	m_pSectorShipyardShader;
+	Genesis::ResourceShader*	m_pSectorProbeShader;
+	Genesis::ResourceShader*	m_pSectorStarfortShader;
+	Genesis::ResourceShader*	m_pSectorInhibitorShader;
+	Genesis::ResourceShader*	m_pSectorHomeworldShader;
 	Genesis::VertexBuffer*		m_pSectorVB;
 	Genesis::VertexBuffer*		m_pSectorInhibitorVB;
 	Genesis::VertexBuffer*		m_pSectorHomeworldVB;
 
-	Genesis::Shader*			m_pSectorCrossShader;
+	Genesis::ResourceShader*	m_pSectorCrossShader;
 	Genesis::VertexBuffer*		m_pSectorCrossVB;
     Genesis::ShaderUniformInstances m_SectorCrossUniforms;
 
-	Genesis::ShaderUniform*		m_pSectorHomeworldDiffuseSampler;
+	Genesis::ShaderUniformSharedPtr	m_pSectorHomeworldDiffuseSampler;
 	std::array< Genesis::ResourceImage*, (int)FactionId::Count > m_HomeworldImages;
 
-	Genesis::Shader*			m_pSectorThreatShader;
+	Genesis::ResourceShader*			m_pSectorThreatShader;
 	std::array< Genesis::ShaderUniformInstances, static_cast<size_t>( ThreatRating::Count ) > m_pSectorThreatUniforms;
 
-	Genesis::Shader*			m_pGoalTargetShader;
+	Genesis::ResourceShader*			m_pGoalTargetShader;
 	Genesis::VertexBuffer*		m_pGoalTargetVB;
 
 	Genesis::LayerSharedPtr		m_pLayer;

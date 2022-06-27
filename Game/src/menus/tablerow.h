@@ -21,6 +21,7 @@
 #include <vector>
 
 #include <colour.h>
+#include <genesis.h>
 
 #include "menus/eva.h"
 

@@ -20,6 +20,7 @@
 #include <gui/gui.h>
 #include <imgui/imgui.h>
 #include <math/misc.h>
+#include <genesis.h>
 
 #include "ui/image.h"
 #include "ui/panel.h"

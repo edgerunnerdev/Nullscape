@@ -20,9 +20,8 @@
 #include <configuration.h>
 #include <genesis.h>
 #include <resources/resourceimage.h>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>
 #include <vertexbuffer.h>
 
 namespace Hexterminate
@@ -46,7 +45,7 @@ m_pVertexBuffer( nullptr )
 		static_cast<float>( Genesis::Configuration::GetScreenHeight() ) );
 
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Line, VBO_POSITION | VBO_UV | VBO_COLOUR );
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "untextured_vertex_coloured" );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/untextured_vertex_coloured.glsl");
 }
 
 PointOfInterest::~PointOfInterest()

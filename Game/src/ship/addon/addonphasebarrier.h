@@ -19,6 +19,7 @@
 
 #include "ship/addon/addon.h"
 
+#include <resources/resourceshader.hpp>
 #include <scene/sceneobject.h>
 #include <rendersystem.h>
 
@@ -71,14 +72,14 @@ private:
 	float							m_Charge;
 
 	Genesis::ResourceImage*			m_pTexture;
-	Genesis::Shader*				m_pShader;
+	Genesis::ResourceShader*		m_pShader;
 	Genesis::VertexBuffer*          m_pVertexBuffer;
-	Genesis::ShaderUniform*			m_pShieldStrengthUniform;
-	Genesis::ShaderUniform*			m_pClipActiveUniform;
-	Genesis::ShaderUniform*			m_pClipUniform;
-	Genesis::ShaderUniform*			m_pClipForwardUniform;
-	Genesis::ShaderUniform*			m_pAmbientColourUniform;
-	Genesis::ShaderUniform*			m_pActiveUniform;
+	Genesis::ShaderUniformSharedPtr	m_pShieldStrengthUniform;
+	Genesis::ShaderUniformSharedPtr	m_pClipActiveUniform;
+	Genesis::ShaderUniformSharedPtr	m_pClipUniform;
+	Genesis::ShaderUniformSharedPtr	m_pClipForwardUniform;
+	Genesis::ShaderUniformSharedPtr	m_pAmbientColourUniform;
+	Genesis::ShaderUniformSharedPtr	m_pActiveUniform;
 
 	float							m_RadiusX;
 	float							m_RadiusY;

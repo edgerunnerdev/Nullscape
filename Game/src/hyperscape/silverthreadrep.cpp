@@ -20,8 +20,6 @@
 #include <configuration.h>
 #include <genesis.h>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 
 #include "hyperscape/silverthreadrep.h"
@@ -49,9 +47,8 @@ m_pLinkParallax( nullptr ),
 m_pLayer( nullptr )
 {
 	using namespace Genesis;
-	ShaderCache* pShaderCache = FrameWork::GetRenderSystem()->GetShaderCache();
 
-	m_pStarShader = pShaderCache->Load( "hyperscape_star" );
+	m_pStarShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/hyperscape_star.glsl");
 	m_pStarParallax = m_pStarShader->RegisterUniform( "k_parallax", ShaderUniformType::FloatVector2 );
 	m_pLocationVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
 	const size_t locationReserveSize = 128;
@@ -59,7 +56,7 @@ m_pLayer( nullptr )
 	m_LocationUVData.resize( locationReserveSize );
 	m_LocationColorData.resize( locationReserveSize );
 
-	m_pLinkShader = pShaderCache->Load( "hyperscape_link" );
+	m_pLinkShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/hyperscape_link.glsl");
 	m_pLinkParallax = m_pLinkShader->RegisterUniform( "k_parallax", ShaderUniformType::FloatVector2 );
 	m_pLinkVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
 	m_LinkPosData.resize( locationReserveSize );

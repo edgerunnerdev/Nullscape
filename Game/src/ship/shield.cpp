@@ -28,9 +28,6 @@
 #include <resources/resourceimage.h>
 #include <resourcemanager.h>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>
-#include <shaderuniform.h>
 #include <genesis.h>
 
 #include "faction/faction.h"
@@ -74,9 +71,9 @@ m_pCollisionInfo( nullptr )
 	m_pTexture->EnableMipMapping( false );
 
     m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "shield" );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/shield.glsl");
 
-	ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
 	if ( pSampler != nullptr )
 	{
 		pSampler->Set( m_pTexture, GL_TEXTURE0 );

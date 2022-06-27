@@ -17,11 +17,9 @@
 
 #include <math/constants.h>
 #include <genesis.h>
-#include <shader.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 #include <vertexbuffer.h>
-
+#include <resources/resourceshader.hpp>
 #include <resources/resourceimage.h>
 #include <rendersystem.h>
 #include <inputmanager.h>
@@ -63,7 +61,7 @@ m_DisplayFlagship( false )
 	m_pImage = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/ui/sector/fleet.png");
 	m_pImageFlagship = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/ui/sector/fleetflagship.png");
 
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "textured_vertex_coloured" );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/textured_vertex_coloured.glsl");
 	m_pDiffuseSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
 	m_pDiffuseSampler->Set( m_pImage, GL_TEXTURE0 );
 

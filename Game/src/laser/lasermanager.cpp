@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
-#include <shadercache.h>
+#include <resources/resourceshader.hpp>
 #include <vertexbuffer.h>
 #include <log.hpp>
 
@@ -38,8 +38,8 @@ m_pVertexBuffer( nullptr )
 	m_pTexture = (Genesis::ResourceImage*)Genesis::FrameWork::GetResourceManager()->GetResource( "data/images/laser.png" );
 
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "laser" );
-	ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/laser.glsl");
+	ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
     pSampler->Set( m_pTexture, GL_TEXTURE0 );
 };
 

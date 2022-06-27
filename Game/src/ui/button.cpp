@@ -18,8 +18,8 @@
 #include <imgui/imgui.h>
 #include <imgui/misc/cpp/imgui_stdlib.h>
 #include <log.hpp>
-
 #include <gui/gui.h>
+#include <genesis.h>
 
 #include "ui/button.h"
 #include "ui/fonts.h"

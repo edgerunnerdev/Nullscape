@@ -35,7 +35,6 @@ static const unsigned int IVF_FRAME_HDR_SZ = 12;
 
 class ResourceVideo;
 class VertexBuffer;
-class Shader;
 class ShaderUniform;
 
 class VideoPlayer : public Task

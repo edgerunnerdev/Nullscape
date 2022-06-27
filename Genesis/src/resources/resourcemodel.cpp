@@ -28,7 +28,6 @@
 #include "resources/resourceshader.hpp"
 #include "../genesis.h"
 #include "../rendersystem.h"
-#include "../shadercache.h"
 #include "../shaderuniform.h"
 #include "render/debugrender.h"
 #include "modelserialization.hpp"

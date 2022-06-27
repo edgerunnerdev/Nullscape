@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
+#include <resources/resourceshader.hpp>
 #include <resources/resourcesound.h>
 #include <genesis.h>
 #include <configuration.h>
 #include <rendersystem.h>
-#include <shadercache.h>
 
 #include "menus/intelwindow.h"
 #include "menus/eva.h"
@@ -122,7 +122,7 @@ m_pSFX( nullptr )
 	m_pIcon->SetSize( 131.0f, 160.0f );
 	m_pIcon->SetTexture( nullptr );
 	m_pIcon->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
-    m_pIcon->SetShader( FrameWork::GetRenderSystem()->GetShaderCache()->Load( "gui_portrait" ) );
+    m_pIcon->SetShader( FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_portrait.glsl" ) );
 	m_pMainPanel->AddElement( m_pIcon );
 
 	m_LineLength = static_cast<int>( ( panelWidth - m_pContent->GetPosition().x - 8.0f ) / 8.0f );

@@ -20,9 +20,7 @@
 #include <rendersystem.h>
 #include <genesis.h>
 #include <render/debugrender.h>
-#include <shader.h>
-#include <shadercache.h>
-#include <shaderuniform.h>
+#include <resources/resourceshader.hpp>
 #include "sector/sector.h"
 #include "muzzleflash/muzzleflashdata.h"
 #include "muzzleflash/muzzleflashmanager.h"
@@ -46,8 +44,8 @@ m_NumVertices( 0 )
     ResourceImage* pTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/images/muzzleflash.png");
 
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    m_pShader = pRenderSystem->GetShaderCache()->Load( "muzzleflash" );
-    ShaderUniform* pDiffuseSamplerUniform = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/muzzleflash.glsl");
+    ShaderUniformSharedPtr pDiffuseSamplerUniform = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
     pDiffuseSamplerUniform->Set( pTexture, GL_TEXTURE0 );
 
     m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );

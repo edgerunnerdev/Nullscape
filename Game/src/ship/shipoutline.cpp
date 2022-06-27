@@ -27,7 +27,6 @@
 #include <imgui/imgui.h>
 #include <rendersystem.h>
 #include <resources/resourcemodel.h>
-#include <shadercache.h>
 
 namespace Hexterminate
 {
@@ -35,7 +34,6 @@ namespace Hexterminate
 ShipOutline::ShipOutline()
 {
     m_Thickness = 1.15f;
-    Genesis::ShaderCache* pShaderCache = Genesis::FrameWork::GetRenderSystem()->GetShaderCache();
 
     //m_pMaterialPlayer = new Genesis::Material();
     //m_pMaterialPlayer->SetName("ship_outline_player");
@@ -52,9 +50,9 @@ ShipOutline::ShipOutline()
 
 ShipOutline::~ShipOutline()
 {
-    delete m_pMaterialPlayer;
-    delete m_pMaterialFriendly;
-    delete m_pMaterialHostile;
+    //delete m_pMaterialPlayer;
+    //delete m_pMaterialFriendly;
+    //delete m_pMaterialHostile;
 }
 
 void ShipOutline::DrawShipOutlineTweaks()

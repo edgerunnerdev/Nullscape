@@ -18,6 +18,7 @@
 #include <functional>
 
 #include <configuration.h>
+#include <genesis.h>
 #include <rendersystem.h>
 
 #include "menus/settingswindow.h"

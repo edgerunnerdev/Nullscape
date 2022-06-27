@@ -21,12 +21,9 @@
 #include <rendersystem.h>
 #include "particles/particlepass.h"
 
-namespace Genesis
-{
-namespace Gui
+namespace Genesis::Gui
 {
 class Atlas;
-}
 }
 
 namespace Hexterminate
@@ -55,7 +52,7 @@ private:
 	int							FindIndexForTexture( ParticlePass* pPass, int id );
 	void						AddQuad( const Genesis::Gui::Atlas* pAtlas, const Particle* pParticle, Genesis::PositionData& vertices, Genesis::UVData& uvs, Genesis::ColourData& colours );
 	void						RenderGeometry( ParticlePass* pPass, const ParticleRenderData& particleRenderData, unsigned int startIdx, unsigned int endIdx );
-	Genesis::Shader*			GetShader( Genesis::BlendMode blendMode, int textureId );
+	Genesis::ResourceShader*	GetShader( Genesis::BlendMode blendMode, int textureId );
 	ParticleManager*			m_pParticleManager;
 	ParticlePass*				m_pPass[2];
 };

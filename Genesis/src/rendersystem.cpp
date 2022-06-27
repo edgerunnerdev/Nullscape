@@ -37,7 +37,6 @@
 #include "resources/resourceimage.h"
 #include "resources/resourcemodel.h"
 #include "scene/scene.h"
-#include "shadercache.h"
 #include "shaderuniform.h"
 #include "videoplayer.h"
 #include "window.h"
@@ -62,7 +61,6 @@ namespace Genesis
 RenderSystem::RenderSystem()
     : m_ScreenshotScheduled(false)
     , m_CaptureInProgress(false)
-    , m_pShaderCache(nullptr)
     , m_ScreenWidth(0)
     , m_ScreenHeight(0)
     , m_pPostProcessShader(nullptr)
@@ -99,7 +97,6 @@ RenderSystem::~RenderSystem()
         pInputManager->RemoveKeyboardCallback(m_InputCallbackCapture);
     }
 
-    delete m_pShaderCache;
     delete m_pPostProcessVertexBuffer;
 
     ImGuiImpl::Shutdown();
@@ -155,8 +152,6 @@ void RenderSystem::Initialize(GLuint screenWidth, GLuint screenHeight)
 
     m_pPrimaryViewport = std::make_shared<Viewport>("Primary viewport", m_ScreenWidth, m_ScreenHeight, true, true);
     AddViewport(m_pPrimaryViewport);
-
-    m_pShaderCache = new ShaderCache();
 
     CreateRenderTargets();
     InitializePostProcessing();
@@ -308,16 +303,16 @@ RenderTarget* RenderSystem::GetRenderTarget(RenderTargetId id)
 // using a variety of post-processing effects.
 void RenderSystem::InitializePostProcessing()
 {
-    m_pPostProcessShader = GetShaderCache()->Load("postprocessing");
+    m_pPostProcessShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/postprocessing.glsl");
 
-    ShaderUniform* pBaseSampler = m_pPostProcessShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
+    ShaderUniformSharedPtr pBaseSampler = m_pPostProcessShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
     pBaseSampler->Set(m_pPrimaryViewport->GetRenderTarget()->GetColor(), GL_TEXTURE0);
 
     // RenderTargetId::GlowBlurVertical contains the final result of the glow effect.
-    ShaderUniform* pGlowSampler = m_pPostProcessShader->RegisterUniform("k_sampler1", ShaderUniformType::Texture);
+    ShaderUniformSharedPtr pGlowSampler = m_pPostProcessShader->RegisterUniform("k_sampler1", ShaderUniformType::Texture);
     pGlowSampler->Set(GetRenderTarget(RenderTargetId::GlowBlurVertical)->GetColor(), GL_TEXTURE1);
 
-    ShaderUniform* pResolution = m_pPostProcessShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
+    ShaderUniformSharedPtr pResolution = m_pPostProcessShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
     const float w = static_cast<float>(m_pPrimaryViewport->GetWidth());
     const float h = static_cast<float>(m_pPrimaryViewport->GetHeight());
     if (pResolution != nullptr)
@@ -326,7 +321,7 @@ void RenderSystem::InitializePostProcessing()
     }
 
     auto LinkPostProcessEffect = [this](const char* pUniformName, PostProcessEffect effect) {
-        ShaderUniform* pShaderUniform = m_pPostProcessShader->RegisterUniform(pUniformName, ShaderUniformType::Boolean);
+        ShaderUniformSharedPtr pShaderUniform = m_pPostProcessShader->RegisterUniform(pUniformName, ShaderUniformType::Boolean);
         if (pShaderUniform != nullptr)
         {
             pShaderUniform->Set(Configuration::IsPostProcessingEffectEnabled(effect));
@@ -348,7 +343,7 @@ void RenderSystem::InitializePostProcessing()
 // Initializes the shader and vertex buffer used by the glow effect.
 void RenderSystem::InitializeGlowChain()
 {
-    m_pGlowShader = GetShaderCache()->Load("glow");
+    m_pGlowShader =  FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/glow.glsl");
 
     // The sampler isn't set immediately as it alternates between the two glow blur render targets.
     m_pGlowShaderSampler = m_pGlowShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
@@ -356,7 +351,7 @@ void RenderSystem::InitializeGlowChain()
     // Horizontal (1,0) or vertical (0,1) blur.
     m_pGlowShaderDirection = m_pGlowShader->RegisterUniform("k_direction", ShaderUniformType::FloatVector2);
 
-    ShaderUniform* pResolution = m_pGlowShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
+    ShaderUniformSharedPtr pResolution = m_pGlowShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
     const float w = static_cast<float>(m_pGlowRenderTarget->GetWidth());
     const float h = static_cast<float>(m_pGlowRenderTarget->GetHeight());
     if (pResolution != nullptr)

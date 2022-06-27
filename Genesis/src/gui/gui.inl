@@ -41,27 +41,27 @@ inline InputArea* GuiManager::GetFocusedInputArea() const
 	return mFocusedInputArea;
 }
 
-inline Shader* GuiManager::GetUntexturedShader()
+inline ResourceShader* GuiManager::GetUntexturedShader()
 {
 	return m_pUntexturedShader;
 }
 
-inline ShaderUniform* GuiManager::GetUntexturedShaderColourUniform()
+inline ShaderUniformSharedPtr GuiManager::GetUntexturedShaderColourUniform()
 {
 	return m_pUntexturedColourUniform;
 }
 
-inline Shader* GuiManager::GetTexturedShader()
+inline ResourceShader* GuiManager::GetTexturedShader()
 {
 	return m_pTexturedShader;
 }
 
-inline ShaderUniform* GuiManager::GetTexturedShaderColourUniform()
+inline ShaderUniformSharedPtr GuiManager::GetTexturedShaderColourUniform()
 {
 	return m_pTexturedColourUniform;
 }
 
-inline ShaderUniform* GuiManager::GetTexturedSamplerUniform()
+inline ShaderUniformSharedPtr GuiManager::GetTexturedSamplerUniform()
 {
 	return m_pTexturedSamplerUniform;
 }
@@ -238,7 +238,7 @@ inline ResourceImage* Image::GetTexture() const
 	return m_pImage;
 }
 
-inline Shader* Image::GetShader() const
+inline ResourceShader* Image::GetShader() const
 {
 	return m_pOverrideShader;
 }

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <scene/sceneobject.h>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
 #include <vertexbuffer.h>
 
@@ -29,6 +30,7 @@
 namespace Genesis
 {
 	class ResourceImage;
+	class ResourceShader;
 
 	namespace Physics
 	{
@@ -85,15 +87,15 @@ private:
 	Ship*							m_pOwner;
 		
 	Genesis::ResourceImage*			m_pTexture;
-	Genesis::Shader*				m_pShader;
+	Genesis::ResourceShader*		m_pShader;
 	Genesis::VertexBuffer*          m_pVertexBuffer;
     Genesis::ColourData             m_ColourData;
-	Genesis::ShaderUniform*			m_pQuantumModeUniform;
-    Genesis::ShaderUniform*         m_pShieldStrengthUniform;
-	Genesis::ShaderUniform*         m_pQuantumShieldScaleUniform;
-	Genesis::ShaderUniform*         m_pQuantumShieldTriangleGapUniform;
-	Genesis::ShaderUniform*         m_pQuantumShieldIntensityUniform;
-	Genesis::ShaderUniform*			m_pQuantumShieldColourUniform;
+	Genesis::ShaderUniformSharedPtr	m_pQuantumModeUniform;
+    Genesis::ShaderUniformSharedPtr m_pShieldStrengthUniform;
+	Genesis::ShaderUniformSharedPtr m_pQuantumShieldScaleUniform;
+	Genesis::ShaderUniformSharedPtr m_pQuantumShieldTriangleGapUniform;
+	Genesis::ShaderUniformSharedPtr m_pQuantumShieldIntensityUniform;
+	Genesis::ShaderUniformSharedPtr	m_pQuantumShieldColourUniform;
     bool                            m_VisualsDirty;
 
 	int								m_ShapeKey;

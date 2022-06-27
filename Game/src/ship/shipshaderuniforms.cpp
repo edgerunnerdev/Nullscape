@@ -16,9 +16,7 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <rendersystem.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
-#include <shader.h>
 #include <genesis.h>
 
 #include "shipshaderuniforms.h"
@@ -31,7 +29,7 @@ m_pShader( nullptr )
 {
     using namespace Genesis;
 
-    m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "shipmodule" );
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/shipmodule.glsl");
 
     m_Uniforms[ (int)ShipShaderUniform::PrimaryPaint ] = m_pShader->RegisterUniform( "k_primaryPaint", ShaderUniformType::FloatVector4, false );
     m_Uniforms[ (int)ShipShaderUniform::SecondaryPaint ] = m_pShader->RegisterUniform( "k_secondaryPaint", ShaderUniformType::FloatVector4, false );
@@ -53,7 +51,7 @@ m_pShader( nullptr )
 
 void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, int value )
 {
-    Genesis::ShaderUniform* pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
+    Genesis::ShaderUniformSharedPtr pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
     if ( pShaderUniform != nullptr )
     {
         pShaderUniform->Set( value );
@@ -62,7 +60,7 @@ void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, int value )
 
 void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, float value )
 {
-    Genesis::ShaderUniform* pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
+    Genesis::ShaderUniformSharedPtr pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
     if ( pShaderUniform != nullptr )
     {
         pShaderUniform->Set( value );
@@ -71,7 +69,7 @@ void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, float value )
 
 void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, const glm::vec4& value )
 {
-    Genesis::ShaderUniform* pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
+    Genesis::ShaderUniformSharedPtr pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
     if ( pShaderUniform != nullptr )
     {
         pShaderUniform->Set( value );
@@ -80,7 +78,7 @@ void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, const glm::ve
 
 void ShipShaderUniforms::Set( ShipShaderUniform shipShaderUniform, Genesis::ResourceImage* pTexture )
 {
-    Genesis::ShaderUniform* pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
+    Genesis::ShaderUniformSharedPtr pShaderUniform = m_Uniforms[ (int)shipShaderUniform ];
     if ( pShaderUniform != nullptr && pTexture != nullptr )
     {
         pShaderUniform->Set( pTexture, UniformToGL( shipShaderUniform ) );

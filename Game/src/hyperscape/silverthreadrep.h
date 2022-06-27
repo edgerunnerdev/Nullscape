@@ -19,14 +19,9 @@
 
 #include <scene/layer.h>
 #include <scene/sceneobject.h>
+#include <resources/resourceshader.hpp>
 #include <inputmanager.h>
 #include <vertexbuffer.h>
-
-namespace Genesis
-{
-	class Shader;
-	class ShaderUniform;
-}
 
 namespace Hexterminate
 {
@@ -64,8 +59,8 @@ private:
 	SilverThread* m_pSilverThread;
 	bool m_Show;
 	glm::vec2 m_Parallax;
-	Genesis::Shader* m_pStarShader;
-	Genesis::ShaderUniform* m_pStarParallax;
+	Genesis::ResourceShader* m_pStarShader;
+	Genesis::ShaderUniformSharedPtr m_pStarParallax;
 	Genesis::VertexBuffer* m_pLocationVB;
 	Genesis::PositionData m_LocationPosData;
 	Genesis::UVData m_LocationUVData;
@@ -78,8 +73,8 @@ private:
 	};
 	std::vector<LocationScreenData> m_LocationScreenData;
 
-	Genesis::Shader* m_pLinkShader;
-	Genesis::ShaderUniform* m_pLinkParallax;
+	Genesis::ResourceShader* m_pLinkShader;
+	Genesis::ShaderUniformSharedPtr m_pLinkParallax;
 	Genesis::VertexBuffer* m_pLinkVB;
 	Genesis::PositionData m_LinkPosData;
 	Genesis::UVData m_LinkUVData;

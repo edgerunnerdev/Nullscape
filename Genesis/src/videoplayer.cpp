@@ -23,7 +23,6 @@
 #include "resourcemanager.h"
 #include "resources/resourceimage.h"
 #include "resources/resourcevideo.h"
-#include "shader.h"
 
 #include <log.hpp>
 #include <sstream>

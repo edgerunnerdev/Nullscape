@@ -15,9 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 
 #include "sprite/spritemanager.h"
@@ -38,8 +37,8 @@ m_pVertexBuffer( nullptr )
 
 	m_pTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/images/sprites.png" );
 
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sprite" );
-	Genesis::ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/sprite.glsl");
+	Genesis::ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
 	pSampler->Set( m_pTexture, GL_TEXTURE0 );
 
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );

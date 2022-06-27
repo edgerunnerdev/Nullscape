@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include <log.hpp>
+#include <genesis.h>
 
 #include "menus/popup.h"
 #include "menus/newgamewindow.h"

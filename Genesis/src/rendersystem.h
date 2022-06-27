@@ -21,21 +21,21 @@
 #include "glm/gtx/transform.hpp"
 #include "inputmanager.h"
 #include "render/rendertarget.h"
+#include "resources/resourceshader.hpp"
 #include "rendersystem.fwd.h"
-#include "shader.h"
 #include "shaderuniformtype.h"
 #include "taskmanager.h"
 
 #include <array>
 #include <bitset>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace Genesis
 {
 
 class Scene;
-class ShaderCache;
 class VertexBuffer;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,6 @@ public:
     void Initialize(GLuint screenWidth, GLuint screenHeight);
     void ViewOrtho(int width = 0, int height = 0);
     void ViewPerspective(int width = 0, int height = 0, Scene* pScene = nullptr);
-    ShaderCache* GetShaderCache() const;
 
     glm::vec3 Raycast(const glm::vec2& screenCoordinates);
 
@@ -118,19 +117,16 @@ private:
     bool m_ScreenshotScheduled;
     bool m_CaptureInProgress;
 
-    // Shader support
-    ShaderCache* m_pShaderCache;
-
     GLuint m_ScreenWidth;
     GLuint m_ScreenHeight;
 
     // Used for post-processing effects
-    Shader* m_pPostProcessShader;
+    ResourceShader* m_pPostProcessShader;
     VertexBuffer* m_pPostProcessVertexBuffer;
 
-    Shader* m_pGlowShader;
-    ShaderUniform* m_pGlowShaderSampler;
-    ShaderUniform* m_pGlowShaderDirection;
+    ResourceShader* m_pGlowShader;
+    ShaderUniformSharedPtr m_pGlowShaderSampler;
+    ShaderUniformSharedPtr m_pGlowShaderDirection;
     VertexBuffer* m_pGlowVertexBuffer;
     RenderTargetUniquePtr m_pGlowRenderTarget;
     RenderTargetUniquePtr m_pGlowBlurRenderTarget[2];
@@ -138,7 +134,7 @@ private:
     // Auxiliary render targets
     RenderTargetUniquePtr m_RadarRenderTarget;
 
-    typedef std::map<GLenum, std::string> InternalFormatMap;
+    using InternalFormatMap = std::unordered_map<GLenum, std::string>;
     InternalFormatMap mInternalFormatMap;
 
     float m_ShaderTimer;
@@ -154,17 +150,12 @@ private:
 
     using PostProcessBitSet = std::bitset<static_cast<size_t>(PostProcessEffect::Count)>;
     PostProcessBitSet m_ActivePostProcessEffects;
-    std::array<ShaderUniform*, static_cast<size_t>(PostProcessEffect::Count)> m_PostProcessShaderUniforms;
+    std::array<ShaderUniformSharedPtr, static_cast<size_t>(PostProcessEffect::Count)> m_PostProcessShaderUniforms;
 
     std::list<ViewportSharedPtr> m_Viewports;
     ViewportSharedPtr m_pPrimaryViewport;
     ViewportSharedPtr m_pCurrentViewport;
 };
-
-inline ShaderCache* RenderSystem::GetShaderCache() const
-{
-    return m_pShaderCache;
-}
 
 inline float RenderSystem::GetShaderTimer() const
 {

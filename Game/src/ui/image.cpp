@@ -18,10 +18,10 @@
 #include <imgui/imgui.h>
 #include <imgui/misc/cpp/imgui_stdlib.h>
 
+#include <resources/resourceshader.hpp>
 #include <gui/gui.h>
 #include <genesis.h>
 #include <log.hpp>
-#include <shadercache.h>
 
 #include "ui/image.h"
 
@@ -71,7 +71,7 @@ void Image::SetPath( const std::string& filename )
 
 void Image::SetShader( const std::string& shaderName )
 {
-    m_pImage->SetShader( Genesis::FrameWork::GetRenderSystem()->GetShaderCache()->Load( shaderName ) );
+    m_pImage->SetShader(Genesis::FrameWork::GetResourceManager()->GetResource<Genesis::ResourceShader*>(shaderName));
 }
 
 void Image::LoadResources()

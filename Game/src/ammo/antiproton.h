@@ -17,11 +17,12 @@
 
 #pragma once
 
+#include <resources/resourceshader.hpp>
+
 #include "ammo/ammo.h"
 
 namespace Genesis
 {
-	class Shader;
 	class ResourceImage;
     class VertexBuffer;
 }
@@ -49,11 +50,11 @@ public:
 	QuantumState						GetQuantumState() const;
 
 private:
-	static Genesis::Shader*				m_pShader;
+	static Genesis::ResourceShader*		m_pShader;
     Genesis::VertexBuffer*              m_pVertexBuffer;
-	Genesis::ShaderUniform*				m_pInternalRadiusUniform;
-	Genesis::ShaderUniform*				m_pExternalRadiusUniform;
-	Genesis::ShaderUniform*				m_pQuantumStateUniform;
+	Genesis::ShaderUniformSharedPtr		m_pInternalRadiusUniform;
+	Genesis::ShaderUniformSharedPtr		m_pExternalRadiusUniform;
+	Genesis::ShaderUniformSharedPtr		m_pQuantumStateUniform;
 	QuantumState						m_QuantumState;
 };
 

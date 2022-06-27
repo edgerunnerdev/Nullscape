@@ -20,7 +20,6 @@
 #include "math/constants.h"
 #include "rendersystem.h"
 #include "resources/resourcefont.h"
-#include "shadercache.h"
 #include "vertexbuffer.h"
 
 #include <cassert>
@@ -44,7 +43,7 @@ DebugRender::DebugRender()
     }
 
     m_pVertexBuffer = new VertexBuffer(GeometryType::Line, VBO_POSITION | VBO_COLOUR);
-    m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("untextured_vertex_coloured");
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/untextured_vertex_coloured.glsl");
 }
 
 DebugRender::~DebugRender()

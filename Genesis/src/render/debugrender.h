@@ -17,17 +17,17 @@
 
 #pragma once
 
-#include <genesis.h>
+#include "genesis.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <resourcemanager.h>
-#include <scene/sceneobject.h>
+#include "resources/resourceshader.hpp"
+#include "scene/sceneobject.h"
 #include <vector>
 
 namespace Genesis
 {
 class VertexBuffer;
-class Shader;
 
 namespace Render
 {
@@ -91,7 +91,7 @@ private:
     float m_LookupCos[DEBUG_RENDER_CIRCLE_SIDES];
     float m_LookupSin[DEBUG_RENDER_CIRCLE_SIDES];
 
-    Shader* m_pShader;
+    ResourceShader* m_pShader;
     VertexBuffer* m_pVertexBuffer;
 };
 

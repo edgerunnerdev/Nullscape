@@ -20,8 +20,8 @@
 #include <math/constants.h>
 #include <math/misc.h>
 #include <resources/resourceimage.h>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 #include <vertexbuffer.h>
 
@@ -35,7 +35,7 @@
 namespace Hexterminate
 {
 
-Genesis::Shader* Antiproton::m_pShader = nullptr;
+Genesis::ResourceShader* Antiproton::m_pShader = nullptr;
 
 Antiproton::Antiproton() :
 m_pVertexBuffer( nullptr ),
@@ -76,8 +76,7 @@ void Antiproton::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f */ 
 
 	if ( m_pShader == nullptr )
 	{
-		RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-		m_pShader = pRenderSystem->GetShaderCache()->Load( "antiproton" );
+		m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/antiproton.glsl");
 	}
 
 	m_pInternalRadiusUniform = m_pShader->RegisterUniform( "k_internalRadius", ShaderUniformType::Float );

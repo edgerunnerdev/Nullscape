@@ -22,8 +22,6 @@
 #include "../imgui/imgui_impl.h"
 #include "../rendersystem.h"
 #include "../resources/resourcesound.h"
-#include "../shader.h"
-#include "../shadercache.h"
 #include "../shaderuniform.h"
 #include "../vertexbuffer.h"
 #include "sound/soundmanager.h"
@@ -67,11 +65,11 @@ void PlaySFX(Genesis::ResourceSound* pSFX)
 // GuiManager
 ///////////////////////////////////////////////////////////////////////////
 
-Shader* GuiManager::m_pUntexturedShader = nullptr;
-ShaderUniform* GuiManager::m_pUntexturedColourUniform = nullptr;
-Shader* GuiManager::m_pTexturedShader = nullptr;
-ShaderUniform* GuiManager::m_pTexturedSamplerUniform = nullptr;
-ShaderUniform* GuiManager::m_pTexturedColourUniform = nullptr;
+ResourceShader* GuiManager::m_pUntexturedShader = nullptr;
+ShaderUniformSharedPtr GuiManager::m_pUntexturedColourUniform = nullptr;
+ResourceShader* GuiManager::m_pTexturedShader = nullptr;
+ShaderUniformSharedPtr GuiManager::m_pTexturedSamplerUniform = nullptr;
+ShaderUniformSharedPtr GuiManager::m_pTexturedColourUniform = nullptr;
 
 GuiManager::GuiManager()
     : m_pCursor(nullptr)
@@ -91,10 +89,9 @@ GuiManager::~GuiManager()
 
 void GuiManager::Initialize()
 {
-    ShaderCache* pShaderCache = FrameWork::GetRenderSystem()->GetShaderCache();
-    m_pUntexturedShader = pShaderCache->Load("gui_untextured");
+    m_pUntexturedShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_untextured.glsl");
     m_pUntexturedColourUniform = m_pUntexturedShader->RegisterUniform("k_colour", ShaderUniformType::FloatVector4);
-    m_pTexturedShader = pShaderCache->Load("gui_textured");
+    m_pTexturedShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_textured.glsl");
     m_pTexturedColourUniform = m_pTexturedShader->RegisterUniform("k_colour", ShaderUniformType::FloatVector4);
     m_pTexturedSamplerUniform = m_pTexturedShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
 
@@ -628,7 +625,7 @@ void Image::Render()
     GuiElement::Render();
 }
 
-void Image::SetShader(Shader* pShader)
+void Image::SetShader(ResourceShader* pShader)
 {
     m_pOverrideShader = pShader;
 

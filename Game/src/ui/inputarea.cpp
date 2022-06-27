@@ -19,6 +19,7 @@
 #include <imgui/misc/cpp/imgui_stdlib.h>
 
 #include <gui/gui.h>
+#include <genesis.h>
 
 #include "ui/inputarea.h"
 

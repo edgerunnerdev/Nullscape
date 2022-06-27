@@ -42,7 +42,6 @@
 #include <resources/resourcevideo.h>
 #include <sound/soundmanager.h>
 #include <viewers/modelviewer/modelviewer.hpp>
-#include <shadercache.h>
 #include <rendersystem.h>
 #include <log.hpp>
 #include <configuration.h>
@@ -1376,16 +1375,6 @@ void Game::LoaderThreadMain()
 	SDL_GL_MakeCurrent( pWindow->GetSDLWindow(), pWindow->GetSDLThreadGLContext() );
 
 	using namespace Genesis;
-	ShaderCache* pShaderCache = FrameWork::GetRenderSystem()->GetShaderCache();
-	std::filesystem::path shadersPath( "data/shaders" );
-	for ( const auto& entry : std::filesystem::recursive_directory_iterator( shadersPath ) )
-	{
-		if ( entry.path().extension() == ".vert" )
-        {
-			pShaderCache->Load( ToString( entry.path().stem() ) );
-        }
-	}
-
 	ResourceManager* pResourceManager = FrameWork::GetResourceManager();
 	std::vector<std::string> filesToLoad;
 	filesToLoad.reserve( 512 );
@@ -1412,16 +1401,16 @@ void Game::LoaderThreadMain()
 	const GLuint64 timeout = 5000000000; // 5 second timeout
 	while( true )
 	{
-		//GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
-		//if ( result == GL_WAIT_FAILED )
-		//{
-		//	Genesis::Core::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
-		//	exit( -1 );
-		//}
-		//else if ( result != GL_TIMEOUT_EXPIRED )
-		//{
-		//	break;
-		//}
+		GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
+		if ( result == GL_WAIT_FAILED )
+		{
+			Genesis::Core::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
+			exit( -1 );
+		}
+		else if ( result != GL_TIMEOUT_EXPIRED )
+		{
+			break;
+		}
 	}
 
 	Genesis::Core::Log::Info() << "All resources loaded.";

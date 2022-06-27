@@ -22,8 +22,8 @@
 #include <math/constants.h>
 #include <math/misc.h>
 #include <resources/resourceimage.h>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 #include <vertexbuffer.h>
 
@@ -33,8 +33,8 @@
 namespace Hexterminate
 {
 
-Genesis::Shader* Beam::m_pShader = nullptr;
-Genesis::Shader* Beam::m_pFlareShader = nullptr;
+Genesis::ResourceShader* Beam::m_pShader = nullptr;
+Genesis::ResourceShader* Beam::m_pFlareShader = nullptr;
 
 Beam::Beam() :
 m_pBeamVertexBuffer( nullptr ),
@@ -68,9 +68,9 @@ void Beam::SetupBeam()
 	if ( m_pShader == nullptr )
 	{
         RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-        m_pShader = pRenderSystem->GetShaderCache()->Load( "beam" );
-        ResourceImage* pTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/images/beam.jpg" );
-        ShaderUniform* pTextureSamplerUniform = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+        m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/beam.glsl");
+        ResourceImage* pTexture = FrameWork::GetResourceManager()->GetResource<ResourceImage*>("data/images/beam.jpg");
+        ShaderUniformSharedPtr pTextureSamplerUniform = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
         pTextureSamplerUniform->Set( pTexture, GL_TEXTURE0 );
 	}
 }
@@ -84,11 +84,11 @@ void Beam::SetupBeamFlare()
 	if ( m_pFlareShader == nullptr )
 	{
         RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-        m_pFlareShader = pRenderSystem->GetShaderCache()->Load( "beamflare" );
+        m_pFlareShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/beamflare.glsl");
         ResourceImage* pTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/images/beamflare.png" );
         ResourceImage* pMask = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/images/beamflaremask.png" );
-        ShaderUniform* pTextureSamplerUniform = m_pFlareShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
-        ShaderUniform* pMaskSamplerUniform = m_pFlareShader->RegisterUniform( "k_sampler1", ShaderUniformType::Texture );
+        ShaderUniformSharedPtr pTextureSamplerUniform = m_pFlareShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+        ShaderUniformSharedPtr pMaskSamplerUniform = m_pFlareShader->RegisterUniform( "k_sampler1", ShaderUniformType::Texture );
         pTextureSamplerUniform->Set( pTexture, GL_TEXTURE0 );
         pMaskSamplerUniform->Set( pMask, GL_TEXTURE1 );
 	}

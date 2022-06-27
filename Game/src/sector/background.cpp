@@ -24,8 +24,6 @@
 #include <rendersystem.h>
 #include <math/misc.h>
 #include <configuration.h>
-#include <shader.h>
-#include <shadercache.h>
 #include <shaderuniform.h>
 #include <vertexbuffer.h>
 #include <xml.h>
@@ -55,30 +53,30 @@ m_AmbientColour( pBackgroundInfo->GetAmbientColour().glm() )
 
 	ResourceManager* pResourceManager = FrameWork::GetResourceManager();
 
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "sectorbackground" );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/sectorbackground.glsl");
 
 	std::stringstream ss;
 	ss << "data/backgrounds/" << pBackgroundInfo->GetFilename();
 	ResourceImage* pBackground = (ResourceImage*)pResourceManager->GetResource( ss.str() );
-	ShaderUniform* pBackgroundSampler = m_pShader->RegisterUniform( "k_backgroundSampler", ShaderUniformType::Texture );
+	ShaderUniformSharedPtr pBackgroundSampler = m_pShader->RegisterUniform( "k_backgroundSampler", ShaderUniformType::Texture );
 	pBackgroundSampler->Set( pBackground, GL_TEXTURE0 );
 
 	ResourceImage* pStar = (ResourceImage*)pResourceManager->GetResource( "data/backgrounds/star.jpg" );
-	ShaderUniform* pStarSampler = m_pShader->RegisterUniform( "k_starSampler", ShaderUniformType::Texture );
+	ShaderUniformSharedPtr pStarSampler = m_pShader->RegisterUniform( "k_starSampler", ShaderUniformType::Texture );
 	pStarSampler->Set( pStar, GL_TEXTURE1 );
 
-	ShaderUniform* pHasStar = m_pShader->RegisterUniform( "k_hasStar", ShaderUniformType::Boolean );
+	ShaderUniformSharedPtr pHasStar = m_pShader->RegisterUniform( "k_hasStar", ShaderUniformType::Boolean );
 	pHasStar->Set( pStarInfo != nullptr );
 
     if ( pStarInfo != nullptr )
     {
-        ShaderUniform* pCoreColour = m_pShader->RegisterUniform( "k_coreColour", ShaderUniformType::FloatVector3 );
+        ShaderUniformSharedPtr pCoreColour = m_pShader->RegisterUniform( "k_coreColour", ShaderUniformType::FloatVector3 );
         pCoreColour->Set( pStarInfo->GetCoreColour() );
         
-        ShaderUniform* pCoronaColour = m_pShader->RegisterUniform( "k_coronaColour", ShaderUniformType::FloatVector3 );
+        ShaderUniformSharedPtr pCoronaColour = m_pShader->RegisterUniform( "k_coronaColour", ShaderUniformType::FloatVector3 );
         pCoronaColour->Set( pStarInfo->GetCoronaColour() );
 
-        ShaderUniform* pDistance = m_pShader->RegisterUniform( "k_distance", ShaderUniformType::Float );
+        ShaderUniformSharedPtr pDistance = m_pShader->RegisterUniform( "k_distance", ShaderUniformType::Float );
         pDistance->Set( pStarInfo->GetDistance() );
 
         m_pStarOffset = m_pShader->RegisterUniform( "k_offset", ShaderUniformType::FloatVector2 );
@@ -94,7 +92,7 @@ m_AmbientColour( pBackgroundInfo->GetAmbientColour().glm() )
 			starUvScale.y *= starUvScale.x;
 		}
 
-		ShaderUniform* pStarUvScale = m_pShader->RegisterUniform( "k_starUvScale", ShaderUniformType::FloatVector2 );
+		ShaderUniformSharedPtr pStarUvScale = m_pShader->RegisterUniform( "k_starUvScale", ShaderUniformType::FloatVector2 );
 		pStarUvScale->Set( starUvScale );
 
         m_AmbientColour = glm::mix( m_pBackgroundInfo->GetAmbientColour().glm(), glm::vec4( pStarInfo->GetCoreColour(), 1.0f ), 0.2f );

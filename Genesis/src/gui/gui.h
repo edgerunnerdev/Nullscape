@@ -17,12 +17,13 @@
 
 #pragma once
 
-#include "../inputmanager.h"
-#include "../rendersystem.h"
-#include "../resources/resourcefont.h"
-#include "../resources/resourceimage.h"
-#include "../taskmanager.h"
-#include "../vertexbuffer.h"
+#include "inputmanager.h"
+#include "rendersystem.h"
+#include "resources/resourcefont.h"
+#include "resources/resourceimage.h"
+#include "resources/resourceshader.hpp"
+#include "taskmanager.h"
+#include "vertexbuffer.h"
 
 #include <functional>
 #include <list>
@@ -70,11 +71,11 @@ public:
     void SetFocusedInputArea(InputArea* inputArea);
     InputArea* GetFocusedInputArea() const;
 
-    static Shader* GetUntexturedShader();
-    static ShaderUniform* GetUntexturedShaderColourUniform();
-    static Shader* GetTexturedShader();
-    static ShaderUniform* GetTexturedShaderColourUniform();
-    static ShaderUniform* GetTexturedSamplerUniform();
+    static ResourceShader* GetUntexturedShader();
+    static ShaderUniformSharedPtr GetUntexturedShaderColourUniform();
+    static ResourceShader* GetTexturedShader();
+    static ShaderUniformSharedPtr GetTexturedShaderColourUniform();
+    static ShaderUniformSharedPtr GetTexturedSamplerUniform();
 
     Cursor* GetCursor() const;
 
@@ -89,11 +90,11 @@ private:
     // will be redirected to this element.
     InputArea* mFocusedInputArea;
 
-    static Shader* m_pUntexturedShader;
-    static ShaderUniform* m_pUntexturedColourUniform;
-    static Shader* m_pTexturedShader;
-    static ShaderUniform* m_pTexturedSamplerUniform;
-    static ShaderUniform* m_pTexturedColourUniform;
+    static ResourceShader* m_pUntexturedShader;
+    static ShaderUniformSharedPtr m_pUntexturedColourUniform;
+    static ResourceShader* m_pTexturedShader;
+    static ShaderUniformSharedPtr m_pTexturedSamplerUniform;
+    static ShaderUniformSharedPtr m_pTexturedColourUniform;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -238,15 +239,15 @@ public:
     virtual void Render();
     virtual void SetTexture(ResourceImage* pImage);
     ResourceImage* GetTexture() const;
-    void SetShader(Shader* pShader);
-    Shader* GetShader() const;
+    void SetShader(ResourceShader* pShader);
+    ResourceShader* GetShader() const;
 
 private:
     VertexBuffer* m_pImageVertexBuffer;
     ResourceImage* m_pImage;
-    Shader* m_pOverrideShader;
-    ShaderUniform* m_pOverrideShaderColourUniform;
-    ShaderUniform* m_pOverrideShaderSamplerUniform;
+    ResourceShader* m_pOverrideShader;
+    ShaderUniformSharedPtr m_pOverrideShaderColourUniform;
+    ShaderUniformSharedPtr m_pOverrideShaderSamplerUniform;
 };
 
 ///////////////////////////////////////////////////////////////////////////

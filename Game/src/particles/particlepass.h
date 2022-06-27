@@ -19,6 +19,7 @@
 
 #include <vector>
 
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
 #include <vertexbuffer.h>
 
@@ -30,9 +31,6 @@ namespace Genesis
 	{
 		class Atlas;
 	}
-
-	class Shader;
-	class ShaderUniform;
 }
 
 namespace Hexterminate
@@ -62,8 +60,8 @@ public:
 	bool						m_GlowEnabled;
 
 	Genesis::BlendMode			m_BlendMode;
-	Genesis::Shader*			m_pShader;
-	Genesis::ShaderUniform*		m_pSamplerUniform;
+	Genesis::ResourceShader*	m_pShader;
+	Genesis::ShaderUniformSharedPtr m_pSamplerUniform;
 
 	Genesis::VertexBuffer*		m_pVertexBuffer;
 	Genesis::PositionData		m_PositionData;

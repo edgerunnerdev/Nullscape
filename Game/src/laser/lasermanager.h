@@ -27,6 +27,7 @@
 namespace Genesis
 {
 class ResourceImage;
+class ResourceShader;
 class VertexBuffer;
 }
 
@@ -59,7 +60,7 @@ private:
 	LaserVector						m_Lasers;
 
 	Genesis::ResourceImage*			m_pTexture;
-	Genesis::Shader*				m_pShader;
+	Genesis::ResourceShader*		m_pShader;
 	Genesis::VertexBuffer*			m_pVertexBuffer;
 };
 

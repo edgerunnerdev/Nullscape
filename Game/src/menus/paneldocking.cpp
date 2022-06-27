@@ -18,6 +18,7 @@
 #include <resources/resourceimage.h>
 #include <gui/gui.h>
 #include <configuration.h>
+#include <genesis.h>
 
 #include "menus/eva.h"
 #include "menus/paneldocking.h"

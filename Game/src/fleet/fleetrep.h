@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <resources/resourceshader.hpp>
 #include <scene/layer.h>
 #include <scene/sceneobject.h>
 
@@ -26,8 +27,6 @@ namespace Genesis
 {
 class Layer;
 class ResourceImage;
-class Shader;
-class ShaderUniform;
 }
 
 namespace Hexterminate
@@ -57,8 +56,8 @@ private:
 
 	Genesis::ResourceImage*		m_pImage;
 	Genesis::ResourceImage*		m_pImageFlagship;
-	Genesis::Shader*			m_pShader;
-	Genesis::ShaderUniform*		m_pDiffuseSampler;
+	Genesis::ResourceShader*	m_pShader;
+	Genesis::ShaderUniformSharedPtr	m_pDiffuseSampler;
 	Genesis::VertexBuffer*		m_pVertexBuffer;
 
 	Genesis::LayerSharedPtr		m_pLayer;

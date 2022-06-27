@@ -18,8 +18,7 @@
 #include <scene/layer.h>
 #include <scene/scene.h>
 #include <configuration.h>
-#include <shadercache.h>
-#include <shaderuniform.h>
+#include <genesis.h>
 
 #include "hyperscape/hyperscaperep.h"
 #include "menus/popup.h"
@@ -152,12 +151,12 @@ void HyperscapeRep::Render()
 void HyperscapeRep::BuildBackground()
 {
 	using namespace Genesis;
-	m_pBackgroundShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "hyperscape_background" );
+	m_pBackgroundShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/hyperscape_background.glsl");
 
-	ShaderUniform* pBackgroundUniform = m_pBackgroundShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	ShaderUniformSharedPtr pBackgroundUniform = m_pBackgroundShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
 	pBackgroundUniform->Set( FrameWork::GetResourceManager()->GetResource<ResourceImage*>( "data/backgrounds/hyperscape.jpg" ), GL_TEXTURE0 );
 
-	ShaderUniform* pNoiseUniform = m_pBackgroundShader->RegisterUniform( "k_sampler1", ShaderUniformType::Texture );
+	ShaderUniformSharedPtr pNoiseUniform = m_pBackgroundShader->RegisterUniform( "k_sampler1", ShaderUniformType::Texture );
 	pNoiseUniform->Set( FrameWork::GetResourceManager()->GetResource<ResourceImage*>( "data/images/noise1.png" ), GL_TEXTURE1 );
 
 	m_pBackgroundVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );

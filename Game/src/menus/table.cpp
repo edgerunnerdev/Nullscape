@@ -18,8 +18,6 @@
 #include <genesis.h>
 #include <gui/gui.h>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>    
 #include <vertexbuffer.h>
 
 #include <inputmanager.h>
@@ -48,7 +46,7 @@ m_pVertexBuffer( nullptr )
 
 	m_MousePressedToken = FrameWork::GetInputManager()->AddMouseCallback( std::bind( &Table::OnMousePressedCallback, this ), MouseButton::Left, ButtonState::Pressed );
 
-    m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "untextured_vertex_coloured" );
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/untextured_vertex_coloured.glsl");
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_COLOUR );
 }
 

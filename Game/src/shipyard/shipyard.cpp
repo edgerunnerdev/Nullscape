@@ -16,11 +16,11 @@
 // along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
 
 #include <resources/resourcemodel.h>
+#include <resources/resourceshader.hpp>
 #include <resources/resourcesound.h>
 #include <configuration.h>
 #include <genesis.h>
 #include <inputmanager.h>
-#include <shader.h>
 #include <shaderuniform.h>
 
 #include "menus/contextualtips.h"

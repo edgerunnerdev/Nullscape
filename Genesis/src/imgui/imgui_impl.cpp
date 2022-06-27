@@ -1,8 +1,8 @@
 #include "imgui/imgui_impl.h"
 
+#include "resources/resourceshader.hpp"
 #include "genesis.h"
 #include "rendersystem.h"
-#include "shadercache.h"
 #include "shaderuniform.h"
 #include "vertexbuffer.h"
 #include "window.h"
@@ -18,10 +18,10 @@ double ImGuiImpl::g_Time = 0.0f;
 bool ImGuiImpl::g_MousePressed[3] = {false, false, false};
 float ImGuiImpl::g_MouseWheel = 0.0f;
 GLuint ImGuiImpl::g_FontTexture = 0;
-Shader* ImGuiImpl::m_pDiffuseShader = nullptr;
+ResourceShader* ImGuiImpl::m_pDiffuseShader = nullptr;
 ResourceImage* ImGuiImpl::m_pTexture = nullptr;
 VertexBuffer* ImGuiImpl::m_pVertexBuffer = nullptr;
-ShaderUniform* ImGuiImpl::m_pDiffuseSampler = nullptr;
+ShaderUniformSharedPtr ImGuiImpl::m_pDiffuseSampler = nullptr;
 bool ImGuiImpl::m_Initialised = false;
 bool ImGuiImpl::m_Enabled = false;
 ImGuiImpl::MenuRegistry ImGuiImpl::m_MenuRegistry;
@@ -258,7 +258,7 @@ void ImGuiImpl::Render()
 
     if (m_pDiffuseShader == nullptr)
     {
-        m_pDiffuseShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("imgui");
+        m_pDiffuseShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/imgui.glsl");
         m_pDiffuseSampler = m_pDiffuseShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
         m_pDiffuseSampler->Set(g_FontTexture, GL_TEXTURE0);
     }

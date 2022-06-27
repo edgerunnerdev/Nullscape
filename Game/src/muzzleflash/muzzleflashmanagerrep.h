@@ -24,7 +24,7 @@
 namespace Genesis
 {
 class ResourceImage;
-class Shader;
+class ResourceShader;
 class ShaderParameters;
 }
 
@@ -48,7 +48,7 @@ private:
 	void PushBackColours( Genesis::ColourData& colourData, const Genesis::Colour& colour );
 
 	MuzzleflashManager* m_pManager;
-    Genesis::Shader* m_pShader;
+    Genesis::ResourceShader* m_pShader;
     Genesis::VertexBuffer* m_pVertexBuffer;
     unsigned int m_NumVertices;
 };

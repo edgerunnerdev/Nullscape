@@ -22,15 +22,8 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
+#include <resources/resourceshader.hpp>
 #include "rendersystem.fwd.h"
-
-namespace Genesis
-{
-
-class Shader;
-class ShaderUniform;
-
-}
 
 namespace Hexterminate
 {
@@ -61,29 +54,29 @@ class ShipShaderUniforms
 public:
 	ShipShaderUniforms();
 	
-    Genesis::Shader* GetShader() const;
+    Genesis::ResourceShader* GetShader() const;
 
     void Set( ShipShaderUniform shipShaderUniform, int value );
     void Set( ShipShaderUniform shipShaderUniform, float value );
     void Set( ShipShaderUniform shipShaderUniform, const glm::vec4& value );
     void Set( ShipShaderUniform shipShaderUniform, Genesis::ResourceImage* pTexture );
 
-	Genesis::ShaderUniform* Get( ShipShaderUniform shipShaderUniform ) const;
+	Genesis::ShaderUniformSharedPtr Get( ShipShaderUniform shipShaderUniform ) const;
 
 private:
     GLenum UniformToGL( ShipShaderUniform uniform ) const;
 
-    typedef std::array< Genesis::ShaderUniform*, static_cast< size_t >( ShipShaderUniform::Count ) > ShaderUniformArray;
+    typedef std::array< Genesis::ShaderUniformSharedPtr, static_cast< size_t >( ShipShaderUniform::Count ) > ShaderUniformArray;
     ShaderUniformArray m_Uniforms;
-    Genesis::Shader* m_pShader;
+    Genesis::ResourceShader* m_pShader;
 };
 
-inline Genesis::Shader* ShipShaderUniforms::GetShader() const
+inline Genesis::ResourceShader* ShipShaderUniforms::GetShader() const
 {
     return m_pShader;
 }
 
-inline Genesis::ShaderUniform* ShipShaderUniforms::Get( ShipShaderUniform shipShaderUniform ) const
+inline Genesis::ShaderUniformSharedPtr ShipShaderUniforms::Get( ShipShaderUniform shipShaderUniform ) const
 {
 	return m_Uniforms[ static_cast< size_t >( shipShaderUniform ) ];
 }

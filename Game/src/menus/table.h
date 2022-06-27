@@ -24,7 +24,7 @@
 
 namespace Genesis
 {
-    class Shader;
+	class ResourceShader;
     class VertexBuffer;
 }
 
@@ -76,7 +76,7 @@ private:
 
 	Genesis::InputCallbackToken	m_MousePressedToken;
 
-    Genesis::Shader*    m_pShader;
+    Genesis::ResourceShader* m_pShader;
     Genesis::VertexBuffer* m_pVertexBuffer;
 
 };

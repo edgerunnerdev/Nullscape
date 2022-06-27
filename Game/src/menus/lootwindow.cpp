@@ -20,7 +20,6 @@
 #include <genesis.h>
 #include <configuration.h>
 #include <rendersystem.h>
-#include <shadercache.h>
 
 #include "menus/intelwindow.h"
 #include "menus/lootwindow.h"
@@ -71,8 +70,8 @@ m_pPerkProgressSFX( nullptr )
 	m_pMainPanel->SetHiddenForCapture( true );
 	pGuiManager->AddElement( m_pMainPanel );
 
-	Shader* pIconShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "gui_loot" );
-	Shader* pWingsShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "gui_wings" );
+	ResourceShader* pIconShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_loot.glsl");
+	ResourceShader* pWingsShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/gui_wings.glsl");
 
 	m_pIcon = new Gui::Image();
     m_pIcon->SetPosition( ( m_PanelWidth - m_IconSize ) / 2.0f, 96.0f );

@@ -24,7 +24,7 @@
 
 namespace Genesis
 {
-	class Shader;
+	class ResourceShader;
 	class VertexBuffer;
     class ResourceImage;
 
@@ -70,7 +70,7 @@ private:
 	Genesis::Gui::Panel*	m_pBackground;
 	PointOfInterest*		m_pPointOfInterest;
 	bool					m_Show;
-	Genesis::Shader*		m_pShader;
+	Genesis::ResourceShader* m_pShader;
 	Genesis::VertexBuffer*	m_pVertexBuffer;
     Genesis::ResourceImage* m_pGoalTargetImage;
 };

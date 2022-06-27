@@ -17,6 +17,7 @@
 
 #include <gui/gui.h>
 #include <imgui/imgui.h>
+#include <genesis.h>
 
 #include "menus/eva.h"
 #include "ui/radiobutton.h"

@@ -26,7 +26,7 @@
 namespace Genesis
 {
 	class ResourceImage;
-	class Shader;
+	class ResourceShader;
 }
 
 namespace Hexterminate
@@ -87,7 +87,7 @@ private:
 
 	// Rendering
 	Genesis::VertexBuffer*		m_pVertexBuffer;
-	Genesis::Shader*			m_pShader;
+	Genesis::ResourceShader*	m_pShader;
 	glm::vec3					m_CachedPlayerShipPosition;
 	Genesis::PositionData		m_PositionData;
 	Genesis::UVData				m_UVData;

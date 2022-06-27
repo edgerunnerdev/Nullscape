@@ -20,8 +20,6 @@
 #include <configuration.h>
 #include <genesis.h>
 #include <rendersystem.h>
-#include <shadercache.h>
-#include <shader.h>
 #include <shaderuniform.h>
 
 #include "hyperscape/starfieldrep.h"
@@ -44,7 +42,7 @@ m_pLayer( nullptr ),
 m_Parallax( 0.0f, 0.0f )
 {
 	using namespace Genesis;
-    m_pStarShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "hyperscape_starfield" );
+    m_pStarShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/hyperscape_starfield.glsl");
 	m_pStarfieldParallax = m_pStarShader->RegisterUniform( "k_parallax", ShaderUniformType::FloatVector2 );
 	m_pStarfieldVB = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR );
 

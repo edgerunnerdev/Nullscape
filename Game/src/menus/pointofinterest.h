@@ -24,7 +24,7 @@
 
 namespace Genesis
 {
-	class Shader;
+	class ResourceShader;
 	class VertexBuffer;
 }
 
@@ -82,7 +82,7 @@ private:
 	glm::vec2					m_StaticEnd;
 	PointOfInterestTarget*		m_pDynamicEnd;
 
-	Genesis::Shader*			m_pShader;
+	Genesis::ResourceShader*	m_pShader;
 	Genesis::VertexBuffer*		m_pVertexBuffer;
 
 	Genesis::Colour				m_Colour;

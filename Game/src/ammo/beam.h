@@ -21,8 +21,8 @@
 
 namespace Genesis
 {
-	class Shader;
 	class ResourceImage;
+	class ResourceShader;
     class VertexBuffer;
 }
 
@@ -55,8 +55,8 @@ private:
 	void								RenderBeam( const glm::mat4& modelMatrix, const Genesis::Colour& beamColour, float opacity );
 	void								RenderBeamFlare( const glm::mat4& modelMatrix, const Genesis::Colour& beamColour, float opacity );
 
-	static Genesis::Shader*				m_pShader;
-	static Genesis::Shader*				m_pFlareShader;
+	static Genesis::ResourceShader*		m_pShader;
+	static Genesis::ResourceShader*		m_pFlareShader;
 
     Genesis::VertexBuffer*              m_pBeamVertexBuffer;
     Genesis::VertexBuffer*              m_pFlareVertexBuffer;

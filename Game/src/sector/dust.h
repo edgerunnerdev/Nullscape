@@ -20,11 +20,11 @@
 #include <string>
 #include <vector>
 #include <scene/sceneobject.h>
-#include <shader.h>
 
 namespace Genesis
 {
 	class ResourceImage;
+	class ResourceShader;
 	class VertexBuffer;
 }
 
@@ -48,7 +48,7 @@ public:
 
 private:
 	Genesis::ResourceImage*		m_pDust;
-	Genesis::Shader*			m_pShader;
+	Genesis::ResourceShader*	m_pShader;
 	Genesis::VertexBuffer*		m_pVertexBuffer;
 	DustVector					m_dustParticles;
 };

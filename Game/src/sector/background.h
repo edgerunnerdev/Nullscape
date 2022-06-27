@@ -18,12 +18,11 @@
 #pragma once
 
 #include <string>
+#include <resources/resourceshader.hpp>
 #include <scene/sceneobject.h>
-#include <shader.h>
 
 namespace Genesis
 {
-    class ShaderUniform;
 	class VertexBuffer;
 }
 
@@ -50,11 +49,11 @@ public:
 private:
 	void						CreateGeometry();
 
-	Genesis::Shader*			m_pShader;
+	Genesis::ResourceShader*	m_pShader;
 	const BackgroundInfo*		m_pBackgroundInfo;
 	Genesis::VertexBuffer*		m_pVertexBuffer;
     StarInfo*                   m_pStarInfo;
-    Genesis::ShaderUniform*     m_pStarOffset;
+    Genesis::ShaderUniformSharedPtr m_pStarOffset;
     glm::vec4                   m_AmbientColour;
 };
 

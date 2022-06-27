@@ -20,8 +20,6 @@
 #include "genesis.h"
 #include "math/misc.h"
 #include "rendersystem.h"
-#include "shader.h"
-#include "shadercache.h"
 #include "vertexbuffer.h"
 
 namespace Genesis
@@ -31,7 +29,7 @@ ModelViewerBackground::ModelViewerBackground(int width, int height)
     : m_pShader(nullptr)
     , m_pVertexBuffer(nullptr)
 {
-    m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load("untextured_vertex_coloured");
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/untextured_vertex_coloured.glsl");
     m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
     m_pVertexBuffer->CreateUntexturedQuad(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }

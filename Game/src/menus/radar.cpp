@@ -18,10 +18,8 @@
 #include <genesis.h>
 #include <configuration.h>
 #include <resources/resourceimage.h>
+#include <resources/resourceshader.hpp>
 #include <rendersystem.h>
-#include <shader.h>
-#include <shadercache.h>
-#include <shaderuniform.h>
 
 #include "sector/sector.h"
 #include "ship/ship.h"
@@ -60,8 +58,8 @@ m_QuadCount( 0 )
 	m_ShipyardIdx = m_Atlas.AddElement( 416.0f, 224.0f, 448.0f, 256.0f );
 
 	m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_UV );
-	m_pShader = FrameWork::GetRenderSystem()->GetShaderCache()->Load( "radar" );
-	ShaderUniform* pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
+	m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/radar.glsl");
+	ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
     pSampler->Set( m_pTexture, GL_TEXTURE0 );
 
 	SetPosition( Configuration::GetScreenWidth() - sRadarSize - 8.0f, Configuration::GetScreenHeight() - sRadarSize - 8.0f );

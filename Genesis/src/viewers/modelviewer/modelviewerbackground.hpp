@@ -17,8 +17,8 @@
 
 #pragma once
 
+#include "resources/resourceshader.hpp"
 #include "scene/sceneobject.h"
-#include "shader.h"
 #include <string>
 
 namespace Genesis
@@ -35,7 +35,7 @@ public:
     virtual void Render() override;
 
 private:
-    Shader* m_pShader;
+    ResourceShader* m_pShader;
     VertexBuffer* m_pVertexBuffer;
 };
 
