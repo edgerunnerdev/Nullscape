@@ -25,8 +25,6 @@ namespace Hyperscape
 
 class ButtonDeathExit;
 class ButtonDeathRespawn;
-class SectorInfo;
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // DeathMenu

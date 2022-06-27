@@ -36,7 +36,6 @@ class Layer;
 namespace Hyperscape
 {
 
-class Background;
 class AmmoManager;
 class MuzzleflashManager;
 class MuzzleflashManagerRep;
@@ -99,7 +98,6 @@ public:
 	MuzzleflashManager*	GetMuzzleflashManager() const;
 	const ShipList&		GetShipList() const;
 	TrailManager*		GetTrailManager() const;
-    Background*         GetBackground() const;
 	ShipTweaks*			GetShipTweaks() const;
 	SectorCamera*		GetCamera() const;
 
@@ -141,7 +139,6 @@ protected:
 	Genesis::LayerSharedPtr m_pFxLayer;
 	Genesis::LayerSharedPtr m_pAmmoLayer;
 	Genesis::LayerSharedPtr m_pPhysicsLayer;
-	Background*			m_pBackground;
 	Dust*				m_pDust;
 	Boundary*			m_pBoundary;
 	ShipList			m_ShipList;
@@ -241,11 +238,6 @@ inline FleetWeakPtr Sector::GetRegionalFleet() const
 inline bool Sector::IsPlayerVictorious() const
 {
 	return m_IsPlayerVictorious;
-}
-
-inline Background* Sector::GetBackground() const
-{
-    return m_pBackground;
 }
 
 inline ShipTweaks* Sector::GetShipTweaks() const

@@ -1,4 +1,4 @@
-// Copyright 2015 Pedro Nunes
+// Copyright 2022 Pedro Nunes
 //
 // This file is part of Hyperscape.
 //
@@ -18,32 +18,38 @@
 #pragma once
 
 #include <string>
-#include <vector>
-#include "colour.h"
+#include <resources/resourceshader.hpp>
+#include <scene/sceneobject.h>
+
+namespace Genesis
+{
+	class VertexBuffer;
+}
 
 namespace Hyperscape
 {
 
-class BackgroundInfo;
-typedef std::vector<BackgroundInfo> BackgroundInfoVector;
-
-class BackgroundInfo
+class Background : public Genesis::SceneObject
 {
 public:
-	BackgroundInfo( int id, const std::string& filename, const Genesis::Colour& ambient ) :
-		m_Id( id ),
-		m_Filename( filename ),
-		m_Ambient( ambient )
-	{}
+								Background(const std::string& seed);
+	virtual						~Background() override;
+    virtual void                Update( float delta ) override;
+	virtual void				Render() override;
 
-	inline int						GetId() const				{ return m_Id; }
-	inline const std::string&		GetFilename() const			{ return m_Filename; }
-	inline const Genesis::Colour&	GetAmbientColour() const	{ return m_Ambient; }
+    const glm::vec4&            GetAmbientColour() const;
 
 private:
-	int				m_Id;
-	std::string		m_Filename;
-	Genesis::Colour m_Ambient;
+	void						CreateGeometry();
+
+	Genesis::ResourceShader*	m_pShader;
+	Genesis::VertexBuffer*		m_pVertexBuffer;
+    glm::vec4                   m_AmbientColour;
 };
+
+inline const glm::vec4& Background::GetAmbientColour() const
+{
+    return m_AmbientColour;
+}
 
 }

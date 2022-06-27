@@ -70,7 +70,6 @@
 #include "fleet/fleetrep.h"
 #include "requests/campaigntags.h"
 #include "requests/requestmanager.h"
-#include "sector/backgroundinfo.h"
 #include "sector/sectorinfo.h"
 #include "sector/sector.h"
 #include "sector/galaxycreationinfo.h"
@@ -80,6 +79,7 @@
 #include "sector/events/corsairfleet.h"
 #include "sector/events/orbitaldefenses.h"
 #include "sector/events/neutralflagship.h"
+#include "system/system.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
 #include "menus/mainmenu.h"
@@ -117,7 +117,6 @@ m_pConsole( nullptr ),
 m_pAudioDebug( nullptr ),
 m_pSector( nullptr ),
 m_pPlayer( nullptr ),
-m_pGalaxy( nullptr ),
 m_pMusicTitle( nullptr ),
 m_pTutorialWindow( nullptr ),
 m_State( GameState::Menu ),
@@ -174,7 +173,6 @@ Game::~Game()
 	delete m_pAudioDebug;
 	delete m_pMainMenu;
 	delete m_pPopup;
-	delete m_pGalaxy;
 	delete m_pShipInfoManager;
 	delete m_pMusicTitle;
 	delete m_pModuleInfoManager;
@@ -232,7 +230,6 @@ void Game::Initialise()
     m_pNPCPerks->Enable( Perk::DreadnaughtConstruction );
     m_pNPCPerks->Enable( Perk::Superconductors );
 
-	SetupBackgrounds();
 	SetupFactions();
 	m_pShipInfoManager->Initialise();
 
@@ -371,11 +368,6 @@ Genesis::TaskStatus Game::Update( float delta )
 		m_InputBlockedTimer = std::max( 0.0f, m_InputBlockedTimer - delta );
 	}
 
-	if ( m_pGalaxy )
-	{
-		m_pGalaxy->Update( delta );
-	}
-
 	if ( m_pPopup )
 	{
 		m_pPopup->Update( delta );
@@ -460,7 +452,6 @@ void Game::StartNewLegacyGame( const ShipCustomisationData& customisationData, c
 	m_FirstTimeInCombat = true;
 	m_pPlayer = new Player( customisationData, companionShipTemplate );
 	m_pMainMenu->Show( false );
-	m_pGalaxy->Create( galaxyCreationInfo );
 
 	SetPlayedTime( 0.0f );
 
@@ -559,8 +550,6 @@ void Game::EndGameAux()
 	}
 
 	SetupFactions(); // Recreate the factions to clear all stored data regarding fleets / sectors
-	m_pGalaxy->Reset();
-	m_pGalaxy->Show( true );
 
 	delete m_pPlayer;
 	m_pPlayer = nullptr;
@@ -750,35 +739,6 @@ void Game::LoadGameAux()
 
 	if ( !hasErrors )
 	{
-		// Load the galaxy but make sure we already have the Player created.
-		// Also load the blackboard if one exists
-		for ( XMLElement* pElem = pRootElem->FirstChildElement(); pElem != nullptr; pElem = pElem->NextSiblingElement() ) 
-		{
-			const std::string value( pElem->Value() );
-			if ( value == "Galaxy" )
-			{
-				m_pGalaxy->Create( GalaxyCreationInfo( GalaxyCreationInfo::CreationMode::Empty ) );
-				hasErrors |= ( m_pGalaxy->Read( pElem ) == false );
-			}
-			else if ( value == "Factions" )
-			{
-				int i = 0;
-				for ( XMLElement* pFactionElement = pElem->FirstChildElement(); pFactionElement != NULL; pFactionElement = pFactionElement->NextSiblingElement() )
-				{
-					SDL_assert_release( i < static_cast< int >( FactionId::Count ) );
-					hasErrors |= ( m_pFaction[ i ]->Read( pFactionElement ) == false );
-					i++;
-				}
-			}
-			else if ( value == "Blackboard" )
-			{
-				hasErrors |= ( m_pBlackboard->Read( pElem ) == false );
-			}
-		}
-	}
-
-	if ( !hasErrors )
-	{
 		m_pMainMenu->Show( false );
         m_ContextualTipsEnabled = m_pBlackboard->Exists( "#contextual_tips" );
 		InitialiseSectorEvents();
@@ -819,11 +779,7 @@ void Game::SetState( GameState newState )
 				m_pIntelWindow = new IntelWindow();
 			}
 
-			if (m_pGalaxy == nullptr)
-			{
-				m_pGalaxy = new Galaxy();
-				m_pGalaxy->Show(true);
-			}
+			m_pSystem = std::make_shared<System>("17260877307600676");
 
 			m_pMainMenu = new MainMenu();
 		}
@@ -835,11 +791,6 @@ void Game::SetState( GameState newState )
 	else if ( m_State == GameState::HyperscapeView )
 	{
 		playlistName = "data/playlists/galaxyview.m3u";
-	}
-
-	if (m_pGalaxy)
-	{
-		m_pGalaxy->GetRepresentation()->GetGalaxyWindow()->Show(m_State == GameState::GalaxyView);
 	}
 
 	if ( playlistName.empty() == false )
@@ -870,17 +821,6 @@ void Game::LoadToState( GameState state )
 {
 	m_pLoadingScreen->Show( true );
 	m_LoadToState = state;
-}
-
-void Game::SetupBackgrounds()
-{
-	m_Backgrounds.push_back( BackgroundInfo( 0, "CarinaNebula.jpg",		Genesis::Colour( 0.04f, 0.09f, 0.11f ) ) );
-	m_Backgrounds.push_back( BackgroundInfo( 1, "Tannhauser.jpg",		Genesis::Colour( 0.04f, 0.09f, 0.03f ) ) );
-	m_Backgrounds.push_back( BackgroundInfo( 2, "TheRim.jpg",			Genesis::Colour( 0.24f, 0.06f, 0.19f ) ) );
-	m_Backgrounds.push_back( BackgroundInfo( 3, "DepthsOfSpace.jpg",	Genesis::Colour( 0.04f, 0.04f, 0.08f ) ) );
-	m_Backgrounds.push_back( BackgroundInfo( 4, "HeartOfFire.jpg",		Genesis::Colour( 0.03f, 0.09f, 0.16f ) ) );
-	m_Backgrounds.push_back( BackgroundInfo( 5, "Gardens.jpg",			Genesis::Colour( 0.29f, 0.17f, 0.34f ) ) );
-	m_Backgrounds.push_back( BackgroundInfo( 6, "TheEnd.jpg",			Genesis::Colour( 0.06f, 0.08f, 0.20f ) ) );
 }
 
 void Game::SetupFactions()

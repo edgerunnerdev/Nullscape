@@ -26,7 +26,6 @@
 #include <endexternalheaders.h>
 
 #include "misc/mathaux.h"
-#include "sector/background.h"
 #include "serialisable.h"
 
 #include "fleet/fleet.fwd.h"
@@ -34,7 +33,6 @@
 namespace Hyperscape
 {
 
-class BackgroundInfo;
 class ShipInfo;
 class Faction;
 class Fleet;
@@ -94,7 +92,6 @@ public:
 	void						SetAutoResolve( bool state )			{ m_AutoResolve = state; }
 	FleetWeakPtrList			GetContestedFleets() const				{ return m_ContestedFleets; }
 	void						ForceResolve( Faction* pVictoriousFaction );
-	const BackgroundInfo*		GetBackground() const					{ return m_pBackgroundInfo; }
 	bool						IsPersonal() const						{ return m_IsPersonal; }
 	void						SetPersonal( bool state )				{ m_IsPersonal = state; }
 	int							GetConquestReward() const;
@@ -148,7 +145,6 @@ protected:
 	int							m_RegionalFleetPoints;
 	int							m_StarfortHealth;
 	FleetWeakPtrList			m_ContestedFleets;
-	const BackgroundInfo*		m_pBackgroundInfo;
 	StringSet					m_ComponentNames;
 };
 

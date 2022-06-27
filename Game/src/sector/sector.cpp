@@ -48,7 +48,6 @@
 #include "muzzleflash/muzzleflashmanagerrep.h"
 #include "requests/imperialrequest.h"
 #include "requests/requestmanager.h"
-#include "sector/background.h"
 #include "sector/boundary.h"
 #include "sector/sectorcamera.h"
 #include "sector/dust.h"
@@ -89,7 +88,6 @@ namespace Hyperscape
 
 Sector::Sector( SectorInfo* pSectorInfo ):
 m_pSectorInfo( pSectorInfo ),
-m_pBackground( nullptr ),
 m_pDust( nullptr ),
 m_pBoundary( nullptr ),
 m_pAmmoManager( nullptr ),
@@ -910,9 +908,6 @@ void Sector::SelectBackground()
 		pStarInfo = new StarInfo( seed * seed );
 		pStarInfo->PrintOut();
 	}
-
-	m_pBackground = new Background( m_pSectorInfo->GetBackground(), pStarInfo );
-	m_pBackgroundLayer->AddSceneObject( m_pBackground );
 }
 
 void Sector::AddFleetCommand( FleetCommandUniquePtr pFleetCommand )

@@ -48,8 +48,6 @@ void FogOfWar::Update( float delta )
 
 void FogOfWar::MarkAsVisible( const SectorInfo* pSectorInfo, int radius /* = 0 */ )
 {
-	SDL_assert( radius >= 0 && radius <= 2 );
-
 	glm::ivec2 coords = pSectorInfo->GetCoordinates();
 	MarkAsVisibleSingle( coords.x, coords.y );
 

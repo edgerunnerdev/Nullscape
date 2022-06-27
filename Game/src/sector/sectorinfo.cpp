@@ -22,7 +22,6 @@
 
 #include "requests/imperialrequest.h"
 #include "requests/requestmanager.h"
-#include "sector/backgroundinfo.h"
 #include "sector/galaxy.h"
 #include "sector/sectorinfo.h"
 #include "ship/inventory.h"
@@ -58,8 +57,7 @@ m_HasProceduralSpawning( true ),
 m_IsHomeworld( false ),
 m_RegionalFleetBasePoints( 0 ),
 m_RegionalFleetPoints( 0 ),
-m_StarfortHealth( 0 ),
-m_pBackgroundInfo( nullptr )
+m_StarfortHealth( 0 )
 {
 
 }
@@ -77,8 +75,7 @@ m_HasProceduralSpawning( true ),
 m_IsHomeworld( false ),
 m_RegionalFleetBasePoints( 0 ),
 m_RegionalFleetPoints( 0 ),
-m_StarfortHealth( 0 ),
-m_pBackgroundInfo( nullptr )
+m_StarfortHealth( 0 )
 {
 	m_pFaction = nullptr;
 }
@@ -413,20 +410,9 @@ bool SectorInfo::Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRo
 	Xml::Write( xmlDoc, pSectorElement, "HyperspaceInhibitor", HasHyperspaceInhibitor() );
 	Xml::Write( xmlDoc, pSectorElement, "RegionalFleetBasePoints", (int)m_RegionalFleetBasePoints );
 	Xml::Write( xmlDoc, pSectorElement, "RegionalFleetPoints", m_RegionalFleetPoints );
-	Xml::Write( xmlDoc, pSectorElement, "BackgroundId", m_pBackgroundInfo->GetId() );
 	Xml::Write( xmlDoc, pSectorElement, "Personal", m_IsPersonal );
 	Xml::Write( xmlDoc, pSectorElement, "HasStar", m_HasStar );
 	Xml::Write( xmlDoc, pSectorElement, "Homeworld", m_IsHomeworld );
-
-	SDL_assert( m_pBackgroundInfo != nullptr );
-	if ( m_pBackgroundInfo == nullptr )
-	{
-		return false;
-	}
-	else
-	{
-		Xml::Write( xmlDoc, pSectorElement, "BackgroundId", m_pBackgroundInfo->GetId() );
-	}
 
 	if ( m_ComponentNames.empty() == false )
 	{
@@ -445,7 +431,6 @@ bool SectorInfo::Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRo
 bool SectorInfo::Read( tinyxml2::XMLElement* pRootElement )
 {
 	std::string faction;
-	int backgroundId = -1;
 
 	for ( tinyxml2::XMLElement* pChildElement = pRootElement->FirstChildElement(); pChildElement != nullptr; pChildElement = pChildElement->NextSiblingElement() ) 
 	{
@@ -460,7 +445,6 @@ bool SectorInfo::Read( tinyxml2::XMLElement* pRootElement )
 		Xml::Serialise( pChildElement, "HyperspaceInhibitor", m_HasHyperspaceInhibitor );
 		Xml::Serialise( pChildElement, "RegionalFleetBasePoints", m_RegionalFleetBasePoints );
 		Xml::Serialise( pChildElement, "RegionalFleetPoints", m_RegionalFleetPoints );
-		Xml::Serialise( pChildElement, "BackgroundId", backgroundId );
 		Xml::Serialise( pChildElement, "Personal", m_IsPersonal );
 		Xml::Serialise( pChildElement, "HasStar", m_HasStar );
 		Xml::Serialise( pChildElement, "Homeworld", m_IsHomeworld );
@@ -495,17 +479,6 @@ bool SectorInfo::Read( tinyxml2::XMLElement* pRootElement )
 	SDL_assert( m_Coordinates.x < NumSectorsX );
 	SDL_assert( m_Coordinates.y >= 0 );
 	SDL_assert( m_Coordinates.y < NumSectorsY );
-	SDL_assert( backgroundId != -1 );
-	
-	for ( auto& background : g_pGame->GetBackgrounds() )
-	{
-		if ( background.GetId() == backgroundId )
-		{
-			m_pBackgroundInfo = &background;
-		}
-	}
-
-	SDL_assert( m_pBackgroundInfo != nullptr );
 
 	return true;
 }

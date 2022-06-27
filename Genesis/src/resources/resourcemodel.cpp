@@ -208,7 +208,7 @@ bool ResourceModel::Load()
     }
     else
     {
-        Core::Log::Info() << "Loaded model " << GetFilename().GetFullPath() << ": " << model.header.meshes << " meshes, " << model.header.materials << " materials.";
+        Core::Log::Info() << "Loaded model " << GetFilename().GetFullPath() << ": " << static_cast<int>(model.header.meshes) << " meshes, " << static_cast<int>(model.header.materials) << " materials.";
         m_State = ResourceState::Loaded;
         return true;
     }

@@ -91,19 +91,19 @@ class Popup;
 class MusicTitle;
 class TutorialWindow;
 class RequestManager;
-class BackgroundInfo;
 class Perks;
 class LoadingScreen;
 class AchievementsManager;
 class SaveGameStorage;
 class ShipOutline;
+
+GENESIS_DECLARE_SMART_PTR(System);
 GENESIS_DECLARE_SMART_PTR(SaveGameHeader);
 
 extern Game* g_pGame;
 
 using StringVector = std::vector<std::string>;
 using WStringVector = std::vector<std::wstring>;
-using BackgroundInfoVector = std::vector<BackgroundInfo>;
 using LoadingScreenUniquePtr = std::unique_ptr<LoadingScreen>;
 using ShipOutlineUniquePtr = std::unique_ptr<ShipOutline>;
 
@@ -225,8 +225,6 @@ public:
     void SetInputBlocked(bool state);
     bool IsInputBlocked() const;
 
-    const BackgroundInfoVector& GetBackgrounds() const;
-
     void Quit();
     bool IsQuitRequested() const;
 
@@ -238,7 +236,6 @@ private:
     void LoadResourcesAsync();
     void LoaderThreadMain();
     void EndGameAux();
-    void SetupBackgrounds();
     void LoadGameAux();
     void ToggleImGui();
 
@@ -249,7 +246,7 @@ private:
     ShipInfoManager* m_pShipInfoManager;
     Sector* m_pSector;
     Player* m_pPlayer;
-    Galaxy* m_pGalaxy;
+    SystemSharedPtr m_pSystem;
     MusicTitle* m_pMusicTitle;
     TutorialWindow* m_pTutorialWindow;
     GameState m_State;
@@ -272,7 +269,6 @@ private:
     float m_InputBlockedTimer;
 
     BlackboardSharedPtr m_pBlackboard;
-    BackgroundInfoVector m_Backgrounds;
 
     Perks* m_pNPCPerks;
 
@@ -338,7 +334,7 @@ inline Player* Game::GetPlayer() const
 
 inline Galaxy* Game::GetGalaxy() const
 {
-    return m_pGalaxy;
+    return nullptr;
 }
 
 inline Faction* Game::GetFaction(FactionId id) const
@@ -414,11 +410,6 @@ inline bool Game::IsPaused() const
 inline BlackboardSharedPtr Game::GetBlackboard() const
 {
     return m_pBlackboard;
-}
-
-inline const BackgroundInfoVector& Game::GetBackgrounds() const
-{
-    return m_Backgrounds;
 }
 
 inline Perks* Game::GetNPCPerks() const

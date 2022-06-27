@@ -1,4 +1,4 @@
-// Copyright 2017 Pedro Nunes
+// Copyright 2022 Pedro Nunes
 //
 // This file is part of Hyperscape.
 //
@@ -17,16 +17,45 @@
 
 #pragma once
 
+#include <array>
+#include <memory>
 #include <string>
+
+#include <scene/layer.h>
 
 namespace Hyperscape
 {
+
+class Background;
+using BackgroundUniquePtr = std::unique_ptr<Background>;
 
 class System
 {
 public:
 	System(const std::string& seed);
 	~System();
+
+private:
+    enum class LayerId
+    {
+        Background = 0,
+        Ships,
+        Effects,
+        Ammo,
+        Physics,
+
+        Count
+    };
+
+    void InitializeLayers();
+    void InitializeBackground();
+	Genesis::LayerSharedPtr GetLayer(LayerId id) const;
+
+	std::string m_Seed;
+
+	std::array<Genesis::LayerSharedPtr, static_cast<size_t>(LayerId::Count)> m_Layers;
+
+	BackgroundUniquePtr m_pBackground;
 };
 
 }

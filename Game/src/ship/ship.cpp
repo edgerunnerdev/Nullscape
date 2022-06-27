@@ -30,7 +30,6 @@
 #include "particles/particlemanager.h"
 #include "player.h"
 #include "requests/campaigntags.h"
-#include "sector/backgroundinfo.h"
 #include "sector/sector.h"
 #include "sector/sectorcamera.h"
 #include "sector/sectorinfo.h"
