@@ -15,31 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
-#include "system/astronomicalobject/star.hpp"
+#include "system/astronomicalobject/planet.hpp"
 
 namespace Hyperscape
 {
 
-Star::Star(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
+Planet::Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
     : AstronomicalObject(randomEngine, coordinates)
 {
 }
 
-Star::Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta)
-    : AstronomicalObject(randomEngine, std::move(pOrbit), theta)
-{
-}
+Planet::~Planet() {}
 
-Star::~Star() {}
-
-void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) 
+void Planet::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) 
 {
     ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
     glm::vec2 normalizedCoordinates = GetCoordinates() + glm::vec2(1.0f) / 2.0f;
     ImVec2 center(canvasTopLeft.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + size.y * normalizedCoordinates.y);
 
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
-    pDrawList->AddCircleFilled(center, 16.0f, IM_COL32(200, 200, 200, 255));
+    pDrawList->AddCircleFilled(center, 8.0f, IM_COL32(200, 200, 0, 255));
 }
 
 } // namespace Hyperscape

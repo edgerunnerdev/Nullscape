@@ -15,38 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
-#include "system/astronomicalobject/astronomicalobject.hpp"
 #include "system/astronomicalobject/orbit.hpp"
+
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <SDL.h>
+#include <externalheadersend.hpp>
+// clang-format on
 
 namespace Hyperscape
 {
 
-AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
-    : m_Coordinates(coordinates)
+Orbit::Orbit(float radius, float eccentricity)
+    : m_Radius(radius)
+    , m_Eccentricity(eccentricity)
 {
+    SDL_assert(radius > 0.0f);
+    SDL_assert(eccentricity > 0.0f);
+    SDL_assert(eccentricity < 1.0f); // Only elliptic orbits are supported.
 }
 
-AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta) 
-    : m_pOrbit(std::move(pOrbit))
-    , m_Coordinates(m_pOrbit->At(theta))
+glm::vec2 Orbit::At(float theta) const 
 {
-}
-
-AstronomicalObject::~AstronomicalObject()
-{
-}
-
-void AstronomicalObject::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight)
-{
-    for (int i = 0; i <= 360; ++i)
-    {
-        
-    }
-}
-
-const glm::vec2& AstronomicalObject::GetCoordinates() const
-{
-    return m_Coordinates;
+    return glm::vec2(0.0f);
 }
 
 } // namespace Hyperscape

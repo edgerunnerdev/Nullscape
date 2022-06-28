@@ -29,10 +29,13 @@
 namespace Hyperscape
 {
 
+GENESIS_DECLARE_SMART_PTR(Orbit);
+
 class AstronomicalObject
 {
 public:
     AstronomicalObject(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
+    AstronomicalObject(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
     virtual ~AstronomicalObject();
 
     virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight);
@@ -41,6 +44,7 @@ public:
 
 private:
     glm::vec2 m_Coordinates;
+    OrbitUniquePtr m_pOrbit;
 };
 
 } // namespace Hyperscape

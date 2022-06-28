@@ -15,38 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
+#pragma once
+
 #include "system/astronomicalobject/astronomicalobject.hpp"
-#include "system/astronomicalobject/orbit.hpp"
 
 namespace Hyperscape
 {
 
-AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
-    : m_Coordinates(coordinates)
+class Planet : public AstronomicalObject
 {
-}
+public:
+    Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
+    virtual ~Planet() override;
+    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) override;
 
-AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta) 
-    : m_pOrbit(std::move(pOrbit))
-    , m_Coordinates(m_pOrbit->At(theta))
-{
-}
+private:
 
-AstronomicalObject::~AstronomicalObject()
-{
-}
-
-void AstronomicalObject::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight)
-{
-    for (int i = 0; i <= 360; ++i)
-    {
-        
-    }
-}
-
-const glm::vec2& AstronomicalObject::GetCoordinates() const
-{
-    return m_Coordinates;
-}
+};
+GENESIS_DECLARE_SMART_PTR(Planet);
 
 } // namespace Hyperscape

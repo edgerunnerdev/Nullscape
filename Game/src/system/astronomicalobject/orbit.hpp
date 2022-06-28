@@ -17,22 +17,27 @@
 
 #pragma once
 
-#include "system/astronomicalobject/astronomicalobject.hpp"
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec2.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include <coredefines.h>
 
 namespace Hyperscape
 {
 
-class Star : public AstronomicalObject
+class Orbit
 {
 public:
-    Star(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
-    Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
-    virtual ~Star() override;
-    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) override;
+    Orbit(float radius, float eccentricity);
+    glm::vec2 At(float theta) const;
 
 private:
-
+    float m_Radius;
+    float m_Eccentricity;
 };
-GENESIS_DECLARE_SMART_PTR(Star);
+GENESIS_DECLARE_SMART_PTR(Orbit);
 
 } // namespace Hyperscape
