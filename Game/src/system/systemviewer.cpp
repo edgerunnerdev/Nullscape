@@ -24,6 +24,7 @@
 #include <imgui/imgui_impl.h>
 #include <math/misc.h>
 
+#include "system/astronomicalobject/astronomicalobject.hpp"
 #include "system/system.hpp"
 
 namespace Hyperscape
@@ -54,7 +55,11 @@ void SystemViewer::UpdateDebugUI()
         SameLine();
 
         BeginChild("Properties", ImVec2(300, 800), true);
-        TextUnformatted("w00t");
+        SystemSharedPtr pSystem = m_pSystem.lock();
+        if (pSystem != nullptr)
+        {
+            Text("Seed: %s", pSystem->GetSeed().c_str());
+        }
         EndChild();
 
         End();
@@ -145,6 +150,14 @@ void SystemViewer::DrawCanvas()
         }
     }
 
+    SystemSharedPtr pSystem = m_pSystem.lock();
+    if (pSystem != nullptr)
+    {
+        for (auto& pAstronomicalObject : pSystem->GetAstronomicalObjects())
+        {
+            pAstronomicalObject->DebugRender(canvas_p0, canvas_p1);
+        }
+    }
 
     ImGui::EndChild();
 }

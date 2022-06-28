@@ -16,6 +16,7 @@ find_package(MagicEnum REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
+find_package(xxhash REQUIRED)
 
 include_directories(
   src/ 
@@ -30,6 +31,7 @@ include_directories(
   ${SDL2_INCLUDE_DIRS}
   ${SDL2_IMAGE_INCLUDE_DIRS}
   ${VPX_INCLUDE_DIRS}
+  ${XXHASH_INCLUDE_DIRS}
 )
 
 link_directories(

@@ -19,21 +19,32 @@
 
 #include <array>
 #include <memory>
+#include <random>
 #include <string>
+#include <vector>
 
 #include <scene/layer.h>
+
+#include "system/system.fwd.hpp"
 
 namespace Hyperscape
 {
 
-class Background;
-using BackgroundUniquePtr = std::unique_ptr<Background>;
+GENESIS_DECLARE_SMART_PTR(AstronomicalObject);
+GENESIS_DECLARE_SMART_PTR(Background);
+
+using AstronomicalObjects = std::vector<AstronomicalObjectUniquePtr>;
 
 class System
 {
 public:
 	System(const std::string& seed);
 	~System();
+
+    const std::string& GetSeed() const;
+    SystemRandomEngine& GetRandomEngine();
+
+    const AstronomicalObjects& GetAstronomicalObjects() const;
 
 private:
     enum class LayerId
@@ -46,16 +57,21 @@ private:
 
         Count
     };
-
+    
+    void InitializeRandomEngine();
     void InitializeLayers();
     void InitializeBackground();
+    void GenerateAstronomicalObjects();
 	Genesis::LayerSharedPtr GetLayer(LayerId id) const;
 
 	std::string m_Seed;
+    SystemRandomEngine m_RandomEngine;
 
 	std::array<Genesis::LayerSharedPtr, static_cast<size_t>(LayerId::Count)> m_Layers;
 
 	BackgroundUniquePtr m_pBackground;
+
+    AstronomicalObjects m_AstronomicalObjects;
 };
 
 }

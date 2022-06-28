@@ -19,9 +19,16 @@
 
 #include "system/system.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <xxhash64.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <scene/scene.h>
 #include <genesis.h>
 
+#include "system/astronomicalobject/star.hpp"
 #include "system/background.hpp"
 
 namespace Hyperscape
@@ -30,8 +37,10 @@ namespace Hyperscape
 System::System(const std::string& seed)
     : m_Seed(seed)
 {
+    InitializeRandomEngine();
     InitializeLayers();
     InitializeBackground();
+    GenerateAstronomicalObjects();
 }
    
 System::~System()
@@ -41,6 +50,27 @@ System::~System()
     {
         pScene->RemoveLayer(m_Layers[i]->GetLayerDepth());
     }
+}
+
+const std::string& System::GetSeed() const 
+{
+    return m_Seed;
+}
+
+SystemRandomEngine& System::GetRandomEngine() 
+{
+    return m_RandomEngine;
+}
+
+const AstronomicalObjects& System::GetAstronomicalObjects() const 
+{
+    return m_AstronomicalObjects;
+}
+
+void System::InitializeRandomEngine() 
+{
+    uint64_t seedHash = XXHash64::hash(m_Seed.data(), m_Seed.length(), 0);
+    m_RandomEngine = SystemRandomEngine(seedHash);
 }
 
 void System::InitializeLayers() 
@@ -57,6 +87,12 @@ void System::InitializeBackground()
 {
     m_pBackground = std::make_unique<Background>(m_Seed);
     GetLayer(LayerId::Background)->AddSceneObject(m_pBackground.get(), false);
+}
+
+void System::GenerateAstronomicalObjects() 
+{
+    StarUniquePtr pStar = std::make_unique<Star>(GetRandomEngine(), glm::vec2(0.0f, 0.0f));
+    m_AstronomicalObjects.push_back(std::move(pStar));
 }
 
 Genesis::LayerSharedPtr System::GetLayer(LayerId id) const 
