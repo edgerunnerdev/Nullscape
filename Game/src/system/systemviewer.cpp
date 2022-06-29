@@ -80,7 +80,7 @@ void SystemViewer::UpdateDebugUI()
                 for (auto& pAstronomicalObject : pSystem->GetAstronomicalObjects())
                 {
                     PushID(pAstronomicalObject.get());
-                    if (TreeNode(pAstronomicalObject->GetName().c_str()))
+                    if (TreeNodeEx(pAstronomicalObject->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
                     {
                         pAstronomicalObject->UpdateDebugUI();
                         TreePop();

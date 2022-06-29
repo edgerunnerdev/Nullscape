@@ -25,14 +25,32 @@ namespace Hyperscape
 class Star : public AstronomicalObject
 {
 public:
+    enum class Type
+    {
+        MainSequenceStar,
+        GiantStar,
+        ProtoStar,
+        CarbonStar,
+        WolfRayetStar,
+        BlackHole,
+        NeutronStar,
+        WhiteDwarf,
+        BrownDwarf
+    };
+
     Star(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
     Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
     virtual ~Star() override;
     virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) override;
     virtual void UpdateDebugUI() override;
 
-private:
+    Type GetType() const;
 
+private:
+    void GenerateProperties(SystemRandomEngine& randomEngine);
+    void GenerateType(SystemRandomEngine& randomEngine);
+
+    Type m_Type;
 };
 GENESIS_DECLARE_SMART_PTR(Star);
 

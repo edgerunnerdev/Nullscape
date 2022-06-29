@@ -17,24 +17,31 @@
 
 #include "system/astronomicalobject/star.hpp"
 
+#include <sstream>
+
 #include "system/astronomicalobject/orbit.hpp"
+#include <genesis.h>
 
 namespace Hyperscape
 {
 
 Star::Star(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
     : AstronomicalObject(randomEngine, "Star", coordinates)
+    , m_Type(Type::MainSequenceStar)
 {
+    GenerateProperties(randomEngine);
 }
 
 Star::Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta)
     : AstronomicalObject(randomEngine, "Star", std::move(pOrbit), theta)
+    , m_Type(Type::MainSequenceStar)
 {
+    GenerateProperties(randomEngine);
 }
 
 Star::~Star() {}
 
-void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) 
+void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight)
 {
     AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight);
 
@@ -48,7 +55,53 @@ void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRi
 
 void Star::UpdateDebugUI() 
 {
+    ImGui::Text("Type: %s", magic_enum::enum_name(m_Type).data());
+}
 
+Star::Type Star::GetType() const
+{
+    return m_Type;
+}
+
+void Star::GenerateProperties(SystemRandomEngine& randomEngine)
+{
+    GenerateType(randomEngine);
+}
+
+void Star::GenerateType(SystemRandomEngine& randomEngine)
+{
+    struct StarTypeProbability
+    {
+        Type type;
+        float probability;
+    };
+
+    // clang-format off
+    static const std::vector<StarTypeProbability> starTypeProbabilities = {
+        {Type::MainSequenceStar, 77.00f},
+        {Type::GiantStar,         0.25f},
+        {Type::ProtoStar,         2.40f}, 
+        {Type::CarbonStar,        0.08f},
+        {Type::WolfRayetStar,     0.05f},
+        {Type::BlackHole,         0.41f},
+        {Type::NeutronStar,       4.00f},
+        {Type::WhiteDwarf,        0.36f},
+        {Type::BrownDwarf,       15.45f}
+    };
+    // clang-format on
+
+    std::uniform_real_distribution<float> typeDistribution(0.0f, 100.0f);
+    const float value = typeDistribution(randomEngine);
+    float accumulated = 0.0f;
+    for (auto& starTypeProbability : starTypeProbabilities)
+    {
+        accumulated += starTypeProbability.probability;
+        if (value <= accumulated)
+        {
+            m_Type = starTypeProbability.type;
+            break;
+        }
+    }
 }
 
 } // namespace Hyperscape
