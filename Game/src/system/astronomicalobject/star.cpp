@@ -17,16 +17,18 @@
 
 #include "system/astronomicalobject/star.hpp"
 
+#include "system/astronomicalobject/orbit.hpp"
+
 namespace Hyperscape
 {
 
 Star::Star(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
-    : AstronomicalObject(randomEngine, coordinates)
+    : AstronomicalObject(randomEngine, "Star", coordinates)
 {
 }
 
 Star::Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta)
-    : AstronomicalObject(randomEngine, std::move(pOrbit), theta)
+    : AstronomicalObject(randomEngine, "Star", std::move(pOrbit), theta)
 {
 }
 
@@ -34,12 +36,19 @@ Star::~Star() {}
 
 void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) 
 {
+    AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight);
+
     ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
-    glm::vec2 normalizedCoordinates = GetCoordinates() + glm::vec2(1.0f) / 2.0f;
+    glm::vec2 normalizedCoordinates = GetCoordinates() / 2.0f + glm::vec2(0.5f);
     ImVec2 center(canvasTopLeft.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + size.y * normalizedCoordinates.y);
 
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
-    pDrawList->AddCircleFilled(center, 16.0f, IM_COL32(200, 200, 200, 255));
+    pDrawList->AddCircleFilled(center, 16.0f, IM_COL32(200, 200, 0, 255));
+}
+
+void Star::UpdateDebugUI() 
+{
+
 }
 
 } // namespace Hyperscape

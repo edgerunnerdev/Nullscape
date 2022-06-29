@@ -33,6 +33,7 @@ class Orbit
 public:
     Orbit(float radius, float eccentricity);
     glm::vec2 At(float theta) const;
+    float GetEccentricity() const;
 
 private:
     float m_Radius;

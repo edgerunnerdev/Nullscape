@@ -54,11 +54,40 @@ void SystemViewer::UpdateDebugUI()
 
         SameLine();
 
-        BeginChild("Properties", ImVec2(300, 800), true);
+        BeginChild("Properties", ImVec2(300, 900), true);
         SystemSharedPtr pSystem = m_pSystem.lock();
         if (pSystem != nullptr)
         {
-            Text("Seed: %s", pSystem->GetSeed().c_str());
+            if (CollapsingHeader("Seed"))
+            {
+                Text("Seed: %s", pSystem->GetSeed().c_str());
+                
+                Separator();
+
+                static int sDepth = 1;
+                InputInt("Depth", &sDepth);
+                sDepth = gClamp<int>(sDepth, 1, 8);
+
+                if (Button("Reseed"))
+                {
+                    Reseed(sDepth);
+                }
+            }
+
+            
+            if (CollapsingHeader("Astronomical objects", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                for (auto& pAstronomicalObject : pSystem->GetAstronomicalObjects())
+                {
+                    PushID(pAstronomicalObject.get());
+                    if (TreeNode(pAstronomicalObject->GetName().c_str()))
+                    {
+                        pAstronomicalObject->UpdateDebugUI();
+                        TreePop();
+                    }
+                    PopID();
+                }
+            }
         }
         EndChild();
 
@@ -69,6 +98,22 @@ void SystemViewer::UpdateDebugUI()
 void SystemViewer::View(SystemSharedPtr pSystem)
 {
     m_pSystem = pSystem;
+}
+
+void SystemViewer::Reseed(int depth) 
+{
+    std::stringstream seed;
+    seed << depth;
+    static std::random_device rd;
+    std::uniform_int_distribution<int> dist(0, 9);
+    for (int i = 0; i < 16; i++)
+    {
+        char c = '0' + dist(rd);
+        seed << c;
+    }
+
+    m_pReseedSystem = std::make_shared<System>(seed.str());
+    m_pSystem = m_pReseedSystem;
 }
 
 void SystemViewer::DrawCanvas() 
@@ -83,8 +128,8 @@ void SystemViewer::DrawCanvas()
     ImGui::PopStyleVar();
 
     static const float sSectorSize = 64.0f;
-    static const size_t sNumSectorsW = 32;
-    static const size_t sNumSectorsH = 32;
+    static const size_t sNumSectorsW = 31;
+    static const size_t sNumSectorsH = 31;
 
     // Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows us to use IsItemHovered()/IsItemActive()
     ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!

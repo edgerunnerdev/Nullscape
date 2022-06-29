@@ -20,6 +20,7 @@
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <SDL.h>
+#include <glm/trigonometric.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -31,13 +32,20 @@ Orbit::Orbit(float radius, float eccentricity)
     , m_Eccentricity(eccentricity)
 {
     SDL_assert(radius > 0.0f);
-    SDL_assert(eccentricity > 0.0f);
+    SDL_assert(eccentricity >= 0.0f);
     SDL_assert(eccentricity < 1.0f); // Only elliptic orbits are supported.
 }
 
 glm::vec2 Orbit::At(float theta) const 
 {
-    return glm::vec2(0.0f);
+    const float x = glm::cos(theta) * m_Radius * (1.0f + m_Eccentricity) + m_Radius * m_Eccentricity;
+    const float y = glm::sin(theta) * m_Radius * (1.0f - m_Eccentricity); 
+    return glm::vec2(x, y);
+}
+
+float Orbit::GetEccentricity() const 
+{
+    return m_Eccentricity;
 }
 
 } // namespace Hyperscape

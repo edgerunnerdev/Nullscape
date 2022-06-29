@@ -17,11 +17,18 @@
 
 #include "system/astronomicalobject/planet.hpp"
 
+#include "system/astronomicalobject/orbit.hpp"
+
 namespace Hyperscape
 {
 
 Planet::Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
-    : AstronomicalObject(randomEngine, coordinates)
+    : AstronomicalObject(randomEngine, "Planet", coordinates)
+{
+}
+
+Planet::Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta) 
+    : AstronomicalObject(randomEngine, "Planet", std::move(pOrbit), theta) 
 {
 }
 
@@ -29,12 +36,22 @@ Planet::~Planet() {}
 
 void Planet::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) 
 {
+    AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight);
+
     ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
-    glm::vec2 normalizedCoordinates = GetCoordinates() + glm::vec2(1.0f) / 2.0f;
+    glm::vec2 normalizedCoordinates = GetCoordinates() / 2.0f + glm::vec2(0.5f);
     ImVec2 center(canvasTopLeft.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + size.y * normalizedCoordinates.y);
 
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
-    pDrawList->AddCircleFilled(center, 8.0f, IM_COL32(200, 200, 0, 255));
+    pDrawList->AddCircleFilled(center, 8.0f, IM_COL32(200, 200, 200, 255));
+}
+
+void Planet::UpdateDebugUI() 
+{
+    if (m_pOrbit != nullptr)
+    {
+        ImGui::Text("Orbital eccentricity: %.4f", m_pOrbit->GetEccentricity());
+    }
 }
 
 } // namespace Hyperscape

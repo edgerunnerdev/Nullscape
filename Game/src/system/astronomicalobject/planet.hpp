@@ -26,8 +26,10 @@ class Planet : public AstronomicalObject
 {
 public:
     Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
+    Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
     virtual ~Planet() override;
     virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) override;
+    virtual void UpdateDebugUI() override;
 
 private:
 

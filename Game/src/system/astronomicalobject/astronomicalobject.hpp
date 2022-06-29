@@ -24,6 +24,9 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <array>
+#include <string>
+
 #include "system/system.fwd.hpp"
 
 namespace Hyperscape
@@ -31,20 +34,29 @@ namespace Hyperscape
 
 GENESIS_DECLARE_SMART_PTR(Orbit);
 
+// Astronomical coordinates are between [-1,1], with stars generally being at (0,0).
 class AstronomicalObject
 {
 public:
-    AstronomicalObject(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
-    AstronomicalObject(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
+    AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, const glm::vec2& coordinates);
+    AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, OrbitUniquePtr pOrbit, float theta);
     virtual ~AstronomicalObject();
 
     virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight);
+    virtual void UpdateDebugUI();
 
     const glm::vec2& GetCoordinates() const;
+    const std::string& GetName() const;
+
+protected:
+    ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const glm::vec2& coordinates) const;
+
+    std::string m_Name;
+    OrbitUniquePtr m_pOrbit;
 
 private:
     glm::vec2 m_Coordinates;
-    OrbitUniquePtr m_pOrbit;
+    std::array<ImVec2, 360> m_OrbitPoints;
 };
 
 } // namespace Hyperscape

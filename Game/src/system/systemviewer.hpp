@@ -35,10 +35,14 @@ public:
     void View(SystemSharedPtr pSystem);
 
 private:
+    void Reseed(int depth);
     void DrawCanvas();
 
     SystemWeakPtr m_pSystem;
     bool m_IsOpen;
+
+    // The reseed system is used only for debugging purposes, allowing us to quickly iterate.
+    SystemSharedPtr m_pReseedSystem;
 };
 
 } // namespace Hyperscape

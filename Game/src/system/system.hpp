@@ -62,6 +62,9 @@ private:
     void InitializeLayers();
     void InitializeBackground();
     void GenerateAstronomicalObjects();
+    float GenerateEccentricity();
+    int GeneratePlanetCount();
+    std::vector<float> GeneratePlanetDistances(int planetCount);
 	Genesis::LayerSharedPtr GetLayer(LayerId id) const;
 
 	std::string m_Seed;

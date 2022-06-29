@@ -28,6 +28,8 @@
 #include <scene/scene.h>
 #include <genesis.h>
 
+#include "system/astronomicalobject/orbit.hpp"
+#include "system/astronomicalobject/planet.hpp"
 #include "system/astronomicalobject/star.hpp"
 #include "system/background.hpp"
 
@@ -93,6 +95,82 @@ void System::GenerateAstronomicalObjects()
 {
     StarUniquePtr pStar = std::make_unique<Star>(GetRandomEngine(), glm::vec2(0.0f, 0.0f));
     m_AstronomicalObjects.push_back(std::move(pStar));
+
+    std::uniform_real_distribution<float> orbitDistribution(0.0f, 360.0f);
+    int planetCount = GeneratePlanetCount();
+    std::vector<float> planetDistances = GeneratePlanetDistances(planetCount);
+
+    for (int i = 0; i < planetCount; ++i)
+    {
+        OrbitUniquePtr pOrbit = std::make_unique<Orbit>(planetDistances[i], GenerateEccentricity());
+        PlanetUniquePtr pPlanet = std::make_unique<Planet>(GetRandomEngine(), std::move(pOrbit), orbitDistribution(GetRandomEngine()));
+        m_AstronomicalObjects.push_back(std::move(pPlanet));
+    }
+}
+
+// In the solar system, all planets have an eccentricity between 0.006 (Venus) and 0.248 (Pluto).
+// We generate eccentricity values between [0-0.25], but greatly weight the results towards the lower end.
+float System::GenerateEccentricity() 
+{
+    const std::uniform_real_distribution<float> eccentricityDistribution(0.0f, 1.0);
+    const float v = eccentricityDistribution(GetRandomEngine());
+    const float fv = glm::clamp(-log10(-v+1.0f)/2.0f, 0.0f, 1.0f) * 0.25f;
+    return fv;
+}
+
+int System::GeneratePlanetCount() 
+{
+    // Completely artificial set of values as we currently don't have enough data to generate a good table.
+    // See https://en.wikipedia.org/wiki/List_of_multiplanetary_systems
+    // Either way, we do want most systems to have some planets.
+    const std::array<int, 9> count = { 100, 500, 700, 1000, 300, 200, 100, 50, 10 };
+    int accum = 0;
+    for (int i = 0; i < count.size(); ++i)
+    {
+        accum += count[i];
+    }
+
+    const std::uniform_int_distribution<int> planetDistribution(0, accum);
+    const int v = planetDistribution(GetRandomEngine());
+    accum = 0;
+    for (int i = 0; i < count.size(); ++i)
+    {
+        accum += count[i];
+        if (v <= accum)
+        {
+            return i;
+        }
+    }
+    return 0;
+}
+
+std::vector<float> System::GeneratePlanetDistances(int planetCount) 
+{
+    std::vector<float> distances;
+    distances.reserve(planetCount);
+
+    const std::uniform_real_distribution<float> distanceDistribution(0.2f, 0.8f);
+    float accumulatedDistance = 0.0f;
+    for (int i = 0; i < planetCount; ++i)
+    {
+        accumulatedDistance += distanceDistribution(GetRandomEngine());
+        distances.push_back(accumulatedDistance);
+    }
+
+    if (accumulatedDistance > 1.0f)
+    {
+        for (int i = 0; i < planetCount; ++i)
+        {
+            distances[i] /= accumulatedDistance;
+        }
+    }
+
+    for (int i = 0; i < planetCount; ++i)
+    {
+        distances[i] *= 0.75f;
+    }
+
+    return distances;
 }
 
 Genesis::LayerSharedPtr System::GetLayer(LayerId id) const 

@@ -29,6 +29,7 @@ public:
     Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
     virtual ~Star() override;
     virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) override;
+    virtual void UpdateDebugUI() override;
 
 private:
 
