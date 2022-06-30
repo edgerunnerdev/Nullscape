@@ -246,14 +246,6 @@ void Hotbar::UpdateAbilities( Ship* pPlayerShip )
 	int abilityCount = addonsCount;
 	if ( abilityCount > sNumShipAddons )
 		abilityCount = sNumShipAddons;
-	
-	const bool hasRammingSpeed = g_pGame->GetPlayer()->GetPerks()->IsEnabled( Perk::RammingSpeed );
-	int rammingSpeedAbilityIndex = -1;
-	if ( hasRammingSpeed )
-	{
-		rammingSpeedAbilityIndex = abilityCount;
-		abilityCount++;
-	}
 
 	const bool hasAlternator = pPlayerShip->GetQuantumStateAlternator() != nullptr;
 	int alternatorAbilityIndex = -1;
@@ -274,17 +266,7 @@ void Hotbar::UpdateAbilities( Ship* pPlayerShip )
 	{
 		AbilityData& ability = m_Abilities[ i ];
 
-		if ( i == rammingSpeedAbilityIndex )
-		{
-			ability.key = "TAB";
-			ability.name = "Ramming speed";
-			ability.inCooldown = pPlayerShip->GetRammingSpeedCooldown() > 0.0f;
-			ability.isActive = pPlayerShip->IsRammingSpeedEnabled();
-			ability.cooldownRatio = pPlayerShip->GetRammingSpeedCooldown() / RammingSpeedCooldown;
-			ability.isUsable = !ability.inCooldown;
-			ability.pIcon = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/ui/icons/navigation.png" );
-		}
-		else if ( i == alternatorAbilityIndex )
+		if ( i == alternatorAbilityIndex )
 		{
 			ability.key = "Space";
 			ability.name = "Switch quantum phase";

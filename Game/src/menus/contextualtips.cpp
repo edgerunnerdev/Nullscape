@@ -187,11 +187,6 @@ bool ContextualTips::m_LookupTableInitialised = false;
 
 bool ContextualTips::Present( ContextualTipType tip, bool overridePreference /* = false */ )
 {
-    if ( overridePreference == false && g_pGame->AreContextualTipsEnabled() == false )
-    {
-        return false;
-    }
-
     const std::string& tag = ContextualTipTag[ static_cast<std::size_t>( tip ) ];
     BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
     if ( pBlackboard != nullptr && pBlackboard->Exists( tag ) == false )

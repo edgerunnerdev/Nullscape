@@ -29,7 +29,6 @@
 #include "particles/particleemitter.h"
 #include "particles/particlemanager.h"
 #include "player.h"
-#include "requests/campaigntags.h"
 #include "sector/sector.h"
 #include "sector/sectorcamera.h"
 #include "sector/sectorinfo.h"
@@ -1146,17 +1145,6 @@ bool Ship::DamageShared(WeaponSystem weaponSystem, float baseDamage, int burst, 
         *pFrameDamage *= towerBonusMagnitude;
     }
 
-    // In easy mode, reduce the damage dealt to the player and allied ships.
-    // The display damage should remain unchanged, as that's only used for visual effects.
-    if (g_pGame->GetDifficulty() == Difficulty::Easy)
-    {
-        FactionId factionId = GetFaction()->GetFactionId();
-        if (factionId == FactionId::Player || factionId == FactionId::Empire)
-        {
-            *pFrameDamage *= (1.0f - cEasyDamageMitigation);
-        }
-    }
-
     m_pDamageTracker->AddDamage(pDealtByFaction->GetFactionId(), *pFrameDamage);
     return true;
 }
@@ -1306,13 +1294,6 @@ void Ship::Dock(Shipyard* pShipyard)
     {
         pEngine->Disable();
     }
-
-    // Once the player docks, we need to make permanent any temporary modules which
-    // have been acquired.
-    if (g_pGame->GetDifficulty() == Difficulty::Normal)
-    {
-        g_pGame->GetPlayer()->GetInventory()->ClearCachedModules();
-    }
 }
 
 void Ship::Undock()
@@ -1391,8 +1372,6 @@ void Ship::OnShipDestroyed()
     {
         OnFlagshipDestroyed();
     }
-
-    GameEventManager::Broadcast(new GameEventShipDestroyed(this));
 }
 
 void Ship::PlayDestructionSequence()
@@ -1405,47 +1384,7 @@ void Ship::PlayDestructionSequence()
 
 void Ship::OnFlagshipDestroyed()
 {
-    if (IsFlagship())
-    {
-        BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
-        switch (GetFaction()->GetFactionId())
-        {
-        case FactionId::Pirate:
-        {
-            g_pGame->AddIntel(GameCharacter::NavarreHexer, "*static* ---ys found how to --ild ships, afterall-- *static*");
 
-            g_pGame->AddIntel(GameCharacter::FleetIntelligence, "One less to threaten the Empire. With him out of the picture, we should be able "
-                                                                "to wipe the raiders out, once and for all.");
-
-            pBlackboard->Add(sKillPirateFlagshipCompleted);
-            g_pGame->GetAchievementsManager()->UnlockAchievement(ACH_IMPERIAL_DRM);
-            break;
-        }
-        case FactionId::Marauders:
-        {
-            g_pGame->AddIntel(GameCharacter::HarkonStormchaser, "*static* FREEEEEDOOOOOOOOOOOOOOM *static*");
-
-            g_pGame->AddIntel(GameCharacter::FleetIntelligence, "At last, Harkon has meet his end. Well fought, Captain.");
-
-            // This really should move to CampaignRequest.
-            if (g_pGame->GetGameMode() == GameMode::Campaign)
-            {
-                g_pGame->AddIntel(GameCharacter::FleetIntelligence, "From the wreck of his ship, we will salvage the codes to disable the hyperspace inhibitor "
-                                                                    "which protects their home sector, Valhalla. That will be our next target and finally "
-                                                                    "those people will be productive, peaceful members of our great Empire.");
-            }
-
-            pBlackboard->Add(sKillMarauderFlagshipCompleted);
-            break;
-        }
-        case FactionId::Ascent:
-        {
-            pBlackboard->Add(sKillAscentFlagshipCompleted);
-            break;
-        }
-        default: break;
-        }
-    }
 }
 
 void Ship::OnModuleDestroyed(Module* pModule)
@@ -1565,13 +1504,11 @@ void Ship::SpawnLoot()
         if (pSelectedModuleInfo->GetType() == ModuleType::Armour)
         {
             const int quantity = 3 + rand() % 2;
-            const int cachedQuantity = (g_pGame->GetDifficulty() == Difficulty::Normal) ? quantity : 0;
-            g_pGame->GetPlayer()->GetInventory()->AddModule(pSelectedModuleInfo->GetName(), quantity, cachedQuantity, true);
+            g_pGame->GetPlayer()->GetInventory()->AddModule(pSelectedModuleInfo->GetName(), quantity, 0, true);
         }
         else
         {
-            const int cachedQuantity = (g_pGame->GetDifficulty() == Difficulty::Normal) ? 1 : 0;
-            g_pGame->GetPlayer()->GetInventory()->AddModule(pSelectedModuleInfo->GetName(), 1, cachedQuantity, true);
+            g_pGame->GetPlayer()->GetInventory()->AddModule(pSelectedModuleInfo->GetName(), 1, 0, true);
 
             // Unlock the "Favoured by the RNG gods" achievement if this module is the particle accelerator.
             if (pSelectedModuleInfo->GetName() == "LegendaryParticleAccelerator")
@@ -1661,15 +1598,7 @@ void Ship::GetBoundingBox(glm::vec3& topLeft, glm::vec3& bottomRight) const
 
 bool Ship::HasPerk(Perk perk) const
 {
-    Player* pPlayer = g_pGame->GetPlayer();
-    if (pPlayer->GetShip() == this)
-    {
-        return pPlayer->GetPerks()->IsEnabled(perk);
-    }
-    else
-    {
-        return g_pGame->GetNPCPerks()->IsEnabled(perk);
-    }
+    return false;
 }
 
 bool Ship::IsFlagship() const

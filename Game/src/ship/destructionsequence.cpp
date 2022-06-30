@@ -97,24 +97,7 @@ void DestructionSequence::Update( float delta )
 
 void DestructionSequence::GrantPerkPointPart()
 {
-	if ( Faction::sIsEnemyOf( m_pOwner->GetFaction(), g_pGame->GetPlayerFaction() ) )
-	{
-		Player* pPlayer = g_pGame->GetPlayer();
-		int perkPointParts = pPlayer->GetPerkPointsParts() + 1;
-		if ( perkPointParts >= 10 )
-		{
-			pPlayer->SetPerkPointsParts( 0 );
-			pPlayer->SetPerkPoints( pPlayer->GetPerkPoints() + 1 );
 
-			GameEventManager::Broadcast( new GameEvent( GameEventType::PerkPointAcquired ) );
-		}
-		else
-		{
-			pPlayer->SetPerkPointsParts( perkPointParts );
-
-			GameEventManager::Broadcast( new GameEvent( GameEventType::PerkPointPartAcquired ) );
-		}
-	}
 }
 
 }

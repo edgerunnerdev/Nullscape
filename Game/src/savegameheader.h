@@ -54,8 +54,6 @@ public:
 	inline const std::string&	GetShipName() const			{ return m_ShipName; }
 	inline float				GetPlayedTime() const		{ return m_PlayedTime; }
 	inline bool					IsAlive() const				{ return m_Alive; }
-	inline Difficulty			GetDifficulty() const		{ return m_Difficulty; }
-	inline GameMode				GetGameMode() const			{ return m_GameMode; }
 
 private:
 	std::filesystem::path		m_Filename;
@@ -63,8 +61,6 @@ private:
 	std::string					m_ShipName;
 	float						m_PlayedTime;
 	bool						m_Alive;
-	Difficulty					m_Difficulty;
-	GameMode					m_GameMode;
 
 	SaveGameHeaderError			m_Error;
 };

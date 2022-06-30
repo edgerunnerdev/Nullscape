@@ -35,8 +35,6 @@
 #include "faction/faction.h"
 #include "menus/cursortype.h"
 #include "menus/musictitle.h"
-#include "sector/events/sectorevent.h"
-#include "sector/galaxycreationinfo.h"
 #include "ship/ship.h"
 
 static const int HEXTERMINATE_BUILD = 19;
@@ -113,28 +111,9 @@ struct NewGameParameters;
 enum class GameCharacter
 {
     FleetIntelligence,
-    NavarreHexer,
-    HarkonStormchaser,
-    JeroenLightbringer,
-    AeliseGloriam,
-    Chrysamere,
-
     Count
 };
 
-enum class Difficulty
-{
-    Easy,
-    Normal,
-    Hardcore
-};
-
-enum class GameMode
-{
-    Campaign,
-    InfiniteWar,
-    Hyperscape
-};
 
 ///////////////////////////////////////////////////////////////////////////
 // Game
@@ -172,26 +151,15 @@ public:
     Galaxy* GetGalaxy() const;
     IntelWindow* GetIntelWindow() const;
     Popup* GetPopup() const;
-    TutorialWindow* GetTutorialWindow() const;
-    RequestManager* GetRequestManager() const;
     SectorInfo* FindSpawnSector() const;
-    BlackboardSharedPtr GetBlackboard() const;
-    Perks* GetNPCPerks() const;
     AchievementsManager* GetAchievementsManager() const;
     SaveGameStorage* GetSaveGameStorage() const;
     ShipOutline* GetShipOutline() const;
-    Difficulty GetDifficulty() const;
-    void SetDifficulty(Difficulty difficulty);
-    GameMode GetGameMode() const;
-    void SetGameMode(GameMode mode);
 
     void RaiseInteractiveWarning(const std::string& text) const;
     void SetCursorType(CursorType type);
     CursorType GetCursorType() const;
     void ShowCursor(bool state);
-
-    void EnterSector(SectorInfo* pSectorInfo);
-    void ExitSector();
 
     void StartNewGame(const ShipCustomisationData& customisationData);
     void EndGame();
@@ -207,16 +175,7 @@ public:
     float GetPlayedTime() const;
     void SetPlayedTime(float time);
 
-    void InitialiseSectorEvents();
-    const SectorEventVector& GetSectorEvents();
-
     bool IsDevelopmentModeActive() const;
-    bool IsShipCaptureModeActive() const;
-    bool IsTutorialActive() const;
-    bool AreContextualTipsEnabled() const;
-
-    bool RequisitionShip(const ShipInfo* pShipInfo);
-    bool ReturnShip(const ShipInfo* pShipInfo);
 
     void Pause();
     void Unpause();
@@ -227,6 +186,8 @@ public:
 
     void Quit();
     bool IsQuitRequested() const;
+
+    BlackboardSharedPtr GetBlackboard();
 
     UI::RootElement* GetUIRoot() const;
 
@@ -258,19 +219,12 @@ private:
 
     Faction* m_pFaction[static_cast<unsigned int>(FactionId::Count)];
     float m_PlayedTime;
-    bool m_EndGame;
 
     Popup* m_pPopup;
-
-    SectorEventVector m_SectorEvents;
 
     bool m_IsPaused;
     bool m_IsInputBlocked;
     float m_InputBlockedTimer;
-
-    BlackboardSharedPtr m_pBlackboard;
-
-    Perks* m_pNPCPerks;
 
     Genesis::Gui::Text* m_pFrameText;
     bool m_ContextualTipsEnabled;
@@ -284,8 +238,6 @@ private:
     Genesis::Physics::Simulation* m_pPhysicsSimulation;
 
     std::unique_ptr<SaveGameStorage> m_pSaveGameStorage;
-    Difficulty m_Difficulty;
-    GameMode m_GameMode;
     bool m_KillSave;
 
     UI::RootElementUniquePtr m_pUIRootElement;
@@ -295,6 +247,8 @@ private:
 
     std::thread m_LoaderThread;
     std::atomic_bool m_AllResourcesLoaded;
+
+    BlackboardSharedPtr m_pBlackboard;
 };
 
 inline Genesis::Physics::Simulation* Game::GetPhysicsSimulation() const
@@ -362,59 +316,14 @@ inline void Game::SetPlayedTime(float time)
     m_PlayedTime = time;
 }
 
-inline Difficulty Game::GetDifficulty() const
-{
-    return m_Difficulty;
-}
-
-inline void Game::SetDifficulty(Difficulty difficulty)
-{
-    m_Difficulty = difficulty;
-}
-
-inline GameMode Game::GetGameMode() const
-{
-    return m_GameMode;
-}
-
-inline void Game::SetGameMode(GameMode mode)
-{
-    m_GameMode = mode;
-}
-
-inline const SectorEventVector& Game::GetSectorEvents()
-{
-    return m_SectorEvents;
-}
-
 inline Popup* Game::GetPopup() const
 {
     return m_pPopup;
 }
 
-inline TutorialWindow* Game::GetTutorialWindow() const
-{
-    return m_pTutorialWindow;
-}
-
 inline bool Game::IsPaused() const
 {
     return m_IsPaused;
-}
-
-inline BlackboardSharedPtr Game::GetBlackboard() const
-{
-    return m_pBlackboard;
-}
-
-inline Perks* Game::GetNPCPerks() const
-{
-    return m_pNPCPerks;
-}
-
-inline bool Game::AreContextualTipsEnabled() const
-{
-    return m_ContextualTipsEnabled;
 }
 
 inline void Game::Quit()

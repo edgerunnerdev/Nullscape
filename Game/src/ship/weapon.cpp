@@ -158,7 +158,7 @@ void Weapon::Update( float delta )
 	const bool inShipyard = m_pOwner->GetDockingState() != DockingState::Undocked;
     const bool jumpingIn = pHyperspaceCore != nullptr && pHyperspaceCore->IsJumping() && pHyperspaceCore->GetJumpDirection() == HyperspaceJumpDirection::JumpIn;
 
-	if ( m_Hardpoint.isTurret && g_pGame->IsShipCaptureModeActive() == false && !jumpingIn && !inShipyard )
+	if ( m_Hardpoint.isTurret && !jumpingIn && !inShipyard )
 	{
 		glm::vec3 turretOrigin( glm::column( m_WorldTransform, 3 ) );
 		glm::vec3 turretForward( glm::column( m_WorldTransform, 1 ) );

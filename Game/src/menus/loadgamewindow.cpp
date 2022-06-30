@@ -116,20 +116,15 @@ void LoadGameWindow::CreateTable()
 		pRow->SetFont( pFont );
 		pRow->Add( pSaveGameHeader->GetShipName() );
 		pRow->Add( pSaveGameHeader->GetCaptainName() );
-		pRow->Add( ToString( pSaveGameHeader->GetDifficulty() ) );
-		pRow->Add( ToString( pSaveGameHeader->GetGameMode() ) );
 		pRow->Add( ToStringTime( pSaveGameHeader->GetPlayedTime() ) );
 
-		if ( pSaveGameHeader->GetDifficulty() == Difficulty::Hardcore )
+		if ( pSaveGameHeader->IsAlive() )
 		{
-			if ( pSaveGameHeader->IsAlive() )
-			{
-				pRow->SetColour( Genesis::Colour( 0.8f, 0.0f, 0.0f, 1.0f ) );
-			}
-			else
-			{
-				pRow->SetColour( Genesis::Colour( 0.6f, 0.0f, 0.0f, 0.6f ) );
-			}
+			pRow->SetColour( Genesis::Colour( 0.8f, 0.0f, 0.0f, 1.0f ) );
+		}
+		else
+		{
+			pRow->SetColour( Genesis::Colour( 0.6f, 0.0f, 0.0f, 0.6f ) );
 		}
 
 		m_pTable->AddRow( pRow );

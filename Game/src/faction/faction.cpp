@@ -19,16 +19,10 @@
 #include <math/misc.h>
 #include <genesis.h>
 #include <xml.h>
-#include "faction/empirefaction.h"
 #include "faction/faction.h"
 #include "fleet/fleet.h"
 #include "fleet/fleetbehaviour.h"
 #include "misc/randomshuffle.h"
-#include "requests/campaigntags.h"
-#include "requests/expandrequest.h"
-#include "requests/requestmanager.h"
-#include "sector/fogofwar.h"
-#include "sector/galaxy.h"
 #include "ship/shipinfo.h"
 #include "achievements.h"
 #include "blackboard.h"
@@ -114,38 +108,7 @@ void Faction::PostUpdate()
 
 void Faction::ProcessTurn()
 {
-	// Figure out how many shipyards this faction should have, based on our SectorToShipyard ratio
-	// and whether this faction is collapsing or not.
-	// If we need more, build them in our controlled sectors.
-	size_t numSectors = m_ControlledSectors.size();
-	float wantedShipyards = IsCollapsing() ? 0.0f : ( numSectors * m_Info.m_SectorToShipyardRatio );
-	SectorInfoVector shipyards;
-	for ( auto& pSector : m_ControlledSectors )
-	{
-		pSector->ProcessTurn();
 
-		if ( pSector->HasShipyard() )
-		{
-			shipyards.push_back( pSector );
-		}
-	}
-
-	SectorInfoVector controlled_sectors = m_ControlledSectors;
-	while ( wantedShipyards > (float)shipyards.size() )
-	{
-		RandomShuffle::Shuffle( controlled_sectors.begin(), controlled_sectors.end() );
-		SectorInfo* pSectorInfo = controlled_sectors.back();
-		if ( pSectorInfo->HasShipyard() == false )
-		{
-			pSectorInfo->SetShipyard( true );
-			shipyards.push_back( pSectorInfo );
-			controlled_sectors.pop_back();
-		}
-	}
-
-	BuildFleets( shipyards );
-	ProcessTurnFleets();
-	ProcessCollapse();
 }
 
 void Faction::ForceNextTurn()
@@ -202,36 +165,7 @@ void Faction::ProcessTurnFleets()
 // If a Faction is collapsing then for every turn they have a chance of losing control of sectors. 
 void Faction::ProcessCollapse()
 {
-	if ( IsCollapsing() )
-	{
-		for ( auto& pSectorInfo : m_ControlledSectors )
-		{
-			if ( gRand() <= 0.05f )
-			{
-				pSectorInfo->SetFaction( g_pGame->GetFaction( FactionId::Neutral ), false, false );
-			}
-		}
-	}
 
-	if ( m_FactionId == FactionId::Ascent && 
-		 m_ControlledSectors.empty() && 
-		 g_pGame->GetFaction( m_FactionId )->GetInitialPresence() != FactionPresence::None )
-	{
-		g_pGame->GetAchievementsManager()->UnlockAchievement( ACH_NOT_EVEN_BEACONS );
-	}
-	
-	if ( g_pGame->GetGameMode() == GameMode::InfiniteWar &&
-		m_FactionId == FactionId::Hegemon && 
-		m_ControlledSectors.empty() && 
-		g_pGame->GetFaction( m_FactionId )->GetInitialPresence() != FactionPresence::None )
-	{
-		g_pGame->GetAchievementsManager()->UnlockAchievement( ACH_HEGEGONE );
-
-		if ( g_pGame->GetDifficulty() == Difficulty::Hardcore )
-		{
-			g_pGame->GetAchievementsManager()->UnlockAchievement( ACH_FINITE_WAR );
-		}
-	}
 }
 
 void Faction::AddControlledSector( SectorInfo* pSector, bool immediate, bool takenByPlayer )
@@ -312,20 +246,7 @@ bool Faction::IsFlagshipSpawned() const
 
 bool Faction::IsFlagshipDestroyed() const
 {
-	BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
-	switch ( GetFactionId() )
-	{
-	case FactionId::Pirate:
-		return pBlackboard->Exists( sKillPirateFlagshipCompleted );
-	case FactionId::Marauders:
-		return pBlackboard->Exists( sKillMarauderFlagshipCompleted );
-	case FactionId::Ascent:
-		return pBlackboard->Exists( sKillAscentFlagshipCompleted );
-	case FactionId::Iriani:
-		return pBlackboard->Exists( sIrianiArcFinished );
-	default:
-		return false;
-	}
+	return false;
 }
 
 void Faction::DestroyFleet( FleetWeakPtr fleetWeakPtr )
@@ -355,73 +276,17 @@ bool Faction::sIsEnemyOf( Faction* pFactionA, Faction* pFactionB )
 
 const LootProbability& Faction::GetLootProbability( bool isFlagship ) const
 { 
-	if ( isFlagship )
-	{
-		if ( g_pGame->GetDifficulty() == Difficulty::Hardcore )
-		{
-			return m_Info.m_LootProbabilityFlagshipHc;
-		}
-		else
-		{
-			return m_Info.m_LootProbabilityFlagship;
-		}
-	}
-	else
-	{
-		return m_Info.m_LootProbability;
-	}
+	return m_Info.m_LootProbability;
 }
 
 int	Faction::GetConquestReward( const SectorInfo* pSectorInfo, bool* pBonusApplied /* = nullptr */ ) const 
 {
-	int conquestReward = m_Info.m_ConquestReward;
-	int bonusReward = 0;
-	
-	EmpireFaction* pEmpireFaction = (EmpireFaction*)(g_pGame->GetFaction( FactionId::Empire ));
-	const ImperialRequestList& requests = pEmpireFaction->GetRequestManager()->GetRequests();
-	for ( auto& pRequest : requests )
-	{
-		bonusReward += pRequest->GetConquestReward( pSectorInfo );
-	}
-
-	if ( pBonusApplied != nullptr )
-	{
-		*pBonusApplied = ( bonusReward > 0 );
-	}
-
-	return conquestReward + bonusReward; 
+	return 0;
 }
 
 bool Faction::IsCollapsing() const
 {
-	GameMode gameMode = g_pGame->GetGameMode();
-	if ( gameMode == GameMode::Campaign )
-	{
-		if ( m_Info.m_CollapseTag.empty() )
-		{
-			return false;
-		}
-		else
-		{
-			BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
-			return ( pBlackboard != nullptr && pBlackboard->Exists( m_Info.m_CollapseTag ) );
-		}
-	}
-	else if ( gameMode == GameMode::InfiniteWar )
-	{
-		if ( HasStartedWithHomeworld() == false )
-		{
-			return false;
-		}
-		else
-		{
-			return GetHomeworld() == nullptr;
-		}
-	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 bool Faction::Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement )

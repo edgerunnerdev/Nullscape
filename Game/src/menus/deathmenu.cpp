@@ -110,7 +110,7 @@ void DeathMenu::Update( float delta )
 
 void DeathMenu::UpdateButtons()
 {
-	const bool hardcore = ( g_pGame->GetDifficulty() == Difficulty::Hardcore );
+	const bool hardcore = true;
 	m_pRespawnSector = hardcore ? nullptr : g_pGame->FindSpawnSector();
 
 	if ( hardcore )
@@ -180,26 +180,7 @@ m_pOwner( pOwner )
 
 void ButtonDeathRespawn::OnPress()
 {
-	SectorInfo* respawnSector = m_pOwner->GetRespawnSector();
-	SDL_assert( respawnSector != nullptr );
-	g_pGame->ExitSector();
 
-	if ( g_pGame->GetDifficulty() == Difficulty::Normal )
-	{
-		g_pGame->GetPlayer()->GetInventory()->DeductCachedModules();
-	}
-
-	FleetSharedPtr pPlayerFleet = g_pGame->GetPlayerFleet().lock();
-	if ( pPlayerFleet != nullptr )
-	{
-		int sectorX, sectorY;
-		respawnSector->GetCoordinates( sectorX, sectorY );
-		float x = ((float)sectorX + 0.5f) / NumSectorsX;
-		float y = ((float)sectorY + 0.5f) / NumSectorsY;
-		pPlayerFleet->SetPosition( x, y );
-		pPlayerFleet->SetDestination( x, y );
-		pPlayerFleet->SetEngaged( false );
-	}
 }
 
 }

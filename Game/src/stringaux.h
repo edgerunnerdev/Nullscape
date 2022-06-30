@@ -40,8 +40,6 @@ namespace Hyperscape
 	std::string					ToString( ModuleRarity rarity );
 	std::string					ToString( AddonCategory );
     std::string                 ToString( FactionId faction );
-	std::string					ToString( Difficulty difficulty );
-	std::string					ToString( GameMode gameMode );
 	std::string					ToString( FactionPresence presence );
 	const std::string&			ToString( Perk perk );
 	const std::string&			ToString( ShipType shipType );

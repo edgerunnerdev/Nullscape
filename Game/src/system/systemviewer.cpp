@@ -112,7 +112,7 @@ void SystemViewer::Reseed(int depth)
         seed << c;
     }
 
-    m_pReseedSystem = std::make_shared<System>(seed.str());
+    m_pReseedSystem = std::make_shared<System>(seed.str(), true);
     m_pSystem = m_pReseedSystem;
 }
 

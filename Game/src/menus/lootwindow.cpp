@@ -215,76 +215,14 @@ void LootWindow::Update( float delta )
 
 void LootWindow::HandleGameEvent( GameEvent* pEvent )
 {
-	if ( pEvent->GetType() == GameEventType::ModuleAcquired )
-	{
-		GameEventModuleAcquired* pEventModuleAcquired = (GameEventModuleAcquired*)pEvent;
-		if ( pEventModuleAcquired->GetTriggersNotification() )
-		{
-			LootElement lootElement;
-			lootElement.pModuleInfo = pEventModuleAcquired->GetModuleInfo();
-			lootElement.quantity = pEventModuleAcquired->GetQuantity();
-			m_LootQueue.push_back( lootElement );
-			m_Dirty = true;
-		}
-	}
-	else if ( pEvent->GetType() == GameEventType::PerkPointPartAcquired )
-	{
-		unsigned int perkPointsParts = g_pGame->GetPlayer()->GetPerkPointsParts();
-		m_pPerkMeter->SetValue( perkPointsParts );
-		
-		std::stringstream ss;
-		ss << "Perk progression: " << perkPointsParts << " / 10";
-		m_pPerkAcquired->SetText( ss.str() );
 
-		m_pPerkAcquired->AlignToCentre();
-
-        Genesis::Gui::PlaySFX( m_pPerkProgressSFX );
-
-	}
-	else if ( pEvent->GetType() == GameEventType::PerkPointAcquired )
-	{
-		m_pPerkMeter->SetValue( 10 );
-		m_pPerkAcquired->SetText( "Perk point acquired!" );
-		m_pPerkAcquired->AlignToCentre();
-
-        Genesis::Gui::PlaySFX( m_pPerkPointAcquiredSFX );
-	}
 }
 
 // This test function gives the player a module every few seconds. 
 // Quantity is randomised to cover the case of armour module drops, which drop in multiples.
 void LootWindow::Test( float delta )
 {
-    static float timer = 0.0f;
-    timer -= delta;
-    if ( timer < 0.0f )
-    {
-        timer = 10.0f;
 
-        ModuleInfoManager* pModuleInfoManager = g_pGame->GetModuleInfoManager();
-		ModuleInfoVector moduleInfos = pModuleInfoManager->GetAllModules();
-		ModuleInfo* pModuleInfo = moduleInfos[ rand() % moduleInfos.size() ];
-		Inventory* pInventory = g_pGame->GetPlayer()->GetInventory();
-		const int quantity = rand() % 2 ? 1 : 3;
-		pInventory->AddModule( pModuleInfo->GetName(), quantity, quantity, true );
-
-		// Same as in DestructionSequence.cpp
-		Player* pPlayer = g_pGame->GetPlayer();
-		int perkPointParts = pPlayer->GetPerkPointsParts() + 1;
-		if ( perkPointParts >= 10 )
-		{
-			pPlayer->SetPerkPointsParts( 0 );
-			pPlayer->SetPerkPoints( pPlayer->GetPerkPoints() + 1 );
-
-			GameEventManager::Broadcast( new GameEvent( GameEventType::PerkPointAcquired ) );
-		}
-		else
-		{
-			pPlayer->SetPerkPointsParts( perkPointParts );
-
-			GameEventManager::Broadcast( new GameEvent( GameEventType::PerkPointPartAcquired ) );
-		}
-    }
 }
 
 float LootWindow::CalculateIconScaling() const

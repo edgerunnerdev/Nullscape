@@ -24,6 +24,7 @@
 #include "ship/ship.fwd.h"
 #include "sector/sectorinfo.h"
 #include "fleet/fleetdoctrine.h"
+#include "fleet/fleet.fwd.h"
 #include "loot/lootprobability.h"
 #include "serialisable.h"
 

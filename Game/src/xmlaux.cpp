@@ -132,54 +132,6 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hypersc
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::Difficulty& value )
-{
-	SDL_assert( pElement != nullptr );
-
-	if ( name != pElement->Value() )
-		return false;
-
-	using namespace Hyperscape;
-
-	std::string text( pElement->GetText() );
-	std::string texts[] = { "Easy", "Normal", "Hardcore", "Arrived" };
-	Difficulty difficulty[] = { Difficulty::Easy, Difficulty::Normal, Difficulty::Hardcore };
-	for ( int i = 0; i < 4; ++i )
-	{
-		if ( text == texts[ i ] )
-		{
-			value = difficulty[ i ];
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::GameMode& value )
-{
-	SDL_assert( pElement != nullptr );
-
-	if ( name != pElement->Value() )
-		return false;
-
-	using namespace Hyperscape;
-
-	std::string text( pElement->GetText() );
-	std::string texts[] = { "Campaign", "Infinite War" };
-	GameMode gameMode[] = { GameMode::Campaign, GameMode::InfiniteWar };
-	for ( int i = 0; i < 2; ++i )
-	{
-		if ( text == texts[ i ] )
-		{
-			value = gameMode[ i ];
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, const std::string& content )
 {
 	tinyxml2::XMLElement* pElement = xmlDoc.NewElement( elementName.c_str() );

@@ -174,117 +174,12 @@ Ship* FleetSpawner::SpawnShip( Sector* pSector, FleetSharedPtr pFleet, const Shi
 
 void FleetSpawner::CheckFirstEncounter( Faction* pFaction )
 {
-	static const std::string sFirstEncounterNeutral( "#first_encounter_neutral" );
-	static const std::string sFirstEncounterPirates( "#first_encounter_pirates" );
-	static const std::string sFirstEncounterMarauders( "#first_encounter_marauders" );
-	static const std::string sFirstEncounterAscent( "#first_encounter_ascent" );
-	static const std::string sFirstEncounterIriani( "#first_encounter_iriani" );
 
-	FactionId factionId = pFaction->GetFactionId();
-	BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
-	if ( factionId == FactionId::Neutral && pBlackboard->Get( sFirstEncounterNeutral ) == false ) 
-	{
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"Most of the Unaligned Sectors once belonged to the Empire but are nowadays " \
-			"just a shade of their former glory. Stunted by petty wars and centuries of " \
-			"strife, they still rely on outdated ship designs." );
-
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"Our ships should be more than a match for them but if needed, jump out into " \
-			"hyperspace and join up with another Imperial fleet. But have no doubt, taking " \
-			"these sectors is for the greater good of the Empire: their resources will " \
-			"keep our shipyards going." );
-	
-		pBlackboard->Add( sFirstEncounterNeutral );
-	}
-	else if ( factionId == FactionId::Pirate && pBlackboard->Get( sFirstEncounterPirates ) == false ) 
-	{
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"At some point in the past, those who were involved in copyright infringement were " \
-			"named pirates. Eventually, they got tired of this and turned into real piracy." );
-		
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"It is such a fleet we encounter today: pirates and raiders. Their ships are " \
-			"very fast and prefer to keep their distance but we stand a good chance if we " \
-			"can bring our weapons to bear." );
-	
-		pBlackboard->Add( sFirstEncounterPirates );
-	}
-	else if ( factionId == FactionId::Marauders && pBlackboard->Get( sFirstEncounterMarauders ) == false ) 
-	{
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"The edge of galaxy has always posed its threats, with habitable planets often " \
-			"too far from each other for the Empire's scattered outposts to keep in line. The " \
-			"settlers of the Rim were for the most part outcasts, prisoners, freethinkers and " \
-			"other undesirables." );
-
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"They field slow but heavily armoured ships which can take a great deal of " \
-			"punishment while boring you to tears with their talks of freedom. They will " \
-			"understand, in time, that Unity is Strength. Now let us wipe their fleet out of " \
-			"our sector." );
-	
-		pBlackboard->Add( sFirstEncounterMarauders );
-	}
-	else if ( factionId == FactionId::Ascent && pBlackboard->Get( sFirstEncounterAscent ) == false ) 
-	{
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"The Ascent were originally a small breakaway faction which turned into worshipping " \
-			"their local star, for some reason. Eventually they declared independence and have " \
-			"vowed to destroy the Empire after we turned their star supernova." );
-
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"Their doctrine is one of fielding many small fleets which make use of shielding " \
-			"technology. This allows them to reinforce neighbouring sectors quickly, so the " \
-			"tide can turn while we're engaged." );
-
-		pBlackboard->Add( sFirstEncounterAscent );
-	}
-	else if ( factionId == FactionId::Iriani && pBlackboard->Get( sFirstEncounterIriani ) == false ) 
-	{
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"Far from the heart of the Empire, Iriani Prime was fairly unaffected by the Great " \
-			"Collapse. The region controlled by today's Iriani Federation is slowly expanding " \
-			"but they too need to be brought back to the Imperial fold." );
-	
-		g_pGame->AddIntel( GameCharacter::FleetIntelligence,
-			"Their ships have some of the most advanced technology in the galaxy, making them " \
-			"both difficult to overwhelm and expensive to produce. Expect considerable losses " \
-			"when engaging Iriani fleets but have no doubt, the modules you could recover would " \
-			"be well worth it." );
-
-		pBlackboard->Add( sFirstEncounterIriani );
-	}
 }
 
 void FleetSpawner::CheckFlagshipEncounter( Faction* pFaction )
 {
-	static const std::string sPirateLeaderEncountered( "#pirate_leader_encountered" );
-	static const std::string sMaraudersLeaderEncountered( "#marauders_leader_encountered" );
 
-	BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
-	FactionId factionId = pFaction->GetFactionId();
-	if ( factionId == FactionId::Pirate && pBlackboard->Exists( sPirateLeaderEncountered ) == false )
-	{
-		g_pGame->AddIntel( GameCharacter::NavarreHexer,
-			"Well, about time you guys come out. Empire's trying to get back to the good old " \
-			"days, eh? Doubt it, these days you can't make ships worth crap. Come on, let me " \
-			"show you this beauty I found in one of those systems you guys abandoned. " \
-			"Tail between your legs and all." );
-
-		pBlackboard->Add( sPirateLeaderEncountered );
-	}
-	else if ( factionId == FactionId::Marauders && pBlackboard->Exists( sMaraudersLeaderEncountered ) == false )
-	{
-		g_pGame->AddIntel( GameCharacter::HarkonStormchaser,
-			"Finally, we meet on the battlefield! The Imperial flagship, fielded at last. Of course, " \
-			"the Emperor had to send his favourite lap dog to try to crush us, didn't he?" );
-
-		g_pGame->AddIntel( GameCharacter::HarkonStormchaser,
-			"Today, you will see what free men and women are made of! Come! Come and face our guns!" );
-
-		pBlackboard->Add( sMaraudersLeaderEncountered );
-	}
 }
 
 }

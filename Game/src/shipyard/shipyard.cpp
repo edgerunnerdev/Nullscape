@@ -157,35 +157,10 @@ void Shipyard::InitialiseModels()
 
 void Shipyard::SetConstructionDimensions()
 {
-	Perks* pPerks = g_pGame->GetPlayer()->GetPerks();
-	if ( pPerks->IsEnabled( Perk::DreadnaughtConstruction ) )
-	{
-		m_MinConstructionX = 0;
-		m_MaxConstructionX = 4;
-		m_MinConstructionY = 0;
-		m_MaxConstructionY = 18;
-	}
-	else if ( pPerks->IsEnabled( Perk::BattleshipConstruction ) )
-	{
-		m_MinConstructionX = 0;
-		m_MaxConstructionX = 3;
-		m_MinConstructionY = 0;
-		m_MaxConstructionY = 18;
-	}
-	else if ( pPerks->IsEnabled( Perk::BattlecruiserConstruction ) )
-	{
-		m_MinConstructionX = 0;
-		m_MaxConstructionX = 3;
-		m_MinConstructionY = 2;
-		m_MaxConstructionY = 15;
-	}
-	else if ( pPerks->IsEnabled( Perk::GunshipConstruction ) ) 
-	{
-		m_MinConstructionX = 1;
-		m_MaxConstructionX = 3;
-		m_MinConstructionY = 3;
-		m_MaxConstructionY = 14;
-	}
+    m_MinConstructionX = 0;
+    m_MaxConstructionX = 4;
+    m_MinConstructionY = 0;
+    m_MaxConstructionY = 18;
 
 	SDL_assert( m_MaxConstructionX <= sHexGridWidth );
 	SDL_assert( m_MaxConstructionY <= sHexGridHeight );
@@ -223,9 +198,7 @@ void Shipyard::Update( float delta )
 		m_BaseModelShowTimer = 0.0f;
 	}
 
-	// The IsShipCaptureModeActive() is here to make sure that the docking text isn't visible even if the shipyard can be used,
-	// so that screenshots can be taken immediately after leaving the shipyard without having to move.
-	m_pPanelDocking->Show( CanBeUsed() && !g_pGame->IsShipCaptureModeActive() );
+	m_pPanelDocking->Show(CanBeUsed());
 
 	if ( m_pModuleDetails != nullptr )
 	{

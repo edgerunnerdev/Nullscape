@@ -62,34 +62,34 @@ void ShipInfoManager::Initialise()
 		return;
 
 	// Run through all the files in data/xml/ships and load all the ships that are listed
-	const std::filesystem::path basePath( "data/xml/ships" );
-	for ( int i = 0; i < static_cast<int>( FactionId::Count ); ++i )
-	{
-		Faction* pFaction = g_pGame->GetFaction( static_cast<FactionId>( i ) );
-        Genesis::Core::Log::Info() << "Loading ships for faction '" << pFaction->GetName() << "'.";
+	//const std::filesystem::path basePath( "data/xml/ships" );
+	//for ( int i = 0; i < static_cast<int>( FactionId::Count ); ++i )
+	//{
+	//	Faction* pFaction = g_pGame->GetFaction( static_cast<FactionId>( i ) );
+ //       Genesis::Core::Log::Info() << "Loading ships for faction '" << pFaction->GetName() << "'.";
 
-		// These need to be separated into two loops, as the order in which files are listed
-		// by the directory_iterator is not guaranteed and XML files reference SHP files which
-		// have to be loaded first.
-		std::filesystem::path factionPath = basePath / ToLower( pFaction->GetName() );
-		for ( const auto& filename : std::filesystem::directory_iterator( factionPath ) )
-		{
-			const std::filesystem::path& extension = filename.path().extension();
-			if ( extension == ".shp" )
-			{
-				SerialiseHexGrid( pFaction, filename );
-			}
-		}
+	//	// These need to be separated into two loops, as the order in which files are listed
+	//	// by the directory_iterator is not guaranteed and XML files reference SHP files which
+	//	// have to be loaded first.
+	//	std::filesystem::path factionPath = basePath / ToLower( pFaction->GetName() );
+	//	for ( const auto& filename : std::filesystem::directory_iterator( factionPath ) )
+	//	{
+	//		const std::filesystem::path& extension = filename.path().extension();
+	//		if ( extension == ".shp" )
+	//		{
+	//			SerialiseHexGrid( pFaction, filename );
+	//		}
+	//	}
 
-		for ( const auto& filename : std::filesystem::directory_iterator( factionPath ) )
-		{
-			const std::filesystem::path& extension = filename.path().extension();
-			if ( extension == ".xml" )
-			{
-				SerialiseXml( pFaction, filename );
-			}
-		}
-	}
+	//	for ( const auto& filename : std::filesystem::directory_iterator( factionPath ) )
+	//	{
+	//		const std::filesystem::path& extension = filename.path().extension();
+	//		if ( extension == ".xml" )
+	//		{
+	//			SerialiseXml( pFaction, filename );
+	//		}
+	//	}
+	//}
 
 	m_Initialised = true;
 }

@@ -116,20 +116,12 @@ public:
 	void				AddFleetCommand( FleetCommandUniquePtr pFleetCommand );
 
 protected:
-	void				SpawnContestingFleets();
-	void				SpawnRegionalFleet();
-	void				SpawnStarfort();
 	void				DeleteRemovedShips();
 	bool				GetFleetSpawnPosition( Faction* pFaction, float& x, float& y );
 	void				GetFleetSpawnPositionAtPoint( int idx, float& x, float& y );
 	void				DebugDrawFleetSpawnPositions();
-	void				IntelStart();
-	bool				SelectFixedEvent();
-	void				SelectRandomEvent();
 	void				UpdateSectorResolution();
-	void				SelectBackground();
 	void				SelectPlaylist();
-	void				InitialiseComponents();
 	void				UpdateComponents( float delta );
 
 	SectorInfo*			m_pSectorInfo;

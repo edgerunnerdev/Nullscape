@@ -149,8 +149,6 @@ void HyperspaceCore::EndJump()
 			{
 				g_pGame->GetAchievementsManager()->UnlockAchievement( ACH_TIS_BUT_A_SCRATCH );
 			}
-
-			g_pGame->ExitSector();
 		}
 		else
 		{

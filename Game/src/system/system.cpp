@@ -28,6 +28,8 @@
 #include <scene/scene.h>
 #include <genesis.h>
 
+#include "sector/sectorinfo.h"
+#include "sector/sector.h"
 #include "system/astronomicalobject/orbit.hpp"
 #include "system/astronomicalobject/planet.hpp"
 #include "system/astronomicalobject/star.hpp"
@@ -36,8 +38,9 @@
 namespace Hyperscape
 {
 
-System::System(const std::string& seed)
+System::System(const std::string& seed, bool demoMode /* = false*/)
     : m_Seed(seed)
+    , m_DemoMode(demoMode)
 {
     InitializeRandomEngine();
     InitializeLayers();
@@ -67,6 +70,27 @@ SystemRandomEngine& System::GetRandomEngine()
 const AstronomicalObjects& System::GetAstronomicalObjects() const 
 {
     return m_AstronomicalObjects;
+}
+
+glm::ivec2 System::GetNumSectors() const
+{
+    return glm::ivec2(sSectorsX, sSectorsY);
+}
+
+SectorSharedPtr System::EnterSector(const glm::ivec2& coordinates) 
+{
+    if (coordinates.x < 0 || coordinates.x >= sSectorsX || coordinates.y < 0 || coordinates.y > sSectorsY)
+    {
+        return nullptr;
+    }
+
+    if (m_Sectors[coordinates.x][coordinates.y] == nullptr)
+    {
+        SectorInfo* si = new SectorInfo(coordinates.x, coordinates.y);
+        m_Sectors[coordinates.x][coordinates.y] = std::make_shared<Sector>(si);
+    }
+
+    return m_Sectors[coordinates.x][coordinates.y];
 }
 
 void System::InitializeRandomEngine() 

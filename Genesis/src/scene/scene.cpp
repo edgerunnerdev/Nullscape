@@ -63,7 +63,7 @@ LayerSharedPtr Scene::AddLayer(uint32_t depth, bool isBackground /* = false */)
 {
     for (auto& pLayer : mLayerList)
     {
-        if (pLayer->GetLayerDepth() == depth && pLayer->IsBackground() == isBackground)
+        if (pLayer->GetLayerDepth() == depth && pLayer->IsBackground() == isBackground && pLayer->IsMarkedForDeletion() == false)
         {
             return pLayer;
         }

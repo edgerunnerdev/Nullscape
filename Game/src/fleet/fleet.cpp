@@ -7,15 +7,12 @@
 #include <log.hpp>
 
 #include "fleet/fleet.h"
-#include "fleet/fleetrep.h"
 #include "fleet/fleetbehaviour.h"
 #include "fleet/fleetdoctrine.h"
 #include "fleet/fleetspawner.h"
 #include "ship/shipinfo.h"
 #include "ship/ship.h"
-#include "sector/fogofwar.h"
 #include "sector/sector.h"
-#include "sector/galaxy.h"
 #include "player.h"
 #include "hexterminate.h"
 #include "globals.h"
@@ -33,7 +30,6 @@ m_pFaction( nullptr ),
 m_pInitialSector( nullptr ),
 m_pDestinationSector( nullptr ),
 m_State( FleetState::Idle ),
-m_pRep( nullptr ),
 m_pBehaviour( nullptr ),
 m_Points( 0 ),
 m_AutoResolvePoints( 0 ),
@@ -47,12 +43,6 @@ m_ImmunityTimer( 0.0f )
 
 Fleet::~Fleet() 
 {
-	if ( m_pRep )
-	{
-		m_pRep->RemoveFromScene();
-		m_pRep = nullptr;
-	}
-
 	delete m_pBehaviour;
 }
 
@@ -75,9 +65,6 @@ void Fleet::Initialise( Faction* pFaction, const SectorInfo* pInitialSector )
 	}
 
 	SetBehaviourFromFaction();
-
-	m_pRep = new FleetRep( this );
-	m_pRep->Initialise();
 }
 
 void Fleet::SetBehaviourFromFaction()
@@ -93,8 +80,6 @@ void Fleet::SetBehaviourFromFaction()
 
 void Fleet::Update( float delta )
 {
-    delta *= g_pGame->GetGalaxy()->GetCompression();
-
 	if ( GetState() == FleetState::Moving )
 	{
 		float maxMovement = delta / NumSectorsX * FleetSpeed; // Movement in sectors per second
@@ -119,26 +104,6 @@ void Fleet::Update( float delta )
 	}
 
 	m_ImmunityTimer = std::max( 0.0f, m_ImmunityTimer - delta );
-
-	UpdateFogOfWar();
-}
-
-void Fleet::UpdateFogOfWar()
-{
-	Galaxy* pGalaxy = g_pGame->GetGalaxy();
-	FogOfWar* pFogOfWar = pGalaxy->GetFogOfWar();
-	if ( pFogOfWar != nullptr )
-	{
-		FactionId factionId = GetFaction()->GetFactionId();
-		if ( factionId == FactionId::Player )
-		{
-			pFogOfWar->MarkAsVisible( GetCurrentSector(), 1 );
-		}
-		else if ( factionId == FactionId::Empire )
-		{
-			pFogOfWar->MarkAsVisible( GetCurrentSector() );
-		}
-	}
 }
 
 void Fleet::ProcessTurn()
@@ -151,17 +116,7 @@ void Fleet::ProcessTurn()
 
 SectorInfo* Fleet::GetCurrentSector() const
 {
-	Galaxy* pGalaxy = g_pGame->GetGalaxy();
-	if ( pGalaxy == nullptr || pGalaxy->IsInitialised() == false )
-	{
-		return nullptr;
-	}
-	else
-	{
-		int x = gClamp<int>((int)(m_Position.x * NumSectorsX), 0, NumSectorsX - 1);
-		int y = gClamp<int>((int)(m_Position.y * NumSectorsY), 0, NumSectorsY - 1);
-		return g_pGame->GetGalaxy()->GetSectorInfo( x, y );
-	}
+	return nullptr;
 }
 
 void Fleet::NotifyBattleWon()
@@ -174,36 +129,7 @@ void Fleet::NotifyBattleWon()
 
 void Fleet::SetEngaged( bool state )
 { 
-	if ( state )
-	{
-		if ( m_State == FleetState::Engaged )
-		{
-			return;
-		}
 
-		m_State = FleetState::Engaged;
-		SetAutoResolvePoints( GetPoints() );
-
-		FleetSharedPtr pPlayerFleet = g_pGame->GetPlayerFleet().lock();
-		if ( pPlayerFleet.get() == this && g_pGame->GetCurrentSector() == nullptr )
-		{
-			g_pGame->EnterSector( GetCurrentSector() );
-		}
-		else if ( pPlayerFleet.get() != this && g_pGame->GetCurrentSector() != nullptr && g_pGame->GetCurrentSector()->GetSectorInfo() == GetCurrentSector() )
-		{
-			g_pGame->GetCurrentSector()->Reinforce( shared_from_this() );
-		}
-	}
-	else
-	{
-		if ( m_State == FleetState::Idle )
-		{
-			return;
-		}
-
-		m_State = FleetState::Idle;
-		SetAutoResolvePoints( GetPoints() );
-	}
 }
 
 int Fleet::GetPoints() const
@@ -317,12 +243,6 @@ bool Fleet::Read( tinyxml2::XMLElement* pRootElement )
 		UpgradeFromVersion( version );
 	}
 
-	SectorInfo* pInitialSector = g_pGame->GetGalaxy()->GetSectorInfo( initialSectorX, initialSectorY );
-
-	Initialise( m_pFaction, pInitialSector );
-	SetPosition( posX, posY );
-	SetDestination( dstX, dstY );
-
 	return true;
 }
 
@@ -335,7 +255,6 @@ void Fleet::SetDestination( float x, float y )
 { 
 	m_Destination = glm::vec2( x, y );
 	m_State = FleetState::Moving; 
-	m_pDestinationSector = g_pGame->GetGalaxy()->GetSectorInfo( static_cast<int>( x * NumSectorsX ), static_cast<int>( y * NumSectorsY ) );
 }
 
 void Fleet::SetDestinationSector( const SectorInfo* pSectorInfo )
@@ -347,37 +266,7 @@ void Fleet::SetDestinationSector( const SectorInfo* pSectorInfo )
 
 bool Fleet::IsInRangeOf( FleetWeakPtr pOtherFleetWeakPtr ) const
 {
-	FleetSharedPtr pOtherFleet = pOtherFleetWeakPtr.lock();
-	if ( pOtherFleet == nullptr || pOtherFleet->GetCurrentSector() == nullptr )
-	{
-		return false;
-	}
-
-	if ( pOtherFleet.get() == this )
-	{
-		return true;
-	}
-
-	int currentSectorCoordsX;
-	int currentSectorCoordsY;
-	GetCurrentSector()->GetCoordinates( currentSectorCoordsX, currentSectorCoordsY );
-
-	int sectorCoordsX;
-	int sectorCoordsY;
-	pOtherFleet->GetCurrentSector()->GetCoordinates( sectorCoordsX, sectorCoordsY );
-
-	const float deltaX = (float)( currentSectorCoordsX - sectorCoordsX );
-	const float deltaY = (float)( currentSectorCoordsY - sectorCoordsY );
-
-	float supportDistance = MaxFleetSupportDistance;
-	Player* pPlayer = g_pGame->GetPlayer();
-	if ( pPlayer->GetPerks()->IsEnabled( Perk::SwordOfTheEmpire ) && g_pGame->GetPlayerFleet().lock() == pOtherFleet )
-	{
-        Genesis::Core::Log::Info() << "Triggered Sword of the Empire";
-		supportDistance = 8.0f;
-	}
-				
-	return ( deltaX * deltaX + deltaY * deltaY <= supportDistance * supportDistance );
+	return false;
 }
 
 void Fleet::GenerateProceduralFleet( int pointsToSpend )

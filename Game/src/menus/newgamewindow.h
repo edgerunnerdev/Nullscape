@@ -22,7 +22,6 @@
 
 #include "ui/types.fwd.h"
 #include "ui/window.h"
-#include "sector/galaxycreationinfo.h"
 #include "ship/ship.h"
 
 namespace Hyperscape
@@ -62,11 +61,9 @@ private:
     UI::ElementSharedPtr CreateShipInfoPanel( const std::string& name ) const;
     UI::ElementSharedPtr CreateShipDetailsPanel();
     UI::ElementSharedPtr CreateDifficultyPanel();
-    UI::ElementSharedPtr CreateFactionPresencePanel( FactionId factionId );
     UI::ElementSharedPtr CreatePreferencesPanel();
 
     void StartNewGame();
-    void SetFactionPresence( FactionId factionId, FactionPresence presence );
 
     std::vector<UI::ElementSharedPtr> m_Pages;
     PageId m_CurrentPage;
@@ -79,7 +76,6 @@ private:
 
     ShipCustomisationData m_ShipCustomisationData; 
     std::string m_CompanionShipTemplate;
-    GalaxyCreationInfo m_GalaxyCreationInfo;
 
     UI::InputAreaSharedPtr m_pShipNameInputArea;
     UI::InputAreaSharedPtr m_pCaptainNameInputArea;

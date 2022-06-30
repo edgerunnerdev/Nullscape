@@ -26,8 +26,6 @@ SaveGameHeader::SaveGameHeader( const std::filesystem::path& filename ) :
 m_Filename( filename ),
 m_PlayedTime( 0.0f ),
 m_Alive( false ),
-m_Difficulty( Difficulty::Normal ),
-m_GameMode( GameMode::Campaign ),
 m_Error( SaveGameHeaderError::Uninitialised )
 {
 
@@ -52,8 +50,6 @@ bool SaveGameHeader::Read( tinyxml2::XMLDocument& xmlDoc )
 	for ( XMLElement* pElem = pRootElem->FirstChildElement(); pElem != nullptr; pElem = pElem->NextSiblingElement() ) 
 	{
 		aliveSerialised |= Xml::Serialise( pElem, "Alive", m_Alive );
-		Xml::Serialise( pElem, "Difficulty", m_Difficulty );
-		Xml::Serialise( pElem, "GameMode", m_GameMode );
 
 		if ( std::string( pElem->Value() ) == "Player" )
 		{

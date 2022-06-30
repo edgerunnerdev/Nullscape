@@ -13,27 +13,6 @@ std::string ToLower( const std::string& str )
 	return loweredStr;
 }
 
-///*
-//Transform any std string or string view
-//into any of the 4 std string types,
-//(c) 2018-2021 by dbj at dbj dot org
-//https://dbj.org/license_dbj
-//*/
-//template<typename T, typename F>
-//inline T
-//	transform_to(F str) noexcept
-//{
-//	// note: F has to have 
-//	// the empty() method
-//	if (str.empty())
-//		return {};
-//	// note: F must be able to work 
-//	// with std begin and end
-//	return { std::begin(str), std::end(str) };
-//	// also the above line requires, T has a constructor
-//	// that will take begin and end values of type F.
-//};
-
 std::wstring ToWString( const std::string& str )
 {
 	std::wstring result;
@@ -190,28 +169,6 @@ std::string ToString( FactionId factionId )
 		return "Hegemon";
     else
         return "<unknown faction>";
-}
-
-std::string ToString( Difficulty difficulty )
-{
-	if ( difficulty == Difficulty::Easy )
-		return "Easy";
-	else if ( difficulty == Difficulty::Normal )
-		return "Normal";
-	else if ( difficulty == Difficulty::Hardcore )
-		return "Hardcore";
-	else
-		return "Not set";
-}
-
-std::string ToString( GameMode gameMode )
-{
-	if ( gameMode == GameMode::Campaign )
-		return "Campaign";
-	else if ( gameMode == GameMode::InfiniteWar )
-		return "Infinite War";
-	else
-		return "Not set";
 }
 
 std::string ToString( FactionPresence presence )

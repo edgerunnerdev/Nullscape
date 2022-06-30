@@ -54,11 +54,7 @@
 #include <window.h>
 
 #include "hexterminate.h"
-#include "faction/empirefaction.h"
 #include "faction/faction.h"
-#include "faction/irianifaction.h"
-#include "faction/neutralfaction.h"
-#include "faction/piratefaction.h"
 #include "misc/gui.h"
 #include "misc/random.h"
 #include "ship/module.h"
@@ -67,18 +63,8 @@
 #include "ship/inventory.h"
 #include "ship/shipoutline.h"
 #include "fleet/fleet.h"
-#include "fleet/fleetrep.h"
-#include "requests/campaigntags.h"
-#include "requests/requestmanager.h"
 #include "sector/sectorinfo.h"
 #include "sector/sector.h"
-#include "sector/galaxycreationinfo.h"
-#include "sector/galaxy.h"
-#include "sector/galaxyrep.h"
-#include "sector/events/chrysamere.h"
-#include "sector/events/corsairfleet.h"
-#include "sector/events/orbitaldefenses.h"
-#include "sector/events/neutralflagship.h"
 #include "system/system.hpp"
 #include "system/systemviewer.hpp"
 #include "ui/editor.h"
@@ -86,7 +72,6 @@
 #include "menus/mainmenu.h"
 #include "menus/audiodebug.h"
 #include "menus/intelwindow.h"
-#include "menus/galaxywindow.h"
 #include "menus/loadingscreen.h"
 #include "menus/pointofinterest.h"
 #include "menus/popup.h"
@@ -124,19 +109,15 @@ m_State( GameState::Menu ),
 m_pIntelWindow( nullptr ),
 m_pAchievementsManager ( nullptr ),
 m_PlayedTime( 0.0f ),
-m_EndGame( false ),
 m_IsPaused( false ),
 m_IsInputBlocked( false ),
 m_InputBlockedTimer( 0.0f ),
-m_pNPCPerks( nullptr ),
 m_pFrameText( nullptr ),
 m_ContextualTipsEnabled( true ),
 m_QuitRequested( false ),
 m_pVideoElement( nullptr ),
 m_CursorType( CursorType::Pointer ),
 m_LoadToState( GameState::Unknown ),
-m_Difficulty( Difficulty::Normal ),
-m_GameMode( GameMode::Campaign ),
 m_KillSave( false ),
 m_ShowImguiTestWindow( false ),
 m_AllResourcesLoaded( false ),
@@ -176,7 +157,6 @@ Game::~Game()
 	delete m_pShipInfoManager;
 	delete m_pMusicTitle;
 	delete m_pModuleInfoManager;
-	delete m_pNPCPerks;
 	delete m_pIntelWindow;
 	delete m_pAchievementsManager;
 
@@ -186,12 +166,6 @@ Game::~Game()
 	}
 
 	delete m_pPhysicsSimulation;
-
-	for ( auto& pSectorEvent : m_SectorEvents )
-	{
-		delete pSectorEvent;
-	}
-	m_SectorEvents.clear();
 
 #ifndef _FINAL
 	Genesis::InputManager* pInputManager = Genesis::FrameWork::GetInputManager();
@@ -222,13 +196,6 @@ void Game::Initialise()
 	m_pBlackboard = std::make_shared<Blackboard>();
 	m_pModuleInfoManager = new ModuleInfoManager();
 	m_pShipInfoManager = new ShipInfoManager();
-
-	m_pNPCPerks = new Perks();
-    m_pNPCPerks->Enable( Perk::GunshipConstruction );
-    m_pNPCPerks->Enable( Perk::BattlecruiserConstruction );
-    m_pNPCPerks->Enable( Perk::BattleshipConstruction );
-    m_pNPCPerks->Enable( Perk::DreadnaughtConstruction );
-    m_pNPCPerks->Enable( Perk::Superconductors );
 
 	SetupFactions();
 	m_pShipInfoManager->Initialise();
@@ -275,7 +242,7 @@ void Game::Initialise()
 
 	if ( SteamAPI_Init() )
 	{
-        Genesis::Core::Log::Info() << "Steam API initialised.";
+        Genesis::Core::Log::Info() << "Steam API initialized.";
 	}
 	else
 	{
@@ -428,18 +395,13 @@ Genesis::TaskStatus Game::Update( float delta )
 	{
 		if (IsPaused() == false)
 		{
-			m_PlayedTime += delta * GetGalaxy()->GetCompression();
+			m_PlayedTime += delta;
 		}
 	}
 
 	if ( GetState() == GameState::Intro && Genesis::FrameWork::GetVideoPlayer()->IsPlaying() == false )
 	{
 		SetState( GameState::LoadResources );
-	}
-
-	if ( m_EndGame )
-	{
-		EndGameAux();
 	}
 
 	return Genesis::TaskStatus::Continue;
@@ -454,21 +416,20 @@ void Game::StartNewGame(const ShipCustomisationData& customisationData)
 
 	SetPlayedTime( 0.0f );
 
-	SetState(GameState::Combat);
+	m_pSystem = nullptr;
+	m_pSystem = std::make_shared<System>("17260877307600676");
+    m_pSystemViewer->View(m_pSystem);
+
+    SetState(GameState::Combat);
 }
 
 void Game::EndGame()
 {
-	m_EndGame = true;
+
 }
 
 void Game::EndGameAux()
 {
-	if ( GetCurrentSector() != nullptr )
-	{
-		ExitSector();
-	}
-
 	SaveGame();
 
 	delete m_pTutorialWindow;
@@ -487,8 +448,6 @@ void Game::EndGameAux()
     m_pMainMenu->SetOption( MainMenuOption::NewGame );
 
 	SetState( GameState::Menu );
-
-	m_EndGame = false;
 }
 
 void Game::SetupNewGameTutorial()
@@ -500,96 +459,6 @@ void Game::SetupNewGameTutorial()
 	else
 	{
 		m_pTutorialWindow->Clear();
-	}
-
-	if ( GetGameMode() == GameMode::Campaign )
-	{
-		TutorialStep tutorialStep1( 
-			"Welcome to Hyperscape, Captain.\n\n" \
-			"This is the galaxy view, where you can see the location of " \
-			"your fleet and decide on your next move.\n\n" \
-			"Your objective is to defeat the other factions, reuniting " \
-			"what was once a galaxy spanning Empire." );
-		m_pTutorialWindow->AddStep( tutorialStep1 );
-
-		TutorialStep tutorialStep2(
-			"Blue sectors belong to the Empire. As you reclaim sectors, " \
-			"the Empire will be able to field a greater number of fleets.\n\n" \
-			"As fleets are built and deployed, they'll start expanding our " \
-			"borders and will assist you in battle." );
-		m_pTutorialWindow->AddStep( tutorialStep2 );
-
-		TutorialStep tutorialStep3(
-			"This is your fleet.\n\n" \
-			"As you move through the galaxy, you will be able to decide " \
-			"whether you want to try to conquer a given sector or not. " \
-			"When you arrive to a sector you'll see an associated threat " \
-			"rating, which will give you an idea of how difficult the battle " \
-			"would be.\n\n" \
-			"Keep in mind that this rating is just an estimate based on " \
-			"data from our probes and isn't necessarily accurate, so if " \
-			"you see that a battle is about to turn sour, jump out." );
-		FleetSharedPtr pPlayerFleet = GetPlayerFleet().lock();
-		tutorialStep3.SetPointOfInterest( pPlayerFleet->GetRepresentation() );
-		m_pTutorialWindow->AddStep( tutorialStep3 );
-
-		TutorialStep tutorialStep4(
-			"The sector you are currently in has a shipyard, represented " \
-			"by the shipyard icon. If you enter the sector and then dock " \
-			"with the shipyard, you'll be able to customise your ship with " \
-			"the modules you recover during your battles.\n\n" \
-			"However, be aware that shipyards in a sector controlled by an " \
-			"enemy faction will be well defended." );
-		m_pTutorialWindow->AddStep( tutorialStep4 );
-
-		TutorialStep tutorialStep5(
-			"We recommend attacking the unaligned sectors surrounding the\n" \
-			"Empire first, as their fleets should be fairly manageable.\n\n" \
-			"Good luck, Captain." );
-		m_pTutorialWindow->AddStep( tutorialStep5 );
-	}
-	else if ( GetGameMode() == GameMode::InfiniteWar )
-	{
-		TutorialStep tutorialStep1( 
-			"Welcome to the Infinite War, Captain.\n\n" \
-			"If you have not played the Campaign before, I recommend doing " \
-			"so first.\n\n" );
-		m_pTutorialWindow->AddStep( tutorialStep1 );
-
-		TutorialStep tutorialStep2( 
-			"This view should be familiar, but note that it is now mostly " \
-			"covered by fog of war. You can see the areas surrounding the " \
-			"Empire, your fleet and allied fleets. You will have to explore " \
-			"to discover the location of the other factions.");
-		m_pTutorialWindow->AddStep( tutorialStep2 );
-
-		TutorialStep tutorialStep3( 
-			"To assist you with this, you will now have the option to " \
-			"deploy hyperspace probes on Imperial or neutral sectors. " \
-			"These will permanently reveal surrounding sectors, providing " \
-			"an early warning of incoming fleets or encroaching factions." );
-		m_pTutorialWindow->AddStep( tutorialStep3 );
-
-		TutorialStep tutorialStep4( 
-			"Additionally, you can also deploy starforts. These are " \
-			"very powerful defensive structures, which make a sector very " \
-			"difficult for a hostile fleet to take over.\n\n" \
-			"Your homeworld starts with one, so it should be quite safe for now." );
-		m_pTutorialWindow->AddStep( tutorialStep4 );
-
-		TutorialStep tutorialStep5( 
-			"Your objective is to conquer the homeworld sector of all enemy factions. " \
-			"These will be marked once you discover them.\n\n"
-			"Good luck, Captain." );
-		m_pTutorialWindow->AddStep( tutorialStep5 );
-	}
-	else if ( GetGameMode() == GameMode::Hyperscape )
-	{
-		// TODO: Write Hyperscape tutorial.
-		TutorialStep tutorialStep1( 
-			"Welcome to the Hyperscape, Captain."
-		);
-		m_pTutorialWindow->AddStep( tutorialStep1 );
 	}
 }
 
@@ -617,14 +486,6 @@ void Game::LoadGame( SaveGameHeaderWeakPtr pSaveGameHeaderWeakPtr )
 		g_pGame->RaiseInteractiveWarning( "Couldn't load game, header is invalid." );
 		return;
     }
-	else if ( pSaveGameHeader->GetDifficulty() == Difficulty::Hardcore && !pSaveGameHeader->IsAlive() )
-	{
-		GetPopup()->Show( PopupMode::Ok, "This ship has been destroyed and serves the Empire no more..." );
-		return;
-	}
-
-	SetDifficulty( pSaveGameHeader->GetDifficulty() );
-	SetGameMode( pSaveGameHeader->GetGameMode() );
 
 	m_pLoadingScreen->Show( true );
 	m_GameToLoad = pSaveGameHeader->GetFilename();
@@ -670,7 +531,6 @@ void Game::LoadGameAux()
 	{
 		m_pMainMenu->Show( false );
         m_ContextualTipsEnabled = m_pBlackboard->Exists( "#contextual_tips" );
-		InitialiseSectorEvents();
 		SetState( GameState::GalaxyView );
 	}
 	else
@@ -708,10 +568,16 @@ void Game::SetState( GameState newState )
 				m_pIntelWindow = new IntelWindow();
 			}
 
-			m_pSystem = std::make_shared<System>("17260877307600676");
+			m_pSystem = std::make_shared<System>("17260877307600676", true);
             m_pSystemViewer->View(m_pSystem);
 
 			m_pMainMenu = new MainMenu();
+
+			ShipCustomisationData data;
+			data.m_CaptainName = "TestCaptain";
+			data.m_pModuleInfoHexGrid = nullptr;
+			data.m_ShipName = "TestShip";
+			StartNewGame(data);
 		}
 	}
 	else if ( m_State == GameState::GalaxyView ) 
@@ -755,248 +621,7 @@ void Game::LoadToState( GameState state )
 
 void Game::SetupFactions()
 {
-	for ( int i = 0; i < (int)FactionId::Count; ++i )
-	{
-		delete m_pFaction[ i ];
-	}
-	
-	// The neutral faction initially owns all the sectors but deploys no roaming fleets.
-	// As the "beginner's target" faction, they field no capital ships.
-	FactionInfo infoNeutral;
-	infoNeutral.m_Name = "Neutral";
-	infoNeutral.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoNeutral.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.7f, 0.7f, 0.7f );
-	infoNeutral.m_Colours[ (int)FactionColourId::Secondary ]			= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoNeutral.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoNeutral.m_Colours[ (int)FactionColourId::SecondaryFlagship ]	= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoNeutral.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 1.0f, 0.8f, 0.8f );
-	infoNeutral.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 1.0f, 0.8f, 0.8f );
-	infoNeutral.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoNeutral.m_BaseFleetPoints = 1000; // Unused
-	infoNeutral.m_SectorToShipyardRatio = 0.0f;
-	infoNeutral.m_Doctrine = FleetDoctrine( FleetBehaviourType::None, 0.75f, 0.25f, 0.0f );
-	infoNeutral.m_LootProbability				= LootProbability( 0.75f, 0.25f, 0.00f, 0.00f, 0.00f );
-	infoNeutral.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.89f, 0.10f, 0.01f, 0.00f );
-	infoNeutral.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.78f, 0.20f, 0.02f, 0.00f );
-	infoNeutral.m_ThreatValueMultiplier = 1.0f;
-	infoNeutral.m_ConquestReward = 200;
-	infoNeutral.m_UsesFormations = false;
-	infoNeutral.m_RegionalFleetMultiplier = 1.0f;
-	infoNeutral.m_SpawnsFlagshipInGalaxy = false;
-	m_pFaction[ (int)FactionId::Neutral ] = new NeutralFaction( infoNeutral );
 
-	// The Player faction contains a single, player-controlled fleet.
-	FactionInfo infoPlayer;
-	infoPlayer.m_Name = "Player";
-	infoPlayer.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 0.0f, 1.0f, 1.0f );
-	infoPlayer.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.0f, 0.2f, 0.6f );
-	infoPlayer.m_Colours[ (int)FactionColourId::Secondary ]				= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoPlayer.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoPlayer.m_Colours[ (int)FactionColourId::SecondaryFlagship ]		= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoPlayer.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 0.0f, 1.0f, 1.0f );
-	infoPlayer.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 0.0f, 1.0f, 1.0f );
-	infoPlayer.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 0.0f, 1.0f, 1.0f );
-	infoPlayer.m_BaseFleetPoints = 1000; // Unused
-	infoPlayer.m_SectorToShipyardRatio = 1.0f;
-	infoPlayer.m_Doctrine = FleetDoctrine( FleetBehaviourType::None, 1.0f, 0.0f, 0.0f );
-	infoPlayer.m_LootProbability				= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoPlayer.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoPlayer.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoPlayer.m_ThreatValueMultiplier = 1.0f;
-	infoPlayer.m_ConquestReward = 0;
-	infoPlayer.m_UsesFormations = true;
-	infoPlayer.m_RegionalFleetMultiplier = 1.0f;
-	infoPlayer.m_SpawnsFlagshipInGalaxy = false;
-	m_pFaction[ (int)FactionId::Player ] = new Faction( infoPlayer, FactionId::Player );
-
-	// The Empire deploys large fleets from their few shipyards, with a preference for large number of capitals.
-	FactionInfo infoEmpire;
-	infoEmpire.m_Name = "Empire";
-	infoEmpire.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 0.0f, 0.0f, 1.0f );
-	infoEmpire.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.0f, 0.2f, 0.6f );
-	infoEmpire.m_Colours[ (int)FactionColourId::Secondary ]				= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoEmpire.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoEmpire.m_Colours[ (int)FactionColourId::SecondaryFlagship ]		= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoEmpire.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 0.0f, 1.0f, 1.0f );
-	infoEmpire.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 0.0f, 1.0f, 1.0f );
-	infoEmpire.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 0.2f, 0.2f, 1.0f );
-	infoEmpire.m_BaseFleetPoints = 1000;
-	infoEmpire.m_SectorToShipyardRatio = 0.10f;
-	infoEmpire.m_Doctrine = FleetDoctrine( FleetBehaviourType::Expansionist, 0.2f, 0.2f, 0.6f );
-	infoEmpire.m_LootProbability				= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoEmpire.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoEmpire.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoEmpire.m_ThreatValueMultiplier = 1.0f;
-	infoEmpire.m_ConquestReward = 0;
-	infoEmpire.m_UsesFormations = true;
-	infoEmpire.m_RegionalFleetMultiplier = 1.0f;
-	infoEmpire.m_SpawnsFlagshipInGalaxy = false;
-	m_pFaction[ (int)FactionId::Empire ] = new EmpireFaction( infoEmpire );
-
-	// The Ascent have a large number of medium sized, medium weight fleets. The practical effect of this is that they tend to swarm in
-	// during a battle, with fleets joining in mid-fight.
-	FactionInfo infoAscent;
-	infoAscent.m_Name = "Ascent";
-	infoAscent.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 1.0f, 0.3f, 0.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 1.0f, 0.3f, 0.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::Secondary ]				= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::SecondaryFlagship ]		= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 1.0f, 0.3f, 0.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 1.0f, 0.3f, 0.0f );
-	infoAscent.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 1.0f, 0.3f, 0.0f );
-	infoAscent.m_BaseFleetPoints = 1200;
-	infoAscent.m_SectorToShipyardRatio = 0.15f;
-	infoAscent.m_Doctrine = FleetDoctrine( FleetBehaviourType::Expansionist, 1.0f, 1.0f, 0.25f );
-	infoAscent.m_LootProbability				= LootProbability( 0.00f, 0.20f, 0.70f, 0.10f, 0.00f );
-	infoAscent.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.75f, 0.25f );
-	infoAscent.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 1.00f );
-	infoAscent.m_ThreatValueMultiplier = 3.0f;
-	infoAscent.m_ConquestReward = 800;
-	infoAscent.m_CollapseTag = sKillAscentFlagshipCompleted;
-	infoAscent.m_UsesFormations = true;
-    infoAscent.m_FlagshipFleetShips.push_back( "special_flagship" );
-    infoAscent.m_FlagshipFleetShips.push_back( "capital1" );
-    infoAscent.m_FlagshipFleetShips.push_back( "capital1" );
-    infoAscent.m_FlagshipFleetShips.push_back( "battlecruiser1" );
-    infoAscent.m_FlagshipFleetShips.push_back( "battlecruiser1" );
-	infoAscent.m_RegionalFleetMultiplier = 1.5f;
-	infoAscent.m_SpawnsFlagshipInGalaxy = true;
-	m_pFaction[ (int)FactionId::Ascent ] = new Faction( infoAscent, FactionId::Ascent );
-
-	// Pirates prefer small fleets but plenty of them. They aren't capable of fielding capital ships.
-	FactionInfo infoPirate;
-	infoPirate.m_Name = "Pirate";
-	infoPirate.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 0.5f, 0.2f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.5f, 0.2f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::Secondary ]				= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::SecondaryFlagship ]		= Genesis::Colour( 0.5f, 0.2f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 0.5f, 0.2f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 0.7f, 0.4f, 0.0f );
-	infoPirate.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 0.6f, 0.3f, 0.1f );
-	infoPirate.m_BaseFleetPoints = 800;
-	infoPirate.m_SectorToShipyardRatio = 1.0f;
-	infoPirate.m_Doctrine = FleetDoctrine( FleetBehaviourType::Roaming, 0.8f, 0.2f, 0.0f );
-	infoPirate.m_LootProbability				= LootProbability( 0.30f, 0.60f, 0.10f, 0.00f, 0.00f );
-	infoPirate.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.95f, 0.05f );
-	infoPirate.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.60f, 0.40f );
-	infoPirate.m_ThreatValueMultiplier = 1.5f;
-	infoPirate.m_ConquestReward = 400;
-	infoPirate.m_CollapseTag = sKillPirateFlagshipCompleted;
-	infoPirate.m_UsesFormations = false;
-    infoPirate.m_FlagshipFleetShips.push_back( "special_flagship" );
-    infoPirate.m_FlagshipFleetShips.push_back( "pirate_battlecruiser_2" );
-    infoPirate.m_FlagshipFleetShips.push_back( "pirate_battlecruiser_2" );
-	infoPirate.m_RegionalFleetMultiplier = 1.0f;
-	infoPirate.m_SpawnsFlagshipInGalaxy = true;
-	m_pFaction[ (int)FactionId::Pirate ] = new PirateFaction( infoPirate ); // Custom faction due to breaking the rules and respawning on neutral sectors
-
-	// Marauders field capital-heavy fleets
-	FactionInfo infoMarauders;
-	infoMarauders.m_Name = "Marauders";
-	infoMarauders.m_Colours[ (int)FactionColourId::Base ]				= Genesis::Colour( 1.0f, 0.0f, 0.0f );
-	infoMarauders.m_Colours[ (int)FactionColourId::Primary ]			= Genesis::Colour( 0.7f, 0.0f, 0.0f );
-	infoMarauders.m_Colours[ (int)FactionColourId::Secondary ]			= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoMarauders.m_Colours[ (int)FactionColourId::PrimaryFlagship ]	= Genesis::Colour( 0.7f, 0.0f, 0.0f );
-	infoMarauders.m_Colours[ (int)FactionColourId::SecondaryFlagship ]	= Genesis::Colour( 0.7f, 0.4f, 0.1f );
-	infoMarauders.m_Colours[ (int)FactionColourId::Glow ]				= Genesis::Colour( 0.75f, 0.0f, 0.0f );
-	infoMarauders.m_Colours[ (int)FactionColourId::GlowFlagship ]		= Genesis::Colour( 1.00f, 0.10f, 0.10f );
-	infoMarauders.m_Colours[ (int)FactionColourId::FleetChevron ]		= Genesis::Colour( 1.0f, 0.0f, 0.0f );
-	infoMarauders.m_BaseFleetPoints = 1600;
-	infoMarauders.m_SectorToShipyardRatio = 0.15f;
-	infoMarauders.m_Doctrine = FleetDoctrine( FleetBehaviourType::Raiding, 0.0f, 0.5f, 1.0f );
-	infoMarauders.m_LootProbability				= LootProbability( 0.00f, 0.40f, 0.55f, 0.05f, 0.00f );
-	infoMarauders.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.90f, 0.10f );
-	infoMarauders.m_LootProbabilityFlagshipHc	= LootProbability( 0.00f, 0.00f, 0.00f, 0.25f, 0.75f );
-	infoMarauders.m_ThreatValueMultiplier = 2.5f;
-	infoMarauders.m_ConquestReward = 1000;
-	infoMarauders.m_CollapseTag = sKillMarauderFlagshipCompleted;
-    infoMarauders.m_UsesFormations = false;
-    infoMarauders.m_FlagshipFleetShips.push_back( "special_flagship" );
-    infoMarauders.m_FlagshipFleetShips.push_back( "marauder_capital_1" );
-    infoMarauders.m_FlagshipFleetShips.push_back( "marauder_capital_1" );
-    infoMarauders.m_FlagshipFleetShips.push_back( "marauder_battlecruiser_2" );
-    infoMarauders.m_FlagshipFleetShips.push_back( "marauder_battlecruiser_2" );
-	infoMarauders.m_RegionalFleetMultiplier = 1.25f;
-	infoMarauders.m_SpawnsFlagshipInGalaxy = false;
-	m_pFaction[ (int)FactionId::Marauders ] = new Faction( infoMarauders, FactionId::Marauders );
-
-	// The Iriani rely on a mix of battlecruisers and battleships. They field few but very hard hitting ships.
-	FactionInfo infoIriani;
-	infoIriani.m_Name = "Iriani";
-	infoIriani.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 0.8f, 0.0f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.6f, 0.0f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::Secondary ]				= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 1.0f, 1.0f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::SecondaryFlagship ]		= Genesis::Colour( 0.6f, 0.0f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 0.4f, 0.0f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 0.6f, 0.1f, 1.0f );
-	infoIriani.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 0.8f, 0.0f, 1.0f );
-	infoIriani.m_BaseFleetPoints = 1200;
-	infoIriani.m_SectorToShipyardRatio = 0.15f;
-	infoIriani.m_Doctrine = FleetDoctrine( FleetBehaviourType::Expansionist, 0.0f, 1.0f, 1.0f );
-	infoIriani.m_LootProbability				= LootProbability( 0.00f, 0.00f, 0.80f, 0.15f, 0.05f );
-	infoIriani.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 1.00f );
-	infoIriani.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 1.00f );
-	infoIriani.m_ThreatValueMultiplier = 5.0f;
-	infoIriani.m_ConquestReward = 2000;
-	infoIriani.m_CollapseTag = sIrianiArcFinished;
-	infoIriani.m_UsesFormations = true;
-	infoIriani.m_RegionalFleetMultiplier = 2.0f;
-	infoIriani.m_SpawnsFlagshipInGalaxy = true;
-	m_pFaction[ (int)FactionId::Iriani ] = new IrianiFaction( infoIriani );
-
-	// Special faction for one-off events
-	FactionInfo infoSpecial;
-	infoSpecial.m_Name = "Special";
-	infoSpecial.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoSpecial.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.0f, 0.0f, 0.8f );
-	infoSpecial.m_Colours[ (int)FactionColourId::Secondary ]			= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoSpecial.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.8f );
-	infoSpecial.m_Colours[ (int)FactionColourId::SecondaryFlagship ]	= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoSpecial.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 0.0f, 0.5f, 1.0f );
-	infoSpecial.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 0.0f, 0.5f, 1.0f );
-	infoSpecial.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoSpecial.m_BaseFleetPoints = 1000;
-	infoSpecial.m_SectorToShipyardRatio = 0.0f;
-	infoSpecial.m_Doctrine = FleetDoctrine( FleetBehaviourType::Defensive, 1.0f, 1.0f, 1.0f );
-	infoSpecial.m_LootProbability				= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoSpecial.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoSpecial.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.00f, 0.00f );
-	infoSpecial.m_ConquestReward = 0;
-	infoSpecial.m_UsesFormations = true;
-	infoSpecial.m_SpawnsFlagshipInGalaxy = false;
-	m_pFaction[ (int)FactionId::Special ] = new Faction( infoSpecial, FactionId::Special );
-
-	// Hegemon field capital-heavy fleets
-	FactionInfo infoHegemon;
-	infoHegemon.m_Name = "Hegemon";
-	infoHegemon.m_Colours[ (int)FactionColourId::Base ]					= Genesis::Colour( 0.0f, 1.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::Primary ]				= Genesis::Colour( 0.0f, 1.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::Secondary ]			= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::PrimaryFlagship ]		= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::SecondaryFlagship ]	= Genesis::Colour( 0.0f, 0.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::Glow ]					= Genesis::Colour( 0.00f, 1.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::GlowFlagship ]			= Genesis::Colour( 0.00f, 1.0f, 0.0f );
-	infoHegemon.m_Colours[ (int)FactionColourId::FleetChevron ]			= Genesis::Colour( 0.0f, 1.0f, 0.0f );
-	infoHegemon.m_BaseFleetPoints = 1600;
-	infoHegemon.m_SectorToShipyardRatio = 0.1f;
-	infoHegemon.m_Doctrine = FleetDoctrine( FleetBehaviourType::Expansionist, 0.0f, 0.5f, 1.0f );
-	infoHegemon.m_LootProbability				= LootProbability( 0.00f, 0.40f, 0.55f, 0.05f, 0.00f );
-	infoHegemon.m_LootProbabilityFlagship		= LootProbability( 0.00f, 0.00f, 0.00f, 0.90f, 0.10f );
-	infoHegemon.m_LootProbabilityFlagshipHc		= LootProbability( 0.00f, 0.00f, 0.00f, 0.25f, 0.75f );
-	infoHegemon.m_ThreatValueMultiplier = 7.5f;
-	infoHegemon.m_ConquestReward = 4000;
-	infoHegemon.m_UsesFormations = true;
-	infoHegemon.m_FlagshipFleetShips.push_back( "special_flagship" );
-	infoHegemon.m_FlagshipFleetShips.push_back( "hegemon_capital_3" );
-	infoHegemon.m_FlagshipFleetShips.push_back( "hegemon_capital_3" );
-	infoHegemon.m_FlagshipFleetShips.push_back( "hegemon_battlecruiser_2" );
-	infoHegemon.m_FlagshipFleetShips.push_back( "hegemon_battlecruiser_2" );
-	infoHegemon.m_RegionalFleetMultiplier = 1.25f;
-	infoHegemon.m_SpawnsFlagshipInGalaxy = true;
-	m_pFaction[ (int)FactionId::Hegemon ] = new Faction( infoHegemon, FactionId::Hegemon );
 }
 
 Faction* Game::GetFaction( const std::string& name ) const
@@ -1028,137 +653,9 @@ FleetWeakPtr Game::GetPlayerFleet() const
 	return FleetWeakPtr();
 }
 
-void Game::InitialiseSectorEvents()
-{
-	if ( m_SectorEvents.empty() == false )
-	{
-		for ( auto& pSectorEvent : m_SectorEvents )
-		{
-			delete pSectorEvent;
-		}
-		m_SectorEvents.clear();
-	}
-
-	m_SectorEvents.push_back( new SectorEventChrysamere() );
-	m_SectorEvents.push_back( new SectorEventOrbitalDefenses() );
-	m_SectorEvents.push_back( new SectorEventNeutralFlagship() );
-	m_SectorEvents.push_back( new SectorEventCorsairFleet() );
-}
-
-void Game::EnterSector( SectorInfo* pSectorInfo )
-{
-	SDL_assert( pSectorInfo != nullptr );
-
-	// This should never happen. The only way for this not to be nullptr is if we've entered a sector but didn't exit it.
-	SDL_assert( m_pSector == nullptr );
-
-	// Disable auto-resolve so battles don't get processed as if we weren't fighting them...
-	pSectorInfo->SetAutoResolve( false );
-
-	// If we've just exited a sector we need to make sure our fleet isn't invulnerable before contesting again
-	FleetSharedPtr pPlayerFleet = g_pGame->GetPlayerFleet().lock();
-	if ( pPlayerFleet )
-	{
-		pPlayerFleet->SetImmunity( false );
-	}
-
-	pSectorInfo->Contest();
-
-	m_pSector = new Sector( pSectorInfo );
-	bool init = m_pSector->Initialise();
-	SDL_assert( init );
-	
-	SetState( GameState::Combat );
-}
-
-void Game::ExitSector()
-{
-	SDL_assert( m_pSector != nullptr );
-
-	if ( GetDifficulty() == Difficulty::Hardcore )
-	{
-		Ship* pShip = g_pGame->GetPlayer()->GetShip();
-		if ( pShip->IsDestroyed() )
-		{
-			KillSaveGame();
-		}
-	}
-
-	SectorInfo* pSectorInfo = m_pSector->GetSectorInfo();
-
-	// Hack to link in the Tactical Relocation achievement, as there's no support in Sector Components for
-	// detecting exiting the sector.
-	if ( pSectorInfo->GetName() == "Cradle of Isaldren" && g_pGame->GetPlayer()->GetShip()->IsDestroyed() == false )
-	{
-		g_pGame->GetAchievementsManager()->UnlockAchievement( ACH_TACTICAL_RELOCATION );
-	}
-
-	pSectorInfo->FleetDisengaged( g_pGame->GetPlayerFleet() );
-
-	delete m_pSector;
-	m_pSector = nullptr;
-
-	// Forcing the next turn will cause the sector to lose its contested status and allow the
-	// player to start fighting again without waiting.
-	GetGalaxy()->ForceNextTurn();
-
-	SetState( GameState::GalaxyView );
-
-	SaveGame();
-}
-
-RequestManager* Game::GetRequestManager() const
-{
-	Faction* pFaction = GetFaction( FactionId::Empire );
-	if ( pFaction == nullptr )
-		return nullptr;
-	
-	EmpireFaction* pEmpireFaction = (EmpireFaction*)pFaction;
-	return pEmpireFaction->GetRequestManager();
-}
-
 SectorInfo* Game::FindSpawnSector() const
 {
-	const SectorInfoVector& controlledSectors = GetFaction( FactionId::Empire )->GetControlledSectors();
-	if ( controlledSectors.empty() )
-	{
-		return nullptr;
-	}
-	else if ( GetGameMode() == GameMode::Campaign )
-	{
-		// We give priority to the Tannhauser sector, but if we can't find it (presumably because it got conquered by another faction),
-		// we'll spawn at another sector that has a shipyard in it
-		SectorInfo* pBackupSectorInfo = nullptr;
-		for ( auto& pSectorInfo : controlledSectors )
-		{
-			if ( pSectorInfo->GetName().find("Tannhauser") != std::string::npos && pSectorInfo->HasShipyard() )
-			{
-				return pSectorInfo;
-			}
-			else if ( pSectorInfo->HasShipyard() )
-			{
-				pBackupSectorInfo = pSectorInfo;
-			}
-		}
-		return pBackupSectorInfo;
-	}
-	else if ( GetGameMode() == GameMode::InfiniteWar )
-	{
-		for ( auto& pSectorInfo : controlledSectors )
-		{
-			if ( pSectorInfo->IsHomeworld() )
-			{
-				return pSectorInfo;
-			}
-		}
-
-		Genesis::Core::Log::Error() << "Failed to find homeworld sector for the Empire.";
-		return nullptr;
-	}
-	else
-	{
-		return nullptr;
-	}
+	return nullptr;
 }
 
 void Game::AddFleetCommandIntel( const std::string& text, ModuleInfo* pModuleInfo /* = nullptr */ )
@@ -1178,12 +675,7 @@ void Game::AddIntel( GameCharacter character, const std::string& text, bool canB
 	{
 		static const std::string characterNames[ static_cast<unsigned int>( GameCharacter::Count ) ] =
 		{
-			"Fleet Intelligence Officer",
-			"Navarre Hexer",
-			"Harkon Stormchaser",
-			"Jeroen Lightbringer",
-			"Aelise Gloriam",
-			"Chrysamere"
+			"Fleet Intelligence Officer"
 		};
 
 		pIntelWindow->AddFragment( IntelFragment( character, characterNames[ static_cast<unsigned int>( character ) ], text, nullptr, canBeQueued ) );
@@ -1254,66 +746,6 @@ bool Game::IsDevelopmentModeActive() const
 	return true;
 }
 
-bool Game::IsShipCaptureModeActive() const
-{
-	return false;
-}
-
-bool Game::IsTutorialActive() const
-{
-	if ( m_pTutorialWindow == nullptr )
-	{
-		return false;
-	}
-	else
-	{
-		return m_pTutorialWindow->IsActive();
-	}
-}
-
-bool Game::RequisitionShip( const ShipInfo* pShipInfo )
-{
-	Player* pPlayer = GetPlayer();
-	if ( pPlayer == nullptr || pPlayer->GetInfluence() < pShipInfo->GetCost() )
-		return false;
-
-	FleetSharedPtr pPlayerFleet = GetPlayerFleet().lock();
-    if ( pPlayerFleet != nullptr && pPlayerFleet->GetShips().size() + 1 < pPlayer->GetFleetMaxShips() )
-	{
-		pPlayerFleet->AddShip( pShipInfo );
-		pPlayer->SetInfluence( pPlayer->GetInfluence() - pShipInfo->GetCost() );
-
-		if ( pShipInfo->GetDisplayName() == "Arbellatris" )
-		{
-			g_pGame->GetAchievementsManager()->UnlockAchievement( ACH_WALK_SLOWLY );
-		}
-
-		return true;
-	}
-
-	return false;
-}
-
-bool Game::ReturnShip( const ShipInfo* pShipInfo )
-{
-	Player* pPlayer = GetPlayer();
-	if ( pPlayer == nullptr )
-	{
-		return false;
-	}
-
-	FleetSharedPtr pPlayerFleet = GetPlayerFleet().lock();
-	if ( pPlayerFleet != nullptr && pPlayerFleet->RemoveShip( pShipInfo ) )
-	{
-		pPlayer->SetInfluence( pPlayer->GetInfluence() + pShipInfo->GetCost() );
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 void Game::RaiseInteractiveWarning( const std::string& text ) const
 {
 	Popup* pPopup = GetPopup();
@@ -1367,6 +799,11 @@ void Game::Unpause()
 	}
 }
 
+BlackboardSharedPtr Game::GetBlackboard() 
+{
+	return m_pBlackboard;
+}
+
 
 //-------------------------------------------------------------------
 // Main
@@ -1378,7 +815,7 @@ int Main(Genesis::CommandLineParameters* parameters)
 	FrameWork::Initialize();
 
 	FrameWork::CreateWindowGL(
-		"HEXTERMINATE", 
+		"Hyperscape", 
 		Configuration::GetScreenWidth(),
 		Configuration::GetScreenHeight(), 
 		Configuration::GetMultiSampleSamples() );

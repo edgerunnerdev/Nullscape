@@ -73,10 +73,6 @@ m_pSFX( nullptr )
 	}
 
 	m_pIcons[ static_cast<unsigned int>( GameCharacter::FleetIntelligence ) ] = pRm->GetResource<ResourceImage*>( "data/ui/portraits/FleetIntelligenceOfficer.jpg" );
-	m_pIcons[ static_cast<unsigned int>( GameCharacter::NavarreHexer ) ] = pRm->GetResource<ResourceImage*>( "data/ui/portraits/NavarreHexer.jpg" );
-	m_pIcons[ static_cast<unsigned int>( GameCharacter::HarkonStormchaser ) ] = pRm->GetResource< ResourceImage*>( "data/ui/portraits/HarkonStormchaser.png" );
-	m_pIcons[ static_cast<unsigned int>( GameCharacter::Chrysamere ) ] = pRm->GetResource<ResourceImage*>( "data/ui/portraits/Chrysamere.png" );
-	m_pIcons[ static_cast<unsigned int>( GameCharacter::AeliseGloriam ) ] = pRm->GetResource<ResourceImage*>( "data/ui/portraits/AeliseGloriam.png" );
 
 	Gui::GuiManager* pGuiManager = Genesis::FrameWork::GetGuiManager();
 

@@ -69,76 +69,6 @@ FleetWindow::~FleetWindow()
 void FleetWindow::Show( bool state )
 {
 	UI::Window::Show( state );
-
-	if ( state )
-	{
-		// Setting the initial text from the ShipInfo can't be done on window construction,
-		// as it gets overwritten by the design.
-		if ( m_RequisitionTextInitialized == false )
-		{
-			for ( auto& rsi : m_RequisitionShipInfos )
-			{
-				rsi.pTitle->SetText( rsi.pShipInfo->GetLongDisplayName() );
-				rsi.pBackground->SetPath( rsi.pShipInfo->GetDisplayImage() );
-
-				std::stringstream weaponsText;
-				weaponsText << "Weapons: " << rsi.pShipInfo->GetWeaponsText();
-				rsi.pWeaponsText->SetText( weaponsText.str() );
-
-				std::stringstream defenseText;
-				defenseText << "Defense: " << rsi.pShipInfo->GetDefenseText();
-				rsi.pDefenseText->SetText( defenseText.str() );
-
-				std::stringstream influenceText;
-				influenceText << "Influence: " << rsi.pShipInfo->GetCost();
-				rsi.pInfluenceText->SetText( influenceText.str() );
-				if ( HasSufficientInfluence( rsi.pShipInfo ) )
-				{
-					rsi.pInfluenceIcon->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
-					rsi.pInfluenceText->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
-				}
-				else
-				{
-					rsi.pInfluenceIcon->SetColour( 1.0f, 0.0f, 0.0f, 1.0f );
-					rsi.pInfluenceText->SetColour( 1.0f, 0.0f, 0.0f, 1.0f );
-				}
-
-				std::optional<Perk> requiredPerk = rsi.pShipInfo->GetRequiredPerk();
-				if ( requiredPerk.has_value() == false )
-				{
-					rsi.pPerkIcon->Show( false );
-					rsi.pPerkText->Show( false );
-				}
-				else
-				{
-					rsi.pPerkIcon->Show( true );
-					rsi.pPerkText->Show( true );
-
-					std::stringstream perkText;
-					perkText << "Perk: " << ToString( requiredPerk.value() );
-					rsi.pPerkText->SetText( perkText.str() );
-
-					if ( g_pGame->GetPlayer()->GetPerks()->IsEnabled( requiredPerk.value() ) )
-					{
-						rsi.pPerkIcon->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
-						rsi.pPerkText->SetColour( 1.0f, 1.0f, 1.0f, 1.0f );
-					}
-					else
-					{
-						rsi.pPerkIcon->SetColour( 1.0f, 0.0f, 0.0f, 1.0f );
-						rsi.pPerkText->SetColour( 1.0f, 0.0f, 0.0f, 1.0f );
-					}
-				}
-
-				rsi.pRequisitionButton->Enable( CanRequisitionShip( rsi.pShipInfo ) );
-			}
-
-			m_RequisitionTextInitialized = true;
-		}
-
-		RefreshFleetShips();
-		RefreshRequisitionShips();
-	}
 }
 
 void FleetWindow::PopulateFleetShips()
@@ -233,54 +163,7 @@ void FleetWindow::PopulateRequisitionShips()
 
 void FleetWindow::RefreshFleetShips()
 {
-	const int maxFleetShips = static_cast<int>(m_FleetShipInfos.size());
-	FleetSharedPtr pPlayerFleet = g_pGame->GetPlayerFleet().lock();
-	const ShipInfoList& fleetShips = pPlayerFleet->GetShips();
 
-	FleetShipInfo& playerFsi = m_FleetShipInfos[ 0 ];
-	playerFsi.pNameText->SetText( g_pGame->GetPlayer()->GetShipCustomisationData().m_ShipName );
-	playerFsi.pCategoryText->SetText( "Flagship" );
-	playerFsi.pReturnButton->Show( false );
-	playerFsi.pUnavailableIcon->Show( false );
-	playerFsi.pUnavailableText->Show( false );
-
-	int usedSlots = 1;
-	for ( const ShipInfo* pShipInfo : fleetShips )
-	{
-		FleetShipInfo& fsi = m_FleetShipInfos[ usedSlots++ ];
-		fsi.pNameText->Show( true );
-		fsi.pNameText->SetText( pShipInfo->GetDisplayName() );
-		fsi.pCategoryText->Show( true );
-		fsi.pCategoryText->SetText( ToString( pShipInfo->GetShipType() ) );
-		fsi.pReturnButton->Show( true );
-		fsi.pUnavailableIcon->Show( false );
-		fsi.pUnavailableText->Show( false );
-	}
-
-	Perks* pPerks = g_pGame->GetPlayer()->GetPerks();
-	for ( int i = usedSlots; i < maxFleetShips; ++i )
-	{
-		FleetShipInfo& fsi = m_FleetShipInfos[ i ];
-		fsi.pNameText->Show( false );
-		fsi.pCategoryText->Show( false );
-		fsi.pReturnButton->Show( false );
-
-		if ( i == 3 && pPerks->IsEnabled( Perk::SupportRequest ) == false )
-		{
-			fsi.pUnavailableIcon->Show( true );
-			fsi.pUnavailableText->Show( true );
-		}
-		else if ( i == 4 && pPerks->IsEnabled( Perk::PrimaryFleet ) == false )
-		{
-			fsi.pUnavailableIcon->Show( true );
-			fsi.pUnavailableText->Show( true );
-		}
-		else
-		{
-			fsi.pUnavailableIcon->Show( false );
-			fsi.pUnavailableText->Show( false );
-		}
-	}
 }
 
 void FleetWindow::RefreshRequisitionShips()
@@ -302,42 +185,22 @@ void FleetWindow::RefreshRequisitionShips()
 
 bool FleetWindow::CanRequisitionShip( const ShipInfo* pShipInfo ) const
 {
-	if ( g_pGame->GetPlayer() == nullptr || g_pGame->GetPlayerFleet().expired() )
-	{
-		return false;
-	}
-	else
-	{
-		const bool fleetHasSpace = g_pGame->GetPlayerFleet().lock()->GetShips().size() + 1 < g_pGame->GetPlayer()->GetFleetMaxShips();
-		return fleetHasSpace && HasSufficientInfluence( pShipInfo ) && HasNecessaryPerk( pShipInfo );
-	}
+	return false;
 }
 
 bool FleetWindow::HasSufficientInfluence( const ShipInfo* pShipInfo ) const
 {
-	return g_pGame->GetPlayer()->GetInfluence() >= pShipInfo->GetCost();
+	return false;
 }
 
 bool FleetWindow::HasNecessaryPerk( const ShipInfo* pShipInfo ) const
 {
-	std::optional<Perk> requiredPerk = pShipInfo->GetRequiredPerk();
-	if ( requiredPerk.has_value() == false )
-	{
-		return true;
-	}
-	else
-	{
-		return g_pGame->GetPlayer()->GetPerks()->IsEnabled( requiredPerk.value() );
-	}
+	return false;
 }
 
 void FleetWindow::RequisitionShip( const ShipInfo* pShipInfo )
 {
-	if ( g_pGame->RequisitionShip( pShipInfo ) )
-	{
-		RefreshFleetShips();
-		RefreshRequisitionShips();
-	}
+
 }
 
 }

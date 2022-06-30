@@ -38,20 +38,15 @@
 #include "laser/lasermanager.h"
 #include "sprite/spritemanager.h"
 #include "menus/contextualtips.h"
-#include "menus/galaxywindow.h"
 #include "menus/lootwindow.h"
 #include "menus/hyperspacemenu.h"
-#include "menus/galaxywindow.h"
 #include "menus/radar.h"
 #include "menus/shiptweaks.h"
 #include "muzzleflash/muzzleflashmanager.h"
 #include "muzzleflash/muzzleflashmanagerrep.h"
-#include "requests/imperialrequest.h"
-#include "requests/requestmanager.h"
 #include "sector/boundary.h"
 #include "sector/sectorcamera.h"
 #include "sector/dust.h"
-#include "sector/starinfo.h"
 #include "ship/ship.h"
 #include "ship/shipinfo.h"
 #include "ship/collisionmasks.h"
@@ -68,12 +63,8 @@
 #include "trail/trailmanagerrep.h"
 #include "particles/particlemanager.h"
 #include "particles/particlemanagerrep.h"
-#include "requests/campaigntags.h"
 #include "achievements.h"
 #include "player.h"
-
-#include "sector/events/sectorevent.h"
-#include "sector/events/orbitaldefenses.h"
 
 #include "hexterminate.h"
 #include "menus/hotbar.h"
@@ -98,7 +89,6 @@ m_pTrailManagerRep( nullptr ),
 m_pRadar( nullptr ),
 m_pRegionalFleet( nullptr ),
 m_pShipyard( nullptr ),
-m_pSectorEvent( nullptr ),
 m_IsPlayerVictorious( false ),
 m_pLootWindow( nullptr ),
 m_AdditionalWaves( 0u ),
@@ -136,11 +126,6 @@ m_AdditionalWavesSpawned( 0u )
 Sector::~Sector()
 {
 	DamageTrackerDebugWindow::Unregister();
-
-	if ( g_pGame->GetPlayer() )
-	{
-		g_pGame->GetPlayer()->UnassignShip();
-	}
 
 	Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
 	pScene->RemoveLayer( LAYER_BACKGROUND );
@@ -194,8 +179,6 @@ bool Sector::Initialise()
 		}
 	}
 
-	SelectBackground();
-
 	m_pTrailManager = new TrailManager();
 	m_pTrailManagerRep = new TrailManagerRep( m_pTrailManager );
 	m_pShipLayer->AddSceneObject( m_pTrailManagerRep );
@@ -225,199 +208,12 @@ bool Sector::Initialise()
 	m_pSpriteManager = new SpriteManager();
 	m_pAmmoLayer->AddSceneObject( m_pSpriteManager );
 
-	InitialiseComponents();
-
-	if ( GetSectorInfo()->HasShipyard() == true )
-	{
-		glm::vec3 shipyardPosition( 0.0f, 0.0f, 0.0f );
-		m_pShipyard = new Shipyard( shipyardPosition );
-		m_pShipLayer->AddSceneObject( m_pShipyard );
-
-		const ShipInfo* pTurretInfo = g_pGame->GetShipInfoManager()->Get( GetSectorInfo()->GetFaction(), "special_turret" );
-		if ( pTurretInfo != nullptr )
-		{
-			for ( int i = 0; i < 2; ++i )
-			{
-				ShipSpawnData spawnData;
-				spawnData.m_PositionX = ( i == 0 ) ? -160.0f : 230.0f;
-				spawnData.m_PositionY = 0.0f;
-
-				ShipCustomisationData customisationData;
-				customisationData.m_CaptainName = "";
-				customisationData.m_ShipName = "";
-				customisationData.m_pModuleInfoHexGrid = pTurretInfo->GetModuleInfoHexGrid();
-
-				Ship* pTurret = new Ship();
-				pTurret->SetInitialisationParameters(
-					GetSectorInfo()->GetFaction(),
-					GetRegionalFleet(),
-					customisationData,
-					spawnData,
-					pTurretInfo );
-
-				pTurret->Initialise();
-
-				AddShip( pTurret );
-			}
-		}
-	}
-
 	m_pRadar = new Radar();
 	Genesis::FrameWork::GetGuiManager()->AddElement( m_pRadar );
-
-	IntelStart();
-
-	if ( GetSectorInfo()->HasProceduralSpawning() )
-	{
-		SpawnContestingFleets();
-		SpawnRegionalFleet();
-
-		if ( SelectFixedEvent() == false )
-		{
-			SelectRandomEvent();
-		}
-
-		bool hostilesPresent = false;
-		for ( auto& pShip : m_ShipList )
-		{
-			if ( pShip->GetFaction() != g_pGame->GetFaction( FactionId::Player ) && pShip->GetFaction() != g_pGame->GetFaction( FactionId::Empire ) )
-			{
-				hostilesPresent = true;
-				break;
-			}
-		}
-
-		SelectPlaylist();
-
-		// How many waves should we create for the faction that owns this sector?
-		m_AdditionalWaves = GetSectorInfo()->HasComponentName( "ReinforcementsComponent" ) ? 0u : 1u;
-
-		const Difficulty difficulty = g_pGame->GetDifficulty();
-		const float playedTime = g_pGame->GetPlayedTime();
-		int minWaves = 2;
-		int maxWaves = 2;
-		if ( difficulty == Difficulty::Easy )
-		{
-			if ( playedTime > ( cWaveThresholdThree * 60.0f ) )
-			{
-				maxWaves = 3;
-			}
-			else if ( playedTime > ( cWaveThresholdFour * 60.0f ) )
-			{
-				maxWaves = 4;
-			}
-		}
-		else if ( difficulty == Difficulty::Normal )
-		{
-			maxWaves = 3;
-
-			if ( playedTime > ( cWaveThresholdFour * 60.0f ) )
-			{
-				maxWaves = 4;
-			}
-		}
-		else
-		{
-			minWaves = 3;
-			maxWaves = 4;
-		}
-
-		m_AdditionalWaves = gRand( minWaves, maxWaves );
-
-		// If the faction we're attacking owns bordering sectors, there's an increased
-		// chance of an extra wave.
-		if (GetSectorInfo()->GetFaction()->GetFactionId() != FactionId::Neutral)
-		{
-			float waveChance = 0.1f;
-			SectorInfoVector borderingSectors;
-			GetSectorInfo()->GetBorderingSectors( borderingSectors );
-			for ( auto& pBorderingSector : borderingSectors )
-			{
-				if ( pBorderingSector->GetFaction() == GetSectorInfo()->GetFaction() )
-				{
-					waveChance += 0.1f;
-				}
-			}
-
-			if ( waveChance > gRand() )
-			{
-				m_AdditionalWaves++;
-			}
-		}
-
-		Genesis::Core::Log::Info() << "Additional waves for this sector: " << m_AdditionalWaves;
-	}
-	else
-	{
-		SpawnContestingFleets();
-		SelectPlaylist();
-		SelectFixedEvent();
-	}
-
-	if ( GetSectorInfo()->HasStarfort() )
-	{
-		SpawnStarfort();
-	}
 
 	DamageTrackerDebugWindow::Register();
 
 	return true;
-}
-
-void Sector::InitialiseComponents()
-{
-	using namespace Genesis;
-	for ( std::string componentName : GetSectorInfo()->GetComponentNames() )
-	{
-		ComponentSharedPtr pComponent = ComponentFactory::Create( componentName );
-		if ( pComponent == nullptr )
-		{
-            Core::Log::Warning() << "Couldn't instantiate a component with the name '" << componentName << "'.";
-		}
-		else
-		{
-			pComponent->Initialise();
-			m_Components.Add( pComponent );
-		}
-	}
-}
-
-bool Sector::SelectFixedEvent()
-{
-	const ImperialRequestList& requests = g_pGame->GetRequestManager()->GetRequests();
-	for ( auto& request : requests )
-	{
-		if ( request->GoalExists( GetSectorInfo() ) )
-		{
-			request->OnPlayerEnterSector();
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void Sector::SelectRandomEvent()
-{
-	const SectorEventVector& sectorEvents = g_pGame->GetSectorEvents();
-	SectorEventVector availableSectorEvents;
-	for ( auto& pSectorEvent : sectorEvents )
-	{
-		if ( pSectorEvent->IsAvailableAt( GetSectorInfo() ) )
-		{
-			availableSectorEvents.push_back( pSectorEvent );
-		}
-	}
-
-	if ( availableSectorEvents.empty() || gRand() > RandomEventChance )
-	{
-		m_pSectorEvent = nullptr;
-	}
-	else
-	{
-		m_pSectorEvent = availableSectorEvents[ rand() % availableSectorEvents.size() ];
-		m_pSectorEvent->OnPlayerEnterSector();
-	}
 }
 
 void Sector::SelectPlaylist()
@@ -510,190 +306,18 @@ void Sector::UpdateComponents( float delta )
 
 void Sector::UpdateSectorResolution()
 {
-	// TODO: If the player is killed and there is only one faction left, that faction should claim the sector
-	if ( m_IsPlayerVictorious || GetSectorInfo()->HasProceduralSpawning() == false )
-	{
-		return;
-	}
 
-	bool hostilesPresent = false;
-	int hostilesKilled = 0;
-    int regionalShips = 0;
-    int regionalShipsKilled = 0;
-	for ( auto& pShip : m_ShipList )
-	{
-		if ( pShip->GetFaction() != g_pGame->GetFaction( FactionId::Player ) && pShip->GetFaction() != g_pGame->GetFaction( FactionId::Empire ) )
-		{
-			if ( pShip->IsDestroyed() )
-			{
-				hostilesKilled++;
-			}
-			else
-			{
-				hostilesPresent = true;
-			}
-		}
-
-        if ( pShip->GetFaction() == GetSectorInfo()->GetFaction() )
-        {
-            regionalShips++;
-
-            if ( pShip->IsDestroyed() )
-            {
-                regionalShipsKilled++;
-            }
-        }
-	}
-
-    // Once too many ships belonging to the owner of the sector have been destroyed, see if we should spawn a reinforcement wave
-    bool reinforced = false;
-    if ( regionalShips > 0 )
-    {
-        const float attritionRatio = static_cast<float>( regionalShipsKilled ) / static_cast<float>( regionalShips );
-        if ( attritionRatio >= 0.75f && m_AdditionalWaves > 0u )
-        {
-            m_AdditionalWaves--;
-
-			const int fleetPoints = (int)( (float)( gRand( 400, 600 ) + m_AdditionalWavesSpawned * 350 ) * m_pSectorInfo->GetFaction()->GetRegionalFleetStrengthMultiplier() );
-			FleetSharedPtr temporaryFleet = std::make_shared<Fleet>();
-			temporaryFleet->Initialise( m_pSectorInfo->GetFaction(), m_pSectorInfo );
-			temporaryFleet->GenerateProceduralFleet( fleetPoints );
-
-			if ( Reinforce( temporaryFleet ) )
-			{
-				m_TemporaryFleets.push_back( temporaryFleet );
-				reinforced = true;
-				m_AdditionalWavesSpawned++;
-			}
-        }
-    }
-
-	if ( reinforced == false && hostilesPresent == false )
-	{
-		m_IsPlayerVictorious = true;
-
-		bool bonusApplied = false;
-		const int conquestReward = GetSectorInfo()->GetFaction()->GetConquestReward( GetSectorInfo(), &bonusApplied );
-		if ( conquestReward > 0 )
-		{
-			Player* pPlayer = g_pGame->GetPlayer();
-			pPlayer->SetInfluence( pPlayer->GetInfluence() + conquestReward ); 
-		}
-
-		FactionId originalOwner = GetSectorInfo()->GetFaction()->GetFactionId();
-		GetSectorInfo()->ForceResolve( g_pGame->GetFaction( FactionId::Empire ) );
-
-		// The standard "All hostiles destroyed" line is only said when there are no bonuses in play as each
-		// ImperialRequisiton will have its own "success" intel line to say.
-		if ( bonusApplied == false && originalOwner != FactionId::Empire )
-		{
-			std::stringstream ss;
-
-			if ( hostilesKilled == 0 && conquestReward > 0 )
-			{
-				ss << "No hostiles present, we claim this sector for the Empire." << std::endl << std::endl << "Our influence with Imperial HQ has increased by " << conquestReward << ".";
-			}
-			else
-			{
-				ss << "All hostiles destroyed." << std::endl << std::endl << "Our influence with Imperial HQ has increased by " << conquestReward << ".";
-			}
-
-			g_pGame->AddFleetCommandIntel( ss.str() );
-
-            ContextualTips::Present( ContextualTipType::NoEnemies );
-		}
-
-		if ( GetSectorInfo()->IsHomeworld() && originalOwner != FactionId::Empire )
-		{
-			GetSectorInfo()->SetHomeworld( false );
-			g_pGame->GetFaction( originalOwner )->SetHomeworld( nullptr );
-		}
-
-		BlackboardSharedPtr pBlackboard = g_pGame->GetBlackboard();
-		if ( originalOwner == FactionId::Pirate && 
-			pBlackboard->Exists( sFirstPirateEvent ) && 
-			pBlackboard->Exists( sFirstPirateEventCompleted ) == false )
-		{
-			const int numShipyardsCaptured = pBlackboard->Get( sPirateShipyardsCaptured ) + 1;
-			pBlackboard->Add( sPirateShipyardsCaptured, numShipyardsCaptured );
-		}
-	}
 }
 
 void Sector::DeleteRemovedShips()
 {
 	for ( Ship* pShip : m_ShipsToRemove )
 	{
-		if ( g_pGame->GetPlayer() && pShip == g_pGame->GetPlayer()->GetShip() )
-			g_pGame->GetPlayer()->UnassignShip();
-
 		m_pShipLayer->RemoveSceneObject( pShip );
 		m_ShipList.remove( pShip );
 	}
 
 	m_ShipsToRemove.clear();
-}
-
-void Sector::SpawnContestingFleets()
-{
-	float spawnPointX, spawnPointY;
-	const FleetWeakPtrList& fleets = m_pSectorInfo->GetContestedFleets();
-	for ( FleetWeakPtrList::const_iterator it = fleets.cbegin(); it != fleets.cend(); ++it )
-	{
-		if ( !it->expired() )
-		{
-			FleetSharedPtr pFleet = it->lock();
-			bool validSpawn = GetFleetSpawnPosition( pFleet->GetFaction(), spawnPointX, spawnPointY );
-			SDL_assert( validSpawn );
-			FleetSpawner::Spawn( pFleet, this, nullptr, spawnPointX, spawnPointY );
-		}
-	}
-}
-
-void Sector::SpawnRegionalFleet()
-{
-	float spawnPointX, spawnPointY;
-	int numRegionalFleetPoints = (int)( (float)m_pSectorInfo->GetRegionalFleetPoints() * m_pSectorInfo->GetFaction()->GetRegionalFleetStrengthMultiplier() );
-	if ( numRegionalFleetPoints > 0 )
-	{
-		m_pRegionalFleet = std::make_shared<Fleet>();
-		m_pRegionalFleet->Initialise( m_pSectorInfo->GetFaction(), m_pSectorInfo );
-		m_pRegionalFleet->GenerateProceduralFleet( numRegionalFleetPoints);
-		
-		GetFleetSpawnPosition( m_pSectorInfo->GetFaction(), spawnPointX, spawnPointY );
-		FleetSpawner::Spawn( m_pRegionalFleet, this, nullptr, spawnPointX, spawnPointY );
-	}
-}
-
-void Sector::SpawnStarfort()
-{
-	ShipSpawnData spawnData;
-	spawnData.m_PositionX = 0.0f;
-	spawnData.m_PositionY = -600.0f;
-
-	const ShipInfo* pStarfortInfo = g_pGame->GetShipInfoManager()->Get( g_pGame->GetFaction( FactionId::Empire ), "special_starfort" );
-	if ( pStarfortInfo == nullptr )
-	{
-        Genesis::Core::Log::Error() << "Couldn't find Empire's special_starfort.";
-		return;
-	}
-
-	ShipCustomisationData customisationData;
-	customisationData.m_CaptainName = "";
-	customisationData.m_ShipName = "";
-	customisationData.m_pModuleInfoHexGrid = pStarfortInfo->GetModuleInfoHexGrid();
-
-	Ship* pStarfort = new Ship();
-	pStarfort->SetInitialisationParameters(
-		g_pGame->GetFaction( FactionId::Empire ),
-		GetRegionalFleet(),
-		customisationData,
-		spawnData,
-		pStarfortInfo );
-
-	pStarfort->Initialise();
-
-	AddShip( pStarfort );
 }
 
 bool Sector::Reinforce( FleetSharedPtr pFleet, ShipVector* pSpawnedShips /* = nullptr */ )
@@ -778,16 +402,7 @@ void Sector::RemoveShip( Ship* pShip )
 
 bool Sector::GetFleetSpawnPosition( Faction* pFleetFaction, float& x, float& y )
 {
-	// If the player's fleet is spawning and we are in an allied sector with a shipyard, then spawn next to it.
-	if ( GetSectorInfo()->HasShipyard() && 
-		 GetSectorInfo()->GetFaction()->GetFactionId() == FactionId::Empire && 
-		 pFleetFaction->GetFactionId() == FactionId::Player )
-	{
-		x = 0.0f;
-		y = -200.0f;
-		return true;
-	}
-	else if ( m_AvailableSpawnPoints.empty() )
+	if ( m_AvailableSpawnPoints.empty() )
 	{
 		return false;
 	}
@@ -831,30 +446,6 @@ void Sector::DebugDrawFleetSpawnPositions()
 	}
 }
 
-void Sector::IntelStart()
-{
-	std::stringstream ss;
-
-	if ( Faction::sIsEnemyOf( GetSectorInfo()->GetFaction(), g_pGame->GetPlayerFaction() ) )
-	{
-		ss << "Fleet entering sector " << GetSectorInfo()->GetName() << ", contact imminent.";
-	}
-	else
-	{
-		ss << "Fleet entering allied sector " << GetSectorInfo()->GetName() << ".";
-	}
-
-	g_pGame->AddIntel( GameCharacter::FleetIntelligence, ss.str(), false );
-
-    ContextualTips::Present( ContextualTipType::EnterSector1 );
-    ContextualTips::Present( ContextualTipType::EnterSector2 );
-
-    if ( GetSectorInfo()->HasShipyard() )
-    {
-        ContextualTips::Present( ContextualTipType::Shipyard );
-    }
-}
-
 void Sector::SetTowerBonus( Faction* pFaction, TowerBonus bonus, float bonusMagnitude )
 {
 	int idx = static_cast<int>( pFaction->GetFactionId() );
@@ -888,18 +479,6 @@ void Sector::GetTowerBonus( Faction* pFaction, TowerBonus* pBonus, float* pBonus
 		{
 			*pBonusMagnitude = m_TowerBonusMagnitude[ idx ];
 		}
-	}
-}
-
-void Sector::SelectBackground()
-{
-    const glm::ivec2& coordinates = GetSectorInfo()->GetCoordinates();
-    const unsigned int seed = coordinates.x + coordinates.x * coordinates.y;
-    StarInfo* pStarInfo = nullptr; 
-	if ( m_pSectorInfo->HasStar() )
-	{
-		pStarInfo = new StarInfo( seed * seed );
-		pStarInfo->PrintOut();
 	}
 }
 

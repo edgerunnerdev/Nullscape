@@ -31,7 +31,6 @@
 #include <log.hpp>
 
 #include "menus/popup.h"
-#include "sector/galaxy.h"
 #include "hexterminate.h"
 #include "player.h"
 #include "savegameheader.h"
@@ -363,11 +362,8 @@ void SaveGameStorage::CreateSaveGameData( tinyxml2::XMLDocument& xmlDoc, bool ki
 
 	bool result = true;
 	Xml::Write( xmlDoc, pRootElement, "Alive", !killSave );
-	Xml::Write( xmlDoc, pRootElement, "Difficulty", ToString( g_pGame->GetDifficulty() ) );
-	Xml::Write( xmlDoc, pRootElement, "GameMode", ToString( g_pGame->GetGameMode() ) );
 	result &= g_pGame->GetPlayer()->Write( xmlDoc, pRootElement );
 	result &= g_pGame->GetBlackboard()->Write( xmlDoc, pRootElement );
-	result &= g_pGame->GetGalaxy()->Write( xmlDoc, pRootElement );
 
 	XMLElement* pFactionsElement = xmlDoc.NewElement( "Factions" );
 	pRootElement->LinkEndChild( pFactionsElement );

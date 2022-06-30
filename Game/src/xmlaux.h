@@ -34,8 +34,6 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hypersc
 bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::WeaponBehaviour& value );
 bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::TowerBonus& value );
 bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::FleetState& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::Difficulty& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::GameMode& value );
 
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, const std::string& content );
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, int content );

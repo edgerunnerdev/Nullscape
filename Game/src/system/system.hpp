@@ -23,6 +23,12 @@
 #include <string>
 #include <vector>
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec2.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <scene/layer.h>
 
 #include "system/system.fwd.hpp"
@@ -32,19 +38,22 @@ namespace Hyperscape
 
 GENESIS_DECLARE_SMART_PTR(AstronomicalObject);
 GENESIS_DECLARE_SMART_PTR(Background);
+GENESIS_DECLARE_SMART_PTR(Sector);
 
 using AstronomicalObjects = std::vector<AstronomicalObjectUniquePtr>;
 
 class System
 {
 public:
-	System(const std::string& seed);
+	System(const std::string& seed, bool demoMode = false);
 	~System();
 
     const std::string& GetSeed() const;
     SystemRandomEngine& GetRandomEngine();
 
     const AstronomicalObjects& GetAstronomicalObjects() const;
+    glm::ivec2 GetNumSectors() const;
+    SectorSharedPtr EnterSector(const glm::ivec2& coordinates);
 
 private:
     enum class LayerId
@@ -68,6 +77,7 @@ private:
 	Genesis::LayerSharedPtr GetLayer(LayerId id) const;
 
 	std::string m_Seed;
+    bool m_DemoMode;
     SystemRandomEngine m_RandomEngine;
 
 	std::array<Genesis::LayerSharedPtr, static_cast<size_t>(LayerId::Count)> m_Layers;
@@ -75,6 +85,10 @@ private:
 	BackgroundUniquePtr m_pBackground;
 
     AstronomicalObjects m_AstronomicalObjects;
+
+    static const int sSectorsX = 31;
+    static const int sSectorsY = 31;
+    std::array<std::array<SectorSharedPtr, sSectorsY>, sSectorsX> m_Sectors;
 };
 
 }
