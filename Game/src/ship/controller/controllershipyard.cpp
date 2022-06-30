@@ -42,11 +42,11 @@ m_LerpTimer( 0.0f )
 	pRigidBody->SetLinearVelocity( glm::vec3( 0.0f, 0.0f, 0.0f ) );
 	pRigidBody->SetAngularVelocity( glm::vec3( 0.0f, 0.0f, 0.0f ) );
 
-	Sector* pSector = g_pGame->GetCurrentSector();
-	SDL_assert( pSector != nullptr );
-	Shipyard* pShipyard = pSector->GetShipyard();
-	SDL_assert( pShipyard != nullptr );
-	m_StartPosition = pShipyard->GetPosition() - glm::vec3( 0.0f, 400.0f, 0.0f );
+	//Sector* pSector = g_pGame->GetCurrentSector();
+	//SDL_assert( pSector != nullptr );
+	//Shipyard* pShipyard = pSector->GetShipyard();
+	//SDL_assert( pShipyard != nullptr );
+	//m_StartPosition = pShipyard->GetPosition() - glm::vec3( 0.0f, 400.0f, 0.0f );
 }
 
 ControllerShipyard::~ControllerShipyard()
@@ -56,39 +56,39 @@ ControllerShipyard::~ControllerShipyard()
 
 void ControllerShipyard::Update( float delta )
 {
-	Sector* pSector = g_pGame->GetCurrentSector();
-	SDL_assert( pSector != nullptr );
-	Shipyard* pShipyard = pSector->GetShipyard();
-	SDL_assert( pShipyard != nullptr );
+	//Sector* pSector = g_pGame->GetCurrentSector();
+	//SDL_assert( pSector != nullptr );
+	//Shipyard* pShipyard = pSector->GetShipyard();
+	//SDL_assert( pShipyard != nullptr );
 
-	DockingState dockingState = GetShip()->GetDockingState();
-	if ( dockingState == DockingState::Docking )
-	{
-		m_LerpTimer += delta;
-		float t = m_LerpTimer / m_LerpDuration;
-		if ( t > 1.0f )
-		{
-			t = 1.0f;
-			GetShip()->NotifyDockingFinished();
-		}
+	//DockingState dockingState = GetShip()->GetDockingState();
+	//if ( dockingState == DockingState::Docking )
+	//{
+	//	m_LerpTimer += delta;
+	//	float t = m_LerpTimer / m_LerpDuration;
+	//	if ( t > 1.0f )
+	//	{
+	//		t = 1.0f;
+	//		GetShip()->NotifyDockingFinished();
+	//	}
 
-		float f = std::pow(t - 1.0f, 3.0f) + 1.0f;
+	//	float f = std::pow(t - 1.0f, 3.0f) + 1.0f;
 
-		glm::vec3 shipPosition = glm::mix( m_StartPosition, pShipyard->GetPosition(), f );
-		
-		if ( GetShip() != nullptr && GetShip()->GetRigidBody() != nullptr )
-		{
-			GetShip()->GetRigidBody()->SetWorldTransform( glm::translate( shipPosition ) );
-		}
-	}
-	else if ( dockingState == DockingState::Docked && GetShip()->IsModuleEditLocked() )
-	{
-		Genesis::InputManager* pInputManager = Genesis::FrameWork::GetInputManager();
-		if ( pInputManager->IsButtonPressed( SDL_SCANCODE_ESCAPE ) )
-		{
-			pShipyard->Undock();
-		}
-	}
+	//	glm::vec3 shipPosition = glm::mix( m_StartPosition, pShipyard->GetPosition(), f );
+	//	
+	//	if ( GetShip() != nullptr && GetShip()->GetRigidBody() != nullptr )
+	//	{
+	//		GetShip()->GetRigidBody()->SetWorldTransform( glm::translate( shipPosition ) );
+	//	}
+	//}
+	//else if ( dockingState == DockingState::Docked && GetShip()->IsModuleEditLocked() )
+	//{
+	//	Genesis::InputManager* pInputManager = Genesis::FrameWork::GetInputManager();
+	//	if ( pInputManager->IsButtonPressed( SDL_SCANCODE_ESCAPE ) )
+	//	{
+	//		pShipyard->Undock();
+	//	}
+	//}
 }
 
 }

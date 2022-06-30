@@ -39,8 +39,8 @@ bool ParticleSort( const Particle* pA, const Particle* pB )
 ParticleManagerRep::ParticleManagerRep( ParticleManager* pParticleManager ):
 m_pParticleManager( pParticleManager )
 {
-	m_pPass[ 0 ] = new ParticlePass( Genesis::BlendMode::Add, "textured_vertex_coloured", true );
-	m_pPass[ 1 ] = new ParticlePass( Genesis::BlendMode::Blend, "textured_vertex_coloured", false );
+	m_pPass[ 0 ] = new ParticlePass( Genesis::BlendMode::Add, "data/shaders/textured_vertex_coloured.glsl", true );
+	m_pPass[ 1 ] = new ParticlePass( Genesis::BlendMode::Blend, "data/shaders/textured_vertex_coloured.glsl", false );
 }
 
 ParticleManagerRep::~ParticleManagerRep()

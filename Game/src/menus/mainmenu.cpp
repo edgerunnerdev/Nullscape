@@ -124,7 +124,7 @@ void MainMenu::CreateCharacterImage()
 void MainMenu::CreateVersionText()
 {
 	std::stringstream versionText;
-	versionText << "Build " << HEXTERMINATE_BUILD;
+	versionText << "Build " << HYPERSCAPE_BUILD;
 	Genesis::ResourceFont* pFont = UI::Fonts::Get( "kimberley18.fnt" );
 	const float width = pFont->GetTextLength( versionText.str() ); 
 	const float height = pFont->GetLineHeight();

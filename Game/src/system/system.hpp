@@ -38,9 +38,21 @@ namespace Hyperscape
 
 GENESIS_DECLARE_SMART_PTR(AstronomicalObject);
 GENESIS_DECLARE_SMART_PTR(Background);
+GENESIS_DECLARE_SMART_PTR(Player);
 GENESIS_DECLARE_SMART_PTR(Sector);
 
 using AstronomicalObjects = std::vector<AstronomicalObjectUniquePtr>;
+
+enum class LayerId
+{
+    Background = 0,
+    Ships,
+    Effects,
+    Ammo,
+    Physics,
+
+    Count
+};
 
 class System
 {
@@ -48,25 +60,20 @@ public:
 	System(const std::string& seed, bool demoMode = false);
 	~System();
 
+    void Update(float delta);
+
     const std::string& GetSeed() const;
     SystemRandomEngine& GetRandomEngine();
 
     const AstronomicalObjects& GetAstronomicalObjects() const;
     glm::ivec2 GetNumSectors() const;
-    SectorSharedPtr EnterSector(const glm::ivec2& coordinates);
 
-private:
-    enum class LayerId
-    {
-        Background = 0,
-        Ships,
-        Effects,
-        Ammo,
-        Physics,
+    void JumpTo(PlayerSharedPtr pPlayer, const glm::ivec2& coordinates);
+    Sector* GetCurrentSector();
 
-        Count
-    };
-    
+    Genesis::Layer* GetLayer(LayerId id) const;
+
+private:  
     void InitializeRandomEngine();
     void InitializeLayers();
     void InitializeBackground();
@@ -74,21 +81,18 @@ private:
     float GenerateEccentricity();
     int GeneratePlanetCount();
     std::vector<float> GeneratePlanetDistances(int planetCount);
-	Genesis::LayerSharedPtr GetLayer(LayerId id) const;
 
 	std::string m_Seed;
     bool m_DemoMode;
     SystemRandomEngine m_RandomEngine;
-
-	std::array<Genesis::LayerSharedPtr, static_cast<size_t>(LayerId::Count)> m_Layers;
-
+    std::array<Genesis::LayerSharedPtr, static_cast<size_t>(LayerId::Count)> m_Layers;
 	BackgroundUniquePtr m_pBackground;
 
     AstronomicalObjects m_AstronomicalObjects;
 
     static const int sSectorsX = 31;
     static const int sSectorsY = 31;
-    std::array<std::array<SectorSharedPtr, sSectorsY>, sSectorsX> m_Sectors;
+    SectorUniquePtr m_pCurrentSector;
 };
 
 }

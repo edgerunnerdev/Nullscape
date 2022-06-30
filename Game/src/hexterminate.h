@@ -37,7 +37,7 @@
 #include "menus/musictitle.h"
 #include "ship/ship.h"
 
-static const int HEXTERMINATE_BUILD = 19;
+static const std::string HYPERSCAPE_BUILD("0.0.1");
 
 namespace Genesis
 {
@@ -79,7 +79,6 @@ class ShipInfoManager;
 class MainMenu;
 class Console;
 class AudioDebug;
-class Player;
 class Hotbar;
 class IntelWindow;
 class Galaxy;
@@ -95,6 +94,7 @@ class AchievementsManager;
 class SaveGameStorage;
 class ShipOutline;
 
+GENESIS_DECLARE_SMART_PTR(Player);
 GENESIS_DECLARE_SMART_PTR(System);
 GENESIS_DECLARE_SMART_PTR(SystemViewer);
 GENESIS_DECLARE_SMART_PTR(SaveGameHeader);
@@ -146,7 +146,7 @@ public:
     Faction* GetFaction(const std::string& name) const;
     Faction* GetFaction(FactionId faction) const;
     Faction* GetPlayerFaction() const;
-    Player* GetPlayer() const;
+    PlayerSharedPtr GetPlayer() const;
     FleetWeakPtr GetPlayerFleet() const;
     Galaxy* GetGalaxy() const;
     IntelWindow* GetIntelWindow() const;
@@ -192,8 +192,6 @@ public:
     UI::RootElement* GetUIRoot() const;
 
 private:
-    void SetupFactions();
-    void SetupNewGameTutorial();
     void LoadResourcesAsync();
     void LoaderThreadMain();
     void EndGameAux();
@@ -205,8 +203,7 @@ private:
     AudioDebug* m_pAudioDebug;
     ModuleInfoManager* m_pModuleInfoManager;
     ShipInfoManager* m_pShipInfoManager;
-    Sector* m_pSector;
-    Player* m_pPlayer;
+    PlayerSharedPtr m_pPlayer;
     SystemSharedPtr m_pSystem;
     SystemViewerUniquePtr m_pSystemViewer;
     MusicTitle* m_pMusicTitle;
@@ -256,11 +253,6 @@ inline Genesis::Physics::Simulation* Game::GetPhysicsSimulation() const
     return m_pPhysicsSimulation;
 }
 
-inline Sector* Game::GetCurrentSector() const
-{
-    return m_pSector;
-}
-
 inline ModuleInfoManager* Game::GetModuleInfoManager() const
 {
     return m_pModuleInfoManager;
@@ -281,7 +273,7 @@ inline ShipOutline* Game::GetShipOutline() const
     return m_pShipOutline.get();
 }
 
-inline Player* Game::GetPlayer() const
+inline PlayerSharedPtr Game::GetPlayer() const
 {
     return m_pPlayer;
 }

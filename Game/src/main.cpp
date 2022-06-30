@@ -101,7 +101,6 @@ Game::Game():
 m_pMainMenu( nullptr ),
 m_pConsole( nullptr ),
 m_pAudioDebug( nullptr ),
-m_pSector( nullptr ),
 m_pPlayer( nullptr ),
 m_pMusicTitle( nullptr ),
 m_pTutorialWindow( nullptr ),
@@ -148,7 +147,6 @@ Game::~Game()
 {
 	ShaderTweaksDebugWindow::Unregister();
 
-	delete m_pSector;
 	delete m_pTutorialWindow;
 	delete m_pConsole;
 	delete m_pAudioDebug;
@@ -190,14 +188,13 @@ void Game::Initialise()
 	Random::Initialise();
 	RandomShuffle::Initialise();
 
-	Genesis::Core::Log::Info() << "HEXTERMINATE build " << HEXTERMINATE_BUILD;
+	Genesis::Core::Log::Info() << "Hyperscape build " << HYPERSCAPE_BUILD;
 
 	m_pLoadingScreen = LoadingScreenUniquePtr( new LoadingScreen );
 	m_pBlackboard = std::make_shared<Blackboard>();
 	m_pModuleInfoManager = new ModuleInfoManager();
 	m_pShipInfoManager = new ShipInfoManager();
 
-	SetupFactions();
 	m_pShipInfoManager->Initialise();
 
 	m_pPhysicsSimulation = new Genesis::Physics::Simulation();
@@ -352,9 +349,9 @@ Genesis::TaskStatus Game::Update( float delta )
 		m_pMusicTitle->Update( delta );
 	}
 
-	if ( m_pSector )
+	if ( m_pSystem )
 	{
-		m_pSector->Update( delta );
+		m_pSystem->Update(delta);
 	}
 
 	if ( m_pIntelWindow )
@@ -411,7 +408,7 @@ void Game::StartNewGame(const ShipCustomisationData& customisationData)
 {
 	SDL_assert( GetPlayer() == nullptr );
 
-	m_pPlayer = new Player(customisationData);
+	m_pPlayer = std::make_shared<Player>(customisationData);
 	m_pMainMenu->Show(false);
 
 	SetPlayedTime( 0.0f );
@@ -419,6 +416,8 @@ void Game::StartNewGame(const ShipCustomisationData& customisationData)
 	m_pSystem = nullptr;
 	m_pSystem = std::make_shared<System>("17260877307600676");
     m_pSystemViewer->View(m_pSystem);
+
+	m_pSystem->JumpTo(m_pPlayer, {0, 0});
 
     SetState(GameState::Combat);
 }
@@ -439,27 +438,12 @@ void Game::EndGameAux()
 		m_pIntelWindow->Clear();
 	}
 
-	SetupFactions(); // Recreate the factions to clear all stored data regarding fleets / sectors
-
-	delete m_pPlayer;
 	m_pPlayer = nullptr;
 
 	m_pMainMenu->Show( true );
     m_pMainMenu->SetOption( MainMenuOption::NewGame );
 
 	SetState( GameState::Menu );
-}
-
-void Game::SetupNewGameTutorial()
-{
-	if ( m_pTutorialWindow == nullptr )
-	{
-		m_pTutorialWindow = new TutorialWindow();
-	}
-	else
-	{
-		m_pTutorialWindow->Clear();
-	}
 }
 
 void Game::KillSaveGame()
@@ -520,7 +504,7 @@ void Game::LoadGameAux()
 			const std::string value( pElem->Value() );
 			if ( value == "Player" )
 			{
-				m_pPlayer = new Player();
+				m_pPlayer = std::make_shared<Player>();
 				hasErrors = ( m_pPlayer->Read( pElem ) == false );
 				break;
 			}
@@ -535,7 +519,7 @@ void Game::LoadGameAux()
 	}
 	else
 	{
-		delete m_pPlayer;
+		m_pPlayer = nullptr;
 		RaiseInteractiveWarning( "Invalid save file." );
 	}
 
@@ -617,11 +601,6 @@ void Game::LoadToState( GameState state )
 {
 	m_pLoadingScreen->Show( true );
 	m_LoadToState = state;
-}
-
-void Game::SetupFactions()
-{
-
 }
 
 Faction* Game::GetFaction( const std::string& name ) const
@@ -802,6 +781,11 @@ void Game::Unpause()
 BlackboardSharedPtr Game::GetBlackboard() 
 {
 	return m_pBlackboard;
+}
+
+Sector* Game::GetCurrentSector() const
+{
+    return m_pSystem ? m_pSystem->GetCurrentSector() : nullptr;
 }
 
 

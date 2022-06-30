@@ -207,7 +207,7 @@ void IntelWindow::Update( float delta )
 
 void IntelWindow::AddFragment( const IntelFragment& fragment )
 {
-	Player* pPlayer = g_pGame->GetPlayer();
+	PlayerSharedPtr pPlayer = g_pGame->GetPlayer();
 	if ( pPlayer != nullptr && pPlayer->GetShip() != nullptr && pPlayer->GetShip()->IsDestroyed() )
 	{
 		return;

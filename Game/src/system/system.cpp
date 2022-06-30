@@ -57,6 +57,14 @@ System::~System()
     }
 }
 
+void System::Update(float delta) 
+{
+    if (m_pCurrentSector)
+    {
+        m_pCurrentSector->Update(delta);
+    }
+}
+
 const std::string& System::GetSeed() const 
 {
     return m_Seed;
@@ -77,20 +85,26 @@ glm::ivec2 System::GetNumSectors() const
     return glm::ivec2(sSectorsX, sSectorsY);
 }
 
-SectorSharedPtr System::EnterSector(const glm::ivec2& coordinates) 
+void System::JumpTo(PlayerSharedPtr pPlayer, const glm::ivec2& coordinates) 
 {
     if (coordinates.x < 0 || coordinates.x >= sSectorsX || coordinates.y < 0 || coordinates.y > sSectorsY)
     {
-        return nullptr;
+        return;
     }
 
-    if (m_Sectors[coordinates.x][coordinates.y] == nullptr)
+    if (m_pCurrentSector != nullptr)
     {
-        SectorInfo* si = new SectorInfo(coordinates.x, coordinates.y);
-        m_Sectors[coordinates.x][coordinates.y] = std::make_shared<Sector>(si);
+        SDL_assert(false); // TODO
     }
 
-    return m_Sectors[coordinates.x][coordinates.y];
+    m_pCurrentSector = std::make_unique<Sector>(this, coordinates);
+    bool res = m_pCurrentSector->Initialize();
+    SDL_assert(res);
+}
+
+Sector* System::GetCurrentSector() 
+{
+    return m_pCurrentSector.get();
 }
 
 void System::InitializeRandomEngine() 
@@ -99,7 +113,7 @@ void System::InitializeRandomEngine()
     m_RandomEngine = SystemRandomEngine(seedHash);
 }
 
-void System::InitializeLayers() 
+void System::InitializeLayers()
 {
     Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
     m_Layers[static_cast<size_t>(LayerId::Background)] = pScene->AddLayer(1, true);
@@ -197,9 +211,9 @@ std::vector<float> System::GeneratePlanetDistances(int planetCount)
     return distances;
 }
 
-Genesis::LayerSharedPtr System::GetLayer(LayerId id) const 
+Genesis::Layer* System::GetLayer(LayerId id) const
 {
-    return m_Layers[static_cast<size_t>(id)];
+    return m_Layers[static_cast<size_t>(id)].get();
 }
 
 } // namespace Hyperscape

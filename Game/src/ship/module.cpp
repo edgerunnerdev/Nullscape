@@ -178,17 +178,6 @@ void Module::ApplyDamage( float amount, DamageType damageType, Ship* pDealtBy )
         TriggerEMP();
     }
 
-	if ( damageType == DamageType::Collision )
-	{
-		TowerBonus bonus;
-		float magnitude;
-		g_pGame->GetCurrentSector()->GetTowerBonus( GetOwner()->GetFaction(), &bonus, &magnitude );
-		if ( bonus == TowerBonus::Ramming )
-		{
-			amount *= magnitude;
-		}
-	}
-
 	m_Health = gMax( 0.0f, m_Health - amount );
 
 	if ( m_Health <= 0.0f )
@@ -984,32 +973,14 @@ void TowerModule::OnDamageEffect()
 // this feature as only flagships have bonused bridges and each faction only has a single flagship in play at any time.
 void TowerModule::AddBonus()
 {
-	TowerInfo* pTowerInfo = static_cast<TowerInfo*>( GetModuleInfo() );
-	Sector* pCurrentSector = g_pGame->GetCurrentSector();
 
-	TowerBonus currentSectorBonus = TowerBonus::None;
-	float currentSectorBonusMagnitude = 0.0f;
-	pCurrentSector->GetTowerBonus( GetOwner()->GetFaction(), &currentSectorBonus, &currentSectorBonusMagnitude );
-
-	if ( currentSectorBonus == TowerBonus::None && pTowerInfo->GetBonusType() != TowerBonus::None )
-	{
-		pCurrentSector->SetTowerBonus( GetOwner()->GetFaction(), pTowerInfo->GetBonusType(), pTowerInfo->GetBonusMagnitude() );
-	}
-	else if ( currentSectorBonus != TowerBonus::None && currentSectorBonusMagnitude < pTowerInfo->GetBonusMagnitude() )
-	{
-		pCurrentSector->SetTowerBonus( GetOwner()->GetFaction(), pTowerInfo->GetBonusType(), pTowerInfo->GetBonusMagnitude() );
-	}
 }
 
 // When the bridge is destroyed, if it has a bonus then it needs to be removed from the sector. 
 // Read comment above in AddBonus()
 void TowerModule::RemoveBonus()
 {
-	TowerInfo* pTowerInfo = static_cast<TowerInfo*>( GetModuleInfo() );
-	if ( pTowerInfo->GetBonusType() != TowerBonus::None )
-	{
-		g_pGame->GetCurrentSector()->SetTowerBonus( GetOwner()->GetFaction(), TowerBonus::None, 0.0f );
-	}
+
 }
 
 const glm::vec4 TowerModule::GetOverlayColour( Ship* pShip ) const

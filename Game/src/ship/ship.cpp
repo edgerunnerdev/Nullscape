@@ -732,14 +732,6 @@ void Ship::UpdateEngines(float delta)
             enginePowerMultiplier *= 1.1f;
         }
 
-        TowerBonus towerBonus = TowerBonus::None;
-        float towerBonusMagnitude = 0.0f;
-        g_pGame->GetCurrentSector()->GetTowerBonus(GetFaction(), &towerBonus, &towerBonusMagnitude);
-        if (towerBonus == TowerBonus::Movement)
-        {
-            enginePowerMultiplier *= towerBonusMagnitude;
-        }
-
         if (AreEnginesDisrupted())
         {
             torque *= 0.5f;
@@ -1134,15 +1126,6 @@ bool Ship::DamageShared(WeaponSystem weaponSystem, float baseDamage, int burst, 
     if (weaponSystem == WeaponSystem::Lance || weaponSystem == WeaponSystem::Ion)
     {
         *pFrameDamage *= delta;
-    }
-
-    TowerBonus towerBonus = TowerBonus::None;
-    float towerBonusMagnitude = 0.0f;
-    g_pGame->GetCurrentSector()->GetTowerBonus(pDealtByFaction, &towerBonus, &towerBonusMagnitude);
-    if (towerBonus == TowerBonus::Damage)
-    {
-        *pDisplayDamage *= towerBonusMagnitude;
-        *pFrameDamage *= towerBonusMagnitude;
     }
 
     m_pDamageTracker->AddDamage(pDealtByFaction->GetFactionId(), *pFrameDamage);

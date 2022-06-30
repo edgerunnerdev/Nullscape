@@ -187,22 +187,22 @@ void ControllerPlayer::Update( float delta )
 		i++;
 	}
 
-	Sector* pSector = g_pGame->GetCurrentSector();
-	if ( pSector != nullptr )
-	{
-		Shipyard* pShipyard = pSector->GetShipyard();
-		if ( pShipyard != nullptr )
-		{
-			float distanceToShipyard = glm::distance( pShipyard->GetPosition(), GetShip()->GetTowerPosition() );
-			if ( distanceToShipyard <= pShipyard->GetDockingRange() )
-			{
-				if ( pInputManager->IsButtonPressed( SDL_SCANCODE_F ) )
-				{
-					pSector->GetShipyard()->Dock( GetShip() );
-				}
-			}
-		}
-	}
+	//Sector* pSector = g_pGame->GetCurrentSector();
+	//if ( pSector != nullptr )
+	//{
+	//	Shipyard* pShipyard = pSector->GetShipyard();
+	//	if ( pShipyard != nullptr )
+	//	{
+	//		float distanceToShipyard = glm::distance( pShipyard->GetPosition(), GetShip()->GetTowerPosition() );
+	//		if ( distanceToShipyard <= pShipyard->GetDockingRange() )
+	//		{
+	//			if ( pInputManager->IsButtonPressed( SDL_SCANCODE_F ) )
+	//			{
+	//				pSector->GetShipyard()->Dock( GetShip() );
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void ControllerPlayer::OnForwardAction()

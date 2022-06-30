@@ -42,7 +42,7 @@ m_pVertexBuffer( nullptr ),
 m_NumVertices( 0 )
 {
     using namespace Genesis;
-    ResourceImage* pTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/models/misc/trail/trail.png");
+    ResourceImage* pTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/images/trail.png");
 
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
     m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/trail.glsl");

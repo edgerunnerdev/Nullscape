@@ -53,12 +53,12 @@
 #include "ship/damagetracker.h"
 #include "ship/hyperspacecore.h"
 #include "shipyard/shipyard.h"
+#include "system/system.hpp"
 #include "fleet/fleet.h"
 #include "fleet/fleetcommand.h"
 #include "fleet/fleetspawner.h"
 #include "menus/intelwindow.h"
 #include "menus/deathmenu.h"
-#include "menus/fleetstatus.h"
 #include "trail/trailmanager.h"
 #include "trail/trailmanagerrep.h"
 #include "particles/particlemanager.h"
@@ -77,8 +77,9 @@ namespace Hyperscape
 // Sector
 ///////////////////////////////////////////////////////////////////////////////
 
-Sector::Sector( SectorInfo* pSectorInfo ):
-m_pSectorInfo( pSectorInfo ),
+Sector::Sector(System* pSystem, const glm::ivec2& coordinates):
+	m_pSystem(pSystem),
+	m_Coordinates(coordinates),
 m_pDust( nullptr ),
 m_pBoundary( nullptr ),
 m_pAmmoManager( nullptr ),
@@ -94,15 +95,6 @@ m_pLootWindow( nullptr ),
 m_AdditionalWaves( 0u ),
 m_AdditionalWavesSpawned( 0u )
 {
-	SDL_assert( pSectorInfo != nullptr );
-
-	Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
-	m_pBackgroundLayer = pScene->AddLayer( LAYER_BACKGROUND, true );
-	m_pShipLayer = pScene->AddLayer( LAYER_SHIP );
-	m_pFxLayer = pScene->AddLayer( LAYER_FX );
-	m_pAmmoLayer = pScene->AddLayer( LAYER_AMMO );
-	m_pPhysicsLayer = pScene->AddLayer( LAYER_PHYSICS );
-
 	m_pCamera = new SectorCamera();
 
 	m_pHyperspaceMenu = new HyperspaceMenu();
@@ -110,7 +102,6 @@ m_AdditionalWavesSpawned( 0u )
 	m_pLootWindow = new LootWindow();
 
 	m_pHotbar = std::make_unique< Hotbar >();
-	m_pFleetStatus = std::make_unique< FleetStatus >();
 
 	for ( int i = 0; i < (int)FactionId::Count; ++i )
 	{
@@ -126,13 +117,6 @@ m_AdditionalWavesSpawned( 0u )
 Sector::~Sector()
 {
 	DamageTrackerDebugWindow::Unregister();
-
-	Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
-	pScene->RemoveLayer( LAYER_BACKGROUND );
-	pScene->RemoveLayer( LAYER_SHIP );
-	pScene->RemoveLayer( LAYER_FX );
-	pScene->RemoveLayer( LAYER_AMMO );
-	pScene->RemoveLayer( LAYER_PHYSICS );
 
 	delete m_pCamera;
 	delete m_pHyperspaceMenu;
@@ -166,7 +150,7 @@ Sector::~Sector()
 	g_pGame->SetCursorType( CursorType::Pointer );
 }
 
-bool Sector::Initialise()
+bool Sector::Initialize()
 {
 	// Setup the spawn points
 	// This is effectively a 3x3 grid
@@ -181,32 +165,32 @@ bool Sector::Initialise()
 
 	m_pTrailManager = new TrailManager();
 	m_pTrailManagerRep = new TrailManagerRep( m_pTrailManager );
-	m_pShipLayer->AddSceneObject( m_pTrailManagerRep );
+	m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject( m_pTrailManagerRep );
 
 	m_pParticleManager = new ParticleManager();
 	m_pParticleManagerRep = new ParticleManagerRep( m_pParticleManager );
-	m_pFxLayer->AddSceneObject( m_pParticleManagerRep );
+	m_pSystem->GetLayer(LayerId::Effects)->AddSceneObject( m_pParticleManagerRep );
 
 	m_pMuzzleflashManager = new MuzzleflashManager();
 	m_pMuzzleflashManagerRep = new MuzzleflashManagerRep( m_pMuzzleflashManager );
-	m_pShipLayer->AddSceneObject( m_pMuzzleflashManagerRep );
+	m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject( m_pMuzzleflashManagerRep );
 
 	m_pDust = new Dust();
-	m_pShipLayer->AddSceneObject( m_pDust );
+	m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject( m_pDust );
 
 	m_pBoundary = new Boundary();
-	m_pShipLayer->AddSceneObject( m_pBoundary );
+	m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject( m_pBoundary );
 
-	m_pPhysicsLayer->AddSceneObject( Genesis::FrameWork::GetDebugRender(), false );
+	m_pSystem->GetLayer(LayerId::Physics)->AddSceneObject( Genesis::FrameWork::GetDebugRender(), false );
 
 	m_pAmmoManager = new AmmoManager();
-	m_pAmmoLayer->AddSceneObject( m_pAmmoManager );
+	m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject( m_pAmmoManager );
 
 	m_pLaserManager = new LaserManager();
-	m_pAmmoLayer->AddSceneObject( m_pLaserManager );
+	m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject( m_pLaserManager );
 
 	m_pSpriteManager = new SpriteManager();
-	m_pAmmoLayer->AddSceneObject( m_pSpriteManager );
+	m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject( m_pSpriteManager );
 
 	m_pRadar = new Radar();
 	Genesis::FrameWork::GetGuiManager()->AddElement( m_pRadar );
@@ -251,16 +235,6 @@ void Sector::Update( float delta )
 	m_pCamera->Update( delta );
 	m_pLootWindow->Update( delta );
 
-	if ( m_pHotbar != nullptr )
-	{
-		m_pHotbar->Update( delta );
-	}
-
-	if ( m_pFleetStatus != nullptr )
-	{
-		m_pFleetStatus->Update();
-	}
-
 	DeleteRemovedShips();
 	
 	if ( m_pShipTweaks->GetDrawFleetSpawnPositions() )
@@ -284,9 +258,6 @@ void Sector::Update( float delta )
 	m_pHyperspaceMenu->Update( delta );
 	m_pDeathMenu->Update( delta );
 
-	UpdateComponents( delta );
-	UpdateSectorResolution();
-
 	for ( auto& pFleetCommand : m_FleetCommands )
 	{
 		pFleetCommand->Update();
@@ -295,25 +266,11 @@ void Sector::Update( float delta )
 	DamageTrackerDebugWindow::Update();
 }
 
-void Sector::UpdateComponents( float delta )
-{
-	using namespace Genesis;
-	for ( auto& pComponentPair : m_Components )
-	{
-		pComponentPair.second->Update( delta );
-	}
-}
-
-void Sector::UpdateSectorResolution()
-{
-
-}
-
 void Sector::DeleteRemovedShips()
 {
 	for ( Ship* pShip : m_ShipsToRemove )
 	{
-		m_pShipLayer->RemoveSceneObject( pShip );
+		m_pSystem->GetLayer(LayerId::Ships)->RemoveSceneObject( pShip );
 		m_ShipList.remove( pShip );
 	}
 
@@ -352,7 +309,7 @@ bool Sector::Reinforce( FleetSharedPtr pFleet, ShipVector* pSpawnedShips /* = nu
 void Sector::AddShip( Ship* pShip )
 {
 	m_ShipList.push_back( pShip );
-	m_pShipLayer->AddSceneObject( pShip, true ); 
+	m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject( pShip, true ); 
 
 	// If non-Imperial ships arrive after victory, then the victory has to be rescinded
 	if ( m_IsPlayerVictorious && pShip->GetFaction() != g_pGame->GetFaction( FactionId::Empire ) )
@@ -446,55 +403,8 @@ void Sector::DebugDrawFleetSpawnPositions()
 	}
 }
 
-void Sector::SetTowerBonus( Faction* pFaction, TowerBonus bonus, float bonusMagnitude )
-{
-	int idx = static_cast<int>( pFaction->GetFactionId() );
-	m_TowerBonus[ idx ] = bonus;
-	m_TowerBonusMagnitude[ idx ] = bonusMagnitude;
-}
-	
-void Sector::GetTowerBonus( Faction* pFaction, TowerBonus* pBonus, float* pBonusMagnitude ) const
-{
-	if ( pFaction == nullptr )
-	{
-		if ( pBonus != nullptr )
-		{
-			*pBonus = TowerBonus::None;
-		}
-		
-		if ( pBonusMagnitude != nullptr )
-		{
-			*pBonusMagnitude = 0.0f;
-		}
-	}
-	else 
-	{
-		int idx = static_cast<int>( pFaction->GetFactionId() );
-		if ( pBonus != nullptr )
-		{
-			*pBonus = m_TowerBonus[ idx ];
-		}
-
-		if ( pBonusMagnitude != nullptr )
-		{
-			*pBonusMagnitude = m_TowerBonusMagnitude[ idx ];
-		}
-	}
-}
-
 void Sector::AddFleetCommand( FleetCommandUniquePtr pFleetCommand )
 {
-	// Hook into the Fleet Status table when the player fleet is added.
-	if ( pFleetCommand->GetLeader()->GetFaction()->GetFactionId() == FactionId::Player )
-	{
-		m_pFleetStatus->AddShip( pFleetCommand->GetLeader() );
-
-		for ( Ship* pShip : pFleetCommand->GetShips() )
-		{
-			m_pFleetStatus->AddShip( pShip );
-		}
-	}
-
 	m_FleetCommands.push_back( std::move( pFleetCommand ) );
 }
 

@@ -137,7 +137,7 @@ int Fleet::GetPoints() const
 	FleetSharedPtr pPlayerFleet = g_pGame->GetPlayerFleet().lock();
 	if ( pPlayerFleet != nullptr && pPlayerFleet.get() == this )
 	{
-		Player* pPlayer = g_pGame->GetPlayer();
+		PlayerSharedPtr pPlayer = g_pGame->GetPlayer();
 		int points = pPlayer->GetShipCustomisationData().m_pModuleInfoHexGrid->GetUsedSlots() * PointsPerModule;
 
 		for ( auto& pShipInfo : m_Ships )

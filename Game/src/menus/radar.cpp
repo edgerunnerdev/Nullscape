@@ -198,14 +198,7 @@ void Radar::AddShips()
 
 void Radar::AddShipyard()
 {
-	Shipyard* pShipyard = g_pGame->GetCurrentSector()->GetShipyard();
-	if ( pShipyard != nullptr )
-	{
-		// HACK: nudge the shipyard's icon position a bit to the right, since the shipyard's
-		// model is (on purpose) not centered at the origin.
-		glm::vec3 shipyardPositon = pShipyard->GetPosition() + glm::vec3( 100.0f, 0.0f, 0.0f );
-		AddIcon( m_ShipyardIdx, shipyardPositon );
-	}
+
 }
 
 void Radar::AddIcon(Genesis::Gui::Atlas::Id atlasIndex, const glm::vec3 &position)

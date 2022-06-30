@@ -1,6 +1,9 @@
 #pragma once
 
 #include <list>
+
+#include <coredefines.h>
+
 #include "ship/ship.h"
 #include "serialisable.h"
 
@@ -34,5 +37,7 @@ private:
 	Ship*					m_pShip;
 	Inventory*				m_pInventory;
 };
+
+GENESIS_DECLARE_SMART_PTR(Player);
 
 }

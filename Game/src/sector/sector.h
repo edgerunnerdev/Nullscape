@@ -20,18 +20,14 @@
 #include <vector>
 #include <list>
 #include <memory>
-#include <component.h>
+
 #include <scene/layer.h>
+
 #include "faction/faction.h"
 #include "ship/ship.fwd.h"
 #include "ship/moduleinfo.h"
 
 #include "fleet/fleet.fwd.h"
-
-namespace Genesis
-{
-class Layer;
-}
 
 namespace Hyperscape
 {
@@ -47,7 +43,6 @@ class Dust;
 class ShipInfo;
 class Faction;
 class Fleet;
-class FleetStatus;
 class SectorInfo;
 class Shipyard;
 class HyperspaceMenu;
@@ -57,23 +52,14 @@ class Radar;
 class ParticleManager;
 class ParticleManagerRep;
 class DeathMenu;
-class SectorEvent;
 class LootWindow;
 class FleetCommand;
 class Boundary;
+class System;
 
 using HotbarUniquePtr = std::unique_ptr< Hotbar >;
-using FleetStatusUniquePtr = std::unique_ptr< FleetStatus >;
 using FleetCommandUniquePtr = std::unique_ptr< FleetCommand >;
 using FleetCommandVector = std::vector< FleetCommandUniquePtr >;
-
-static const int LAYER_BACKGROUND =		1;
-static const int LAYER_SHIP =			1 << 1;
-static const int LAYER_AMMO =			1 << 2;
-static const int LAYER_FX =				1 << 3;
-static const int LAYER_PHYSICS =		1 << 4;
-static const int LAYER_GALAXY =			1 << 5;
-static const int LAYER_ALL =			0xFFFFFFFF;
 
 static const float	sSpawnPointSize		= 1000.0f;
 static const int	sSectorSpawnPoints	= 9;
@@ -84,13 +70,12 @@ using ShipVector = std::vector< Ship* >;
 class Sector
 {
 public:
-						Sector( SectorInfo* pSectorInfo );
+						Sector(System* pSystem, const glm::ivec2& coordinates);
 	virtual				~Sector();
-	virtual				void Update( float fDelta );
+	void Update( float fDelta );
 
-	bool				Initialise();
+	bool				Initialize();
 
-	SectorInfo*			GetSectorInfo() const;
 	AmmoManager*		GetAmmoManager() const;
 	LaserManager*		GetLaserManager() const;
 	SpriteManager*		GetSpriteManager() const;
@@ -104,33 +89,22 @@ public:
 	void				AddShip( Ship* pShip );
 	void				RemoveShip( Ship* pShip );
 
-	Shipyard*			GetShipyard() const;
-
-	void				SetTowerBonus( Faction* pFaction, TowerBonus bonus, float bonusMagnitude );
-	void				GetTowerBonus( Faction* pFaction, TowerBonus* pBonus, float* pBonusMagnitude ) const;
-
 	FleetWeakPtr		GetRegionalFleet() const;
 
 	bool				Reinforce( FleetSharedPtr pFleet, ShipVector* pSpawnedShips = nullptr );
 	bool				IsPlayerVictorious() const;
 	void				AddFleetCommand( FleetCommandUniquePtr pFleetCommand );
 
-protected:
+private:
 	void				DeleteRemovedShips();
 	bool				GetFleetSpawnPosition( Faction* pFaction, float& x, float& y );
 	void				GetFleetSpawnPositionAtPoint( int idx, float& x, float& y );
 	void				DebugDrawFleetSpawnPositions();
-	void				UpdateSectorResolution();
 	void				SelectPlaylist();
-	void				UpdateComponents( float delta );
 
-	SectorInfo*			m_pSectorInfo;
+	System* m_pSystem;
+	glm::ivec2 m_Coordinates;
 
-	Genesis::LayerSharedPtr m_pBackgroundLayer;
-	Genesis::LayerSharedPtr m_pShipLayer;
-	Genesis::LayerSharedPtr m_pFxLayer;
-	Genesis::LayerSharedPtr m_pAmmoLayer;
-	Genesis::LayerSharedPtr m_pPhysicsLayer;
 	Dust*				m_pDust;
 	Boundary*			m_pBoundary;
 	ShipList			m_ShipList;
@@ -148,7 +122,6 @@ protected:
 	Radar*				m_pRadar;
 
 	HotbarUniquePtr		m_pHotbar;
-	FleetStatusUniquePtr m_pFleetStatus;
 
 	FleetSharedPtr		m_pRegionalFleet;
 	IntVector			m_AvailableSpawnPoints;
@@ -158,8 +131,6 @@ protected:
 	Shipyard*			m_pShipyard;
 	HyperspaceMenu*		m_pHyperspaceMenu;
 	DeathMenu*			m_pDeathMenu;
-
-	SectorEvent*		m_pSectorEvent;
 
 	bool				m_IsPlayerVictorious;
 
@@ -173,7 +144,6 @@ protected:
 	unsigned int		m_AdditionalWavesSpawned;
     FleetList           m_TemporaryFleets;
 
-	Genesis::ComponentContainer m_Components;
 	ShipTweaksUniquePtr m_pShipTweaks;
 };
 
@@ -195,16 +165,6 @@ inline SpriteManager* Sector::GetSpriteManager() const
 inline const ShipList& Sector::GetShipList() const
 {
 	return m_ShipList;
-}
-
-inline SectorInfo* Sector::GetSectorInfo() const
-{
-	return m_pSectorInfo;
-}
-
-inline Shipyard* Sector::GetShipyard() const
-{
-	return m_pShipyard;
 }
 
 inline TrailManager* Sector::GetTrailManager() const

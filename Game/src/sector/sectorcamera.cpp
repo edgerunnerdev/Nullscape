@@ -55,7 +55,7 @@ void SectorCamera::Update( float delta )
 	}
 
 	Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
-	const Player* pPlayer = g_pGame->GetPlayer();
+	const PlayerSharedPtr pPlayer = g_pGame->GetPlayer();
 	const Ship* pShip = ( pPlayer != nullptr ) ? pPlayer->GetShip() : nullptr;
 
 	// Update our camera zooming. m_ZoomMultTarget is our target zoom, set by the

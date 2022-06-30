@@ -128,19 +128,6 @@ void Shield::Update( float delta )
 
 	m_EmergencyCapacitorsCooldown = gMax( 0.0f, m_EmergencyCapacitorsCooldown - delta );
 
-	Sector* pSector = g_pGame->GetCurrentSector();
-	if ( pSector != nullptr )
-	{
-		TowerBonus towerBonus;
-		float bonusMagnitude;
-		pSector->GetTowerBonus( m_pOwner->GetFaction(), &towerBonus, &bonusMagnitude );
-		if ( towerBonus == TowerBonus::Shields )
-		{
-			m_RechargeRate *= bonusMagnitude;
-			m_MaximumHitPoints *= bonusMagnitude;
-		}
-	}
-
 	HyperspaceCore* pHyperspaceCore = m_pOwner->GetHyperspaceCore();
 	const bool jumping = ( pHyperspaceCore != nullptr && pHyperspaceCore->IsJumping() );
 	if ( m_State == ShieldState::Deactivated )
