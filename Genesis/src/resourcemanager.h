@@ -24,11 +24,14 @@
 #include <atomic>
 #include <functional>
 #include <list>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
 namespace Genesis
 {
+
+class Forge;
 
 //////////////////////////////////////////////////////////////////////////////
 // ResourceGeneric
@@ -127,6 +130,7 @@ public:
 private:
     ExtensionMap mRegisteredExtensions;
     ResourceMap mResources;
+    std::unique_ptr<Forge> m_pForge;
 };
 
 } // namespace Genesis

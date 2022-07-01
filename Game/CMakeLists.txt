@@ -13,6 +13,7 @@ find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(json REQUIRED)
 find_package(MagicEnum REQUIRED)
+find_package(rpc REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
@@ -28,6 +29,7 @@ include_directories(
   ${IMGUI_INCLUDE_DIRS}
   ${JSON_INCLUDE_DIRS}
   ${MAGICENUM_INCLUDE_DIRS}
+  ${RPC_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIRS}
   ${SDL2_IMAGE_INCLUDE_DIRS}
   ${VPX_INCLUDE_DIRS}
@@ -40,6 +42,7 @@ link_directories(
   ${GENESISCORE_LIBRARY_DIRS}
   ${GLEW_LIBRARY_DIRS}
   ${IMGUI_LIBRARY_DIRS}
+  ${RPC_LIBRARY_DIRS}
   ${SDL2_LIBRARY_DIRS}
   ${SDL2_IMAGE_LIBRARY_DIRS}
   ${VPX_LIBRARY_DIRS}
@@ -51,6 +54,7 @@ link_libraries(
   GenesisCore
   ${GLEW_LIBRARIES}
   imgui
+  rpc
   SDL2main
   SDL2
   SDL2_image

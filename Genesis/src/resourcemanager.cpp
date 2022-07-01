@@ -19,6 +19,7 @@
 
 #include "genesis.h"
 #include "memory.h"
+#include "resources/forge.hpp"
 #include "resources/resourcefont.h"
 #include "resources/resourceimage.h"
 #include "resources/resourcemodel.h"
@@ -93,6 +94,8 @@ ResourceManager::ResourceManager()
         return new ResourceVideo(filename);
     };
     RegisterExtension("ivf", fCreateResourceVideo);
+
+    m_pForge = std::make_unique<Forge>();
 }
 
 ResourceManager::~ResourceManager()

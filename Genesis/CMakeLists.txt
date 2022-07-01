@@ -22,6 +22,7 @@ find_package(GenesisCore REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(MagicEnum REQUIRED)
+find_package(rpc REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
@@ -37,6 +38,7 @@ include_directories(
     ${GLEW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
     ${MAGICENUM_INCLUDE_DIRS}
+    ${RPC_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     ${SDL2_IMAGE_INCLUDE_DIRS}
     ${VPX_INCLUDE_DIRS}
