@@ -15,24 +15,45 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#include <resources/forge.hpp>
-
 #include <filesystem>
+#include <platform.hpp>
+#include <resources/forge.hpp>
+#include <sstream>
+#include <string>
 
 namespace Genesis
 {
 
-Forge::Forge() 
+Forge::Forge()
 {
-	std::filesystem::path forgePath("../../Genesis/bin/Forge.exe");
-	if (std::filesystem::exists(forgePath))
+    using namespace std::filesystem;
+
+#ifdef TARGET_PLATFORM_WINDOWS
+    path forgePath("../../Genesis/bin/Forge.exe");
+#else
+    path forgePath("../../Genesis/bin/Forge");
+#endif
+
+    if (exists(forgePath))
     {
-        // -m standalone -a C:\Users\pnunes\Documents\GitHub\Hyperscape\Game\bin\assets -d C:\Users\pnunes\Documents\GitHub\Hyperscape\Game\bin\data -c C:\Users\pnunes\Documents\GitHub\Hyperscape\Genesis\bin\Compilers -i C:\Users\pnunes\Documents\GitHub\Hyperscape\Game\bin\intermediates
-        //m_pProcess = std::make_unique<Core::Process>(path, arguments.str());
-        //process.Run();
+        m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", 47563);
+
+        path assetsPath = current_path() / "assets";
+        path dataPath = current_path() / "data";
+        path intermediatesPath = current_path() / "intermediates";
+        path compilersPath = canonical(current_path() / ".." / ".." / "Genesis" / "bin" / "compilers");
+
+        std::stringstream arguments;
+        arguments << "-m service -a " << assetsPath.generic_string() << " -d " << dataPath.generic_string() << " -c " << compilersPath.generic_string() << " -i " << intermediatesPath.generic_string();
+
+        m_pProcess = std::make_unique<Core::Process>(forgePath, arguments.str());
+        m_pProcess->Run();
     }
 }
 
-Forge::~Forge(){}
+Forge::~Forge() 
+{
+    m_pRPCClient->send("quit");
+}
 
 } // namespace Genesis

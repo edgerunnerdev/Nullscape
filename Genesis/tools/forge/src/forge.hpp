@@ -61,6 +61,13 @@ public:
     CompilerSharedPtr FindCompiler(const std::string& compilerName) const;
 
 private:
+    enum class CompileResult
+    {
+        Success,
+        Cached,
+        Error
+    };
+
     void OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile);
     void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
 
@@ -70,6 +77,7 @@ private:
     void AggregateKnownAssets();
     void AggregateCompilers();
     bool CompileAssets();
+    CompileResult CompileAsset(Asset* pAsset);
 
     Mode m_Mode;
     std::filesystem::path m_AssetsDir;
@@ -80,6 +88,7 @@ private:
     CompilersMap m_CompilersMap;
     RPCServerUniquePtr m_pRPCServer;
     CacheUniquePtr m_pCache;
+    bool m_QuitRequested;
 };
 
 } // namespace ResComp

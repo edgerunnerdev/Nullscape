@@ -23,7 +23,7 @@ include_directories(
     ${SDL2_INCLUDE_DIRS}
 )
 
-set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin/Compilers)
+set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin/compilers)
 
 if(WIN32)
     add_executable(${PROJECT_NAME} ${SOURCE_FILES})

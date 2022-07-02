@@ -557,11 +557,11 @@ void Game::SetState( GameState newState )
 
 			m_pMainMenu = new MainMenu();
 
-			ShipCustomisationData data;
-			data.m_CaptainName = "TestCaptain";
-			data.m_pModuleInfoHexGrid = nullptr;
-			data.m_ShipName = "TestShip";
-			StartNewGame(data);
+			//ShipCustomisationData data;
+			//data.m_CaptainName = "TestCaptain";
+			//data.m_pModuleInfoHexGrid = nullptr;
+			//data.m_ShipName = "TestShip";
+			//StartNewGame(data);
 		}
 	}
 	else if ( m_State == GameState::GalaxyView ) 

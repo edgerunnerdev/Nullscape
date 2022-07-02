@@ -29,6 +29,8 @@
 #include <process.hpp>
 #include <sstream>
 #include <stringhelpers.hpp>
+#include <thread>
+#include <chrono>
 
 namespace Genesis
 {
@@ -41,6 +43,7 @@ Forge::Forge(Mode mode, const std::filesystem::path& assetsDir, const std::files
     , m_CompilersDir(compilersDir)
     , m_DataDir(dataDir)
     , m_IntermediatesDir(intermediatesDir)
+    , m_QuitRequested(false)
 {
 }
 
@@ -74,7 +77,19 @@ bool Forge::Run()
         Log::Info() << "Compiler found: " << compiler.first;
     }
 
-    return CompileAssets();
+    if (m_Mode == Mode::Standalone)
+    {
+        return CompileAssets();
+    }
+    else
+    {
+        while (m_QuitRequested == false)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+
+        return true;
+    }
 }
 
 CompilerSharedPtr Forge::FindCompiler(const std::string& compilerName) const 
@@ -190,6 +205,12 @@ void Forge::InitializeRPCServer()
                                Log::Error() << text;
                            }
                        });
+
+    m_pRPCServer->bind("quit",
+                       [this]()
+                       {
+                           m_QuitRequested = true;
+                       });
 }
 
 bool Forge::CompileAssets()
@@ -201,34 +222,16 @@ bool Forge::CompileAssets()
 
     for (Asset& asset : m_KnownAssets)
     {
-        if (asset.IsValid() == false)
+        CompileResult result = CompileAsset(&asset);
+        if (result == CompileResult::Error)
         {
-            Core::Log::Error() << "Failed to compile " << asset.GetPath() << ": Invalid asset.";
             errors++;
         }
-        else if (m_pCache->NeedsRebuild(&asset))
+        else if (result == CompileResult::Success)
         {
-            Core::Log::Info() << "Compiling " << asset.GetPath() << "...";
-
-            std::stringstream arguments;
-            arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << asset.GetPath() << " -m forge";
-
-            //Core::Log::Info() << it->second << " " << arguments.str();
-
-            Core::Process process(asset.GetCompiler()->GetPath(), arguments.str());
-            process.Run();
-            process.Wait();
-            if (process.GetExitCode() != 0)
-            {
-                Core::Log::Error() << "Failed to compile " << asset.GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
-                errors++;
-            }
-            else
-            {
-                compiled++;
-            }
+            compiled++;
         }
-        else
+        else if (result == CompileResult::Cached)
         {
             cached++;
         }
@@ -237,6 +240,41 @@ bool Forge::CompileAssets()
     Core::Log::Info() << "Forge asset compilation completed, " << compiled << " compiled, " << cached << " cached, " << errors << " errors.";
 
     return errors == 0;
+}
+
+Forge::CompileResult Forge::CompileAsset(Asset* pAsset) 
+{
+    if (pAsset->IsValid() == false)
+    {
+        Core::Log::Error() << "Failed to compile " << pAsset->GetPath() << ": Invalid asset.";
+        return CompileResult::Error;
+    }
+    else if (m_pCache->NeedsRebuild(pAsset))
+    {
+        Core::Log::Info() << "Compiling " << pAsset->GetPath() << "...";
+
+        std::stringstream arguments;
+        arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << pAsset->GetPath() << " -m forge";
+
+        // Core::Log::Info() << it->second << " " << arguments.str();
+
+        Core::Process process(pAsset->GetCompiler()->GetPath(), arguments.str());
+        process.Run();
+        process.Wait();
+        if (process.GetExitCode() != 0)
+        {
+            Core::Log::Error() << "Failed to compile " << pAsset->GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
+            return CompileResult::Error;
+        }
+        else
+        {
+            return CompileResult::Success;
+        }
+    }
+    else
+    {
+        return CompileResult::Cached;
+    }
 }
 
 void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile)
