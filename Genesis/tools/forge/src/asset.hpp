@@ -40,13 +40,10 @@ public:
     uint64_t GetHash() const;
 
 private:
-    void CalculateHash();
-
     bool m_IsValid;
     std::filesystem::path m_Path;
     CompilerSharedPtr m_pCompiler;
     std::string m_Source;
-    uint64_t m_Hash;
 };
 
 } // namespace Genesis::ResComp

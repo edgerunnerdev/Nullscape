@@ -37,6 +37,7 @@ namespace ResComp
 class Asset;
 class Cache;
 class Compiler;
+class FileWatcher;
 
 using AssetVector = std::vector<Asset>;
 using CacheUniquePtr = std::unique_ptr<Cache>;
@@ -74,6 +75,7 @@ private:
     void InitializeCache();
     void InitializeRPCServer();
     bool InitializeDirectories();
+    bool InitializeFileWatcher();
     void AggregateKnownAssets();
     void AggregateCompilers();
     bool CompileAssets();
@@ -88,6 +90,7 @@ private:
     CompilersMap m_CompilersMap;
     RPCServerUniquePtr m_pRPCServer;
     CacheUniquePtr m_pCache;
+    std::unique_ptr<FileWatcher> m_pFileWatcher;
     bool m_QuitRequested;
 };
 

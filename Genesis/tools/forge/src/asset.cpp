@@ -34,7 +34,6 @@ namespace ResComp
 Asset::Asset(Forge* pForge, const std::filesystem::path& path)
     : m_IsValid(false)
     , m_Path(path)
-    , m_Hash(0)
 {
     using namespace nlohmann;
     std::ifstream file(path);
@@ -62,7 +61,6 @@ Asset::Asset(Forge* pForge, const std::filesystem::path& path)
         if (it != j.end() && it->is_string())
         {
             m_Source = it->get<std::string>();
-            CalculateHash();
         }
         else
         {
@@ -95,16 +93,11 @@ const std::string& Asset::GetSource() const
 
 uint64_t Asset::GetHash() const
 {
-    return m_Hash;
-}
-
-void Asset::CalculateHash() 
-{
     std::vector<uint64_t> hashes;
     hashes.push_back(m_pCompiler->GetHash());
     hashes.push_back(CalculateFileHash(m_Path));
     hashes.push_back(CalculateFileHash(std::filesystem::path(m_Path).remove_filename() / m_Source));
-    m_Hash = XXHash64::hash(hashes.data(), sizeof(uint64_t) * hashes.size(), 0);
+    return XXHash64::hash(hashes.data(), sizeof(uint64_t) * hashes.size(), 0);
 }
 
 } // namespace ResComp

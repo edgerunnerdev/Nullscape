@@ -22,6 +22,7 @@
 #include "asset.hpp"
 #include "cache.hpp"
 #include "compiler.hpp"
+#include "filewatcher.hpp"
 
 #include <filesystem>
 #include <log.hpp>
@@ -81,14 +82,24 @@ bool Forge::Run()
     {
         return CompileAssets();
     }
-    else
+    else if (m_Mode == Mode::Service)
     {
+        if (InitializeFileWatcher() == false)
+        {
+            Log::Error() << "Failed to initialize file watcher.";
+            return false;
+        }
+
         while (m_QuitRequested == false)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
 
         return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -166,6 +177,46 @@ void Forge::AggregateKnownAssets()
 void Forge::InitializeCache() 
 {
     m_pCache = std::make_unique<Cache>(m_IntermediatesDir);
+}
+
+bool Forge::InitializeFileWatcher() 
+{
+    m_pFileWatcher = std::make_unique<FileWatcher>();
+
+    m_pFileWatcher->changeEvent = [this](int64_t id, const std::set<std::pair<std::wstring, uint32_t>>& notifications)
+    {
+        // We don't specifically care about what has changed, just that something has happened and that we need to evaluate our assets.
+        bool compilationNeeded = false;
+        for (const auto& notif : notifications)
+        {
+            if (notif.second == FILE_ACTION_MODIFIED)
+            {
+                Core::Log::Info() << "Change detected on '" << notif.first << "'.";
+                compilationNeeded = true;
+            }
+        }
+
+        if (compilationNeeded)
+        {
+            CompileAssets();
+        }
+    };
+
+    m_pFileWatcher->errorEvent = [](int64_t id)
+    {
+        Core::Log::Error() << "An error has occurred with file watcher, no further events will be sent for ID= " << id;
+    };
+
+    if (m_pFileWatcher->AddDirectory(1, m_AssetsDir))
+    {
+        Core::Log::Info() << "Listening for changes on assets directory.";
+        return true;
+    }
+    else
+    {
+        Core::Log::Error() << "Failed to listen for changes on assets directory.";
+        return false;
+    }
 }
 
 void Forge::InitializeRPCServer()
