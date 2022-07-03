@@ -94,6 +94,7 @@ class AchievementsManager;
 class SaveGameStorage;
 class ShipOutline;
 
+GENESIS_DECLARE_SMART_PTR(EntityViewer);
 GENESIS_DECLARE_SMART_PTR(Player);
 GENESIS_DECLARE_SMART_PTR(System);
 GENESIS_DECLARE_SMART_PTR(SystemViewer);
@@ -246,6 +247,7 @@ private:
     std::atomic_bool m_AllResourcesLoaded;
 
     BlackboardSharedPtr m_pBlackboard;
+    EntityViewerUniquePtr m_pEntityViewer;
 };
 
 inline Genesis::Physics::Simulation* Game::GetPhysicsSimulation() const

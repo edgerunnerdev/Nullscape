@@ -22,12 +22,12 @@
 namespace Genesis
 {
 
-FileViewer::FileViewer(int width, int height, const std::string& extension)
+FileViewer::FileViewer(int width, int height, const std::filesystem::path& root, const std::string& extension)
     : m_Extension(extension)
     , m_Width(width)
     , m_Height(height)
 {
-    m_pRootNode = std::make_unique<Node>("data/models");
+    m_pRootNode = std::make_unique<Node>(root);
     ProcessNode(*m_pRootNode);
 }
 

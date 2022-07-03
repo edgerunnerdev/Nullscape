@@ -69,7 +69,7 @@ ModelViewer::ModelViewer()
     m_pDebugRender = new Render::DebugRender();
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 
-    m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, ".gmdl");
+    m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, "data/models", ".gmdl");
 }
 
 ModelViewer::~ModelViewer()

@@ -69,6 +69,7 @@
 #include "system/systemviewer.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
+#include "viewers/entityviewer/entityviewer.hpp"
 #include "menus/mainmenu.h"
 #include "menus/audiodebug.h"
 #include "menus/intelwindow.h"
@@ -221,6 +222,7 @@ void Game::Initialise()
 	SetCursorType( CursorType::Pointer );
 
 	ShaderTweaksDebugWindow::Register();
+    m_pEntityViewer = std::make_unique<EntityViewer>();
 
     using namespace Genesis;
 	if ( FrameWork::GetCommandLineParameters()->HasParameter("--no-intro") == false )
@@ -302,6 +304,7 @@ Genesis::TaskStatus Game::Update( float delta )
     m_pSystemViewer->UpdateDebugUI();
 	GetBlackboard()->UpdateDebugUI();
 	GetSaveGameStorage()->UpdateDebugUI();
+	m_pEntityViewer->UpdateDebugUI();
 	ShaderTweaksDebugWindow::Update();
 
 	if ( GetState() == GameState::LoadResources )
