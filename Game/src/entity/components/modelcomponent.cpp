@@ -17,16 +17,47 @@
 
 #include "entity/components/modelcomponent.hpp"
 
-#include "entity/componenttype.hpp"
+#include <filesystem>
+
+#include <imgui/imgui.h>
+#include <imgui/misc/cpp/imgui_stdlib.h>
+#include <resources/resourcemodel.h>
+#include <genesis.h>
+
 
 namespace Hyperscape
 {
 
-ModelComponent::ModelComponent() {}
+ModelComponent::ModelComponent()
+    : m_pModel(nullptr)
+{
+}
 
 ModelComponent::~ModelComponent() {}
 
 void ModelComponent::Update(float delta) {}
-void ModelComponent::UpdateDebugUI() {}
+
+void ModelComponent::UpdateDebugUI() 
+{
+    if (ImGui::InputText("Model", &m_Filename))
+    {
+        if (std::filesystem::exists(m_Filename))
+        {
+            m_pModel = Genesis::FrameWork::GetResourceManager()->GetResource<Genesis::ResourceModel*>(m_Filename);
+        }
+        else
+        {
+            m_pModel = nullptr;
+        }
+    }
+}
+
+void ModelComponent::Render()
+{
+    if (m_pModel != nullptr)
+    {
+        m_pModel->Render(glm::mat4(1.0f));
+    }
+}
 
 } // namespace Hyperscape

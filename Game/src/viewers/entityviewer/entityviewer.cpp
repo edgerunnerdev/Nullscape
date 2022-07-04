@@ -66,6 +66,7 @@ EntityViewer::EntityViewer()
     m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, "data/templates", ".json");
 
     m_pEntity = std::make_unique<Entity>();
+    m_pMainLayer->AddSceneObject(m_pEntity.get(), false);
 }
 
 EntityViewer::~EntityViewer()

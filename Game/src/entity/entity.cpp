@@ -27,6 +27,28 @@ void Entity::AddComponent(ComponentUniquePtr pComponent)
 	m_Components[static_cast<size_t>(pComponent->GetType())].push_back(std::move(pComponent));
 }
 
+void Entity::Update(float delta) 
+{
+    for (size_t i = 0; i < m_Components.size(); ++i)
+    {
+        for (auto& pComponent : m_Components[i])
+        {
+            pComponent->Update(delta);
+        }
+    }
+}
+
+void Entity::Render()
+{
+    for (size_t i = 0; i < m_Components.size(); ++i)
+    {
+        for (auto& pComponent : m_Components[i])
+        {
+            pComponent->Render();
+        }
+    }
+}
+
 std::vector<Component*> Entity::GetComponents() 
 {
 	std::vector<Component*> components;

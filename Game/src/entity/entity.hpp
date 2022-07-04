@@ -20,6 +20,7 @@
 #include <array>
 #include <vector>
 
+#include <scene/sceneobject.h>
 #include <coredefines.h>
 
 #include "entity/componenttype.hpp"
@@ -29,11 +30,14 @@ namespace Hyperscape
 
 GENESIS_DECLARE_SMART_PTR(Component)
 
-class Entity final
+class Entity : public Genesis::SceneObject
 {
 public:
     Entity() {}
-    ~Entity() {}
+    virtual ~Entity() override {}
+
+    virtual void Update(float delta) override;
+    virtual void Render() override;
 
     void AddComponent(ComponentUniquePtr pComponent);
     template <typename T> T* GetComponent() { return nullptr; }

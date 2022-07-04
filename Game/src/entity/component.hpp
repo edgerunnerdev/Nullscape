@@ -42,6 +42,7 @@ public:
 
     virtual void Update(float delta) = 0;
     virtual void UpdateDebugUI() = 0;
+    virtual void Render() = 0;
 
     void SetOwner(Entity* pEntity);
 

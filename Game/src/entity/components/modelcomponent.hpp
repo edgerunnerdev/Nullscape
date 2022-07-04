@@ -21,6 +21,11 @@
 
 #include "entity/component.hpp"
 
+namespace Genesis
+{
+class ResourceModel;
+}
+
 namespace Hyperscape
 {
 
@@ -32,11 +37,13 @@ public:
 
     virtual void Update(float delta) override;
     virtual void UpdateDebugUI() override;
+    virtual void Render() override;
 
     DEFINE_COMPONENT(ModelComponent);
 
 private:
     std::string m_Filename;
+    Genesis::ResourceModel* m_pModel;
 };
 
 } // namespace Hyperscape
