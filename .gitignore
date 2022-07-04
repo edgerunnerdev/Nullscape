@@ -25,6 +25,7 @@ Game/bin/data/models/
 Game/bin/data/shaders/
 Game/bin/intermediates/
 Game/bin/config.xml
+Game/bin/forge.log
 Game/bin/Hyperscape.exe
 Game/bin/Hyperscape.ilk
 Game/bin/Hyperscape.pdb
