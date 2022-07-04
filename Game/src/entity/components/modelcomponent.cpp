@@ -15,18 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "entity/components/modelcomponent.hpp"
+
+#include "entity/componenttype.hpp"
 
 namespace Hyperscape
 {
 
-enum class ComponentType
-{
-	ModelComponent = 0,
-	RigidBodyComponent,
-	ShapeAABBComponent,
+ModelComponent::ModelComponent() {}
 
-	Count
-};
+ModelComponent::~ModelComponent() {}
+
+void ModelComponent::Update(float delta) {}
+void ModelComponent::UpdateDebugUI() {}
 
 } // namespace Hyperscape

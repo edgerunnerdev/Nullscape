@@ -15,43 +15,39 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "entity/componentfactory.hpp"
 
-#include "componenttype.hpp"
+#include <memory>
+
+#include "entity/components/modelcomponent.hpp"
 
 namespace Hyperscape
 {
 
-#define DEFINE_COMPONENT(COMPONENT_NAME) \
-    static const ComponentType sType = ComponentType::COMPONENT_NAME; \
-    virtual ComponentType GetType() const override { return sType; }
+std::unique_ptr<ComponentFactory> g_pComponentFactory;
 
-class Entity;
+#define REGISTER_COMPONENT(COMPONENT_NAME) m_Registry[static_cast<size_t>(COMPONENT_NAME::sType)] = [](){ return std::make_unique<COMPONENT_NAME>(); }
 
-class Component
+ComponentFactory::ComponentFactory() 
 {
-public:
-    Component()
-        : m_pEntity(nullptr)
+    REGISTER_COMPONENT(ModelComponent);
+}
+
+ComponentFactory::~ComponentFactory() {}
+
+ComponentFactory* ComponentFactory::Get() 
+{
+	if (g_pComponentFactory == nullptr)
     {
+        g_pComponentFactory = std::make_unique<ComponentFactory>();
     }
 
-    virtual ~Component() {}
+    return g_pComponentFactory.get();
+}
 
-    virtual ComponentType GetType() const = 0;
-
-    virtual void Update(float delta) = 0;
-    virtual void UpdateDebugUI() = 0;
-
-    void SetOwner(Entity* pEntity);
-
-private:
-    Entity* m_pEntity;
-};
-
-inline void Component::SetOwner(Entity* pEntity)
+ComponentUniquePtr ComponentFactory::Create(ComponentType type) const 
 {
-    m_pEntity = pEntity;
+    return m_Registry[static_cast<size_t>(type)]();
 }
 
 } // namespace Hyperscape

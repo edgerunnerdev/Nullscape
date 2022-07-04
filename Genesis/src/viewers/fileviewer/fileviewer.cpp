@@ -33,17 +33,20 @@ FileViewer::FileViewer(int width, int height, const std::filesystem::path& root,
 
 void FileViewer::ProcessNode(Node& node)
 {
-    for (const auto& dirEntry : std::filesystem::directory_iterator(node.path))
+    if (std::filesystem::is_directory(node.path))
     {
-        Node childNode(dirEntry.path());
-        if (dirEntry.is_directory())
+        for (const auto& dirEntry : std::filesystem::directory_iterator(node.path))
         {
-            ProcessNode(childNode);
-            node.children.push_back(std::move(childNode));
-        }
-        else if (dirEntry.is_regular_file() && dirEntry.path().extension() == m_Extension)
-        {
-            node.children.push_back(std::move(childNode));
+            Node childNode(dirEntry.path());
+            if (dirEntry.is_directory())
+            {
+                ProcessNode(childNode);
+                node.children.push_back(std::move(childNode));
+            }
+            else if (dirEntry.is_regular_file() && dirEntry.path().extension() == m_Extension)
+            {
+                node.children.push_back(std::move(childNode));
+            }
         }
     }
 }

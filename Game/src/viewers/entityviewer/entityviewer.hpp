@@ -26,6 +26,8 @@
 namespace Hyperscape
 {
 
+GENESIS_DECLARE_SMART_PTR(Entity);
+
 class EntityViewer final
 {
 public:
@@ -46,6 +48,7 @@ private:
     float m_Yaw;
     glm::vec3 m_Position;
     std::unique_ptr<Genesis::FileViewer> m_pFileViewer;
+    EntityUniquePtr m_pEntity;
 };
 
 } // namespace Hyperscape

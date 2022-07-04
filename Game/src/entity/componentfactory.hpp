@@ -17,16 +17,33 @@
 
 #pragma once
 
+#include <array>
+#include <functional>
+#include <string>
+
+#include <coredefines.h>
+
+#include "entity/componenttype.hpp"
+
 namespace Hyperscape
 {
 
-enum class ComponentType
-{
-	ModelComponent = 0,
-	RigidBodyComponent,
-	ShapeAABBComponent,
+GENESIS_DECLARE_SMART_PTR(Component)
 
-	Count
+class ComponentFactory
+{
+public:
+    ComponentFactory();
+    ~ComponentFactory();
+
+    static ComponentFactory* Get();
+
+    ComponentUniquePtr Create(ComponentType type) const;
+    
+
+private:
+    using ConstructionFn = std::function<ComponentUniquePtr()>;
+    std::array<ConstructionFn, static_cast<size_t>(ComponentType::Count)> m_Registry;
 };
 
 } // namespace Hyperscape

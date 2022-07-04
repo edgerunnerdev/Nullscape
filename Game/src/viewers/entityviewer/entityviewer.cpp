@@ -29,6 +29,10 @@
 #include <imgui/imgui_impl.h>
 #include <sstream>
 
+#include "entity/entity.hpp"
+#include "entity/component.hpp"
+#include "entity/componentfactory.hpp"
+
 namespace Hyperscape
 {
 
@@ -60,6 +64,8 @@ EntityViewer::EntityViewer()
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 
     m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, "data/templates", ".json");
+
+    m_pEntity = std::make_unique<Entity>();
 }
 
 EntityViewer::~EntityViewer()
@@ -91,33 +97,38 @@ void EntityViewer::UpdateDebugUI()
 
         ImGui::SameLine();
 
-        ImGui::BeginChild("Properties", ImVec2(300, sViewportHeight), true);
-        ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_None;
-        if (ImGui::BeginTabBar("PropertiesTabBar", tabBarFlags))
+        ImGui::BeginChild("Components", ImVec2(300, sViewportHeight), true);
+        
+        if (ImGui::BeginMenu("Add component"))
         {
-            if (ImGui::BeginTabItem("Components"))
+            for (size_t i = 0; i < static_cast<size_t>(ComponentType::Count); ++i)
             {
-                ImGui::Text("This is the Avocado tab!\nblah blah blah blah blah");
-                ImGui::EndTabItem();
+                ComponentType type = static_cast<ComponentType>(i);
+                auto name = magic_enum::enum_name(type);
+                if (ImGui::MenuItem(name.data())) 
+                {
+                    m_pEntity->AddComponent(std::move(ComponentFactory::Get()->Create(type)));
+                }
             }
-            if (ImGui::BeginTabItem("Toolbox"))
-            {
-                ImGui::Button("Add");
-                ImGui::SameLine();
-                ImGui::TextUnformatted("RigidBodyComponent");
 
-                ImGui::Button("Add");
-                ImGui::SameLine();
-                ImGui::TextUnformatted("ShapeAABBComponent");
-
-                ImGui::Button("Add");
-                ImGui::SameLine();
-                ImGui::TextUnformatted("ModelComponent");
-                
-                ImGui::EndTabItem();
-            }
-            ImGui::EndTabBar();
+            ImGui::EndMenu();
         }
+
+        ImGui::Separator();
+
+        std::vector<Component*> components = m_pEntity->GetComponents();
+        for (Component* pComponent : components)
+        {
+            ImGui::PushID(pComponent);
+            auto name = magic_enum::enum_name(pComponent->GetType());
+            if (ImGui::TreeNode(name.data()))
+            {
+                pComponent->UpdateDebugUI();
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+        }
+
         ImGui::EndChild();
 
         ImGui::End();

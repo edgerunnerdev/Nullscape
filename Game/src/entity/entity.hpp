@@ -20,24 +20,27 @@
 #include <array>
 #include <vector>
 
+#include <coredefines.h>
+
 #include "entity/componenttype.hpp"
 
 namespace Hyperscape
 {
 
-class Component;
+GENESIS_DECLARE_SMART_PTR(Component)
 
 class Entity final
 {
 public:
-    Entity();
-    ~Entity();
+    Entity() {}
+    ~Entity() {}
 
-    void AddComponent(Component* pComponent);
+    void AddComponent(ComponentUniquePtr pComponent);
     template <typename T> T* GetComponent() { return nullptr; }
+    std::vector<Component*> GetComponents();
 
 private:
-    std::array<std::vector<Component*>, static_cast<size_t>(ComponentType::Count)> m_Components;
+    std::array<std::vector<ComponentUniquePtr>, static_cast<size_t>(ComponentType::Count)> m_Components;
 };
 
 } // namespace Hyperscape

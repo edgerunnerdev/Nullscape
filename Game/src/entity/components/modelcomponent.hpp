@@ -17,16 +17,26 @@
 
 #pragma once
 
+#include <string>
+
+#include "entity/component.hpp"
+
 namespace Hyperscape
 {
 
-enum class ComponentType
+class ModelComponent : public Component
 {
-	ModelComponent = 0,
-	RigidBodyComponent,
-	ShapeAABBComponent,
+public:
+    ModelComponent();
+    virtual ~ModelComponent() override;
 
-	Count
+    virtual void Update(float delta) override;
+    virtual void UpdateDebugUI() override;
+
+    DEFINE_COMPONENT(ModelComponent);
+
+private:
+    std::string m_Filename;
 };
 
 } // namespace Hyperscape
