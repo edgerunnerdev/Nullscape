@@ -27,11 +27,13 @@
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
+#include <imgui/misc/cpp/imgui_stdlib.h>
 #include <sstream>
 
 #include "entity/entity.hpp"
 #include "entity/component.hpp"
 #include "entity/componentfactory.hpp"
+#include "entity/entityfactory.hpp"
 
 namespace Hyperscape
 {
@@ -62,11 +64,6 @@ EntityViewer::EntityViewer()
 
     m_pDebugRender = new Render::DebugRender();
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
-
-    m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, "data/templates", ".json");
-
-    m_pEntity = std::make_unique<Entity>();
-    m_pMainLayer->AddSceneObject(m_pEntity.get(), false);
 }
 
 EntityViewer::~EntityViewer()
@@ -78,10 +75,12 @@ void EntityViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        ImGui::Begin("Entity viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin("Entity template viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
 
-        ImGui::BeginChild("File viewer", ImVec2(300, sViewportHeight), true);
-        m_pFileViewer->Render();
+        DrawMenu();
+
+        ImGui::BeginChild("Template list", ImVec2(300, sViewportHeight), true);
+        DrawTemplateList();
         ImGui::EndChild();
 
         ImGui::SameLine();
@@ -100,13 +99,64 @@ void EntityViewer::UpdateDebugUI()
 
         ImGui::BeginChild("Components", ImVec2(300, sViewportHeight), true);
         
+        ImGui::TextUnformatted("Components");
+        ImGui::Separator();
+
+        if (m_pEntity == nullptr)
+        {
+            ImGui::TextDisabled("No template loaded.");
+        }
+        else
+        {        
+            std::vector<Component*> components = m_pEntity->GetComponents();
+            for (Component* pComponent : components)
+            {
+                ImGui::PushID(pComponent);
+                auto name = magic_enum::enum_name(pComponent->GetType());
+                if (ImGui::TreeNode(name.data()))
+                {
+                    pComponent->UpdateDebugUI();
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+            }
+        }
+
+        ImGui::EndChild();
+
+        ImGui::End();
+    }
+}
+
+void EntityViewer::DrawMenu() 
+{
+    static std::string sNewTemplateName;
+    bool openNewTemplatePopup = false;
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("Template"))
+        {
+            if (ImGui::MenuItem("New"))
+            {
+                openNewTemplatePopup = true;
+            }
+
+            if (ImGui::MenuItem("Save", nullptr, nullptr, false))
+            {
+                
+            }
+
+            ImGui::EndMenu();
+        }
+    
         if (ImGui::BeginMenu("Add component"))
         {
             for (size_t i = 0; i < static_cast<size_t>(ComponentType::Count); ++i)
             {
                 ComponentType type = static_cast<ComponentType>(i);
                 auto name = magic_enum::enum_name(type);
-                if (ImGui::MenuItem(name.data())) 
+                if (ImGui::MenuItem(name.data()))
                 {
                     m_pEntity->AddComponent(std::move(ComponentFactory::Get()->Create(type)));
                 }
@@ -115,28 +165,49 @@ void EntityViewer::UpdateDebugUI()
             ImGui::EndMenu();
         }
 
-        ImGui::Separator();
+        ImGui::EndMenuBar();
+    }
 
-        std::vector<Component*> components = m_pEntity->GetComponents();
-        for (Component* pComponent : components)
+    if (openNewTemplatePopup)
+    {
+        sNewTemplateName = "";
+        ImGui::OpenPopup("New template");
+    }
+    
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("New template", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("Template name", &sNewTemplateName);
+
+        if (ImGui::Button("Create", ImVec2(200, 0)))
         {
-            ImGui::PushID(pComponent);
-            auto name = magic_enum::enum_name(pComponent->GetType());
-            if (ImGui::TreeNode(name.data()))
-            {
-                pComponent->UpdateDebugUI();
-                ImGui::TreePop();
-            }
-            ImGui::PopID();
+            EntityFactory::Get()->AddBlankTemplate(sNewTemplateName);
+            ImGui::CloseCurrentPopup();
         }
+        ImGui::EndPopup();
+    }
+}
 
-        ImGui::EndChild();
-
-        ImGui::End();
-
-        if (m_pFileViewer->HasSelected())
+void EntityViewer::DrawTemplateList() 
+{
+    ImGui::TextUnformatted("Templates");
+    ImGui::Separator();
+    std::set<std::string> templates = EntityFactory::Get()->GetTemplateNames();
+    for (const std::string& templateName : templates)
+    {
+        bool selected = (templateName == m_LoadedTemplate);
+        if (ImGui::Selectable(templateName.c_str(), &selected) && m_LoadedTemplate != templateName)
         {
-            //LoadModel(m_pFileViewer->GetSelected());
+            if (m_pEntity != nullptr)
+            {
+                m_pMainLayer->RemoveSceneObject(m_pEntity.get());
+                m_pEntity = nullptr;
+            }
+
+            m_pEntity = EntityFactory::Get()->Create(templateName);
+            m_pMainLayer->AddSceneObject(m_pEntity.get(), false);
+            m_LoadedTemplate = templateName;
         }
     }
 }

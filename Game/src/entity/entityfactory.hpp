@@ -17,47 +17,36 @@
 
 #pragma once
 
-#include <array>
+#include <filesystem>
+#include <unordered_map>
+#include <set>
+#include <string>
 #include <vector>
 
-// clang-format off
-#include <externalheadersbegin.hpp>
-#include <bitsery/bitsery.h>
-#include <externalheadersend.hpp>
-// clang-format on
-
-#include <scene/sceneobject.h>
 #include <coredefines.h>
-
-#include "entity/componenttype.hpp"
 
 namespace Hyperscape
 {
 
-GENESIS_DECLARE_SMART_PTR(Component)
+GENESIS_DECLARE_SMART_PTR(Entity)
 
-class Entity : public Genesis::SceneObject
+class EntityFactory
 {
 public:
-    Entity() : m_Test(1337) {}
-    virtual ~Entity() override {}
+    EntityFactory();
+    ~EntityFactory();
 
-    virtual void Update(float delta) override;
-    virtual void Render() override;
+    static EntityFactory* Get();
 
-    void AddComponent(ComponentUniquePtr pComponent);
-    template<typename T> T* GetComponent() { return nullptr; }
-    std::vector<Component*> GetComponents();
-
-    template<typename S>
-    void serialize(S& s) 
-    {
-        s.value4b(m_Test);
-    }
+    EntitySharedPtr Create(const std::string& templateName) const;
+    bool AddBlankTemplate(const std::string& templateName);
+    std::set<std::string> GetTemplateNames() const;
 
 private:
-    std::array<std::vector<ComponentUniquePtr>, static_cast<size_t>(ComponentType::Count)> m_Components;
-    int m_Test;
+    void LoadTemplate(const std::filesystem::path& path);
+
+    using EntityTemplate = std::vector<uint8_t>;
+    std::unordered_map<std::string, EntityTemplate> m_Templates;
 };
 
 } // namespace Hyperscape

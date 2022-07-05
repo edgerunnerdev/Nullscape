@@ -117,6 +117,8 @@ void Layer::Render(Viewport* pViewport)
 
 void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
 {
+    SDL_assert(pObject != nullptr);
+
 #ifdef _DEBUG
     for (auto& pLayerObject : mObjectList)
     {

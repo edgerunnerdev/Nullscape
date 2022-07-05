@@ -21,7 +21,6 @@
 #include <render/viewport.hpp>
 #include <rendersystem.fwd.h>
 #include <scene/layer.h>
-#include <viewers/fileviewer/fileviewer.hpp>
 
 namespace Hyperscape
 {
@@ -37,6 +36,8 @@ public:
     void UpdateDebugUI();
 
 private:
+    void DrawMenu();
+    void DrawTemplateList();
     void UpdateCamera(bool acceptInput);
 
     bool m_IsOpen;
@@ -47,8 +48,8 @@ private:
     float m_Pitch;
     float m_Yaw;
     glm::vec3 m_Position;
-    std::unique_ptr<Genesis::FileViewer> m_pFileViewer;
-    EntityUniquePtr m_pEntity;
+    std::string m_LoadedTemplate;
+    EntitySharedPtr m_pEntity;
 };
 
 } // namespace Hyperscape

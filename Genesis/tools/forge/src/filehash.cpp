@@ -27,14 +27,14 @@ namespace Genesis::ResComp
 uint64_t CalculateFileHash(const std::filesystem::path& path)
 {
     uint64_t hash = 0;
-    std::ifstream file(path, std::ifstream::binary);
+    std::ifstream file(path, std::ios::in | std::ios::binary);
     if (file.good())
     {
         file.seekg(0, file.end);
         size_t length = static_cast<size_t>(file.tellg());
         file.seekg(0, file.beg);
         std::vector<char> buffer;
-        buffer.reserve(length);
+        buffer.resize(length);
         file.read(buffer.data(), length);
         file.close();
 
