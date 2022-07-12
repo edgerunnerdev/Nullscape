@@ -69,7 +69,7 @@ ModelViewer::ModelViewer()
     m_pDebugRender = new Render::DebugRender();
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 
-    m_pFileViewer = std::make_unique<FileViewer>(300, sViewportHeight, "data/models", ".gmdl");
+    m_pFileViewer = std::make_unique<FileViewer>("data/models", ".gmdl");
 }
 
 ModelViewer::~ModelViewer()
@@ -223,10 +223,10 @@ void ModelViewer::ShowStats()
     if (ImGui::CollapsingHeader("Statistics", ImGuiTreeNodeFlags_DefaultOpen))
     {
         size_t triangleCount = m_pModel ? m_pModel->GetTriangleCount() : 0;
-        ImGui::Text("Triangles: %u", triangleCount);
+        ImGui::Text("Triangles: %lu", triangleCount);
 
         size_t vertexCount = m_pModel ? m_pModel->GetVertexCount() : 0;
-        ImGui::Text("Vertices: %u", vertexCount);
+        ImGui::Text("Vertices: %lu", vertexCount);
     }
 }
 

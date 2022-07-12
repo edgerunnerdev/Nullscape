@@ -198,7 +198,7 @@ bool VideoPlayer::PlayVPXLoop()
 
     if (m_Data.frame_sz > (int)sizeof(m_Data.frame))
     {
-        Core::Log::Error() << "Frame " << m_Data.frame_sz << " data too big for example code buffer.", m_Data.frame_sz;
+        Core::Log::Error() << "Frame " << m_Data.frame_sz << " data too big for example code buffer.";
         m_Data.state = -1;
         return false;
     }

@@ -28,7 +28,7 @@ namespace Genesis
 class FileViewer
 {
 public:
-    FileViewer(int width, int height, const std::filesystem::path& root, const std::string& extension);
+    FileViewer(const std::filesystem::path& root, const std::string& extension);
     void Render();
     bool HasSelected() const;
     const std::filesystem::path& GetSelected() const;
@@ -45,8 +45,6 @@ private:
     void RenderNode(const Node& node);
 
     std::unique_ptr<Node> m_pRootNode;
-    int m_Width;
-    int m_Height;
     std::string m_Extension;
     std::filesystem::path m_Selected;
 };

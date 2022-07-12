@@ -22,10 +22,8 @@
 namespace Genesis
 {
 
-FileViewer::FileViewer(int width, int height, const std::filesystem::path& root, const std::string& extension)
+FileViewer::FileViewer(const std::filesystem::path& root, const std::string& extension)
     : m_Extension(extension)
-    , m_Width(width)
-    , m_Height(height)
 {
     m_pRootNode = std::make_unique<Node>(root);
     ProcessNode(*m_pRootNode);
