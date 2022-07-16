@@ -347,6 +347,9 @@ void ImGuiImpl::Render()
         uvData.clear();
         colourData.clear();
     }
+
+    glDisable(GL_BLEND);
+    glDisable(GL_SCISSOR_TEST);
 }
 
 bool ImGuiImpl::IsEnabled()
