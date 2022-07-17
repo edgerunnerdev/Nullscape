@@ -45,16 +45,16 @@ AstronomicalObject::~AstronomicalObject()
 {
 }
 
-void AstronomicalObject::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight)
+void AstronomicalObject::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
 {
     if (m_pOrbit != nullptr)
     {    
         const float oneDegree = glm::radians(1.0f);
         for (int i = 0; i < m_OrbitPoints.size(); ++i)
         {
-            m_OrbitPoints[i] = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, m_pOrbit->At(i * oneDegree));
+            m_OrbitPoints[i] = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, m_pOrbit->At(i * oneDegree));
         }
-        ImGui::GetWindowDrawList()->AddPolyline(m_OrbitPoints.data(), m_OrbitPoints.size(), IM_COL32(200, 200, 200, 255), ImDrawFlags_Closed, 1.0f);
+        ImGui::GetWindowDrawList()->AddPolyline(m_OrbitPoints.data(), m_OrbitPoints.size(), IM_COL32(255, 255, 255, 80), ImDrawFlags_Closed, 1.25f);
     }
 }
 
@@ -73,11 +73,11 @@ const std::string& AstronomicalObject::GetName() const
     return m_Name;
 }
 
-ImVec2 AstronomicalObject::ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const glm::vec2& coordinates) const 
+ImVec2 AstronomicalObject::ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const
 {
     const ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
     const glm::vec2 normalizedCoordinates = coordinates / 2.0f + glm::vec2(0.5f);
-    return ImVec2(canvasTopLeft.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + size.y * normalizedCoordinates.y);
+    return ImVec2(canvasTopLeft.x + canvasOffset.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + canvasOffset.y + size.y * normalizedCoordinates.y);
 }
 
 } // namespace Hyperscape

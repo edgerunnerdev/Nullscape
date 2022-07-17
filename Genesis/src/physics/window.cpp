@@ -18,7 +18,6 @@
 #include "window.h"
 
 #include "genesis.h"
-#include "imgui/imgui.h"
 #include "imgui/imgui_impl.h"
 #include "physics/debugrender.h"
 #include "physics/shape.h"
@@ -27,6 +26,7 @@
 // clang-format off
 #include "beginexternalheaders.h"
 #include <btBulletDynamicsCommon.h>
+#include <imgui.h>
 #include "endexternalheaders.h"
 // clang-format on
 

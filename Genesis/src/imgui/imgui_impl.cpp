@@ -8,7 +8,8 @@
 #include "window.h"
 
 #include <SDL.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
+#include <implot.h>
 #include <vector>
 
 namespace Genesis
@@ -47,6 +48,7 @@ static void ImGui_ImplSDL2_SetClipboardText(void*, const char* pText)
 void ImGuiImpl::Initialise()
 {
     ImGui::CreateContext();
+    ImPlot::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     io.KeyMap[ImGuiKey_Tab] = SDLK_TAB; // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
@@ -119,6 +121,7 @@ void ImGuiImpl::Shutdown()
 
     delete m_pVertexBuffer;
 
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 }
 

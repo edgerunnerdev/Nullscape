@@ -18,6 +18,7 @@ find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(imgui REQUIRED)
+find_package(implot REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
@@ -34,6 +35,7 @@ include_directories(
     ${BULLET3_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${IMGUI_INCLUDE_DIRS}
+    ${IMPLOT_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
@@ -81,3 +83,4 @@ target_compile_options(Genesis PRIVATE
 )
 
 target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Debug>:OPENGL_ERROR_CHECKING=1> $<$<CONFIG:Release>:OPENGL_ERROR_CHECKING=1> $<$<CONFIG:Final>:OPENGL_ERROR_CHECKING=0>)
+add_dependencies(Genesis rpclib bitsery MagicEnum xxhash)

@@ -42,14 +42,14 @@ public:
     AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, OrbitUniquePtr pOrbit, float theta);
     virtual ~AstronomicalObject();
 
-    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight);
+    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset);
     virtual void UpdateDebugUI();
 
     const glm::vec2& GetCoordinates() const;
     const std::string& GetName() const;
 
 protected:
-    ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const glm::vec2& coordinates) const;
+    ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const;
 
     std::string m_Name;
     OrbitUniquePtr m_pOrbit;

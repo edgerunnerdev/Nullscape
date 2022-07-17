@@ -27,7 +27,7 @@
 #include <string>
 #include <sstream>
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 #include <genesis.h>
 #include <taskmanager.h>
@@ -70,6 +70,7 @@
 #include "ui/editor.h"
 #include "ui/rootelement.h"
 #include "viewers/entityviewer/entityviewer.hpp"
+#include "viewers/explorationviewer/explorationviewer.hpp"
 #include "menus/mainmenu.h"
 #include "menus/audiodebug.h"
 #include "menus/intelwindow.h"
@@ -256,6 +257,7 @@ void Game::Initialise()
 	m_pShipOutline = std::make_unique<ShipOutline>();
     m_pUIRootElement = std::make_unique<UI::RootElement>();
     m_pUIEditor = std::make_unique<UI::Editor>();
+    m_pExplorationViewer = std::make_unique<ExplorationViewer>();
 	m_pModelViewer = std::make_unique<Genesis::ModelViewer>();
     m_pSystemViewer = std::make_unique<SystemViewer>();
 
@@ -301,6 +303,7 @@ Genesis::TaskStatus Game::Update( float delta )
 	m_pUIRootElement->Update();
     m_pUIEditor->UpdateDebugUI();
 	m_pModelViewer->UpdateDebugUI();
+    m_pExplorationViewer->UpdateDebugUI();
     m_pSystemViewer->UpdateDebugUI();
 	GetBlackboard()->UpdateDebugUI();
 	GetSaveGameStorage()->UpdateDebugUI();
@@ -419,6 +422,7 @@ void Game::StartNewGame(const ShipCustomisationData& customisationData)
 	m_pSystem = nullptr;
 	m_pSystem = std::make_shared<System>("17260877307600676");
     m_pSystemViewer->View(m_pSystem);
+    m_pExplorationViewer->View(m_pSystem);
 
 	m_pSystem->JumpTo(m_pPlayer, {0, 0});
 
@@ -556,6 +560,7 @@ void Game::SetState( GameState newState )
 			}
 
 			m_pSystem = std::make_shared<System>("17260877307600676", true);
+			m_pExplorationViewer->View(m_pSystem);
             m_pSystemViewer->View(m_pSystem);
 
 			m_pMainMenu = new MainMenu();

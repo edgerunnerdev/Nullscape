@@ -17,23 +17,28 @@
 
 #pragma once
 
-#include "system/astronomicalobject/astronomicalobject.hpp"
+#include <coredefines.h>
 
 namespace Hyperscape
 {
 
-class Planet : public AstronomicalObject
+GENESIS_DECLARE_SMART_PTR(System);
+
+class ExplorationViewer
 {
 public:
-    Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
-    Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
-    virtual ~Planet() override;
-    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) override;
-    virtual void UpdateDebugUI() override;
+    ExplorationViewer();
+    ~ExplorationViewer();
+
+    void UpdateDebugUI();
+
+    void View(SystemSharedPtr pSystem);
 
 private:
+    void DrawCanvas();
 
+    SystemWeakPtr m_pSystem;
+    bool m_IsOpen;
 };
-GENESIS_DECLARE_SMART_PTR(Planet);
 
 } // namespace Hyperscape

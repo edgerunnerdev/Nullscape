@@ -36,7 +36,7 @@
 
 #include <log.hpp>
 #include <SDL_image.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 namespace Genesis
 {

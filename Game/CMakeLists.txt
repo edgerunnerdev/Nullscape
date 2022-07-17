@@ -9,6 +9,7 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(imgui REQUIRED)
+find_package(implot REQUIRED)
 find_package(Genesis REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
@@ -29,6 +30,7 @@ include_directories(
   ${GLEW_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
   ${IMGUI_INCLUDE_DIRS}
+  ${IMPLOT_INCLUDE_DIRS}
   ${JSON_INCLUDE_DIRS}
   ${MAGICENUM_INCLUDE_DIRS}
   ${RPC_INCLUDE_DIRS}
@@ -62,10 +64,12 @@ link_libraries(
   SDL2_image
 )
 
+file(GLOB_RECURSE IMPLOT_SOURCE_FILES CONFIGURE_DEPENDS ${IMPLOT_INCLUDE_DIRS}/*.cpp ${IMPLOT_INCLUDE_DIRS}/*.h)
+
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
 
 if(WIN32)
-    add_executable(Game WIN32 ${SOURCE_FILES})
+    add_executable(Game WIN32 ${SOURCE_FILES} ${IMPLOT_SOURCE_FILES})
     find_package(FMOD REQUIRED)
     target_include_directories(Game PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(Game PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
@@ -75,7 +79,7 @@ if(WIN32)
     set_target_properties(Game PROPERTIES VS_STARTUP_PROJECT ${OUTPUT_DIRECTORY})
     set_target_properties(Game PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${OUTPUT_DIRECTORY})
 else()
-    add_executable(Game ${SOURCE_FILES})
+    add_executable(Game ${SOURCE_FILES} ${IMPLOT_SOURCE_FILES})
     target_link_libraries(Game PRIVATE GL pthread SDL2_mixer vpx)
 endif()
 

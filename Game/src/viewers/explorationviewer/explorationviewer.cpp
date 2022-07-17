@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "system/systemviewer.hpp"
+#include "viewers/explorationviewer/explorationviewer.hpp"
 
 #include <sstream>
 #include <imgui/imgui.h>
@@ -30,25 +30,24 @@
 namespace Hyperscape
 {
 
-SystemViewer::SystemViewer()
+ExplorationViewer::ExplorationViewer()
     : m_IsOpen(false)
 {
-    Genesis::ImGuiImpl::RegisterMenu("Game", "System viewer", &m_IsOpen);
+    Genesis::ImGuiImpl::RegisterMenu("Game", "Exploration viewer", &m_IsOpen);
 }
    
-SystemViewer::~SystemViewer()
-{
+ExplorationViewer::~ExplorationViewer() {
 
 }
 
-void SystemViewer::UpdateDebugUI() 
+void ExplorationViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
         using namespace ImGui;
-        Begin("System viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        Begin("Exploration viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
-        BeginChild("System", ImVec2(1200, 900), true);
+        BeginChild("System", ImVec2(1200, 600), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         DrawCanvas();
         EndChild();
 
@@ -67,11 +66,6 @@ void SystemViewer::UpdateDebugUI()
                 static int sDepth = 1;
                 InputInt("Depth", &sDepth);
                 sDepth = gClamp<int>(sDepth, 1, 8);
-
-                if (Button("Reseed"))
-                {
-                    Reseed(sDepth);
-                }
             }
 
             
@@ -95,39 +89,16 @@ void SystemViewer::UpdateDebugUI()
     }
 }
 
-void SystemViewer::View(SystemSharedPtr pSystem)
+void ExplorationViewer::View(SystemSharedPtr pSystem)
 {
     m_pSystem = pSystem;
 }
 
-void SystemViewer::Reseed(int depth) 
-{
-    std::stringstream seed;
-    seed << depth;
-    static std::random_device rd;
-    std::uniform_int_distribution<int> dist(0, 9);
-    for (int i = 0; i < 16; i++)
-    {
-        char c = '0' + dist(rd);
-        seed << c;
-    }
-
-    m_pReseedSystem = std::make_shared<System>(seed.str(), true);
-    m_pSystem = m_pReseedSystem;
-}
-
-void SystemViewer::DrawCanvas() 
+void ExplorationViewer::DrawCanvas()
 {
     static ImVector<ImVec2> points;
     static ImVec2 scrolling(0.0f, 0.0f);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));      // Disable padding
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(50, 50, 50, 255));  // Set a background color
-    ImGui::BeginChild("canvas", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysHorizontalScrollbar);
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar();
-
-    static const float sSectorSize = 64.0f;
+    static const float sSectorSize = 48.0f;
     static const size_t sNumSectorsW = 31;
     static const size_t sNumSectorsH = 31;
 
@@ -150,18 +121,16 @@ void SystemViewer::DrawCanvas()
     // Pan (we use a zero mouse threshold when there's no context menu)
     // You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
     const float mouse_threshold_for_pan = -1.0f;
-    if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
+    if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Left, mouse_threshold_for_pan))
     {
-        //scrolling.x += io.MouseDelta.x;
-        //scrolling.y += io.MouseDelta.y;
-
-        
+        scrolling.x += io.MouseDelta.x;
+        scrolling.y += io.MouseDelta.y;
     }
 
     
 
     // Context menu (under default mouse threshold)
-    ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+    ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
     if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
         ImGui::OpenPopupOnItemClick("context");
     if (ImGui::BeginPopup("context"))
@@ -178,33 +147,24 @@ void SystemViewer::DrawCanvas()
     }
 
     // Draw grid + all lines in the canvas
-
-    const float GRID_STEP = 64.0f;
+    pDrawList->PushClipRect(canvas_p0, canvas_p1, true);
+    const float GRID_STEP = sSectorSize;
     for (float x = fmodf(scrolling.x, GRID_STEP); x < canvas_sz.x; x += GRID_STEP)
         pDrawList->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y), ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
     for (float y = fmodf(scrolling.y, GRID_STEP); y < canvas_sz.y; y += GRID_STEP)
         pDrawList->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
-
-    for (int x = 0; x < sNumSectorsW; x++)
-    {
-        for (int y = 0; y < sNumSectorsH; y++)
-        {
-            std::stringstream ss;
-            ss << x << "," << y;
-            pDrawList->AddText(ImVec2(canvas_p0.x + x * sSectorSize + 1, canvas_p0.y + y * sSectorSize), IM_COL32(200, 200, 200, 40), ss.str().c_str());
-        }
-    }
 
     SystemSharedPtr pSystem = m_pSystem.lock();
     if (pSystem != nullptr)
     {
         for (auto& pAstronomicalObject : pSystem->GetAstronomicalObjects())
         {
-            pAstronomicalObject->DebugRender(canvas_p0, canvas_p1, ImVec2(0.0f, 0.0f));
+            pAstronomicalObject->DebugRender(canvas_p0, canvas_p1, scrolling);
         }
     }
+    pDrawList->PopClipRect();
 
-    ImGui::EndChild();
+    //ImGui::EndChild();
 }
 
 } // namespace Hyperscape

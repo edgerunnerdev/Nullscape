@@ -18,7 +18,7 @@
 #include <array>
 
 #include <genesis.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <imgui/imgui_impl.h>
 #include <log.hpp>
 

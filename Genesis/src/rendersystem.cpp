@@ -25,7 +25,6 @@
 #include "configuration.h"
 #include "genesis.h"
 #include "gui/gui.h"
-#include "imgui/imgui.h"
 #include "imgui/imgui_impl.h"
 #include "memory.h"
 #include "render/gldebugmessagecallback.h"
@@ -41,6 +40,7 @@
 #include "videoplayer.h"
 #include "window.h"
 
+#include <imgui.h>
 #include <SDL_image.h>
 #include <log.hpp>
 

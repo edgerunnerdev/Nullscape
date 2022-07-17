@@ -95,6 +95,7 @@ class SaveGameStorage;
 class ShipOutline;
 
 GENESIS_DECLARE_SMART_PTR(EntityViewer);
+GENESIS_DECLARE_SMART_PTR(ExplorationViewer);
 GENESIS_DECLARE_SMART_PTR(Player);
 GENESIS_DECLARE_SMART_PTR(System);
 GENESIS_DECLARE_SMART_PTR(SystemViewer);
@@ -206,6 +207,7 @@ private:
     ShipInfoManager* m_pShipInfoManager;
     PlayerSharedPtr m_pPlayer;
     SystemSharedPtr m_pSystem;
+    ExplorationViewerUniquePtr m_pExplorationViewer;
     SystemViewerUniquePtr m_pSystemViewer;
     MusicTitle* m_pMusicTitle;
     TutorialWindow* m_pTutorialWindow;

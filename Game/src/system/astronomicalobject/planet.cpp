@@ -34,14 +34,11 @@ Planet::Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float th
 
 Planet::~Planet() {}
 
-void Planet::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight) 
+void Planet::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
 {
-    AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight);
+    AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight, canvasOffset);
 
-    ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
-    glm::vec2 normalizedCoordinates = GetCoordinates() / 2.0f + glm::vec2(0.5f);
-    ImVec2 center(canvasTopLeft.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + size.y * normalizedCoordinates.y);
-
+    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetCoordinates());
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
     pDrawList->AddCircleFilled(center, 8.0f, IM_COL32(200, 200, 200, 255));
 }

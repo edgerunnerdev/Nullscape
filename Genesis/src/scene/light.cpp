@@ -17,7 +17,7 @@
 
 #include "scene/light.h"
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 namespace Genesis
 {
