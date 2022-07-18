@@ -18,13 +18,13 @@
 #include "viewers/modelviewer/modelviewer.hpp"
 
 #include <sstream>
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl.h"
 #include "viewers/fileviewer/fileviewer.hpp"
 #include "viewers/modelviewer/modelviewerbackground.hpp"
 #include "viewers/modelviewer/modelviewerobject.hpp"
 #include "resources/resourcemodel.h"
 #include "genesis.h"
-#include <imgui.h>
-#include <imgui/imgui_impl.h>
 #include "render/rendertarget.h"
 #include "render/viewport.hpp"
 #include "rendersystem.h"

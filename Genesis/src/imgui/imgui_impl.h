@@ -28,10 +28,9 @@ public:
     static void Enable(bool state);
     static void RegisterMenu(const std::string& menuRoot, const std::string& menuName, bool* pShow);
     static void UnregisterMenu(const std::string& menuRoot, const std::string& menuName);
-
-private:
     static void CreateFontsTexture();
 
+private:
     static double g_Time;
     static bool g_MousePressed[3];
     static float g_MouseWheel;

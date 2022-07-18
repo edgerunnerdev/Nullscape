@@ -20,6 +20,7 @@
 #include "configuration.h"
 #include "eventhandler.h"
 #include "gui/gui.h"
+#include "imgui/imgui.h"
 #include "imgui/imgui_impl.h"
 #include "inputmanager.h"
 #include "memory.h"
@@ -36,7 +37,6 @@
 
 #include <log.hpp>
 #include <SDL_image.h>
-#include <imgui.h>
 
 namespace Genesis
 {

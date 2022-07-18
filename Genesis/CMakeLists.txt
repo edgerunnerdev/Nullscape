@@ -3,7 +3,6 @@ project(Genesis)
 
 include(ExternalLibraries)
 
-add_subdirectory("libs/imgui")
 add_subdirectory("libs/GenesisCore")
 add_subdirectory("libs/GenesisResComp")
 add_subdirectory("tools")
@@ -17,8 +16,6 @@ list(APPEND SOURCE_FILES tools/modelcomp/src/modelserialization.hpp)
 find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
-find_package(imgui REQUIRED)
-find_package(implot REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
@@ -34,8 +31,6 @@ include_directories(
     ${BITSERY_INCLUDE_DIRS}
     ${BULLET3_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
-    ${IMGUI_INCLUDE_DIRS}
-    ${IMPLOT_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}

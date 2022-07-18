@@ -8,8 +8,6 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
 find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
-find_package(imgui REQUIRED)
-find_package(implot REQUIRED)
 find_package(Genesis REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
@@ -29,8 +27,6 @@ include_directories(
   ${GENESISCORE_INCLUDE_DIRS}
   ${GLEW_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
-  ${IMGUI_INCLUDE_DIRS}
-  ${IMPLOT_INCLUDE_DIRS}
   ${JSON_INCLUDE_DIRS}
   ${MAGICENUM_INCLUDE_DIRS}
   ${RPC_INCLUDE_DIRS}
@@ -45,7 +41,6 @@ link_directories(
   ${GENESIS_LIBRARY_DIRS}
   ${GENESISCORE_LIBRARY_DIRS}
   ${GLEW_LIBRARY_DIRS}
-  ${IMGUI_LIBRARY_DIRS}
   ${RPC_LIBRARY_DIRS}
   ${SDL2_LIBRARY_DIRS}
   ${SDL2_IMAGE_LIBRARY_DIRS}
@@ -57,7 +52,6 @@ link_libraries(
   Genesis
   GenesisCore
   ${GLEW_LIBRARIES}
-  imgui
   rpc
   SDL2main
   SDL2

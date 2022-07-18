@@ -1,5 +1,6 @@
 #include "imgui/imgui_impl.h"
 
+#include "imgui/imgui.h"
 #include "resources/resourceshader.hpp"
 #include "genesis.h"
 #include "rendersystem.h"
@@ -8,7 +9,6 @@
 #include "window.h"
 
 #include <SDL.h>
-#include <imgui.h>
 #include <implot.h>
 #include <vector>
 
@@ -75,8 +75,6 @@ void ImGuiImpl::Initialise()
     io.GetClipboardTextFn = ImGui_ImplSDL2_GetClipboardText;
     io.ClipboardUserData = nullptr;
     io.ConfigWindowsMoveFromTitleBarOnly = true;
-
-    CreateFontsTexture();
 
     m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR | VB_2D);
 }

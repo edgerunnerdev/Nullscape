@@ -19,13 +19,14 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <imgui/imgui.h>
 #include <glm/vec2.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
 #include <array>
 #include <string>
+
+#include <imgui/imgui.h>
 
 #include "system/system.fwd.hpp"
 

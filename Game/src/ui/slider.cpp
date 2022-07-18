@@ -16,7 +16,6 @@
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include <imgui/imgui.h>
-
 #include <gui/gui.h>
 #include <math/misc.h>
 #include <genesis.h>

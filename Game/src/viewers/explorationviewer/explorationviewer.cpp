@@ -26,6 +26,7 @@
 
 #include "system/astronomicalobject/astronomicalobject.hpp"
 #include "system/system.hpp"
+#include "ui2.hpp"
 
 namespace Hyperscape
 {
@@ -44,8 +45,10 @@ void ExplorationViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
+        UI2::PushFont(UI2::FontId::JuraRegular16);
+
         using namespace ImGui;
-        Begin("Exploration viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        Begin("Sensors", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
         BeginChild("System", ImVec2(1200, 600), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         DrawCanvas();
@@ -86,6 +89,8 @@ void ExplorationViewer::UpdateDebugUI()
         EndChild();
 
         End();
+
+        UI2::PopFont();
     }
 }
 

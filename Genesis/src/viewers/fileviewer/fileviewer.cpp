@@ -17,7 +17,7 @@
 
 #include "viewers/fileviewer/fileviewer.hpp"
 
-#include <imgui.h>
+#include "imgui/imgui.h"
 
 namespace Genesis
 {

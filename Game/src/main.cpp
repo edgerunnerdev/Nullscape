@@ -86,6 +86,7 @@
 #include "savegamestorage.h"
 #include "shadertweaks.h"
 #include "stringaux.h"
+#include "ui2.hpp"
 #include "xmlaux.h"
 
 #include "particles/particlemanager.h"
@@ -251,6 +252,8 @@ void Game::Initialise()
 #endif // USE_STEAM
 
     Genesis::ImGuiImpl::RegisterMenu( "Tools", "ImGui test window", &m_ShowImguiTestWindow );
+
+	UI2::Initialize();
 
 	m_pAchievementsManager = new AchievementsManager();
 	m_pSaveGameStorage = std::make_unique< SaveGameStorage >();
