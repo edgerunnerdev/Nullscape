@@ -19,8 +19,8 @@
 
 #include <filesystem>
 
-#include <imgui.h>
-#include <misc/cpp/imgui_stdlib.h>
+#include <imgui/imgui.h>
+#include <imgui/misc/cpp/imgui_stdlib.h>
 #include <resources/resourcemodel.h>
 #include <genesis.h>
 

@@ -17,6 +17,10 @@ build/
 # Visual Studio's CMake integration
 .vs/
 
+# vcpkg integration
+vcpkg_installed/
+
+
 # Generated artifacts
 Genesis/libs/GenesisCore/lib/
 Genesis/libs/GenesisResComp/lib/
@@ -34,7 +38,7 @@ Game/bin/log.txt
 Game/bin/Screenshot*.bmp
 Genesis/bin/Compilers/
 Genesis/bin/Forge.*
-Genesis/bin/SDL2.dll
+Genesis/bin/*.dll
 Genesis/ext/
 
 # Blender temporary files

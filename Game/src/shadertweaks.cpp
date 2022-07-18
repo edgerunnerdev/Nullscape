@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
-#include <imgui.h>
+#include <imgui/imgui.h>
 #include "shadertweaks.h"
 
 namespace Hyperscape

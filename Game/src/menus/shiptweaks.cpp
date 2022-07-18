@@ -16,7 +16,7 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include <genesis.h>
-#include <imgui.h>
+#include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
 
 #include "ship/shipoutline.h"

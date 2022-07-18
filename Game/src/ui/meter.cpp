@@ -16,7 +16,7 @@
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gui/gui.h>
-#include <imgui.h>
+#include <imgui/imgui.h>
 
 #include "ui/meter.h"
 

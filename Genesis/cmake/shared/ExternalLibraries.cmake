@@ -2,13 +2,6 @@ include(ExternalProject)
 
 function(BuildExternalLibraries)
 
-  ExternalProject_Add(implot
-    PREFIX ${CMAKE_CURRENT_LIST_DIR}/ext/implot
-    GIT_REPOSITORY https://github.com/epezent/implot.git
-	GIT_TAG v0.13
-    UPDATE_COMMAND "" CONFIGURE_COMMAND "" BUILD_COMMAND "" INSTALL_COMMAND ""
-  )
-
   ExternalProject_Add(rpclib
     PREFIX ${CMAKE_CURRENT_LIST_DIR}/ext/rpclib
     GIT_REPOSITORY https://github.com/edgerunnerdev/rpclib.git

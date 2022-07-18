@@ -45,7 +45,7 @@ void ExplorationViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        UI2::PushFont(UI2::FontId::JuraRegular16);
+        UI2::PushFont(UI2::FontId::JuraRegular20);
 
         using namespace ImGui;
         Begin("Sensors", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);

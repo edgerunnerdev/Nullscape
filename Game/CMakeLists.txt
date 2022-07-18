@@ -49,6 +49,7 @@ link_directories(
 
 link_libraries(
   ${BULLET3_LIBRARIES}
+  freetype
   Genesis
   GenesisCore
   ${GLEW_LIBRARIES}
@@ -61,7 +62,7 @@ link_libraries(
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
 
 if(WIN32)
-    add_executable(Game WIN32 ${SOURCE_FILES} ${IMPLOT_SOURCE_FILES})
+    add_executable(Game WIN32 ${SOURCE_FILES})
     find_package(FMOD REQUIRED)
     target_include_directories(Game PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(Game PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
@@ -71,7 +72,7 @@ if(WIN32)
     set_target_properties(Game PROPERTIES VS_STARTUP_PROJECT ${OUTPUT_DIRECTORY})
     set_target_properties(Game PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${OUTPUT_DIRECTORY})
 else()
-    add_executable(Game ${SOURCE_FILES} ${IMPLOT_SOURCE_FILES})
+    add_executable(Game ${SOURCE_FILES})
     target_link_libraries(Game PRIVATE GL pthread SDL2_mixer vpx)
 endif()
 

@@ -36,7 +36,7 @@ void UI2::Initialize()
     }
 
     RegisterDefaultFont();
-    RegisterFont(FontId::JuraRegular16, "data/ui/fonts/Jura-Regular.ttf", 16.0f);
+    RegisterFont(FontId::JuraRegular20, "data/ui/fonts/Jura-Regular.ttf", 20.0f);
 
     Genesis::ImGuiImpl::CreateFontsTexture();
     
@@ -50,11 +50,7 @@ void UI2::RegisterDefaultFont()
 
 void UI2::RegisterFont(FontId id, const std::filesystem::path& path, float size)
 {
-    ImFontConfig fontConfig = ImFontConfig();
-    fontConfig.OversampleH = 6;
-    fontConfig.OversampleV = 6;
-
-     ImFont* pFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(path.generic_string().c_str(), size, &fontConfig);
+     ImFont* pFont = ImGui::GetIO().Fonts->AddFontFromFileTTF(path.generic_string().c_str(), size);
      SDL_assert(pFont);
      sRegisteredFonts[static_cast<size_t>(id)] = pFont;
 }

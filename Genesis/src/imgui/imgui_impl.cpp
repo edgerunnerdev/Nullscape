@@ -1,6 +1,8 @@
 #include "imgui/imgui_impl.h"
 
 #include "imgui/imgui.h"
+#include "imgui/misc/freetype/imgui_freetype.h"
+#include "implot/implot.h"
 #include "resources/resourceshader.hpp"
 #include "genesis.h"
 #include "rendersystem.h"
@@ -9,7 +11,7 @@
 #include "window.h"
 
 #include <SDL.h>
-#include <implot.h>
+
 #include <vector>
 
 namespace Genesis
@@ -90,6 +92,7 @@ void ImGuiImpl::CreateFontsTexture()
     ImGuiIO& io = ImGui::GetIO();
     unsigned char* pixels;
     int width, height;
+    io.Fonts->FontBuilderFlags = ImGuiFreeTypeBuilderFlags_ForceAutoHint;   
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height); // Load as RGBA 32-bits for OpenGL3 demo because it is more likely to be compatible with user's existing shader.
 
     // Upload texture to graphics system

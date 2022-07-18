@@ -27,12 +27,11 @@
 #include <string>
 #include <sstream>
 
-#include <imgui.h>
-
 #include <genesis.h>
 #include <taskmanager.h>
 #include <gui/gui.h>
 #include <gui/video.h>
+#include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
 #include <physics/simulation.h>
 #include <render/debugrender.h>

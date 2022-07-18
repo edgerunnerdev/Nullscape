@@ -28,7 +28,7 @@ public:
 	enum class FontId
     {
 		Default,
-		JuraRegular16,
+		JuraRegular20,
 
 		Count
 	};

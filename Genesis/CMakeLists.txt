@@ -16,6 +16,7 @@ list(APPEND SOURCE_FILES tools/modelcomp/src/modelserialization.hpp)
 find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
+find_package(freetype CONFIG REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
@@ -26,7 +27,8 @@ find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
 
 include_directories(
-    src/ 
+    src/
+    src/imgui/
     tools/modelcomp/src/
     ${BITSERY_INCLUDE_DIRS}
     ${BULLET3_INCLUDE_DIRS}
