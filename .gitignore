@@ -41,5 +41,13 @@ Genesis/bin/Forge.*
 Genesis/bin/*.dll
 Genesis/ext/
 
+# DLLs. This should become Game/bin/*.dll once all DLLs are correctly deployed.
+Game/bin/brotlicommon.dll
+Game/bin/brotlidec.dll
+Game/bin/bz2*.dll
+Game/bin/freetype*.dll
+Game/bin/libpng16*.dll
+Game/bin/zlib*1.dll
+
 # Blender temporary files
 *.blend?
