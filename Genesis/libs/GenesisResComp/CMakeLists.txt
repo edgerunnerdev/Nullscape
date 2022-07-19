@@ -8,19 +8,23 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(SDL2 REQUIRED)
-find_package(rpc REQUIRED)
 
+find_path(SYSTEM_INCLUDE_DIR zlib.h)
 include_directories(
     src/
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
-    ${RPC_INCLUDE_DIRS}
+    ${SYSTEM_INCLUDE_DIR}
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/$<IF:$<CONFIG:Debug>,Debug,Release>)
-add_dependencies(${PROJECT_NAME} GenesisCore rpclib)
+add_dependencies(${PROJECT_NAME} GenesisCore)
+
+if(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
+endif()
 
 target_compile_options(${PROJECT_NAME} PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:

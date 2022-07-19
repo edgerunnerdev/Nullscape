@@ -6,14 +6,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h src/*.hpp src/*.rc)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
-find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(Genesis REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(json REQUIRED)
 find_package(MagicEnum REQUIRED)
-find_package(rpc REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
@@ -21,7 +19,6 @@ find_package(xxhash REQUIRED)
 
 include_directories(
   src/ 
-  ${BITSERY_INCLUDE_DIRS}
   ${BULLET3_INCLUDE_DIRS}
   ${GENESIS_INCLUDE_DIRS}
   ${GENESISCORE_INCLUDE_DIRS}
@@ -29,7 +26,6 @@ include_directories(
   ${GLM_INCLUDE_DIRS}
   ${JSON_INCLUDE_DIRS}
   ${MAGICENUM_INCLUDE_DIRS}
-  ${RPC_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIRS}
   ${SDL2_IMAGE_INCLUDE_DIRS}
   ${VPX_INCLUDE_DIRS}
@@ -53,7 +49,7 @@ link_libraries(
   Genesis
   GenesisCore
   ${GLEW_LIBRARIES}
-  rpc
+  rpclib::rpc
   SDL2main
   SDL2
   SDL2_image
@@ -71,6 +67,11 @@ if(WIN32)
     target_link_libraries(Game PRIVATE Opengl32 glu32 ws2_32 vpxmt$<$<CONFIG:Debug>:d>)
     set_target_properties(Game PROPERTIES VS_STARTUP_PROJECT ${OUTPUT_DIRECTORY})
     set_target_properties(Game PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${OUTPUT_DIRECTORY})
+	set_target_properties(Game PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
+	
+	get_target_property(OUT Game LINK_LIBRARIES)
+	message(STATUS ${OUT})
+	
 else()
     add_executable(Game ${SOURCE_FILES})
     target_link_libraries(Game PRIVATE GL pthread SDL2_mixer vpx)
@@ -115,4 +116,5 @@ target_compile_options(Game PRIVATE
 
 add_custom_target(BUILD_RESOURCES ALL DEPENDS alwaysrun)
 add_custom_command(TARGET BUILD_RESOURCES POST_BUILD COMMAND ${CMAKE_CURRENT_LIST_DIR}/../Genesis/bin/Forge.exe -m standalone -a ${CMAKE_CURRENT_LIST_DIR}/bin/assets -c ${CMAKE_CURRENT_LIST_DIR}/../Genesis/bin/compilers -d ${CMAKE_CURRENT_LIST_DIR}/bin/data -i ${CMAKE_CURRENT_LIST_DIR}/bin/intermediates)
-add_dependencies(Game BUILD_RESOURCES Forge GenericComp ModelComp ShaderComp)
+add_dependencies(BUILD_RESOURCES Forge GenericComp ModelComp ShaderComp)
+add_dependencies(Game BUILD_RESOURCES)

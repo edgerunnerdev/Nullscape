@@ -12,8 +12,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 list(APPEND SOURCE_FILES tools/modelcomp/src/modelserialization.hpp)
-	
-find_package(bitsery REQUIRED)
+
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(freetype CONFIG REQUIRED)
@@ -21,26 +20,27 @@ find_package(GenesisCore REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(MagicEnum REQUIRED)
-find_package(rpc REQUIRED)
+find_package(rpclib REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(VPX REQUIRED)
 
+find_path(SYSTEM_INCLUDE_DIR zlib.h)
+message(STATUS "vcpkg include directory: ${SYSTEM_INCLUDE_DIR}")
 include_directories(
     src/
     src/imgui/
     tools/modelcomp/src/
-    ${BITSERY_INCLUDE_DIRS}
     ${BULLET3_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
     ${MAGICENUM_INCLUDE_DIRS}
-    ${RPC_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     ${SDL2_IMAGE_INCLUDE_DIRS}
     ${VPX_INCLUDE_DIRS}
+	${SYSTEM_INCLUDE_DIR}
 )
 
 BuildExternalLibraries()
@@ -53,6 +53,7 @@ if(WIN32)
     target_include_directories(Genesis PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(Genesis PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_compile_options(Genesis PUBLIC $<$<CONFIG:Final>:/Ob2 /GL>)
+	set_target_properties(Genesis PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
 else()
     find_package(SDL2_mixer REQUIRED)
 endif()
@@ -80,4 +81,4 @@ target_compile_options(Genesis PRIVATE
 )
 
 target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Debug>:OPENGL_ERROR_CHECKING=1> $<$<CONFIG:Release>:OPENGL_ERROR_CHECKING=1> $<$<CONFIG:Final>:OPENGL_ERROR_CHECKING=0>)
-add_dependencies(Genesis rpclib bitsery MagicEnum xxhash)
+add_dependencies(Genesis MagicEnum xxhash)

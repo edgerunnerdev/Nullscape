@@ -10,7 +10,6 @@ find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(json REQUIRED)
-find_package(rpc REQUIRED)
 
 include_directories(
     src/
@@ -19,7 +18,6 @@ include_directories(
     ${GENESISRESCOMP_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${JSON_INCLUDE_DIRS}
-    ${RPC_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
 )
 
@@ -32,6 +30,7 @@ if(WIN32)
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_LIBRARY_DIRS}/SDL2.dll ${OUTPUT_DIRECTORY})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${GLEW_BINARY_DIRS}/glew32.dll ${OUTPUT_DIRECTORY})
+    set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
 else()
 	add_executable(${PROJECT_NAME} ${SOURCE_FILES})
     #target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
@@ -42,7 +41,6 @@ target_link_directories(${PROJECT_NAME} PRIVATE
     ${GENESISRESCOMP_LIBRARY_DIRS}
     ${GLEW_LIBRARY_DIRS}
     ${SDL2_LIBRARY_DIRS}
-    ${RPC_LIBRARY_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
@@ -51,7 +49,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${GLEW_LIBRARIES}
     SDL2main
     SDL2
-    rpc
+    rpclib::rpc
 )
 
 add_dependencies(${PROJECT_NAME} GenesisCore)

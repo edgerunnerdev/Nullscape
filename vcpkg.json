@@ -3,6 +3,9 @@
   "version-string": "0.0.1",
   "license": "GPL-3.0-or-later",
   "dependencies": [
-    "freetype"
-  ]
+    { "name": "bitsery" },
+    { "name": "freetype" },
+	{ "name": "rpclib", "version>=": "2.3.0" }
+  ],
+  "builtin-baseline": "de176433e9a8769eed0e43d61758f4cdc1dc6e20"
 }
