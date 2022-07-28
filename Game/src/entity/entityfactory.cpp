@@ -18,12 +18,11 @@
 #include "entity/entityfactory.hpp"
 
 #include <fstream>
+#include <tuple>
 #include <memory>
 
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <bitsery/bitsery.h>
-#include <bitsery/adapter/buffer.h>
 #include <bitsery/traits/vector.h>
 #include <externalheadersend.hpp>
 // clang-format on
@@ -31,6 +30,7 @@
 #include <log.hpp>
 
 #include "entity/component.hpp"
+#include "entity/componentserialization.hpp"
 #include "entity/entity.hpp"
 
 namespace Hyperscape
@@ -82,21 +82,27 @@ EntitySharedPtr EntityFactory::Create(const std::string& templateName) const
         return nullptr;
     }
 
+    EntityTemplate const& entityTemplate = it->second;
     EntitySharedPtr pEntity = std::make_shared<Entity>();
 
-    // same as serialization, but returns deserialization state as a pair
-    // first = error code, second = is buffer was successfully read from begin to the end.
-    using InputAdapter = bitsery::InputBufferAdapter<EntityTemplate>;
-    auto state = bitsery::quickDeserialization<InputAdapter>({it->second.begin(), it->second.size()}, *pEntity);
+    SerializationContext context{};
+    std::get<1>(context).registerBasesList<Deserializer>(ComponentPolymorphicClasses{});
+    Deserializer deserializer{context, entityTemplate.begin(), entityTemplate.size()};
+    deserializer.object(*pEntity);
 
-    if (state.first == bitsery::ReaderError::NoError && state.second)
-    {
-        return pEntity;
-    }
-    else
+    if (deserializer.adapter().error() != bitsery::ReaderError::NoError || !deserializer.adapter().isCompletedSuccessfully())
     {
         Genesis::Core::Log::Error() << "Failed to create entity from template " << templateName;
         return nullptr;
+    }
+    else if (!std::get<0>(context).isValid())
+    {
+        Genesis::Core::Log::Error() << "Failed to create entity from template " << templateName << ": dangling pointers.";
+        return nullptr;
+    }
+    else
+    {
+        return pEntity;
     }
 }
 
@@ -107,12 +113,17 @@ bool EntityFactory::AddBlankTemplate(const std::string& templateName)
         return false;
     }
 
+    SerializationContext context{};
+    std::get<1>(context).registerBasesList<Serializer>(ComponentPolymorphicClasses{});
     EntityTemplate buffer;
-    using OutputAdapter = bitsery::OutputBufferAdapter<EntityTemplate>;
-    size_t written = bitsery::quickSerialization<OutputAdapter>(buffer, Entity());
-    if (written != 0)
+    Serializer serializer{context, buffer};
+    serializer.object(Entity());
+    serializer.adapter().flush();
+    size_t writtenSize = serializer.adapter().writtenBytesCount();
+
+    if (writtenSize != 0)
     {
-        buffer.resize(written);
+        buffer.resize(writtenSize);
     }
 
     m_Templates[templateName] = buffer;

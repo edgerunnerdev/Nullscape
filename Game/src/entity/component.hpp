@@ -46,6 +46,11 @@ public:
 
     void SetOwner(Entity* pEntity);
 
+    template <typename S> void serialize(S& s)
+    {
+
+    }
+
 private:
     Entity* m_pEntity;
 };

@@ -23,12 +23,18 @@
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <bitsery/bitsery.h>
+#include <bitsery/traits/array.h>
+#include <bitsery/traits/vector.h>
+#include <bitsery/ext/pointer.h>
+#include <bitsery/ext/inheritance.h>
+#include <bitsery/ext/std_smart_ptr.h>
 #include <externalheadersend.hpp>
 // clang-format on
 
 #include <scene/sceneobject.h>
 #include <coredefines.h>
 
+#include "entity/componentserialization.hpp"
 #include "entity/componenttype.hpp"
 
 namespace Hyperscape
@@ -39,7 +45,7 @@ GENESIS_DECLARE_SMART_PTR(Component)
 class Entity : public Genesis::SceneObject
 {
 public:
-    Entity() : m_Test(1337) {}
+    Entity() {}
     virtual ~Entity() override {}
 
     virtual void Update(float delta) override;
@@ -52,12 +58,19 @@ public:
     template<typename S>
     void serialize(S& s) 
     {
-        s.value4b(m_Test);
+        s.container(m_Components, [](S& s, std::vector<ComponentUniquePtr>& components) 
+            {
+                s.container(components, components.size(), [](S& s, ComponentUniquePtr& pComponent) 
+                {
+                    s.ext(pComponent, bitsery::ext::StdSmartPtr{});
+                });
+            }
+        );
     }
+
 
 private:
     std::array<std::vector<ComponentUniquePtr>, static_cast<size_t>(ComponentType::Count)> m_Components;
-    int m_Test;
 };
 
 } // namespace Hyperscape

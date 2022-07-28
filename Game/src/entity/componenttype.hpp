@@ -23,8 +23,8 @@ namespace Hyperscape
 enum class ComponentType
 {
 	ModelComponent = 0,
-	RigidBodyComponent,
-	ShapeAABBComponent,
+	//RigidBodyComponent,
+	//ShapeAABBComponent,
 
 	Count
 };

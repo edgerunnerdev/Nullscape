@@ -39,6 +39,11 @@ public:
     virtual void UpdateDebugUI() override;
     virtual void Render() override;
 
+    template <typename S> void serialize(S& s) 
+    {
+    
+    }
+
     DEFINE_COMPONENT(ModelComponent);
 
 private:
