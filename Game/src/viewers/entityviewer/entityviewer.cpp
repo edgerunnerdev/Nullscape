@@ -142,9 +142,10 @@ void EntityViewer::DrawMenu()
                 openNewTemplatePopup = true;
             }
 
-            if (ImGui::MenuItem("Save", nullptr, nullptr, false))
+            bool canSave = (m_pEntity != nullptr);
+            if (ImGui::MenuItem("Save", nullptr, nullptr, canSave))
             {
-                
+                EntityFactory::Get()->SaveTemplate(m_LoadedTemplate, m_pEntity.get());
             }
 
             ImGui::EndMenu();
@@ -183,6 +184,8 @@ void EntityViewer::DrawMenu()
         if (ImGui::Button("Create", ImVec2(200, 0)))
         {
             EntityFactory::Get()->AddBlankTemplate(sNewTemplateName);
+            m_LoadedTemplate = sNewTemplateName;
+            sNewTemplateName = "";
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();

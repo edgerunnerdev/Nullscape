@@ -51,17 +51,7 @@ EntityFactory::EntityFactory()
 
 EntityFactory::~EntityFactory() 
 {
-    std::filesystem::path templatesPath("data/templates");
-    for (auto& pair : m_Templates)
-    {
-        std::string filename = pair.first + ".bin";
-        std::ofstream file(templatesPath / filename, std::ifstream::binary);
-        if (file.good())
-        {
-            file.write(reinterpret_cast<char*>(pair.second.data()), pair.second.size());
-            file.close();        
-        }
-    }
+
 }
 
 EntityFactory* EntityFactory::Get() 
@@ -113,20 +103,8 @@ bool EntityFactory::AddBlankTemplate(const std::string& templateName)
         return false;
     }
 
-    SerializationContext context{};
-    std::get<1>(context).registerBasesList<Serializer>(ComponentPolymorphicClasses{});
-    EntityTemplate buffer;
-    Serializer serializer{context, buffer};
-    serializer.object(Entity());
-    serializer.adapter().flush();
-    size_t writtenSize = serializer.adapter().writtenBytesCount();
-
-    if (writtenSize != 0)
-    {
-        buffer.resize(writtenSize);
-    }
-
-    m_Templates[templateName] = buffer;
+    Entity entity;
+    SaveTemplate(templateName, &entity);
     return true;
 }
 
@@ -166,6 +144,35 @@ void EntityFactory::LoadTemplate(const std::filesystem::path& path)
     else
     {
         Genesis::Core::Log::Error() << "Failed to load entity template " << path;
+    }
+}
+
+void EntityFactory::SaveTemplate(const std::string& templateName, Entity* pEntity) 
+{
+    // Serialize entity to memory.
+    SerializationContext context{};
+    std::get<1>(context).registerBasesList<Serializer>(ComponentPolymorphicClasses{});
+    EntityTemplate buffer;
+    Serializer serializer{context, buffer};
+    serializer.object(*pEntity);
+    serializer.adapter().flush();
+    size_t writtenSize = serializer.adapter().writtenBytesCount();
+
+    if (writtenSize != 0)
+    {
+        buffer.resize(writtenSize);
+    }
+
+    m_Templates[templateName] = buffer;
+
+    // Store template to disk.
+    std::filesystem::path templatesPath("data/templates");
+    std::string filename = templateName + ".bin";
+    std::ofstream file(templatesPath / filename, std::ifstream::binary);
+    if (file.good())
+    {
+        file.write(reinterpret_cast<char*>(buffer.data()), buffer.size());
+        file.close();
     }
 }
 

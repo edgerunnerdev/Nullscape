@@ -51,6 +51,7 @@ public:
     EntitySharedPtr Create(const std::string& templateName) const;
     bool AddBlankTemplate(const std::string& templateName);
     std::set<std::string> GetTemplateNames() const;
+    void SaveTemplate(const std::string& templateName, Entity* pEntity);
 
 private:
     void LoadTemplate(const std::filesystem::path& path);
