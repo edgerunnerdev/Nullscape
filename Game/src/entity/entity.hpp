@@ -60,7 +60,7 @@ public:
     {
         s.container(m_Components, [](S& s, std::vector<ComponentUniquePtr>& components) 
             {
-                s.container(components, components.size(), [](S& s, ComponentUniquePtr& pComponent) 
+                s.container(components, 64, [](S& s, ComponentUniquePtr& pComponent) 
                 {
                     s.ext(pComponent, bitsery::ext::StdSmartPtr{});
                 });

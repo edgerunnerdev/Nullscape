@@ -39,6 +39,7 @@ private:
     void DrawMenu();
     void DrawTemplateList();
     void UpdateCamera(bool acceptInput);
+    void LoadTemplate(const std::string& templateName);
 
     bool m_IsOpen;
     Genesis::ViewportSharedPtr m_pViewport;

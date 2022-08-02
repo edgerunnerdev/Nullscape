@@ -40,16 +40,14 @@ public:
 
     virtual ComponentType GetType() const = 0;
 
+    virtual void Initialize() = 0;
     virtual void Update(float delta) = 0;
     virtual void UpdateDebugUI() = 0;
     virtual void Render() = 0;
 
     void SetOwner(Entity* pEntity);
 
-    template <typename S> void serialize(S& s)
-    {
-
-    }
+    template <typename S> void serialize(S& s) {}
 
 private:
     Entity* m_pEntity;

@@ -15,19 +15,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "entity/components/transformcomponent.hpp"
+
+#include <sstream>
+
+#include <imgui/imgui.h>
+#include <genesis.h>
 
 namespace Hyperscape
 {
 
-enum class ComponentType
+TransformComponent::TransformComponent()
+    : m_Version(1)
+    , m_Transform(1)
 {
-	ModelComponent = 0,
-	TransformComponent,
-	//RigidBodyComponent,
-	//ShapeAABBComponent,
+}
 
-	Count
-};
+void TransformComponent::UpdateDebugUI() 
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        float v[4] = { m_Transform[i][0], m_Transform[i][1], m_Transform[i][2], m_Transform[i][3] };
+        std::stringstream label;
+        label << "Row " << i;
+        if (ImGui::InputFloat4(label.str().c_str(), v))
+        {
+            m_Transform[i] = glm::vec4(v[0], v[1], v[2], v[3]);
+        }
+    }
+}
 
 } // namespace Hyperscape

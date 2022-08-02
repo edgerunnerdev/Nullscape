@@ -20,6 +20,7 @@
 #include <memory>
 
 #include "entity/components/modelcomponent.hpp"
+#include "entity/components/transformcomponent.hpp"
 
 namespace Hyperscape
 {
@@ -31,6 +32,7 @@ std::unique_ptr<ComponentFactory> g_pComponentFactory;
 ComponentFactory::ComponentFactory() 
 {
     REGISTER_COMPONENT(ModelComponent);
+    REGISTER_COMPONENT(TransformComponent);
 }
 
 ComponentFactory::~ComponentFactory() {}

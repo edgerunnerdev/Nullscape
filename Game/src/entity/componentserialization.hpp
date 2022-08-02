@@ -27,6 +27,7 @@
 // clang-format on
 
 #include "entity/components/modelcomponent.hpp"
+#include "entity/components/transformcomponent.hpp"
 #include "entity/component.hpp"
 
 namespace Hyperscape
@@ -42,7 +43,10 @@ namespace bitsery::ext
 // for each base class define DIRECTLY derived classes
 // e.g. PolymorphicBaseClass<Shape> : PolymorphicDerivedClasses<Circle, Rectangle, RoundedRectangle>
 // is incorrect, because RoundedRectangle does not directly derive from Shape
-template<> struct PolymorphicBaseClass<Hyperscape::Component> : PolymorphicDerivedClasses<Hyperscape::ModelComponent>
+template<> struct PolymorphicBaseClass<Hyperscape::Component> : PolymorphicDerivedClasses<
+	Hyperscape::ModelComponent,
+	Hyperscape::TransformComponent
+>
 {
 };
 

@@ -22,6 +22,7 @@
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <bitsery/traits/string.h>
+#include <glm/mat4x4.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -35,29 +36,47 @@ class ResourceModel;
 namespace Hyperscape
 {
 
-class ModelComponent : public Component
+class TransformComponent : public Component
 {
 public:
-    ModelComponent();
-    virtual ~ModelComponent() override;
+    TransformComponent();
+    virtual ~TransformComponent() override {}
 
-    virtual void Initialize() override;
-    virtual void Update(float delta) override;
+    virtual void Initialize() override {}
+    virtual void Update(float delta) override {}
     virtual void UpdateDebugUI() override;
-    virtual void Render() override;
+    virtual void Render() override {}
+
+    const glm::mat4x4& GetTransform() const;
+    void SetTransform(const glm::mat4x4& value);
 
     template <typename S> void serialize(S& s) 
     {
         s.value2b(m_Version);
-        s.text1b(m_Filename, 256);
+
+        for (int i = 0; i < 4; ++i)
+        {
+            for (int j = 0; j < 4; ++j)
+            {
+                s.value4b(m_Transform[i][j]);
+            }
+        }
     }
 
-    DEFINE_COMPONENT(ModelComponent);
+    DEFINE_COMPONENT(TransformComponent);
 
 private:
     uint16_t m_Version;
-    std::string m_Filename;
-    Genesis::ResourceModel* m_pModel;
+    glm::mat4x4 m_Transform;
 };
+
+inline const glm::mat4x4& TransformComponent::GetTransform() const
+{
+    return m_Transform;
+}
+inline void TransformComponent::SetTransform(const glm::mat4x4& value)
+{
+    m_Transform = value;
+}
 
 } // namespace Hyperscape

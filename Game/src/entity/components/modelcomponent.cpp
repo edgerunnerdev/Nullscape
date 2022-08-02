@@ -29,11 +29,25 @@ namespace Hyperscape
 {
 
 ModelComponent::ModelComponent()
-    : m_pModel(nullptr)
+    : m_Version(1)
+    , m_pModel(nullptr)
 {
 }
 
 ModelComponent::~ModelComponent() {}
+
+void ModelComponent::Initialize() 
+{
+    using namespace Genesis;
+    if (std::filesystem::exists(m_Filename) && std::filesystem::is_regular_file(m_Filename))
+    {
+        m_pModel = FrameWork::GetResourceManager()->GetResource<ResourceModel*>(m_Filename);
+    }
+    else
+    {
+        m_pModel = nullptr;
+    }
+}
 
 void ModelComponent::Update(float delta) {}
 
@@ -41,14 +55,7 @@ void ModelComponent::UpdateDebugUI()
 {
     if (ImGui::InputText("Model", &m_Filename))
     {
-        if (std::filesystem::exists(m_Filename))
-        {
-            m_pModel = Genesis::FrameWork::GetResourceManager()->GetResource<Genesis::ResourceModel*>(m_Filename);
-        }
-        else
-        {
-            m_pModel = nullptr;
-        }
+        Initialize();
     }
 }
 

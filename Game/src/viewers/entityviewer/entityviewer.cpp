@@ -151,7 +151,7 @@ void EntityViewer::DrawMenu()
             ImGui::EndMenu();
         }
     
-        if (ImGui::BeginMenu("Add component"))
+        if (ImGui::BeginMenu("Add component", m_pEntity != nullptr))
         {
             for (size_t i = 0; i < static_cast<size_t>(ComponentType::Count); ++i)
             {
@@ -184,7 +184,7 @@ void EntityViewer::DrawMenu()
         if (ImGui::Button("Create", ImVec2(200, 0)))
         {
             EntityFactory::Get()->AddBlankTemplate(sNewTemplateName);
-            m_LoadedTemplate = sNewTemplateName;
+            LoadTemplate(sNewTemplateName);
             sNewTemplateName = "";
             ImGui::CloseCurrentPopup();
         }
@@ -202,15 +202,7 @@ void EntityViewer::DrawTemplateList()
         bool selected = (templateName == m_LoadedTemplate);
         if (ImGui::Selectable(templateName.c_str(), &selected) && m_LoadedTemplate != templateName)
         {
-            if (m_pEntity != nullptr)
-            {
-                m_pMainLayer->RemoveSceneObject(m_pEntity.get());
-                m_pEntity = nullptr;
-            }
-
-            m_pEntity = EntityFactory::Get()->Create(templateName);
-            m_pMainLayer->AddSceneObject(m_pEntity.get(), false);
-            m_LoadedTemplate = templateName;
+            LoadTemplate(templateName);
         }
     }
 }
@@ -258,6 +250,19 @@ void EntityViewer::UpdateCamera(bool acceptInput)
 
     pCamera->SetPosition(m_Position);
     pCamera->SetTargetPosition(m_Position + direction);
+}
+
+void EntityViewer::LoadTemplate(const std::string& templateName) 
+{
+    if (m_pEntity != nullptr)
+    {
+        m_pMainLayer->RemoveSceneObject(m_pEntity.get());
+        m_pEntity = nullptr;
+    }
+
+    m_pEntity = EntityFactory::Get()->Create(templateName);
+    m_pMainLayer->AddSceneObject(m_pEntity.get(), false);
+    m_LoadedTemplate = templateName;
 }
 
 } // namespace Hyperscape
