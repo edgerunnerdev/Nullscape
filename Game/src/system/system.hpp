@@ -66,9 +66,8 @@ public:
     SystemRandomEngine& GetRandomEngine();
 
     const AstronomicalObjects& GetAstronomicalObjects() const;
-    glm::ivec2 GetNumSectors() const;
 
-    void JumpTo(PlayerSharedPtr pPlayer, const glm::ivec2& coordinates);
+    void JumpTo(PlayerSharedPtr pPlayer, const glm::vec2& coordinates);
     Sector* GetCurrentSector();
 
     Genesis::Layer* GetLayer(LayerId id) const;
@@ -89,9 +88,6 @@ private:
 	BackgroundUniquePtr m_pBackground;
 
     AstronomicalObjects m_AstronomicalObjects;
-
-    static const int sSectorsX = 31;
-    static const int sSectorsY = 31;
     SectorUniquePtr m_pCurrentSector;
 };
 

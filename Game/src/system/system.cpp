@@ -80,18 +80,8 @@ const AstronomicalObjects& System::GetAstronomicalObjects() const
     return m_AstronomicalObjects;
 }
 
-glm::ivec2 System::GetNumSectors() const
+void System::JumpTo(PlayerSharedPtr pPlayer, const glm::vec2& coordinates) 
 {
-    return glm::ivec2(sSectorsX, sSectorsY);
-}
-
-void System::JumpTo(PlayerSharedPtr pPlayer, const glm::ivec2& coordinates) 
-{
-    if (coordinates.x < 0 || coordinates.x >= sSectorsX || coordinates.y < 0 || coordinates.y > sSectorsY)
-    {
-        return;
-    }
-
     if (m_pCurrentSector != nullptr)
     {
         SDL_assert(false); // TODO

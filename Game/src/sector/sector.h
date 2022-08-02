@@ -70,7 +70,7 @@ using ShipVector = std::vector< Ship* >;
 class Sector
 {
 public:
-						Sector(System* pSystem, const glm::ivec2& coordinates);
+						Sector(System* pSystem, const glm::vec2& coordinates);
 	virtual				~Sector();
 	void Update( float fDelta );
 
@@ -103,7 +103,7 @@ private:
 	void				SelectPlaylist();
 
 	System* m_pSystem;
-	glm::ivec2 m_Coordinates;
+	glm::vec2 m_Coordinates;
 
 	Dust*				m_pDust;
 	Boundary*			m_pBoundary;

@@ -77,7 +77,7 @@ namespace Hyperscape
 // Sector
 ///////////////////////////////////////////////////////////////////////////////
 
-Sector::Sector(System* pSystem, const glm::ivec2& coordinates):
+Sector::Sector(System* pSystem, const glm::vec2& coordinates):
 	m_pSystem(pSystem),
 	m_Coordinates(coordinates),
 m_pDust( nullptr ),

@@ -101,15 +101,12 @@ void ExplorationViewer::View(SystemSharedPtr pSystem)
 
 void ExplorationViewer::DrawCanvas()
 {
-    static ImVector<ImVec2> points;
     static ImVec2 scrolling(0.0f, 0.0f);
     static const float sSectorSize = 48.0f;
-    static const size_t sNumSectorsW = 31;
-    static const size_t sNumSectorsH = 31;
 
     // Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows us to use IsItemHovered()/IsItemActive()
     ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!
-    ImVec2 canvas_sz = ImVec2(sSectorSize * static_cast<float>(sNumSectorsW), sSectorSize * static_cast<float>(sNumSectorsH));
+    ImVec2 canvas_sz = ImVec2(1200, 600);
     ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
 
     // Draw border and background color
@@ -130,9 +127,7 @@ void ExplorationViewer::DrawCanvas()
     {
         scrolling.x += io.MouseDelta.x;
         scrolling.y += io.MouseDelta.y;
-    }
-
-    
+    } 
 
     // Context menu (under default mouse threshold)
     ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
@@ -140,11 +135,11 @@ void ExplorationViewer::DrawCanvas()
         ImGui::OpenPopupOnItemClick("context");
     if (ImGui::BeginPopup("context"))
     {
-        if (ImGui::MenuItem("Test 1", NULL, false, points.Size > 0))
+        if (ImGui::MenuItem("Test 1", NULL, false))
         {
             
         }
-        if (ImGui::MenuItem("Test 2", NULL, false, points.Size > 0))
+        if (ImGui::MenuItem("Test 2", NULL, false))
         {
             
         }
