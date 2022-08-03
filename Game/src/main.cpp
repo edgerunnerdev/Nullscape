@@ -225,14 +225,6 @@ void Game::Initialise()
 	ShaderTweaksDebugWindow::Register();
     m_pEntityViewer = std::make_unique<EntityViewer>();
 
-    using namespace Genesis;
-	if ( FrameWork::GetCommandLineParameters()->HasParameter("--no-intro") == false )
-	{
-		ResourceVideo* pWingsOfSteelVideo = (ResourceVideo*)FrameWork::GetResourceManager()->GetResource( "data/videos/WingsOfSteel.ivf" );
-		pWingsOfSteelVideo->SetSkippable( true );
-		Genesis::FrameWork::GetVideoPlayer()->Play( pWingsOfSteelVideo );
-	}
-
 #if USE_STEAM
 	if ( SteamAPI_RestartAppIfNecessary( STEAM_APP_ID ) )
 	{
