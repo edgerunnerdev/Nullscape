@@ -50,7 +50,7 @@ void ExplorationViewer::UpdateDebugUI()
         using namespace ImGui;
         Begin("Sensors", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
-        BeginChild("System", ImVec2(1200, 600), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        BeginChild("System", ImVec2(1200, 900), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         DrawCanvas();
         EndChild();
 
@@ -60,30 +60,27 @@ void ExplorationViewer::UpdateDebugUI()
         SystemSharedPtr pSystem = m_pSystem.lock();
         if (pSystem != nullptr)
         {
-            if (CollapsingHeader("Seed"))
+            static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+            if (ImGui::BeginTable("Signals", 4, flags))
             {
-                Text("Seed: %s", pSystem->GetSeed().c_str());
-                
-                Separator();
+                ImGui::TableSetupColumn("ID");
+                ImGui::TableSetupColumn("Type");
+                ImGui::TableSetupColumn("Name");
+                ImGui::TableSetupColumn("Strength");
+                ImGui::TableHeadersRow();
 
-                static int sDepth = 1;
-                InputInt("Depth", &sDepth);
-                sDepth = gClamp<int>(sDepth, 1, 8);
-            }
-
-            
-            if (CollapsingHeader("Astronomical objects", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                for (auto& pAstronomicalObject : pSystem->GetAstronomicalObjects())
+                for (auto& pSignalSource : pSystem->GetSignalSources())
                 {
-                    PushID(pAstronomicalObject.get());
-                    if (TreeNodeEx(pAstronomicalObject->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-                    {
-                        pAstronomicalObject->UpdateDebugUI();
-                        TreePop();
-                    }
-                    PopID();
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(pSignalSource->GetSignalId().c_str());
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted("---");
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(pSignalSource->GetSignalName().c_str());
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted("100.0%");
                 }
+                ImGui::EndTable();
             }
         }
         EndChild();
@@ -106,7 +103,7 @@ void ExplorationViewer::DrawCanvas()
 
     // Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows us to use IsItemHovered()/IsItemActive()
     ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!
-    ImVec2 canvas_sz = ImVec2(1200, 600);
+    ImVec2 canvas_sz = ImVec2(1200, 900);
     ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
 
     // Draw border and background color

@@ -32,6 +32,8 @@ AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const s
     : m_Coordinates(coordinates)
     , m_Name(name)
 {
+    m_RandomEngine = LocalRandomEngine(randomEngine());
+    m_SignalId = "XX-###";
 }
 
 AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, OrbitUniquePtr pOrbit, float theta) 
@@ -39,6 +41,7 @@ AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const s
     , m_Name(name)
 {
     m_Coordinates = m_pOrbit->At(theta);
+    m_SignalId = "XX-###";
 }
 
 AstronomicalObject::~AstronomicalObject()
@@ -73,11 +76,26 @@ const std::string& AstronomicalObject::GetName() const
     return m_Name;
 }
 
+LocalRandomEngine& AstronomicalObject::GetRandomEngine() 
+{
+    return m_RandomEngine;
+}
+
 ImVec2 AstronomicalObject::ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const
 {
     const ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
     const glm::vec2 normalizedCoordinates = coordinates / 2.0f + glm::vec2(0.5f);
     return ImVec2(canvasTopLeft.x + canvasOffset.x + size.x * normalizedCoordinates.x, canvasTopLeft.y + canvasOffset.y + size.y * normalizedCoordinates.y);
+}
+
+const glm::vec2& AstronomicalObject::GetSignalCoordinates() const
+{
+    return m_Coordinates;
+}
+
+const std::string& AstronomicalObject::GetSignalId() const 
+{
+    return m_SignalId;
 }
 
 } // namespace Hyperscape

@@ -29,14 +29,14 @@ Star::Star(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
     : AstronomicalObject(randomEngine, "Star", coordinates)
     , m_Type(Type::MainSequenceStar)
 {
-    GenerateProperties(randomEngine);
+    GenerateProperties();
 }
 
 Star::Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta)
     : AstronomicalObject(randomEngine, "Star", std::move(pOrbit), theta)
     , m_Type(Type::MainSequenceStar)
 {
-    GenerateProperties(randomEngine);
+    GenerateProperties();
 }
 
 Star::~Star() {}
@@ -60,12 +60,27 @@ Star::Type Star::GetType() const
     return m_Type;
 }
 
-void Star::GenerateProperties(SystemRandomEngine& randomEngine)
-{
-    GenerateType(randomEngine);
+float Star::GetSignalDifficulty() const 
+{ 
+    return 0.0f; 
 }
 
-void Star::GenerateType(SystemRandomEngine& randomEngine)
+SignalType Star::GetSignalType() const 
+{ 
+    return SignalType::Star; 
+}
+
+const std::string& Star::GetSignalName() const 
+{
+    return m_SignalName;
+}
+
+void Star::GenerateProperties()
+{
+    GenerateType();
+}
+
+void Star::GenerateType()
 {
     struct StarTypeProbability
     {
@@ -88,7 +103,7 @@ void Star::GenerateType(SystemRandomEngine& randomEngine)
     // clang-format on
 
     std::uniform_real_distribution<float> typeDistribution(0.0f, 100.0f);
-    const float value = typeDistribution(randomEngine);
+    const float value = typeDistribution(GetRandomEngine());
     float accumulated = 0.0f;
     for (auto& starTypeProbability : starTypeProbabilities)
     {
@@ -99,6 +114,23 @@ void Star::GenerateType(SystemRandomEngine& randomEngine)
             break;
         }
     }
+
+    // clang-format off
+    static const std::vector<std::string> starTypeNames = {
+        "Main sequence star",
+        "Giant star",
+        "Proto star", 
+        "Carbon star",
+        "Wolf-Rayet star",
+        "Black hole",
+        "Neutron star",
+        "White dwarf",
+        "Brown dwarf"
+    };
+    // clang-format on
+
+    SDL_assert(starTypeProbabilities.size() == starTypeNames.size());
+    m_SignalName = starTypeNames[static_cast<size_t>(m_Type)];
 }
 
 } // namespace Hyperscape

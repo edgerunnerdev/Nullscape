@@ -17,28 +17,32 @@
 
 #pragma once
 
-#include "system/astronomicalobject/astronomicalobject.hpp"
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec2.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include <string>
+
 
 namespace Hyperscape
 {
 
-class Planet : public AstronomicalObject
+enum class SignalType
+{
+    Star,
+    Planet
+};
+
+class SignalSource
 {
 public:
-    Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
-    Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
-    virtual ~Planet() override;
-    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) override;
-    virtual void UpdateDebugUI() override;
-
-    // SignalSource
-    virtual float GetSignalDifficulty() const override;
-    virtual SignalType GetSignalType() const override;
-    virtual const std::string& GetSignalName() const override;
-
-private:
-    std::string m_SignalName;
+    virtual float GetSignalDifficulty() const = 0;
+    virtual SignalType GetSignalType() const = 0;
+    virtual const glm::vec2& GetSignalCoordinates() const = 0;
+    virtual const std::string& GetSignalId() const = 0;
+    virtual const std::string& GetSignalName() const = 0;
 };
-GENESIS_DECLARE_SMART_PTR(Planet);
 
 } // namespace Hyperscape

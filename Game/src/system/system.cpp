@@ -80,6 +80,11 @@ const AstronomicalObjects& System::GetAstronomicalObjects() const
     return m_AstronomicalObjects;
 }
 
+const SignalSources& System::GetSignalSources() const 
+{
+    return m_SignalSources;
+}
+
 void System::JumpTo(PlayerSharedPtr pPlayer, const glm::vec2& coordinates) 
 {
     if (m_pCurrentSector != nullptr)
@@ -121,7 +126,7 @@ void System::InitializeBackground()
 
 void System::GenerateAstronomicalObjects() 
 {
-    StarUniquePtr pStar = std::make_unique<Star>(GetRandomEngine(), glm::vec2(0.0f, 0.0f));
+    StarSharedPtr pStar = std::make_shared<Star>(GetRandomEngine(), glm::vec2(0.0f, 0.0f));
     m_AstronomicalObjects.push_back(std::move(pStar));
 
     std::uniform_real_distribution<float> orbitDistribution(0.0f, 360.0f);
@@ -131,8 +136,13 @@ void System::GenerateAstronomicalObjects()
     for (int i = 0; i < planetCount; ++i)
     {
         OrbitUniquePtr pOrbit = std::make_unique<Orbit>(planetDistances[i], GenerateEccentricity());
-        PlanetUniquePtr pPlanet = std::make_unique<Planet>(GetRandomEngine(), std::move(pOrbit), orbitDistribution(GetRandomEngine()));
+        PlanetSharedPtr pPlanet = std::make_shared<Planet>(GetRandomEngine(), std::move(pOrbit), orbitDistribution(GetRandomEngine()));
         m_AstronomicalObjects.push_back(std::move(pPlanet));
+    }
+
+    for (AstronomicalObjectSharedPtr pObj : m_AstronomicalObjects)
+    {
+        m_SignalSources.push_back(pObj);
     }
 }
 

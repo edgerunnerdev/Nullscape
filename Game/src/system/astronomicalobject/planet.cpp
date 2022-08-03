@@ -25,11 +25,13 @@ namespace Hyperscape
 Planet::Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
     : AstronomicalObject(randomEngine, "Planet", coordinates)
 {
+    m_SignalName = "Planet";
 }
 
 Planet::Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta) 
     : AstronomicalObject(randomEngine, "Planet", std::move(pOrbit), theta) 
 {
+    m_SignalName = "Planet";
 }
 
 Planet::~Planet() {}
@@ -49,6 +51,21 @@ void Planet::UpdateDebugUI()
     {
         ImGui::Text("Orbital eccentricity: %.4f", m_pOrbit->GetEccentricity());
     }
+}
+
+float Planet::GetSignalDifficulty() const
+{
+    return 0.0f;
+}
+
+SignalType Planet::GetSignalType() const
+{
+    return SignalType::Planet;
+}
+
+const std::string& Planet::GetSignalName() const
+{
+    return m_SignalName;
 }
 
 } // namespace Hyperscape

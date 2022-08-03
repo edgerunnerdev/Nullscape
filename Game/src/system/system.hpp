@@ -40,8 +40,10 @@ GENESIS_DECLARE_SMART_PTR(AstronomicalObject);
 GENESIS_DECLARE_SMART_PTR(Background);
 GENESIS_DECLARE_SMART_PTR(Player);
 GENESIS_DECLARE_SMART_PTR(Sector);
+GENESIS_DECLARE_SMART_PTR(SignalSource);
 
-using AstronomicalObjects = std::vector<AstronomicalObjectUniquePtr>;
+using AstronomicalObjects = std::vector<AstronomicalObjectSharedPtr>;
+using SignalSources = std::vector<SignalSourceSharedPtr>;
 
 enum class LayerId
 {
@@ -66,6 +68,7 @@ public:
     SystemRandomEngine& GetRandomEngine();
 
     const AstronomicalObjects& GetAstronomicalObjects() const;
+    const SignalSources& GetSignalSources() const;
 
     void JumpTo(PlayerSharedPtr pPlayer, const glm::vec2& coordinates);
     Sector* GetCurrentSector();
@@ -88,6 +91,7 @@ private:
 	BackgroundUniquePtr m_pBackground;
 
     AstronomicalObjects m_AstronomicalObjects;
+    SignalSources m_SignalSources;
     SectorUniquePtr m_pCurrentSector;
 };
 

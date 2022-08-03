@@ -46,11 +46,17 @@ public:
 
     Type GetType() const;
 
+    // SignalSource
+    virtual float GetSignalDifficulty() const override;
+    virtual SignalType GetSignalType() const override;
+    virtual const std::string& GetSignalName() const override;
+
 private:
-    void GenerateProperties(SystemRandomEngine& randomEngine);
-    void GenerateType(SystemRandomEngine& randomEngine);
+    void GenerateProperties();
+    void GenerateType();
 
     Type m_Type;
+    std::string m_SignalName;
 };
 GENESIS_DECLARE_SMART_PTR(Star);
 

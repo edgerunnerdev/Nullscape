@@ -28,6 +28,7 @@
 
 #include <imgui/imgui.h>
 
+#include "system/signal/signalsource.hpp"
 #include "system/system.fwd.hpp"
 
 namespace Hyperscape
@@ -36,7 +37,7 @@ namespace Hyperscape
 GENESIS_DECLARE_SMART_PTR(Orbit);
 
 // Astronomical coordinates are between [-1,1], with stars generally being at (0,0).
-class AstronomicalObject
+class AstronomicalObject : public SignalSource
 {
 public:
     AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, const glm::vec2& coordinates);
@@ -49,15 +50,22 @@ public:
     const glm::vec2& GetCoordinates() const;
     const std::string& GetName() const;
 
+    // SignalSource
+    virtual const glm::vec2& GetSignalCoordinates() const override;
+    virtual const std::string& GetSignalId() const override;
+
 protected:
+    LocalRandomEngine& GetRandomEngine();
     ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const;
 
     std::string m_Name;
     OrbitUniquePtr m_pOrbit;
 
 private:
+    LocalRandomEngine m_RandomEngine;
     glm::vec2 m_Coordinates;
     std::array<ImVec2, 360> m_OrbitPoints;
+    std::string m_SignalId;
 };
 
 } // namespace Hyperscape

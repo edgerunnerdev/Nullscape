@@ -24,7 +24,14 @@
 namespace Hyperscape
 {
 
+// The SystemRandomEngine is used to instantiate astronomical objects.
 using SystemRandomEngine = std::mt19937_64;
+
+// The LocalRandomEngine should be seeded from the SystemRandomEngine
+// for each detailed astronomical object, so detail on that object
+// can be iterated on without affecting the wider system.
+using LocalRandomEngine = std::mt19937_64;
+
 GENESIS_DECLARE_SMART_PTR(System);
 
 } // namespace Hyperscape
