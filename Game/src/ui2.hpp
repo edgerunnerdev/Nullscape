@@ -29,6 +29,8 @@ public:
     {
 		Default,
 		JuraRegular20,
+		ArconRegular18,
+		ArconBold18,
 
 		Count
 	};

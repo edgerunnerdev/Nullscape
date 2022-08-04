@@ -45,29 +45,33 @@ void ExplorationViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        UI2::PushFont(UI2::FontId::JuraRegular20);
 
+        UI2::PushFont(UI2::FontId::ArconBold18);
         using namespace ImGui;
         Begin("Sensors", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        UI2::PopFont();
 
+        UI2::PushFont(UI2::FontId::ArconRegular18);
         BeginChild("System", ImVec2(1200, 900), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         DrawCanvas();
         EndChild();
 
         SameLine();
 
-        BeginChild("Properties", ImVec2(300, 900), true);
+        BeginChild("Properties", ImVec2(500, 900), true);
         SystemSharedPtr pSystem = m_pSystem.lock();
         if (pSystem != nullptr)
         {
             static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
             if (ImGui::BeginTable("Signals", 4, flags))
             {
-                ImGui::TableSetupColumn("ID");
+                UI2::PushFont(UI2::FontId::ArconBold18);
+                ImGui::TableSetupColumn("ID      ", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Type");
                 ImGui::TableSetupColumn("Name");
-                ImGui::TableSetupColumn("Strength");
+                ImGui::TableSetupColumn("Strength", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableHeadersRow();
+                UI2::PopFont();
 
                 for (auto& pSignalSource : pSystem->GetSignalSources())
                 {

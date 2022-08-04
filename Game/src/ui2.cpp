@@ -37,6 +37,8 @@ void UI2::Initialize()
 
     RegisterDefaultFont();
     RegisterFont(FontId::JuraRegular20, "data/ui/fonts/Jura-Regular.ttf", 20.0f);
+    RegisterFont(FontId::ArconRegular18, "data/ui/fonts/Arcon-Regular.otf", 18.0f);
+    RegisterFont(FontId::ArconBold18, "data/ui/fonts/Arcon-Bold.ttf", 18.0f);
 
     Genesis::ImGuiImpl::CreateFontsTexture();
     
