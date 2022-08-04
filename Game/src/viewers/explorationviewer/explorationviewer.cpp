@@ -78,7 +78,7 @@ void ExplorationViewer::UpdateDebugUI()
                     ImGui::TableNextColumn();
                     ImGui::TextUnformatted(pSignalSource->GetSignalId().c_str());
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted("---");
+                    ImGui::TextUnformatted(pSignalSource->GetSignalType().c_str());
                     ImGui::TableNextColumn();
                     ImGui::TextUnformatted(pSignalSource->GetSignalName().c_str());
                     ImGui::TableNextColumn();

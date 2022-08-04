@@ -29,19 +29,19 @@ namespace Hyperscape
 {
 
 AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, const glm::vec2& coordinates)
-    : m_Coordinates(coordinates)
+    : SignalSource(randomEngine)
+    , m_Coordinates(coordinates)
     , m_Name(name)
 {
     m_RandomEngine = LocalRandomEngine(randomEngine());
-    m_SignalId = "XX-###";
 }
 
 AstronomicalObject::AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, OrbitUniquePtr pOrbit, float theta) 
-    : m_pOrbit(std::move(pOrbit))
+    : SignalSource(randomEngine)
+    , m_pOrbit(std::move(pOrbit))
     , m_Name(name)
 {
     m_Coordinates = m_pOrbit->At(theta);
-    m_SignalId = "XX-###";
 }
 
 AstronomicalObject::~AstronomicalObject()
@@ -91,11 +91,6 @@ ImVec2 AstronomicalObject::ToCanvasCoordinates(const ImVec2& canvasTopLeft, cons
 const glm::vec2& AstronomicalObject::GetSignalCoordinates() const
 {
     return m_Coordinates;
-}
-
-const std::string& AstronomicalObject::GetSignalId() const 
-{
-    return m_SignalId;
 }
 
 } // namespace Hyperscape

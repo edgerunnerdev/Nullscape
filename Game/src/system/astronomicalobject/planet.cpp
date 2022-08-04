@@ -25,12 +25,14 @@ namespace Hyperscape
 Planet::Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
     : AstronomicalObject(randomEngine, "Planet", coordinates)
 {
+    m_SignalType = "Planet";
     m_SignalName = "Planet";
 }
 
 Planet::Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta) 
     : AstronomicalObject(randomEngine, "Planet", std::move(pOrbit), theta) 
 {
+    m_SignalType = "Planet";
     m_SignalName = "Planet";
 }
 
@@ -58,9 +60,9 @@ float Planet::GetSignalDifficulty() const
     return 0.0f;
 }
 
-SignalType Planet::GetSignalType() const
+const std::string& Planet::GetSignalType() const
 {
-    return SignalType::Planet;
+    return m_SignalType;
 }
 
 const std::string& Planet::GetSignalName() const

@@ -25,24 +25,30 @@
 
 #include <string>
 
+#include "system/system.fwd.hpp"
+
 
 namespace Hyperscape
 {
 
-enum class SignalType
-{
-    Star,
-    Planet
-};
-
 class SignalSource
 {
 public:
+    SignalSource(SystemRandomEngine& systemRandomEngine);
+
     virtual float GetSignalDifficulty() const = 0;
-    virtual SignalType GetSignalType() const = 0;
-    virtual const glm::vec2& GetSignalCoordinates() const = 0;
-    virtual const std::string& GetSignalId() const = 0;
+    virtual const std::string& GetSignalType() const = 0;
     virtual const std::string& GetSignalName() const = 0;
+    virtual const glm::vec2& GetSignalCoordinates() const = 0;
+
+    const std::string& GetSignalId() const;
+
+private:
+    void GenerateSignalId(SystemRandomEngine& systemRandomEngine);
+
+    std::string m_SignalId;
 };
+
+inline const std::string& SignalSource::GetSignalId() const { return m_SignalId; }
 
 } // namespace Hyperscape

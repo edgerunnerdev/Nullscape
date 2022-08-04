@@ -65,9 +65,9 @@ float Star::GetSignalDifficulty() const
     return 0.0f; 
 }
 
-SignalType Star::GetSignalType() const 
+const std::string& Star::GetSignalType() const 
 { 
-    return SignalType::Star; 
+    return m_SignalType;
 }
 
 const std::string& Star::GetSignalName() const 
@@ -130,7 +130,9 @@ void Star::GenerateType()
     // clang-format on
 
     SDL_assert(starTypeProbabilities.size() == starTypeNames.size());
-    m_SignalName = starTypeNames[static_cast<size_t>(m_Type)];
+    m_SignalType = starTypeNames[static_cast<size_t>(m_Type)];
+
+    m_SignalName = "Star";
 }
 
 } // namespace Hyperscape

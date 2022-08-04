@@ -33,10 +33,11 @@ public:
 
     // SignalSource
     virtual float GetSignalDifficulty() const override;
-    virtual SignalType GetSignalType() const override;
+    virtual const std::string& GetSignalType() const override;
     virtual const std::string& GetSignalName() const override;
 
 private:
+    std::string m_SignalType;
     std::string m_SignalName;
 };
 GENESIS_DECLARE_SMART_PTR(Planet);

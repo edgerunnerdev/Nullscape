@@ -187,25 +187,12 @@ std::vector<float> System::GeneratePlanetDistances(int planetCount)
     std::vector<float> distances;
     distances.reserve(planetCount);
 
-    const std::uniform_real_distribution<float> distanceDistribution(0.2f, 0.8f);
+    const std::uniform_real_distribution<float> distanceDistribution(0.2f, 0.6f);
     float accumulatedDistance = 0.0f;
     for (int i = 0; i < planetCount; ++i)
     {
         accumulatedDistance += distanceDistribution(GetRandomEngine());
         distances.push_back(accumulatedDistance);
-    }
-
-    if (accumulatedDistance > 1.0f)
-    {
-        for (int i = 0; i < planetCount; ++i)
-        {
-            distances[i] /= accumulatedDistance;
-        }
-    }
-
-    for (int i = 0; i < planetCount; ++i)
-    {
-        distances[i] *= 0.75f;
     }
 
     return distances;

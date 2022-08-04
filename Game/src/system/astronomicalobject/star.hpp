@@ -48,7 +48,7 @@ public:
 
     // SignalSource
     virtual float GetSignalDifficulty() const override;
-    virtual SignalType GetSignalType() const override;
+    virtual const std::string& GetSignalType() const override;
     virtual const std::string& GetSignalName() const override;
 
 private:
@@ -57,6 +57,7 @@ private:
 
     Type m_Type;
     std::string m_SignalName;
+    std::string m_SignalType;
 };
 GENESIS_DECLARE_SMART_PTR(Star);
 

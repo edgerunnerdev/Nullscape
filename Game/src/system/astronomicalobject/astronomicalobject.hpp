@@ -28,7 +28,7 @@
 
 #include <imgui/imgui.h>
 
-#include "system/signal/signalsource.hpp"
+#include "system/signalsource.hpp"
 #include "system/system.fwd.hpp"
 
 namespace Hyperscape
@@ -52,7 +52,6 @@ public:
 
     // SignalSource
     virtual const glm::vec2& GetSignalCoordinates() const override;
-    virtual const std::string& GetSignalId() const override;
 
 protected:
     LocalRandomEngine& GetRandomEngine();
@@ -65,7 +64,6 @@ private:
     LocalRandomEngine m_RandomEngine;
     glm::vec2 m_Coordinates;
     std::array<ImVec2, 360> m_OrbitPoints;
-    std::string m_SignalId;
 };
 
 } // namespace Hyperscape
