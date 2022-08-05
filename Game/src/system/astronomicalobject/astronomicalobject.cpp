@@ -48,7 +48,7 @@ AstronomicalObject::~AstronomicalObject()
 {
 }
 
-void AstronomicalObject::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
+void AstronomicalObject::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
 {
     if (m_pOrbit != nullptr)
     {    

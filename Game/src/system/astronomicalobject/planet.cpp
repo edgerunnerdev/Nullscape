@@ -38,9 +38,9 @@ Planet::Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float th
 
 Planet::~Planet() {}
 
-void Planet::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
+void Planet::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
 {
-    AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight, canvasOffset);
+    AstronomicalObject::CanvasRender(canvasTopLeft, canvasBottomRight, canvasOffset);
 
     ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();

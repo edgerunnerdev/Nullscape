@@ -44,7 +44,7 @@ public:
     AstronomicalObject(SystemRandomEngine& randomEngine, const std::string& name, OrbitUniquePtr pOrbit, float theta);
     virtual ~AstronomicalObject();
 
-    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset);
+    virtual void CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) override;
     virtual void UpdateDebugUI();
 
     const std::string& GetName() const;

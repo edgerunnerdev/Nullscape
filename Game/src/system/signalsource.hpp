@@ -37,6 +37,7 @@ class SignalSource
 public:
     SignalSource(SystemRandomEngine& systemRandomEngine);
 
+    virtual void CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) = 0;
     virtual float GetSignalDifficulty() const = 0;
     virtual const std::string& GetSignalType() const = 0;
     virtual const std::string& GetSignalName() const = 0;

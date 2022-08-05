@@ -202,12 +202,17 @@ std::vector<float> System::GeneratePlanetDistances(int planetCount)
 
 void System::GenerateWormholes() 
 {
-    const std::uniform_int_distribution<int> numWormholesDistribution(1, 4);
+    const std::uniform_int_distribution<int> countDistribution(2, 4);
     const std::uniform_real_distribution<float> distanceDistribution(0.3f, 0.6 * m_AstronomicalObjects.size());
-    int numWormholes = numWormholesDistribution(GetRandomEngine());
+    const std::uniform_real_distribution<float> angleDistribution(-M_PI, M_PI);
+    int numWormholes = countDistribution(GetRandomEngine());
     for (int i = 0; i < numWormholes; ++i)
     {
-        
+        const float distance = distanceDistribution(GetRandomEngine());
+        const float angle = angleDistribution(GetRandomEngine());
+        const glm::vec2 coordinates(glm::cos(angle) * distance, glm::sin(angle) * distance);
+        SignalSourceSharedPtr pWormhole = std::make_shared<Wormhole>(GetRandomEngine(), coordinates, 0);
+        m_SignalSources.push_back(std::move(pWormhole));
     }
 }
 

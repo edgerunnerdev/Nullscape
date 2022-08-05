@@ -28,7 +28,7 @@ public:
     Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates);
     Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta);
     virtual ~Planet() override;
-    virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) override;
+    virtual void CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) override;
     virtual void UpdateDebugUI() override;
 
     // SignalSource

@@ -198,9 +198,9 @@ void SystemViewer::DrawCanvas()
     SystemSharedPtr pSystem = m_pSystem.lock();
     if (pSystem != nullptr)
     {
-        for (auto& pAstronomicalObject : pSystem->GetAstronomicalObjects())
+        for (auto& pSignalSource : pSystem->GetSignalSources())
         {
-            pAstronomicalObject->DebugRender(canvas_p0, canvas_p1, ImVec2(0.0f, 0.0f));
+            pSignalSource->CanvasRender(canvas_p0, canvas_p1, ImVec2(0.0f, 0.0f));
         }
     }
 

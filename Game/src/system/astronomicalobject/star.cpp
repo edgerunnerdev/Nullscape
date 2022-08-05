@@ -41,9 +41,9 @@ Star::Star(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta)
 
 Star::~Star() {}
 
-void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
+void Star::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
 {
-    AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight, canvasOffset);
+    AstronomicalObject::CanvasRender(canvasTopLeft, canvasBottomRight, canvasOffset);
 
     ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();

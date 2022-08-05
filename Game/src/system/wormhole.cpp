@@ -30,6 +30,13 @@ Wormhole::Wormhole(SystemRandomEngine& systemRandomEngine, const glm::vec2& coor
 
 }
 
+void Wormhole::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
+{
+    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
+    ImDrawList* pDrawList = ImGui::GetWindowDrawList();
+    pDrawList->AddCircleFilled(center, 12.0f, IM_COL32(200, 0, 200, 255));
+}
+
 float Wormhole::GetSignalDifficulty() const
 {
     return 1.0f + static_cast<float>(m_Depth);

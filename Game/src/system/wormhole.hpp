@@ -28,6 +28,7 @@ class Wormhole :  public SignalSource
 public:
     Wormhole(SystemRandomEngine& systemRandomEngine, const glm::vec2& coordinates, int depth);
 
+    virtual void CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset) override;
     virtual float GetSignalDifficulty() const override;
     virtual const std::string& GetSignalType() const override;
     virtual const std::string& GetSignalName() const override;
