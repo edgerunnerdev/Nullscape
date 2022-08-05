@@ -42,7 +42,7 @@ void Planet::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottom
 {
     AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight, canvasOffset);
 
-    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetCoordinates());
+    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
     pDrawList->AddCircleFilled(center, 8.0f, IM_COL32(200, 200, 200, 255));
 }

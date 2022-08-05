@@ -34,6 +34,7 @@
 #include "system/astronomicalobject/planet.hpp"
 #include "system/astronomicalobject/star.hpp"
 #include "system/background.hpp"
+#include "system/wormhole.hpp"
 
 namespace Hyperscape
 {
@@ -46,6 +47,7 @@ System::System(const std::string& seed, bool demoMode /* = false*/)
     InitializeLayers();
     InitializeBackground();
     GenerateAstronomicalObjects();
+    GenerateWormholes();
 }
    
 System::~System()
@@ -196,6 +198,17 @@ std::vector<float> System::GeneratePlanetDistances(int planetCount)
     }
 
     return distances;
+}
+
+void System::GenerateWormholes() 
+{
+    const std::uniform_int_distribution<int> numWormholesDistribution(1, 4);
+    const std::uniform_real_distribution<float> distanceDistribution(0.3f, 0.6 * m_AstronomicalObjects.size());
+    int numWormholes = numWormholesDistribution(GetRandomEngine());
+    for (int i = 0; i < numWormholes; ++i)
+    {
+        
+    }
 }
 
 Genesis::Layer* System::GetLayer(LayerId id) const

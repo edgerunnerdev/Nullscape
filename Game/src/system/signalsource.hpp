@@ -20,6 +20,7 @@
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <glm/vec2.hpp>
+#include <imgui/imgui.h>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -42,6 +43,8 @@ public:
     virtual const glm::vec2& GetSignalCoordinates() const = 0;
 
     const std::string& GetSignalId() const;
+
+    ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const;
 
 private:
     void GenerateSignalId(SystemRandomEngine& systemRandomEngine);

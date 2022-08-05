@@ -83,6 +83,7 @@ private:
     float GenerateEccentricity();
     int GeneratePlanetCount();
     std::vector<float> GeneratePlanetDistances(int planetCount);
+    void GenerateWormholes();
 
 	std::string m_Seed;
     bool m_DemoMode;

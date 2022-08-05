@@ -45,7 +45,7 @@ void Star::DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRi
 {
     AstronomicalObject::DebugRender(canvasTopLeft, canvasBottomRight, canvasOffset);
 
-    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetCoordinates());
+    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
     pDrawList->AddCircleFilled(center, 16.0f, IM_COL32(200, 200, 0, 255));
 }

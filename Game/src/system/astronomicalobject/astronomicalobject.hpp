@@ -47,7 +47,6 @@ public:
     virtual void DebugRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset);
     virtual void UpdateDebugUI();
 
-    const glm::vec2& GetCoordinates() const;
     const std::string& GetName() const;
 
     // SignalSource
@@ -55,7 +54,6 @@ public:
 
 protected:
     LocalRandomEngine& GetRandomEngine();
-    ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const;
 
     std::string m_Name;
     OrbitUniquePtr m_pOrbit;
