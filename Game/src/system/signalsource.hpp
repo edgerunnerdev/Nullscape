@@ -45,8 +45,6 @@ public:
 
     const std::string& GetSignalId() const;
 
-    ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const;
-
 private:
     void GenerateSignalId(SystemRandomEngine& systemRandomEngine);
 

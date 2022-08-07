@@ -19,6 +19,13 @@
 
 #include <filesystem>
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec2.hpp>
+#include <imgui/imgui.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 namespace Hyperscape
 {
 
@@ -38,6 +45,7 @@ public:
 	static void Initialize();
 	static void PushFont(FontId id);
 	static void PopFont();
+    static ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates);
 
 private:
 	static void RegisterDefaultFont();

@@ -418,7 +418,7 @@ void Game::StartNewGame(const ShipCustomisationData& customisationData)
     m_pSystemViewer->View(m_pSystem);
     m_pExplorationViewer->View(m_pSystem);
 
-	m_pSystem->JumpTo(m_pPlayer, {0.0f, 0.0f});
+	m_pSystem->JumpTo(m_pPlayer, {-0.5f, 0.3f});
 
     SetState(GameState::Combat);
 }

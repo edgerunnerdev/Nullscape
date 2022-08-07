@@ -17,17 +17,15 @@
 
 #pragma once
 
-#include <vector>
+#include "faction/faction.h"
+#include "fleet/fleet.fwd.h"
+#include "ship/moduleinfo.h"
+#include "ship/ship.fwd.h"
+
 #include <list>
 #include <memory>
-
 #include <scene/layer.h>
-
-#include "faction/faction.h"
-#include "ship/ship.fwd.h"
-#include "ship/moduleinfo.h"
-
-#include "fleet/fleet.fwd.h"
+#include <vector>
 
 namespace Hyperscape
 {
@@ -57,149 +55,155 @@ class FleetCommand;
 class Boundary;
 class System;
 
-using HotbarUniquePtr = std::unique_ptr< Hotbar >;
-using FleetCommandUniquePtr = std::unique_ptr< FleetCommand >;
-using FleetCommandVector = std::vector< FleetCommandUniquePtr >;
+using HotbarUniquePtr = std::unique_ptr<Hotbar>;
+using FleetCommandUniquePtr = std::unique_ptr<FleetCommand>;
+using FleetCommandVector = std::vector<FleetCommandUniquePtr>;
 
-static const float	sSpawnPointSize		= 1000.0f;
-static const int	sSectorSpawnPoints	= 9;
+static const float sSpawnPointSize = 1000.0f;
+static const int sSectorSpawnPoints = 9;
 
-using IntVector = std::vector< int >;
-using ShipVector = std::vector< Ship* >;
+using IntVector = std::vector<int>;
+using ShipVector = std::vector<Ship*>;
 
 class Sector
 {
 public:
-						Sector(System* pSystem, const glm::vec2& coordinates);
-	virtual				~Sector();
-	void Update( float fDelta );
+    Sector(System* pSystem, const glm::vec2& coordinates);
+    virtual ~Sector();
+    void Update(float fDelta);
 
-	bool				Initialize();
+    bool Initialize();
 
-	AmmoManager*		GetAmmoManager() const;
-	LaserManager*		GetLaserManager() const;
-	SpriteManager*		GetSpriteManager() const;
-	ParticleManager*	GetParticleManager() const;
-	MuzzleflashManager*	GetMuzzleflashManager() const;
-	const ShipList&		GetShipList() const;
-	TrailManager*		GetTrailManager() const;
-	ShipTweaks*			GetShipTweaks() const;
-	SectorCamera*		GetCamera() const;
+    AmmoManager* GetAmmoManager() const;
+    LaserManager* GetLaserManager() const;
+    SpriteManager* GetSpriteManager() const;
+    ParticleManager* GetParticleManager() const;
+    MuzzleflashManager* GetMuzzleflashManager() const;
+    const ShipList& GetShipList() const;
+    TrailManager* GetTrailManager() const;
+    ShipTweaks* GetShipTweaks() const;
+    SectorCamera* GetCamera() const;
+    const glm::vec2& GetCoordinates() const;
 
-	void				AddShip( Ship* pShip );
-	void				RemoveShip( Ship* pShip );
+    void AddShip(Ship* pShip);
+    void RemoveShip(Ship* pShip);
 
-	FleetWeakPtr		GetRegionalFleet() const;
+    FleetWeakPtr GetRegionalFleet() const;
 
-	bool				Reinforce( FleetSharedPtr pFleet, ShipVector* pSpawnedShips = nullptr );
-	bool				IsPlayerVictorious() const;
-	void				AddFleetCommand( FleetCommandUniquePtr pFleetCommand );
+    bool Reinforce(FleetSharedPtr pFleet, ShipVector* pSpawnedShips = nullptr);
+    bool IsPlayerVictorious() const;
+    void AddFleetCommand(FleetCommandUniquePtr pFleetCommand);
 
 private:
-	void				DeleteRemovedShips();
-	bool				GetFleetSpawnPosition( Faction* pFaction, float& x, float& y );
-	void				GetFleetSpawnPositionAtPoint( int idx, float& x, float& y );
-	void				DebugDrawFleetSpawnPositions();
-	void				SelectPlaylist();
+    void DeleteRemovedShips();
+    bool GetFleetSpawnPosition(Faction* pFaction, float& x, float& y);
+    void GetFleetSpawnPositionAtPoint(int idx, float& x, float& y);
+    void DebugDrawFleetSpawnPositions();
+    void SelectPlaylist();
 
-	System* m_pSystem;
-	glm::vec2 m_Coordinates;
+    System* m_pSystem;
+    glm::vec2 m_Coordinates;
 
-	Dust*				m_pDust;
-	Boundary*			m_pBoundary;
-	ShipList			m_ShipList;
-	ShipList			m_ShipsToRemove;
-	ParticleManager*	m_pParticleManager;
-	ParticleManagerRep* m_pParticleManagerRep;
-	MuzzleflashManager* m_pMuzzleflashManager;
-	MuzzleflashManagerRep* m_pMuzzleflashManagerRep;
-	AmmoManager*		m_pAmmoManager;
-	LaserManager*		m_pLaserManager;
-	SpriteManager*		m_pSpriteManager;
-	TrailManager*		m_pTrailManager;
-	TrailManagerRep*	m_pTrailManagerRep;
-	SectorCamera*		m_pCamera;
-	Radar*				m_pRadar;
+    Dust* m_pDust;
+    Boundary* m_pBoundary;
+    ShipList m_ShipList;
+    ShipList m_ShipsToRemove;
+    ParticleManager* m_pParticleManager;
+    ParticleManagerRep* m_pParticleManagerRep;
+    MuzzleflashManager* m_pMuzzleflashManager;
+    MuzzleflashManagerRep* m_pMuzzleflashManagerRep;
+    AmmoManager* m_pAmmoManager;
+    LaserManager* m_pLaserManager;
+    SpriteManager* m_pSpriteManager;
+    TrailManager* m_pTrailManager;
+    TrailManagerRep* m_pTrailManagerRep;
+    SectorCamera* m_pCamera;
+    Radar* m_pRadar;
 
-	HotbarUniquePtr		m_pHotbar;
+    HotbarUniquePtr m_pHotbar;
 
-	FleetSharedPtr		m_pRegionalFleet;
-	IntVector			m_AvailableSpawnPoints;
+    FleetSharedPtr m_pRegionalFleet;
+    IntVector m_AvailableSpawnPoints;
 
-	ShipSpawnDataVector	m_DebugShipSpawnData;
+    ShipSpawnDataVector m_DebugShipSpawnData;
 
-	Shipyard*			m_pShipyard;
-	HyperspaceMenu*		m_pHyperspaceMenu;
-	DeathMenu*			m_pDeathMenu;
+    Shipyard* m_pShipyard;
+    HyperspaceMenu* m_pHyperspaceMenu;
+    DeathMenu* m_pDeathMenu;
 
-	bool				m_IsPlayerVictorious;
+    bool m_IsPlayerVictorious;
 
-	TowerBonus			m_TowerBonus[ static_cast<unsigned int>( FactionId::Count ) ];
-	float				m_TowerBonusMagnitude[ static_cast<unsigned int>( FactionId::Count ) ];
+    TowerBonus m_TowerBonus[static_cast<unsigned int>(FactionId::Count)];
+    float m_TowerBonusMagnitude[static_cast<unsigned int>(FactionId::Count)];
 
-	LootWindow*			m_pLootWindow;
-	FleetCommandVector	m_FleetCommands;
+    LootWindow* m_pLootWindow;
+    FleetCommandVector m_FleetCommands;
 
-    unsigned int        m_AdditionalWaves;
-	unsigned int		m_AdditionalWavesSpawned;
-    FleetList           m_TemporaryFleets;
+    unsigned int m_AdditionalWaves;
+    unsigned int m_AdditionalWavesSpawned;
+    FleetList m_TemporaryFleets;
 
-	ShipTweaksUniquePtr m_pShipTweaks;
+    ShipTweaksUniquePtr m_pShipTweaks;
 };
 
 inline AmmoManager* Sector::GetAmmoManager() const
 {
-	return m_pAmmoManager;
+    return m_pAmmoManager;
 }
 
 inline LaserManager* Sector::GetLaserManager() const
 {
-	return m_pLaserManager;
+    return m_pLaserManager;
 }
 
 inline SpriteManager* Sector::GetSpriteManager() const
 {
-	return m_pSpriteManager;
+    return m_pSpriteManager;
 }
 
 inline const ShipList& Sector::GetShipList() const
 {
-	return m_ShipList;
+    return m_ShipList;
 }
 
 inline TrailManager* Sector::GetTrailManager() const
 {
-	return m_pTrailManager;
+    return m_pTrailManager;
 }
 
 inline ParticleManager* Sector::GetParticleManager() const
 {
-	return m_pParticleManager;
+    return m_pParticleManager;
 }
 
 inline MuzzleflashManager* Sector::GetMuzzleflashManager() const
 {
-	return m_pMuzzleflashManager;
+    return m_pMuzzleflashManager;
 }
 
 inline FleetWeakPtr Sector::GetRegionalFleet() const
 {
-	return m_pRegionalFleet;
+    return m_pRegionalFleet;
 }
 
 inline bool Sector::IsPlayerVictorious() const
 {
-	return m_IsPlayerVictorious;
+    return m_IsPlayerVictorious;
 }
 
 inline ShipTweaks* Sector::GetShipTweaks() const
 {
-	return m_pShipTweaks.get();
+    return m_pShipTweaks.get();
 }
 
 inline SectorCamera* Sector::GetCamera() const
 {
-	return m_pCamera;
+    return m_pCamera;
 }
 
+inline const glm::vec2& Sector::GetCoordinates() const
+{
+    return m_Coordinates;
 }
+
+} // namespace Hyperscape

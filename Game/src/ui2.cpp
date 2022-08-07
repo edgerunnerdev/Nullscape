@@ -69,6 +69,13 @@ void UI2::PopFont()
 	ImGui::PopFont();
 }
 
+ImVec2 UI2::ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates)
+{
+    static const float sZoom = 0.5f;
+    const ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
+    return ImVec2(canvasTopLeft.x + canvasOffset.x + size.x * coordinates.x * sZoom, canvasTopLeft.y + canvasOffset.y + size.y * coordinates.y * sZoom);
+}
+
 void UI2::SetupStyle() 
 {
     ImGuiStyle& style = ImGui::GetStyle();

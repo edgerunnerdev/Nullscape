@@ -19,8 +19,10 @@
 
 #include <sstream>
 
-#include "system/astronomicalobject/orbit.hpp"
 #include <genesis.h>
+
+#include "system/astronomicalobject/orbit.hpp"
+#include "ui2.hpp"
 
 namespace Hyperscape
 {
@@ -45,7 +47,7 @@ void Star::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomR
 {
     AstronomicalObject::CanvasRender(canvasTopLeft, canvasBottomRight, canvasOffset);
 
-    ImVec2 center = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
+    ImVec2 center = UI2::ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, GetSignalCoordinates());
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
     pDrawList->AddCircleFilled(center, 16.0f, IM_COL32(200, 200, 0, 255));
 }

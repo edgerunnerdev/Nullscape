@@ -24,6 +24,7 @@
 #include <imgui/imgui_impl.h>
 #include <math/misc.h>
 
+#include "sector/sector.h"
 #include "system/astronomicalobject/astronomicalobject.hpp"
 #include "system/system.hpp"
 #include "ui2.hpp"
@@ -32,9 +33,14 @@ namespace Hyperscape
 {
 
 ExplorationViewer::ExplorationViewer()
-    : m_IsOpen(false)
+    : m_WindowSize(1200, 900)
+    , m_IsOpen(false)
+    , m_Angle(0.0f)
+    , m_Aperture(45.0f)
+    , m_RangeMin(0.0f)
+    , m_RangeMax(2.0f)
 {
-    Genesis::ImGuiImpl::RegisterMenu("Game", "Exploration viewer", &m_IsOpen);
+    Genesis::ImGuiImpl::RegisterMenu("Game", "Sensors", &m_IsOpen);
 }
    
 ExplorationViewer::~ExplorationViewer() {
@@ -52,18 +58,20 @@ void ExplorationViewer::UpdateDebugUI()
         UI2::PopFont();
 
         UI2::PushFont(UI2::FontId::ArconRegular18);
-        BeginChild("System", ImVec2(1200, 900), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        BeginChild("System", m_WindowSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         DrawCanvas();
         EndChild();
 
         SameLine();
 
-        BeginChild("Properties", ImVec2(500, 900), true);
+        BeginGroup();
+        const ImVec2 signalsSize(500, 600);
+        BeginChild("Signals", signalsSize, true);
         SystemSharedPtr pSystem = m_pSystem.lock();
         if (pSystem != nullptr)
         {
             static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
-            if (ImGui::BeginTable("Signals", 4, flags))
+            if (ImGui::BeginTable("SignalsTable", 4, flags))
             {
                 UI2::PushFont(UI2::FontId::ArconBold18);
                 ImGui::TableSetupColumn("ID      ", ImGuiTableColumnFlags_WidthFixed);
@@ -88,6 +96,14 @@ void ExplorationViewer::UpdateDebugUI()
             }
         }
         EndChild();
+
+        BeginChild("Properties", ImVec2(signalsSize.x, m_WindowSize.y - signalsSize.y), true);
+        ImGui::SliderFloat("Angle", &m_Angle, 0.0f, 360.0f, "%.0f", 1.0f);
+        ImGui::SliderFloat("Aperture", &m_Aperture, 5.0f, 180.0f, "%.0f", 1.0f);
+        ImGui::SliderFloat("Minimum range", &m_RangeMin, 0.0f, 3.0f, "%.2f");
+        ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, 3.0f, "%.2f");
+        EndChild();
+        EndGroup();
 
         End();
 
@@ -155,6 +171,8 @@ void ExplorationViewer::DrawCanvas()
     for (float y = fmodf(scrolling.y, GRID_STEP); y < canvas_sz.y; y += GRID_STEP)
         pDrawList->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
 
+    DrawScannerArc(canvas_p0, canvas_p1, scrolling);
+
     SystemSharedPtr pSystem = m_pSystem.lock();
     if (pSystem != nullptr)
     {
@@ -163,7 +181,65 @@ void ExplorationViewer::DrawCanvas()
             pSignalSource->CanvasRender(canvas_p0, canvas_p1, scrolling);
         }
     }
+    
     pDrawList->PopClipRect();
+}
+
+void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset)
+{
+    SystemSharedPtr pSystem = m_pSystem.lock();
+    if (pSystem == nullptr || pSystem->GetCurrentSector() == nullptr)
+    {
+        return;
+    }
+
+    const glm::vec2& sectorCoordinates = pSystem->GetCurrentSector()->GetCoordinates();
+    ImVec2 playerCoordinates = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, sectorCoordinates);
+    ImDrawList* pDrawList = ImGui::GetWindowDrawList();
+    pDrawList->AddCircle(playerCoordinates, 8.0f, ImColor(0.0f, 1.0f, 1.0f));
+
+    const float angleRad = glm::radians(m_Angle);
+    float mr = m_RangeMax;
+    glm::vec2 angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad), glm::sin(angleRad)) * mr;
+    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f));
+
+    const float apertureRad = glm::radians(m_Aperture);
+    angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad), glm::sin(angleRad - apertureRad)) * mr;
+    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f));
+
+    angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad + apertureRad), glm::sin(angleRad + apertureRad)) * mr;
+    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f));
+
+    const float arcStepRad = glm::radians(1.0f);
+    std::vector<ImVec2> rangeArc;
+    rangeArc.resize(m_Aperture * 2 + 1);
+    for (int i = 0; i <= m_Aperture * 2; ++i)
+    {
+        glm::vec2 point = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * mr;
+        rangeArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, point);
+    }
+    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(0.0f, 1.0f, 1.0f), 0, 1.0f);
+
+    std::vector<ImVec2> rangeMinArc;
+    std::vector<ImVec2> rangeMaxArc;
+    rangeMinArc.resize(m_Aperture * 2 + 1);
+    rangeMaxArc.resize(m_Aperture * 2 + 1);
+    for (int i = 0; i <= m_Aperture * 2; ++i)
+    {
+        glm::vec2 pointMin = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * m_RangeMin;
+        rangeMinArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, pointMin);
+
+        glm::vec2 pointMax = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * m_RangeMax;
+        rangeMaxArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, pointMax);
+    }
+
+    pDrawList->Flags &= ~ImDrawListFlags_AntiAliasedFill;
+    for (int i = 0; i < m_Aperture * 2; ++i)
+    {
+        ImVec2 poly[4] = {rangeMinArc[i], rangeMaxArc[i], rangeMaxArc[i + 1], rangeMinArc[i + 1]};
+        pDrawList->AddConvexPolyFilled(poly, 4, ImColor(0.0f, 1.0f, 1.0f, 0.25f));
+    }
+    pDrawList->Flags |= ImDrawListFlags_AntiAliasedFill;
 }
 
 } // namespace Hyperscape

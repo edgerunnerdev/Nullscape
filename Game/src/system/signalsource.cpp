@@ -46,11 +46,4 @@ void SignalSource::GenerateSignalId(SystemRandomEngine& systemRandomEngine)
 	m_SignalId = id.str();
 }
 
-ImVec2 SignalSource::ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates) const
-{
-    static const float sZoom = 0.5f;
-    const ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
-    return ImVec2(canvasTopLeft.x + canvasOffset.x + size.x * coordinates.x * sZoom, canvasTopLeft.y + canvasOffset.y + size.y * coordinates.y * sZoom);
-}
-
 } // namespace Hyperscape

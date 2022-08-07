@@ -24,6 +24,7 @@
 // clang-format on
 
 #include "system/astronomicalobject/orbit.hpp"
+#include "ui2.hpp"
 
 namespace Hyperscape
 {
@@ -55,7 +56,7 @@ void AstronomicalObject::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2&
         const float oneDegree = glm::radians(1.0f);
         for (int i = 0; i < m_OrbitPoints.size(); ++i)
         {
-            m_OrbitPoints[i] = ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, m_pOrbit->At(i * oneDegree));
+            m_OrbitPoints[i] = UI2::ToCanvasCoordinates(canvasTopLeft, canvasBottomRight, canvasOffset, m_pOrbit->At(i * oneDegree));
         }
         ImGui::GetWindowDrawList()->AddPolyline(m_OrbitPoints.data(), m_OrbitPoints.size(), IM_COL32(255, 255, 255, 80), ImDrawFlags_Closed, 1.25f);
     }

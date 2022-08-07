@@ -17,6 +17,13 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec2.hpp>
+#include <imgui/imgui.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <coredefines.h>
 
 namespace Hyperscape
@@ -36,9 +43,15 @@ public:
 
 private:
     void DrawCanvas();
+    void DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset);
 
+    ImVec2 m_WindowSize;
     SystemWeakPtr m_pSystem;
     bool m_IsOpen;
+    float m_Angle;
+    float m_Aperture;
+    float m_RangeMin;
+    float m_RangeMax;
 };
 
 } // namespace Hyperscape
