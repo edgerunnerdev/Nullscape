@@ -98,10 +98,15 @@ void ExplorationViewer::UpdateDebugUI()
         EndChild();
 
         BeginChild("Properties", ImVec2(signalsSize.x, m_WindowSize.y - signalsSize.y), true);
-        ImGui::SliderFloat("Angle", &m_Angle, 0.0f, 360.0f, "%.0f", 1.0f);
-        ImGui::SliderFloat("Aperture", &m_Aperture, 5.0f, 180.0f, "%.0f", 1.0f);
-        ImGui::SliderFloat("Minimum range", &m_RangeMin, 0.0f, 3.0f, "%.2f");
-        ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, 3.0f, "%.2f");
+        const float maximumSensorRange = GetMaximumSensorRange();
+        ImGui::SliderFloat("Angle", &m_Angle, -360.0f, 360.0f, "%.0f deg", 1.0f);
+        ImGui::SliderFloat("Aperture", &m_Aperture, 5.0f, 180.0f, "%.0f deg", 1.0f);
+        ImGui::SliderFloat("Minimum range", &m_RangeMin, 0.0f, m_RangeMax - 0.25f, "%.2f AU");
+        if (m_RangeMin >= m_RangeMax - 0.25f)
+        {
+            m_RangeMin = m_RangeMax - 0.25f;
+        }
+        ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, maximumSensorRange, "%.2f AU");
         EndChild();
         EndGroup();
 
@@ -122,19 +127,19 @@ void ExplorationViewer::DrawCanvas()
     static const float sSectorSize = 48.0f;
 
     // Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows us to use IsItemHovered()/IsItemActive()
-    ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!
-    ImVec2 canvas_sz = ImVec2(1200, 900);
-    ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+    ImVec2 canvasSize = ImVec2(1200, 900);
+    ImVec2 topLeft = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!
+    ImVec2 bottomRight = ImVec2(topLeft.x + canvasSize.x, topLeft.y + canvasSize.y);
 
     // Draw border and background color
     ImGuiIO& io = ImGui::GetIO();
     ImDrawList* pDrawList = ImGui::GetWindowDrawList();
 
     // This will catch our interactions
-    ImGui::InvisibleButton("canvas", canvas_sz, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+    ImGui::InvisibleButton("canvas", canvasSize, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
     const bool is_hovered = ImGui::IsItemHovered();                            // Hovered
     const bool is_active = ImGui::IsItemActive();                              // Held
-    const ImVec2 origin(canvas_p0.x + scrolling.x, canvas_p0.y + scrolling.y); // Lock scrolled origin
+    const ImVec2 origin(topLeft.x + scrolling.x, topLeft.y + scrolling.y); // Lock scrolled origin
     const ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
     // Pan (we use a zero mouse threshold when there's no context menu)
@@ -164,21 +169,21 @@ void ExplorationViewer::DrawCanvas()
     }
 
     // Draw grid + all lines in the canvas
-    pDrawList->PushClipRect(canvas_p0, canvas_p1, true);
+    pDrawList->PushClipRect(topLeft, bottomRight, true);
     const float GRID_STEP = sSectorSize;
-    for (float x = fmodf(scrolling.x, GRID_STEP); x < canvas_sz.x; x += GRID_STEP)
-        pDrawList->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y), ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
-    for (float y = fmodf(scrolling.y, GRID_STEP); y < canvas_sz.y; y += GRID_STEP)
-        pDrawList->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
+    for (float x = fmodf(scrolling.x, GRID_STEP); x < canvasSize.x; x += GRID_STEP)
+        pDrawList->AddLine(ImVec2(topLeft.x + x, topLeft.y), ImVec2(topLeft.x + x, bottomRight.y), IM_COL32(200, 200, 200, 40));
+    for (float y = fmodf(scrolling.y, GRID_STEP); y < canvasSize.y; y += GRID_STEP)
+        pDrawList->AddLine(ImVec2(topLeft.x, topLeft.y + y), ImVec2(bottomRight.x, topLeft.y + y), IM_COL32(200, 200, 200, 40));
 
-    DrawScannerArc(canvas_p0, canvas_p1, scrolling);
+    DrawScannerArc(topLeft, bottomRight, scrolling);
 
     SystemSharedPtr pSystem = m_pSystem.lock();
     if (pSystem != nullptr)
     {
         for (auto& pSignalSource : pSystem->GetSignalSources())
         {
-            pSignalSource->CanvasRender(canvas_p0, canvas_p1, scrolling);
+            pSignalSource->CanvasRender(topLeft, bottomRight, scrolling);
         }
     }
     
@@ -199,15 +204,15 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
     pDrawList->AddCircle(playerCoordinates, 8.0f, ImColor(0.0f, 1.0f, 1.0f));
 
     const float angleRad = glm::radians(m_Angle);
-    float mr = m_RangeMax;
-    glm::vec2 angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad), glm::sin(angleRad)) * mr;
+    const float maximumSensorRange = GetMaximumSensorRange();
+    glm::vec2 angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad), glm::sin(angleRad)) * maximumSensorRange;
     pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f));
 
     const float apertureRad = glm::radians(m_Aperture);
-    angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad), glm::sin(angleRad - apertureRad)) * mr;
+    angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad), glm::sin(angleRad - apertureRad)) * maximumSensorRange;
     pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f));
 
-    angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad + apertureRad), glm::sin(angleRad + apertureRad)) * mr;
+    angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad + apertureRad), glm::sin(angleRad + apertureRad)) * maximumSensorRange;
     pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f));
 
     const float arcStepRad = glm::radians(1.0f);
@@ -215,7 +220,7 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
     rangeArc.resize(m_Aperture * 2 + 1);
     for (int i = 0; i <= m_Aperture * 2; ++i)
     {
-        glm::vec2 point = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * mr;
+        glm::vec2 point = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * maximumSensorRange;
         rangeArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, point);
     }
     pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(0.0f, 1.0f, 1.0f), 0, 1.0f);
@@ -240,6 +245,11 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
         pDrawList->AddConvexPolyFilled(poly, 4, ImColor(0.0f, 1.0f, 1.0f, 0.25f));
     }
     pDrawList->Flags |= ImDrawListFlags_AntiAliasedFill;
+}
+
+float ExplorationViewer::GetMaximumSensorRange() const 
+{
+    return 2.0f;
 }
 
 } // namespace Hyperscape

@@ -44,6 +44,7 @@ public:
 private:
     void DrawCanvas();
     void DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset);
+    float GetMaximumSensorRange() const;
 
     ImVec2 m_WindowSize;
     SystemWeakPtr m_pSystem;
