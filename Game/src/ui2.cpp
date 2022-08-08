@@ -73,7 +73,8 @@ ImVec2 UI2::ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canva
 {
     static const float sZoom = 0.5f;
     const ImVec2 size(canvasBottomRight.x - canvasTopLeft.x, canvasBottomRight.y - canvasTopLeft.y);
-    return ImVec2(canvasTopLeft.x + canvasOffset.x + size.x * coordinates.x * sZoom, canvasTopLeft.y + canvasOffset.y + size.y * coordinates.y * sZoom);
+    const float hratio = size.x / size.y;
+    return ImVec2(canvasTopLeft.x + canvasOffset.x + size.x * coordinates.x * sZoom / hratio, canvasTopLeft.y + canvasOffset.y + size.y * coordinates.y * sZoom);
 }
 
 void UI2::SetupStyle() 
