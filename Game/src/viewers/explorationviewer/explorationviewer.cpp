@@ -54,7 +54,7 @@ void ExplorationViewer::UpdateDebugUI()
 
         UI2::PushFont(UI2::FontId::ArconBold18);
         using namespace ImGui;
-        Begin("Sensors", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        Begin("// SENSORS", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
         UI2::PopFont();
 
         UI2::PushFont(UI2::FontId::ArconRegular18);
@@ -107,6 +107,8 @@ void ExplorationViewer::UpdateDebugUI()
             m_RangeMin = m_RangeMax - 0.25f;
         }
         ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, maximumSensorRange, "%.2f AU");
+        ImGui::Separator();
+        ImGui::Text("Calibrating");
         EndChild();
         EndGroup();
 

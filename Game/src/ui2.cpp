@@ -82,6 +82,14 @@ void UI2::SetupStyle()
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowBorderSize = 0;
     style.ChildRounding = 8;
+    style.Colors[ImGuiCol_WindowBg] = ImColor(30, 30, 30, 240);
+    style.Colors[ImGuiCol_ChildBg] = ImColor(0, 0, 0, 20);
+    style.Colors[ImGuiCol_TitleBgActive] = ImColor(10, 10, 10, 255);
+    style.Colors[ImGuiCol_FrameBg] = ImColor(50, 50, 50, 140);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImColor(255, 255, 255, 30);
+    style.Colors[ImGuiCol_FrameBgActive] = ImColor(255, 255, 255, 50);
+    style.Colors[ImGuiCol_SliderGrab] = ImColor(86, 224, 199, 255);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImColor(0, 255, 209, 255);
 }
 
 } // namespace Hyperscape
