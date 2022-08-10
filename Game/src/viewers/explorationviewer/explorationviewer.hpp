@@ -43,6 +43,7 @@ public:
 
 private:
     void DrawCanvas();
+    void DrawSpectrograph();
     void DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset);
     float GetMaximumSensorRange() const;
 

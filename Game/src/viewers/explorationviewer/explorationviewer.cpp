@@ -22,6 +22,7 @@
 #include <sstream>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
+#include <implot/implot.h>
 #include <math/misc.h>
 
 #include "sector/sector.h"
@@ -56,11 +57,18 @@ void ExplorationViewer::UpdateDebugUI()
         using namespace ImGui;
         Begin("// SENSORS", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
         UI2::PopFont();
-
         UI2::PushFont(UI2::FontId::ArconRegular18);
-        BeginChild("System", m_WindowSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+        BeginGroup();
+        BeginChild("System", ImVec2(m_WindowSize.x, m_WindowSize.y - 330), true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         DrawCanvas();
         EndChild();
+
+        BeginChild("Spectrograph", ImVec2(m_WindowSize.x, 330), true);
+        DrawSpectrograph();
+        EndChild();
+
+        EndGroup();
 
         SameLine();
 
@@ -190,6 +198,45 @@ void ExplorationViewer::DrawCanvas()
     }
     
     pDrawList->PopClipRect();
+}
+
+void ExplorationViewer::DrawSpectrograph() 
+{
+    static float xs1[1001], ys1[1001];
+    for (int i = 0; i < 1001; ++i)
+    {
+        xs1[i] = i * 0.001f;
+        ys1[i] = 0.5f + 0.5f * sinf(50 * (xs1[i] + (float)ImGui::GetTime() / 10));
+    }
+    static double xs2[11], ys2[11];
+    for (int i = 0; i < 11; ++i)
+    {
+        xs2[i] = i * 0.1f;
+        ys2[i] = xs2[i] * xs2[i];
+    }
+
+    SignalData sd;
+    sd.Add(1.0_m, 1.0f);
+    sd.Add(1.0_nm, 1.0f);
+    sd.Add(1.0_Mm, 1.0f);
+    sd.Add(2.0_Mm, 1.0f);
+    sd.Add(1.0_km, 1.0f);
+
+    if (ImPlot::BeginPlot("Spectrograph"))
+    {
+        static const char* pPlotName = "Signal";
+        ImPlot::SetupAxis(ImAxis_X1, "Wavelength (mm)", ImPlotAxisFlags_LogScale | ImPlotAxisFlags_Lock);
+        ImPlot::SetupAxis(ImAxis_Y1, "Intensity", ImPlotAxisFlags_Lock);
+        ImPlot::SetupAxesLimits(0.0, sd.GetMaximumWavelength().ToDouble(), 0.0, 1.0);
+        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+        ImPlot::PlotShaded(pPlotName, xs1, ys1, 1001);
+        ImPlot::PlotLine(pPlotName, xs1, ys1, 1001);
+        ImPlot::PopStyleVar();
+
+        float h = ImPlot::GetPlotSize().y;
+
+        ImPlot::EndPlot();
+    }
 }
 
 void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset)

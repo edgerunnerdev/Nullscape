@@ -33,6 +33,7 @@
 #include <gui/video.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
+#include <implot/implot.h>
 #include <physics/simulation.h>
 #include <render/debugrender.h>
 #include <resourcemanager.h>
@@ -120,7 +121,8 @@ m_pVideoElement( nullptr ),
 m_CursorType( CursorType::Pointer ),
 m_LoadToState( GameState::Unknown ),
 m_KillSave( false ),
-m_ShowImguiTestWindow( false ),
+m_ShowImGuiDemoWindow( false ),
+m_ShowImPlotDemoWindow( false ),
 m_AllResourcesLoaded( false ),
 m_pModuleInfoManager( nullptr ),
 m_pPhysicsSimulation( nullptr ),
@@ -242,7 +244,8 @@ void Game::Initialise()
 	}
 #endif // USE_STEAM
 
-    Genesis::ImGuiImpl::RegisterMenu( "Tools", "ImGui test window", &m_ShowImguiTestWindow );
+    Genesis::ImGuiImpl::RegisterMenu( "Tools", "ImGui demo window", &m_ShowImGuiDemoWindow );
+	Genesis::ImGuiImpl::RegisterMenu( "Tools", "ImPlot demo window", &m_ShowImPlotDemoWindow );
 
 	UI2::Initialize();
 
@@ -289,10 +292,15 @@ Genesis::TaskStatus Game::Update( float delta )
 	SteamAPI_RunCallbacks();
 #endif
 
-    if ( m_ShowImguiTestWindow )
+    if ( m_ShowImGuiDemoWindow )
     {
-        ImGui::ShowDemoWindow( &m_ShowImguiTestWindow );
+        ImGui::ShowDemoWindow( &m_ShowImGuiDemoWindow );
     }
+
+	if ( m_ShowImPlotDemoWindow )
+    {
+		ImPlot::ShowDemoWindow( &m_ShowImPlotDemoWindow );
+	}
 
 	m_pUIRootElement->Update();
     m_pUIEditor->UpdateDebugUI();

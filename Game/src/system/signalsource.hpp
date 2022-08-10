@@ -26,6 +26,7 @@
 
 #include <string>
 
+#include "system/signaldata.hpp"
 #include "system/system.fwd.hpp"
 
 

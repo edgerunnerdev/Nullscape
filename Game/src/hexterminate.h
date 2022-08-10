@@ -243,7 +243,8 @@ private:
     UI::RootElementUniquePtr m_pUIRootElement;
     UI::EditorUniquePtr m_pUIEditor;
     Genesis::ModelViewerUniquePtr m_pModelViewer;
-    bool m_ShowImguiTestWindow;
+    bool m_ShowImGuiDemoWindow;
+    bool m_ShowImPlotDemoWindow;
 
     std::thread m_LoaderThread;
     std::atomic_bool m_AllResourcesLoaded;

@@ -127,7 +127,7 @@ static inline double ImConstrainNan(double val) { return isnan(val) ? 0 : val; }
 // Turns infinity to floating point maximums
 static inline double ImConstrainInf(double val) { return val >= DBL_MAX ?  DBL_MAX : val <= -DBL_MAX ? - DBL_MAX : val; }
 // Turns numbers less than or equal to 0 to 0.001 (sort of arbitrary, is there a better way?)
-static inline double ImConstrainLog(double val) { return val <= 0 ? 0.001f : val; }
+static inline double ImConstrainLog(double val) { return val <= 0 ? 0.000000000001 : val; }
 // Turns numbers less than 0 to zero
 static inline double ImConstrainTime(double val) { return val < IMPLOT_MIN_TIME ? IMPLOT_MIN_TIME : (val > IMPLOT_MAX_TIME ? IMPLOT_MAX_TIME : val); }
 // True if two numbers are approximately equal using units in the last place.
