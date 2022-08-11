@@ -74,3 +74,8 @@ inline bool gIsEqual(float x, float y)
     const float epsilon = 1.0e-5f;
     return std::abs(x - y) <= epsilon * std::abs(x);
 }
+
+template <typename T> static inline T gLerp(T a, T b, float t)
+{
+    return (T)(a + (b - a) * t);
+}

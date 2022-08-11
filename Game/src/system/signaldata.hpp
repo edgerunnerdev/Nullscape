@@ -25,6 +25,8 @@
 
 #include <array>
 
+#include <math/misc.h>
+
 namespace Hyperscape
 {
 
@@ -97,23 +99,48 @@ inline Wavelength operator"" _Mm(long double value)
 class SignalData
 {
 public:
-    SignalData() {}
+    SignalData();
 
     void Add(Wavelength wavelength, float intensity);
+    void Add(double wavelength, float intensity);
     Wavelength GetMinimumWavelength() const;
     Wavelength GetMaximumWavelength() const;
 
-    std::array<double, 1001> Values = {};
+    // Kept as two separate arrays so they can be used directly by ImPlot.
+    static const size_t sNumEntries = 1000;
+    std::array<double, sNumEntries> Wavelengths;
+    std::array<double, sNumEntries> Intensities;
 };
+
+inline SignalData::SignalData() 
+{
+    const double minimum = log10(GetMinimumWavelength().ToDouble());
+    const double maximum = log10(GetMaximumWavelength().ToDouble());
+    float ratio = 0.0f;
+
+    for (size_t i = 0; i < sNumEntries; ++i)
+    {
+        ratio = static_cast<float>(i) / static_cast<float>(sNumEntries);
+        double logValue = gLerp<double>(minimum, maximum, ratio);
+        double wavelength = pow(10.0f, logValue);
+        Add(wavelength, 0.0f);
+    }
+}
 
 inline void SignalData::Add(Wavelength wavelength, float intensity) 
 {
-    const double value = wavelength.ToDouble();
-    const double logValue = log10(value);
+    Add(wavelength.ToDouble(), intensity);
+}
+
+inline void SignalData::Add(double wavelength, float intensity) 
+{
+    const double logValue = log10(wavelength);
     const double minimum = log10(GetMinimumWavelength().ToDouble());
     const double maximum = log10(GetMaximumWavelength().ToDouble());
-    //const double ratio = ImLerp(minimum, maximum, logValue);
-    Values[0] = wavelength.ToDouble();
+    const double ratio = (logValue - minimum) / (maximum - minimum);
+    const unsigned int index = static_cast<unsigned int>(ratio * (sNumEntries - 1));
+    Wavelengths[index] = wavelength;
+    Intensities[index] = intensity;
 }
 
 inline Wavelength SignalData::GetMinimumWavelength() const 

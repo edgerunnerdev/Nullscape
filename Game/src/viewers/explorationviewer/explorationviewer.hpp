@@ -26,6 +26,8 @@
 
 #include <coredefines.h>
 
+#include "system/signaldata.hpp"
+
 namespace Hyperscape
 {
 
@@ -54,6 +56,7 @@ private:
     float m_Aperture;
     float m_RangeMin;
     float m_RangeMax;
+    SignalData m_ScanResult;
 };
 
 } // namespace Hyperscape

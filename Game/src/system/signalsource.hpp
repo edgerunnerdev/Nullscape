@@ -45,6 +45,10 @@ public:
     virtual const glm::vec2& GetSignalCoordinates() const = 0;
 
     const std::string& GetSignalId() const;
+    const SignalData& GetSignalData() const;
+
+protected:
+    SignalData m_SignalData;
 
 private:
     void GenerateSignalId(SystemRandomEngine& systemRandomEngine);
@@ -52,6 +56,14 @@ private:
     std::string m_SignalId;
 };
 
-inline const std::string& SignalSource::GetSignalId() const { return m_SignalId; }
+inline const std::string& SignalSource::GetSignalId() const 
+{ 
+    return m_SignalId; 
+}
+
+inline const SignalData& SignalSource::GetSignalData() const
+{
+    return m_SignalData;
+}
 
 } // namespace Hyperscape
