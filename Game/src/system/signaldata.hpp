@@ -108,8 +108,8 @@ public:
 
     // Kept as two separate arrays so they can be used directly by ImPlot.
     static const size_t sNumEntries = 1000;
-    std::array<double, sNumEntries> Wavelengths;
-    std::array<double, sNumEntries> Intensities;
+    std::array<double, sNumEntries> Wavelengths = { 0.0 };
+    std::array<double, sNumEntries> Intensities = { 0.0 };
 };
 
 inline SignalData::SignalData() 

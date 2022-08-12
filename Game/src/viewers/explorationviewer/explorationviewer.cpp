@@ -214,8 +214,8 @@ void ExplorationViewer::DrawSpectrograph()
         ImPlot::SetupAxis(ImAxis_Y1, "Intensity", ImPlotAxisFlags_Lock);
         ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, m_SpectrographYMax);
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-        ImPlot::PlotShaded(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size() - 1);
-        ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size() - 1);
+        ImPlot::PlotShaded(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
+        ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
         ImPlot::PopStyleVar();
 
         float h = ImPlot::GetPlotSize().y;
@@ -342,7 +342,7 @@ void ExplorationViewer::DoScan()
             if (IsInScannerArc(pSignalSource->GetSignalCoordinates()))
             {
                 const SignalData& signalData = pSignalSource->GetSignalData();
-                for (size_t i = 0; i < m_ScanResult.sNumEntries - 1; ++i)
+                for (size_t i = 0; i < m_ScanResult.sNumEntries; ++i)
                 {
                     m_ScanResult.Intensities[i] += signalData.Intensities[i];
                     m_SpectrographYMax = gMax(m_SpectrographYMax, m_ScanResult.Intensities[i]);
