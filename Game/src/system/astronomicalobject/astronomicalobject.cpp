@@ -82,4 +82,27 @@ const glm::vec2& AstronomicalObject::GetSignalCoordinates() const
     return m_Coordinates;
 }
 
+void AstronomicalObject::AddBlackBodySignal(double temperature) 
+{
+    // Calculate the spectral radiance assuming the astronomical object is a black body, using Planck's law.
+    // https://www.fxsolver.com/browse/formulas/Planck's+law+(+by+wavelength)
+    Wavelength onenm = 1.0_nm;
+    static const double h = 6.62607015 * pow(10.0, -34.0); // Planck's constant.
+    static const double c = 299792458.0;                   // Speed of light.
+    static const double e = 2.71828182845904523536;
+    static const double kb = 1.3806488 * pow(10, -23.0); // Boltzmann constant.
+    for (size_t i = 0; i < m_SignalData.sNumEntries; i++)
+    {
+        const double wavelength = m_SignalData.Wavelengths[i];
+        const double part1 = (2.0 * h * c * c) / pow(wavelength, 5.0);
+        const double part2 = 1.0 / (pow(e, (h * c) / (wavelength * kb * temperature)) - 1.0);
+        double radiance = part1 * part2;
+
+        // From watt per steradian per square metre per metre to kilowatt per steradian per square metre per nanometre.
+        radiance *= pow(10.0, -12.0);
+        
+        m_SignalData.Intensities[i] = radiance;
+    }
+}
+
 } // namespace Hyperscape

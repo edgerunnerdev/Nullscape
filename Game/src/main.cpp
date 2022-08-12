@@ -561,10 +561,6 @@ void Game::SetState( GameState newState )
 				m_pIntelWindow = new IntelWindow();
 			}
 
-			m_pSystem = std::make_shared<System>("17260877307600676", true);
-			m_pExplorationViewer->View(m_pSystem);
-            m_pSystemViewer->View(m_pSystem);
-
 			m_pMainMenu = new MainMenu();
 
 			ShipCustomisationData data;

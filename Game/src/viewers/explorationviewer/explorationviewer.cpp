@@ -40,14 +40,9 @@ ExplorationViewer::ExplorationViewer()
     , m_Aperture(45.0f)
     , m_RangeMin(0.0f)
     , m_RangeMax(2.0f)
+    , m_SpectrographYMax(1.0f)
 {
     Genesis::ImGuiImpl::RegisterMenu("Game", "Sensors", &m_IsOpen);
-
-    m_ScanResult.Add(1.0_m, 1.0f);
-    m_ScanResult.Add(1.0_nm, 1.0f);
-    m_ScanResult.Add(1.0_Mm, 1.0f);
-    m_ScanResult.Add(2.0_Mm, 1.0f);
-    m_ScanResult.Add(1.0_km, 1.0f);
 }
    
 ExplorationViewer::~ExplorationViewer() {
@@ -136,6 +131,9 @@ void ExplorationViewer::UpdateDebugUI()
 void ExplorationViewer::View(SystemSharedPtr pSystem)
 {
     m_pSystem = pSystem;
+
+    // TODO: Remove.
+    DoScan();
 }
 
 void ExplorationViewer::DrawCanvas()
@@ -214,10 +212,10 @@ void ExplorationViewer::DrawSpectrograph()
         static const char* pPlotName = "Signal";
         ImPlot::SetupAxis(ImAxis_X1, "Wavelength (m)", ImPlotAxisFlags_LogScale | ImPlotAxisFlags_Lock);
         ImPlot::SetupAxis(ImAxis_Y1, "Intensity", ImPlotAxisFlags_Lock);
-        ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, 1.0);
+        ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, m_SpectrographYMax);
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-        ImPlot::PlotShaded(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
-        ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
+        ImPlot::PlotShaded(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size() - 1);
+        ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size() - 1);
         ImPlot::PopStyleVar();
 
         float h = ImPlot::GetPlotSize().y;
@@ -325,6 +323,38 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
 float ExplorationViewer::GetMaximumSensorRange() const 
 {
     return 2.0f;
+}
+
+void ExplorationViewer::DoScan() 
+{
+    // Reset result scan intensities
+    for (size_t i = 0; i < m_ScanResult.sNumEntries; ++i)
+    {
+        m_ScanResult.Intensities[i] = 0.0;
+    }
+    m_SpectrographYMax = 1.0f;
+
+    SystemSharedPtr pSystem = m_pSystem.lock();
+    if (pSystem != nullptr)
+    {
+        for (auto& pSignalSource : pSystem->GetSignalSources())
+        {
+            if (IsInScannerArc(pSignalSource->GetSignalCoordinates()))
+            {
+                const SignalData& signalData = pSignalSource->GetSignalData();
+                for (size_t i = 0; i < m_ScanResult.sNumEntries - 1; ++i)
+                {
+                    m_ScanResult.Intensities[i] += signalData.Intensities[i];
+                    m_SpectrographYMax = gMax(m_SpectrographYMax, m_ScanResult.Intensities[i]);
+                }
+            }
+        }
+    }
+}
+
+bool ExplorationViewer::IsInScannerArc(const glm::vec2& coordinates) const 
+{
+    return true;
 }
 
 } // namespace Hyperscape

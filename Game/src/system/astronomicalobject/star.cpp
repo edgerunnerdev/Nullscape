@@ -136,27 +136,7 @@ void Star::GenerateType()
 
     m_SignalName = "Star";
 
-    // Calculate the spectral radiance assuming the astronomical object is a black body, using Planck's law.
-    // https://www.fxsolver.com/browse/formulas/Planck's+law+(+by+wavelength)
-    Wavelength onenm = 1.0_nm;
-    double temperature = 5000.0;
-    static const double h = 6.62607015 * pow(10.0, -34.0); // Planck's constant.
-    static const double c = 299792458.0; // Speed of light. 
-    static const double e = 2.71828182845904523536;
-    static const double kb = 1.3806488 * pow(10, -23.0); // Boltzmann constant.
-    for (int i = 500; i < 3000; i += 10)
-    {
-        const double wavelength = i * onenm.ToDouble();
-        const double part1 = (2.0 * h * c * c) / pow(wavelength, 5.0);
-        const double part2 = 1.0 / (pow(e, (h * c) / (wavelength * kb * temperature)) - 1.0);
-        double radiance = part1 * part2;
-
-        // From watt per steradian per square metre per metre to kilowatt per steradian per square metre per nanometre.
-        radiance *= pow(10.0, -12.0); 
-        int a = 0;
-    }
-
-    // TODO: Black body temperature of a planet: https://en.wikipedia.org/wiki/Effective_temperature
+    AddBlackBodySignal(5000);
 }
 
 } // namespace Hyperscape

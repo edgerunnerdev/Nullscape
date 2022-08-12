@@ -48,6 +48,8 @@ private:
     void DrawSpectrograph();
     void DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset);
     float GetMaximumSensorRange() const;
+    void DoScan();
+    bool IsInScannerArc(const glm::vec2& coordinates) const;
 
     ImVec2 m_WindowSize;
     SystemWeakPtr m_pSystem;
@@ -56,6 +58,7 @@ private:
     float m_Aperture;
     float m_RangeMin;
     float m_RangeMax;
+    float m_SpectrographYMax;
     SignalData m_ScanResult;
 };
 

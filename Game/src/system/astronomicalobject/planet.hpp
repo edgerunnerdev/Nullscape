@@ -37,6 +37,8 @@ public:
     virtual const std::string& GetSignalName() const override;
 
 private:
+    void GenerateProperties();
+
     std::string m_SignalType;
     std::string m_SignalName;
 };

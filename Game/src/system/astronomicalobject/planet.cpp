@@ -26,15 +26,13 @@ namespace Hyperscape
 Planet::Planet(SystemRandomEngine& randomEngine, const glm::vec2& coordinates)
     : AstronomicalObject(randomEngine, "Planet", coordinates)
 {
-    m_SignalType = "Planet";
-    m_SignalName = "Planet";
+    GenerateProperties();
 }
 
 Planet::Planet(SystemRandomEngine& randomEngine, OrbitUniquePtr pOrbit, float theta) 
     : AstronomicalObject(randomEngine, "Planet", std::move(pOrbit), theta) 
 {
-    m_SignalType = "Planet";
-    m_SignalName = "Planet";
+    GenerateProperties();
 }
 
 Planet::~Planet() {}
@@ -69,6 +67,14 @@ const std::string& Planet::GetSignalType() const
 const std::string& Planet::GetSignalName() const
 {
     return m_SignalName;
+}
+
+void Planet::GenerateProperties() 
+{
+    m_SignalType = "Planet";
+    m_SignalName = "Planet";
+
+    // TODO: Black body temperature of a planet: https://en.wikipedia.org/wiki/Effective_temperature
 }
 
 } // namespace Hyperscape

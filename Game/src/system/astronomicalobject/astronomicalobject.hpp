@@ -54,6 +54,7 @@ public:
 
 protected:
     LocalRandomEngine& GetRandomEngine();
+    void AddBlackBodySignal(double temperatureKelvin);
 
     std::string m_Name;
     OrbitUniquePtr m_pOrbit;
