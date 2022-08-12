@@ -211,11 +211,13 @@ void ExplorationViewer::DrawSpectrograph()
     {
         static const char* pPlotName = "Signal";
         ImPlot::SetupAxis(ImAxis_X1, "Wavelength (m)", ImPlotAxisFlags_LogScale | ImPlotAxisFlags_Lock);
-        ImPlot::SetupAxis(ImAxis_Y1, "Intensity", ImPlotAxisFlags_Lock);
+        ImPlot::SetupAxis(ImAxis_Y1, "Intensity", ImPlotAxisFlags_AutoFit);
         ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, m_SpectrographYMax);
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+        ImPlot::PushStyleColor(ImPlotCol_Line, IM_COL32(86, 224, 199, 255));
         ImPlot::PlotShaded(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
         ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
+        ImPlot::PopStyleColor();
         ImPlot::PopStyleVar();
 
         float h = ImPlot::GetPlotSize().y;
@@ -241,22 +243,22 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
     const float maximumSensorRange = GetMaximumSensorRange();
     glm::vec2 angleFrom;
     glm::vec2 angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad), glm::sin(angleRad)) * maximumSensorRange;
-    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f, 0.25f));
+    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(86, 224, 199, 64));
 
     const float apertureRad = glm::radians(m_Aperture);
     angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad), glm::sin(angleRad - apertureRad)) * maximumSensorRange;
-    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f, 0.5f));
+    pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(86, 224, 199, 128));
 
     angleFrom = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad), glm::sin(angleRad - apertureRad)) * m_RangeMin;
     angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad), glm::sin(angleRad - apertureRad)) * m_RangeMax;
-    pDrawList->AddLine(UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleFrom), UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f), 2.0f);
+    pDrawList->AddLine(UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleFrom), UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(86, 224, 199), 2.0f);
 
     angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad + apertureRad), glm::sin(angleRad + apertureRad)) * maximumSensorRange;
     pDrawList->AddLine(playerCoordinates, UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f, 0.5f));
 
     angleFrom = sectorCoordinates + glm::vec2(glm::cos(angleRad + apertureRad), glm::sin(angleRad + apertureRad)) * m_RangeMin;
     angleTo = sectorCoordinates + glm::vec2(glm::cos(angleRad + apertureRad), glm::sin(angleRad + apertureRad)) * m_RangeMax;
-    pDrawList->AddLine(UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleFrom), UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(0.0f, 1.0f, 1.0f), 2.0f);
+    pDrawList->AddLine(UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleFrom), UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, angleTo), ImColor(86, 224, 199), 2.0f);
 
     const float arcStepRad = glm::radians(1.0f);
     std::vector<ImVec2> rangeArc;
@@ -266,7 +268,7 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
         glm::vec2 point = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * maximumSensorRange;
         rangeArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, point);
     }
-    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(0.0f, 1.0f, 1.0f, 0.5f), 0, 1.0f);
+    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(86, 224, 199, 128), 0, 1.0f);
 
 
     for (int i = 0; i <= m_Aperture * 2; ++i)
@@ -274,14 +276,14 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
         glm::vec2 point = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * m_RangeMin;
         rangeArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, point);
     }
-    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(0.0f, 1.0f, 1.0f), 0, 2.0f);
+    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(86, 224, 199), 0, 2.0f);
 
     for (int i = 0; i <= m_Aperture * 2; ++i)
     {
         glm::vec2 point = sectorCoordinates + glm::vec2(glm::cos(angleRad - apertureRad + arcStepRad * i), glm::sin(angleRad - apertureRad + arcStepRad * i)) * m_RangeMax;
         rangeArc[i] = UI2::ToCanvasCoordinates(topLeft, bottomRight, offset, point);
     }
-    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(0.0f, 1.0f, 1.0f), 0, 2.0f);
+    pDrawList->AddPolyline(rangeArc.data(), rangeArc.size(), ImColor(86, 224, 199), 0, 2.0f);
 
     pDrawList->Flags &= ~ImDrawListFlags_AntiAliasedFill;
     std::vector<ImVec2> rangeMinArc;
@@ -300,7 +302,7 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
     for (int i = 0; i < m_Aperture * 2; ++i)
     {
         ImVec2 poly[4] = {rangeMinArc[i], rangeMaxArc[i], rangeMaxArc[i + 1], rangeMinArc[i + 1]};
-        pDrawList->AddConvexPolyFilled(poly, 4, ImColor(0.0f, 1.0f, 1.0f, 0.25f));
+        pDrawList->AddConvexPolyFilled(poly, 4, ImColor(86, 224, 199, 64));
     }
 
     for (int i = 0; i <= m_Aperture * 2; ++i)
@@ -314,7 +316,7 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
     for (int i = 0; i < m_Aperture * 2; ++i)
     {
         ImVec2 poly[4] = {rangeMinArc[i], rangeMaxArc[i], rangeMaxArc[i + 1], rangeMinArc[i + 1]};
-        pDrawList->AddConvexPolyFilled(poly, 4, ImColor(0.0f, 1.0f, 1.0f, 0.1f));
+        pDrawList->AddConvexPolyFilled(poly, 4, ImColor(86, 224, 199, 25));
     }
 
     pDrawList->Flags |= ImDrawListFlags_AntiAliasedFill;
