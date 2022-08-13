@@ -33,6 +33,25 @@
 namespace Hyperscape
 {
 
+// utility structure for realtime plot
+struct RollingBuffer
+{
+    float Span;
+    ImVector<ImVec2> Data;
+    RollingBuffer()
+    {
+        Span = 10.0f;
+        Data.reserve(2000);
+    }
+    void AddPoint(float x, float y)
+    {
+        float xmod = fmodf(x, Span);
+        if (!Data.empty() && xmod < Data.back().x)
+            Data.shrink(0);
+        Data.push_back(ImVec2(xmod, y));
+    }
+};
+
 ExplorationViewer::ExplorationViewer()
     : m_WindowSize(1200, 900)
     , m_IsOpen(false)
@@ -41,6 +60,8 @@ ExplorationViewer::ExplorationViewer()
     , m_RangeMin(0.0f)
     , m_RangeMax(2.0f)
     , m_SpectrographYMax(1.0f)
+    , m_Calibration(0.0f)
+    , m_CalibrationDecayTimer(0.0f)
 {
     Genesis::ImGuiImpl::RegisterMenu("Game", "Sensors", &m_IsOpen);
 }
@@ -87,7 +108,7 @@ void ExplorationViewer::UpdateDebugUI()
                 ImGui::TableSetupColumn("ID      ", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Type");
                 ImGui::TableSetupColumn("Name");
-                ImGui::TableSetupColumn("Strength", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Lock", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableHeadersRow();
                 UI2::PopFont();
 
@@ -107,18 +128,38 @@ void ExplorationViewer::UpdateDebugUI()
         }
         EndChild();
 
-        BeginChild("Properties", ImVec2(signalsSize.x, m_WindowSize.y - signalsSize.y), true);
+        static float sCalibrationHeight = 187.0f;
+        BeginChild("Calibration", ImVec2(signalsSize.x, sCalibrationHeight), true);
+        DrawCalibration();
+        EndChild();
+
+        static float sPropertiesHeight = 125.0f;
+        BeginChild("Properties", ImVec2(signalsSize.x, sPropertiesHeight), true);
         const float maximumSensorRange = GetMaximumSensorRange();
-        ImGui::SliderFloat("Angle", &m_Angle, -360.0f, 360.0f, "%.0f deg", 1.0f);
-        ImGui::SliderFloat("Aperture", &m_Aperture, 5.0f, 180.0f, "%.0f deg", 1.0f);
-        ImGui::SliderFloat("Minimum range", &m_RangeMin, 0.0f, m_RangeMax - 0.25f, "%.2f AU");
+        if (ImGui::SliderFloat("Angle", &m_Angle, -360.0f, 360.0f, "%.0f deg", 1.0f))
+        {
+            TriggerCalibrationDecay();
+        }
+
+        if (ImGui::SliderFloat("Aperture", &m_Aperture, 5.0f, 180.0f, "%.0f deg", 1.0f))
+        {
+            TriggerCalibrationDecay();
+        }
+
+        if (ImGui::SliderFloat("Minimum range", &m_RangeMin, 0.0f, m_RangeMax - 0.25f, "%.2f AU"))
+        {
+            TriggerCalibrationDecay();
+        }
+        
         if (m_RangeMin >= m_RangeMax - 0.25f)
         {
             m_RangeMin = m_RangeMax - 0.25f;
         }
-        ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, maximumSensorRange, "%.2f AU");
-        ImGui::Separator();
-        ImGui::Text("Calibrating");
+
+        if (ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, maximumSensorRange, "%.2f AU"))
+        {
+            TriggerCalibrationDecay();
+        }
         EndChild();
         EndGroup();
 
@@ -205,13 +246,46 @@ void ExplorationViewer::DrawCanvas()
     pDrawList->PopClipRect();
 }
 
+void ExplorationViewer::DrawCalibration() 
+{
+    static RollingBuffer sRollingData;
+    static float t = 0;
+    const float deltaTime = ImGui::GetIO().DeltaTime;
+    t += deltaTime;
+    m_CalibrationDecayTimer = gMax(m_CalibrationDecayTimer - deltaTime, 0.0f);
+
+    std::uniform_real_distribution<float> dist(-0.75f, m_CalibrationDecayTimer > 0.0f ? 0.0f : 1.0f);
+    m_Calibration = gClamp(m_Calibration + ImGui::GetIO().DeltaTime * dist(m_RandomEngine), 0.0f, 1.0f);
+
+    float sensorStrength = GetMaximumSensorStrength() * m_Calibration;
+    sRollingData.AddPoint(t, sensorStrength);
+
+    static float history = 10.0f;
+    sRollingData.Span = history;
+
+    static float sCalibrationHeight = 170.0f;
+    if (ImPlot::BeginPlot("##Calibration", ImVec2(-1, sCalibrationHeight), ImPlotFlags_NoLegend))
+    {
+        ImPlot::SetupAxes(nullptr, "Sensor strength", ImPlotAxisFlags_NoTickLabels | ImPlotAxisFlags_Lock, ImPlotAxisFlags_Lock);
+        ImPlot::SetupAxisLimits(ImAxis_X1, 0.0, history, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, GetMaximumSensorStrength() * 1.1f);
+        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+        ImPlot::PushStyleColor(ImPlotCol_Line, IM_COL32(86, 224, 199, 255));
+        ImPlot::PlotShaded("Strength", &sRollingData.Data[0].x, &sRollingData.Data[0].y, sRollingData.Data.size(), 0, 0, 2 * sizeof(float));
+        ImPlot::PlotLine("Strength", &sRollingData.Data[0].x, &sRollingData.Data[0].y, sRollingData.Data.size(), 0, 2 * sizeof(float));
+        ImPlot::PopStyleColor();
+        ImPlot::PopStyleVar();
+        ImPlot::EndPlot();
+    }
+}
+
 void ExplorationViewer::DrawSpectrograph() 
 {
-    if (ImPlot::BeginPlot("Spectrograph"))
+    if (ImPlot::BeginPlot("Spectrograph", ImVec2(-1, 0), ImPlotFlags_NoLegend))
     {
         static const char* pPlotName = "Signal";
         ImPlot::SetupAxis(ImAxis_X1, "Wavelength (m)", ImPlotAxisFlags_LogScale | ImPlotAxisFlags_Lock);
-        ImPlot::SetupAxis(ImAxis_Y1, "Intensity", ImPlotAxisFlags_AutoFit);
+        ImPlot::SetupAxis(ImAxis_Y1, "Radiance", ImPlotAxisFlags_AutoFit);
         ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, m_SpectrographYMax);
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
         ImPlot::PushStyleColor(ImPlotCol_Line, IM_COL32(86, 224, 199, 255));
@@ -219,9 +293,6 @@ void ExplorationViewer::DrawSpectrograph()
         ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
         ImPlot::PopStyleColor();
         ImPlot::PopStyleVar();
-
-        float h = ImPlot::GetPlotSize().y;
-
         ImPlot::EndPlot();
     }
 }
@@ -327,6 +398,11 @@ float ExplorationViewer::GetMaximumSensorRange() const
     return 2.0f;
 }
 
+float ExplorationViewer::GetMaximumSensorStrength() const 
+{
+    return 1000.0f;
+}
+
 void ExplorationViewer::DoScan() 
 {
     // Reset result scan intensities
@@ -357,6 +433,11 @@ void ExplorationViewer::DoScan()
 bool ExplorationViewer::IsInScannerArc(const glm::vec2& coordinates) const 
 {
     return true;
+}
+
+void ExplorationViewer::TriggerCalibrationDecay() 
+{
+    m_CalibrationDecayTimer = 0.5f;
 }
 
 } // namespace Hyperscape

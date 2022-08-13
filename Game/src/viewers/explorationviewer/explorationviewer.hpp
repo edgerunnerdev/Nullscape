@@ -24,6 +24,8 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <random>
+
 #include <coredefines.h>
 
 #include "system/signaldata.hpp"
@@ -44,12 +46,15 @@ public:
     void View(SystemSharedPtr pSystem);
 
 private:
+    void DrawCalibration();
     void DrawCanvas();
     void DrawSpectrograph();
     void DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset);
     float GetMaximumSensorRange() const;
+    float GetMaximumSensorStrength() const;
     void DoScan();
     bool IsInScannerArc(const glm::vec2& coordinates) const;
+    void TriggerCalibrationDecay();
 
     ImVec2 m_WindowSize;
     SystemWeakPtr m_pSystem;
@@ -59,7 +64,10 @@ private:
     float m_RangeMin;
     float m_RangeMax;
     float m_SpectrographYMax;
+    float m_Calibration;
+    float m_CalibrationDecayTimer;
     SignalData m_ScanResult;
+    std::mt19937_64 m_RandomEngine;
 };
 
 } // namespace Hyperscape
