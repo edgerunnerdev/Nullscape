@@ -62,6 +62,8 @@ ExplorationViewer::ExplorationViewer()
     , m_SpectrographYMax(1.0f)
     , m_Calibration(0.0f)
     , m_CalibrationDecayTimer(0.0f)
+    , m_ScanTimer(0.0f)
+    , m_SignalsInArc(0)
 {
     Genesis::ImGuiImpl::RegisterMenu("Game", "Sensors", &m_IsOpen);
 }
@@ -74,9 +76,16 @@ void ExplorationViewer::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
+        const float delta = ImGui::GetIO().DeltaTime;
+        m_ScanTimer -= delta;
+        if (m_ScanTimer <= 0.0f)
+        {
+            m_ScanTimer = 0.1f;
+            DoScan();
+        }
 
-        UI2::PushFont(UI2::FontId::ArconBold18);
         using namespace ImGui;
+        UI2::PushFont(UI2::FontId::ArconBold18);
         Begin("// SENSORS", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse);
         UI2::PopFont();
         UI2::PushFont(UI2::FontId::ArconRegular18);
@@ -172,9 +181,6 @@ void ExplorationViewer::UpdateDebugUI()
 void ExplorationViewer::View(SystemSharedPtr pSystem)
 {
     m_pSystem = pSystem;
-
-    // TODO: Remove.
-    DoScan();
 }
 
 void ExplorationViewer::DrawCanvas()
@@ -285,14 +291,15 @@ void ExplorationViewer::DrawSpectrograph()
     {
         static const char* pPlotName = "Signal";
         ImPlot::SetupAxis(ImAxis_X1, "Wavelength (m)", ImPlotAxisFlags_LogScale | ImPlotAxisFlags_Lock);
-        ImPlot::SetupAxis(ImAxis_Y1, "Radiance", ImPlotAxisFlags_AutoFit);
-        ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, m_SpectrographYMax);
+        ImPlot::SetupAxis(ImAxis_Y1, "Radiance", ImPlotAxisFlags_Lock);
+        ImPlot::SetupAxesLimits(0.0, m_ScanResult.GetMaximumWavelength().ToDouble(), 0.0, (m_SignalsInArc > 0) ? m_SpectrographYMax * 1.1 : 1.0, ImGuiCond_Always);
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+        ImPlot::PushStyleVar(ImPlotStyleVar_TickLabelWidth, 64.0f);
         ImPlot::PushStyleColor(ImPlotCol_Line, IM_COL32(86, 224, 199, 255));
         ImPlot::PlotShaded(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
         ImPlot::PlotLine(pPlotName, m_ScanResult.Wavelengths.data(), m_ScanResult.Intensities.data(), m_ScanResult.Wavelengths.size());
         ImPlot::PopStyleColor();
-        ImPlot::PopStyleVar();
+        ImPlot::PopStyleVar(2);
         ImPlot::EndPlot();
     }
 }
@@ -410,7 +417,8 @@ void ExplorationViewer::DoScan()
     {
         m_ScanResult.Intensities[i] = 0.0;
     }
-    m_SpectrographYMax = 1.0f;
+    m_SpectrographYMax = 0.0f;
+    m_SignalsInArc = 0;
 
     SystemSharedPtr pSystem = m_pSystem.lock();
     if (pSystem != nullptr)
@@ -423,8 +431,9 @@ void ExplorationViewer::DoScan()
                 for (size_t i = 0; i < m_ScanResult.sNumEntries; ++i)
                 {
                     m_ScanResult.Intensities[i] += signalData.Intensities[i];
-                    m_SpectrographYMax = gMax(m_SpectrographYMax, m_ScanResult.Intensities[i]);
+                    m_SpectrographYMax = glm::max(m_SpectrographYMax, static_cast<float>(m_ScanResult.Intensities[i]));
                 }
+                m_SignalsInArc++;
             }
         }
     }
@@ -432,7 +441,31 @@ void ExplorationViewer::DoScan()
 
 bool ExplorationViewer::IsInScannerArc(const glm::vec2& coordinates) const 
 {
-    return true;
+    SystemSharedPtr pSystem = m_pSystem.lock();
+    if (pSystem == nullptr || pSystem->GetCurrentSector() == nullptr)
+    {
+        return false;
+    }
+
+    const glm::vec2& sectorCoordinates = pSystem->GetCurrentSector()->GetCoordinates();
+    const float scannerAngleRad = glm::radians(m_Angle);
+    const glm::vec2 from(glm::cos(scannerAngleRad), glm::sin(scannerAngleRad));
+    glm::vec2 to(coordinates - sectorCoordinates);
+    const float toDistance = glm::length(to);
+
+    if (glm::length(to) <= 0.001) 
+    {
+        return true;
+    }
+    else
+    {
+        to = glm::normalize(to);
+    }
+
+    const bool isInAperture = glm::degrees(glm::acos(glm::dot(from, to))) < m_Aperture;
+    const bool isInRange = toDistance > m_RangeMin && toDistance < m_RangeMax;
+
+    return isInAperture && isInRange;
 }
 
 void ExplorationViewer::TriggerCalibrationDecay() 

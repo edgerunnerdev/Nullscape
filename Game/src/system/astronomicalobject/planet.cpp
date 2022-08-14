@@ -75,6 +75,7 @@ void Planet::GenerateProperties()
     m_SignalName = "Planet";
 
     // TODO: Black body temperature of a planet: https://en.wikipedia.org/wiki/Effective_temperature
+    AddBlackBodySignal(252); // Earth's effective temperature.
 }
 
 } // namespace Hyperscape

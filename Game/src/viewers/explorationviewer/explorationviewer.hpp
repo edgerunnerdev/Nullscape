@@ -66,6 +66,8 @@ private:
     float m_SpectrographYMax;
     float m_Calibration;
     float m_CalibrationDecayTimer;
+    float m_ScanTimer;
+    int m_SignalsInArc;
     SignalData m_ScanResult;
     std::mt19937_64 m_RandomEngine;
 };

@@ -103,6 +103,7 @@ void AstronomicalObject::AddBlackBodySignal(double temperature)
         }
     }
 
+    // Add some noise to the signal.
     std::uniform_real_distribution<float> dist(0.9f, 1.1f);
     for (size_t i = 0; i < m_SignalData.sNumEntries; i++)
     {
