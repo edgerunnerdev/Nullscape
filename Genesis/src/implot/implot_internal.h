@@ -538,6 +538,8 @@ struct ImPlotTick
     }
 };
 
+float GetTickLabelWidth();
+
 // Collection of ticks
 struct ImPlotTickCollection {
     ImVector<ImPlotTick> Ticks;
@@ -552,6 +554,8 @@ struct ImPlotTickCollection {
         if (tick.ShowLabel) {
             MaxSize.x     =  tick.LabelSize.x > MaxSize.x ? tick.LabelSize.x : MaxSize.x;
             MaxSize.y     =  tick.LabelSize.y > MaxSize.y ? tick.LabelSize.y : MaxSize.y;
+
+            MaxSize.x = ImMax(MaxSize.x, GetTickLabelWidth());
         }
         Ticks.push_back(tick);
         Size++;
@@ -1153,6 +1157,11 @@ struct ImPlotContext {
     ImPlotAlignmentData*        CurrentAlignmentH;
     ImPlotAlignmentData*        CurrentAlignmentV;
 };
+
+inline float GetTickLabelWidth() 
+{
+    return GImPlot->Style.TickLabelWidth;
+}
 
 //-----------------------------------------------------------------------------
 // [SECTION] Internal API

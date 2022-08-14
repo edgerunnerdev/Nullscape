@@ -264,6 +264,7 @@ enum ImPlotStyleVar_ {
     ImPlotStyleVar_FitPadding,         // ImVec2, additional fit padding as a percentage of the fit extents (e.g. ImVec2(0.1f,0.1f) adds 10% to the fit extents of X and Y)
     ImPlotStyleVar_PlotDefaultSize,    // ImVec2, default size used when ImVec2(0,0) is passed to BeginPlot
     ImPlotStyleVar_PlotMinSize,        // ImVec2, minimum size plot frame can be when shrunk
+    ImPlotStyleVar_TickLabelWidth,     // float,  minimum width of the label on the plot ticks.
     ImPlotStyleVar_COUNT
 };
 
@@ -393,6 +394,7 @@ struct ImPlotStyle {
     ImVec2  FitPadding;              // = 0,0     additional fit padding as a percentage of the fit extents (e.g. ImVec2(0.1f,0.1f) adds 10% to the fit extents of X and Y)
     ImVec2  PlotDefaultSize;         // = 400,300 default size used when ImVec2(0,0) is passed to BeginPlot
     ImVec2  PlotMinSize;             // = 200,150 minimum size plot frame can be when shrunk
+    float   TickLabelWidth;          // = 0,
     // style colors
     ImVec4  Colors[ImPlotCol_COUNT]; // Array of styling colors. Indexable with ImPlotCol_ enums.
     // colormap
