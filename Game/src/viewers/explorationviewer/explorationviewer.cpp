@@ -123,14 +123,30 @@ void ExplorationViewer::UpdateDebugUI()
 
                 for (auto& pSignalSource : pSystem->GetSignalSources())
                 {
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(pSignalSource->GetSignalId().c_str());
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(pSignalSource->GetSignalType().c_str());
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(pSignalSource->GetSignalName().c_str());
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted("100.0%");
+                    float signalLockCurrent, signalLockMaximum;
+                    GetSignalLock(pSignalSource, signalLockCurrent, signalLockMaximum);
+                    if (signalLockMaximum < 1.0f)
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::TextDisabled("%s", pSignalSource->GetSignalId().c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextDisabled("%s", signalLockMaximum < 0.5f ? "???" : pSignalSource->GetSignalType().c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextDisabled("%s", signalLockMaximum < 0.5f ? "???" : pSignalSource->GetSignalName().c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextDisabled("%.1f", signalLockCurrent * 100.0f);
+                    }
+                    else
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(pSignalSource->GetSignalId().c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(pSignalSource->GetSignalType().c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(pSignalSource->GetSignalName().c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%.1f", signalLockCurrent * 100.0f);
+                    }
                 }
                 ImGui::EndTable();
             }
@@ -160,9 +176,9 @@ void ExplorationViewer::UpdateDebugUI()
             TriggerCalibrationDecay();
         }
         
-        if (m_RangeMin >= m_RangeMax - 0.25f)
+        if (m_RangeMin >= m_RangeMax - GetMinimumSensorRange())
         {
-            m_RangeMin = m_RangeMax - 0.25f;
+            m_RangeMin = m_RangeMax - GetMinimumSensorRange();
         }
 
         if (ImGui::SliderFloat("Maximum range", &m_RangeMax, 0.25f, maximumSensorRange, "%.2f AU"))
@@ -245,7 +261,12 @@ void ExplorationViewer::DrawCanvas()
     {
         for (auto& pSignalSource : pSystem->GetSignalSources())
         {
-            pSignalSource->CanvasRender(topLeft, bottomRight, scrolling);
+            float signalLockCurrent, signalLockMaximum;
+            GetSignalLock(pSignalSource, signalLockCurrent, signalLockMaximum);
+            if (signalLockMaximum >= 1.0f)
+            {
+                pSignalSource->CanvasRender(topLeft, bottomRight, scrolling);
+            }
         }
     }
     
@@ -260,7 +281,12 @@ void ExplorationViewer::DrawCalibration()
     t += deltaTime;
     m_CalibrationDecayTimer = gMax(m_CalibrationDecayTimer - deltaTime, 0.0f);
 
-    std::uniform_real_distribution<float> dist(-0.75f, m_CalibrationDecayTimer > 0.0f ? 0.0f : 1.0f);
+    float rangeFactor = 1.0f - (m_RangeMax - m_RangeMin - GetMinimumSensorRange()) / (GetMaximumSensorRange() - GetMinimumSensorRange());
+    float apertureFactor = 1.0f - (m_Aperture - 5.0f) / 175.0f;
+    float effectivenessFactor = 0.2f + rangeFactor * 0.4f + apertureFactor * 0.4f;
+    bool limitExceeded = m_Calibration > effectivenessFactor;
+
+    std::uniform_real_distribution<float> dist(-0.75f, (/* m_CalibrationDecayTimer > 0.0f ||*/ limitExceeded) ? 0.0f : 1.0f);
     m_Calibration = gClamp(m_Calibration + ImGui::GetIO().DeltaTime * dist(m_RandomEngine), 0.0f, 1.0f);
 
     float sensorStrength = GetMaximumSensorStrength() * m_Calibration;
@@ -270,7 +296,7 @@ void ExplorationViewer::DrawCalibration()
     sRollingData.Span = history;
 
     static float sCalibrationHeight = 170.0f;
-    if (ImPlot::BeginPlot("##Calibration", ImVec2(-1, sCalibrationHeight), ImPlotFlags_NoLegend))
+    if (ImPlot::BeginPlot("##Calibration", ImVec2(-1, sCalibrationHeight), ImPlotFlags_NoLegend | ImPlotFlags_NoInputs | ImPlotFlags_NoMenus))
     {
         ImPlot::SetupAxes(nullptr, "Sensor strength", ImPlotAxisFlags_NoTickLabels | ImPlotAxisFlags_Lock, ImPlotAxisFlags_Lock);
         ImPlot::SetupAxisLimits(ImAxis_X1, 0.0, history, ImGuiCond_Always);
@@ -287,7 +313,7 @@ void ExplorationViewer::DrawCalibration()
 
 void ExplorationViewer::DrawSpectrograph() 
 {
-    if (ImPlot::BeginPlot("Spectrograph", ImVec2(-1, 0), ImPlotFlags_NoLegend))
+    if (ImPlot::BeginPlot("Spectrograph", ImVec2(-1, 0), ImPlotFlags_NoLegend | ImPlotFlags_NoInputs | ImPlotFlags_NoMenus))
     {
         static const char* pPlotName = "Signal";
         ImPlot::SetupAxis(ImAxis_X1, "Wavelength (m)", ImPlotAxisFlags_LogScale | ImPlotAxisFlags_Lock);
@@ -400,6 +426,11 @@ void ExplorationViewer::DrawScannerArc(const ImVec2& topLeft, const ImVec2& bott
     pDrawList->Flags |= ImDrawListFlags_AntiAliasedFill;
 }
 
+float ExplorationViewer::GetMinimumSensorRange() const
+{
+    return 0.25f;
+}
+
 float ExplorationViewer::GetMaximumSensorRange() const 
 {
     return 2.0f;
@@ -434,6 +465,11 @@ void ExplorationViewer::DoScan()
                     m_SpectrographYMax = glm::max(m_SpectrographYMax, static_cast<float>(m_ScanResult.Intensities[i]));
                 }
                 m_SignalsInArc++;
+                UpdateSignalLock(pSignalSource, true);
+            }
+            else
+            {
+                UpdateSignalLock(pSignalSource, false);
             }
         }
     }
@@ -471,6 +507,60 @@ bool ExplorationViewer::IsInScannerArc(const glm::vec2& coordinates) const
 void ExplorationViewer::TriggerCalibrationDecay() 
 {
     m_CalibrationDecayTimer = 0.5f;
+}
+
+void ExplorationViewer::UpdateSignalLock(const SignalSourceSharedPtr& pSignalSource, bool isInArc) 
+{
+    if (pSignalSource->GetSignalDifficulty() <= 0.0f)
+    {
+        m_SignalLocks[pSignalSource->GetSignalId()] = SignalLockData(1.0f, 1.0f);
+    }
+    else
+    {
+        SignalLocks::iterator it = m_SignalLocks.find(pSignalSource->GetSignalId());
+        float lock = GetEffectiveSensorStrenght() / pSignalSource->GetSignalDifficulty();
+        if (it != m_SignalLocks.end())
+        {
+            // Was this signal previous locked? If so, it should remain fully locked.
+            if (it->second.maximum >= 1.0f)
+            {
+                return;
+            }
+            else if (isInArc)
+            {
+                it->second.current = lock;
+                it->second.maximum = glm::max(it->second.maximum, lock);
+            }
+            else
+            {
+                it->second.current = 0.0f;
+            }
+        }
+        else
+        {
+            m_SignalLocks[pSignalSource->GetSignalId()] = isInArc ? SignalLockData(lock, lock) : SignalLockData(0.0f, 0.0f); 
+        }
+    }
+}
+
+float ExplorationViewer::GetEffectiveSensorStrenght() const 
+{
+    return GetMaximumSensorStrength() * m_Calibration;
+}
+
+void ExplorationViewer::GetSignalLock(const SignalSourceSharedPtr& pSignalSource, float& current, float& maximum) const 
+{
+    SignalLocks::const_iterator it = m_SignalLocks.find(pSignalSource->GetSignalId());
+    if (it == m_SignalLocks.end())
+    {
+        current = 0.0f;
+        maximum = 0.0f;
+    }
+    else
+    {
+        current = it->second.current;
+        maximum = it->second.maximum;
+    }
 }
 
 } // namespace Hyperscape

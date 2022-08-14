@@ -48,10 +48,11 @@ public:
     const SignalData& GetSignalData() const;
 
 protected:
+    LocalRandomEngine m_LocalRandomEngine;
     SignalData m_SignalData;
 
 private:
-    void GenerateSignalId(SystemRandomEngine& systemRandomEngine);
+    void GenerateSignalId();
 
     std::string m_SignalId;
 };

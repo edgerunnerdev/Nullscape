@@ -25,6 +25,7 @@
 // clang-format on
 
 #include <random>
+#include <unordered_map>
 
 #include <coredefines.h>
 
@@ -33,6 +34,7 @@
 namespace Hyperscape
 {
 
+GENESIS_DECLARE_SMART_PTR(SignalSource);
 GENESIS_DECLARE_SMART_PTR(System);
 
 class ExplorationViewer
@@ -50,11 +52,15 @@ private:
     void DrawCanvas();
     void DrawSpectrograph();
     void DrawScannerArc(const ImVec2& topLeft, const ImVec2& bottomRight, const ImVec2& offset);
+    float GetMinimumSensorRange() const;
     float GetMaximumSensorRange() const;
     float GetMaximumSensorStrength() const;
     void DoScan();
     bool IsInScannerArc(const glm::vec2& coordinates) const;
     void TriggerCalibrationDecay();
+    void UpdateSignalLock(const SignalSourceSharedPtr& pSignalSource, bool isInArc);
+    float GetEffectiveSensorStrenght() const;
+    void GetSignalLock(const SignalSourceSharedPtr& pSignalSource, float& current, float& maximum) const;
 
     ImVec2 m_WindowSize;
     SystemWeakPtr m_pSystem;
@@ -70,6 +76,27 @@ private:
     int m_SignalsInArc;
     SignalData m_ScanResult;
     std::mt19937_64 m_RandomEngine;
+
+    struct SignalLockData
+    {
+        SignalLockData()
+            : current(0.0f)
+            , maximum(0.0f)
+        {
+        }
+
+        SignalLockData(float _current, float _maximum)
+            : current(_current)
+            , maximum(_maximum)
+        {
+        }
+
+        float current;
+        float maximum;
+    };
+
+    using SignalLocks = std::unordered_map<std::string, SignalLockData>;
+    SignalLocks m_SignalLocks;
 };
 
 } // namespace Hyperscape

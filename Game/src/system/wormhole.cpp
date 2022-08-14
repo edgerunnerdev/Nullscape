@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
+#include <random>
+
 #include "system/wormhole.hpp"
 
 #include "ui2.hpp"
@@ -29,7 +31,15 @@ Wormhole::Wormhole(SystemRandomEngine& systemRandomEngine, const glm::vec2& coor
     , m_SignalType("Wormhole")
     , m_SignalName("Unstable wormhole")
 {
-
+    Wavelength onenm(1.0_pm);
+    std::normal_distribution<float> wavelengthDist(5.0f, 2.0f);
+    std::uniform_real_distribution<float> radiosityDist(1.0f, 2.0f);
+    for (int i = 0; i < 18; ++i)
+    {
+        double w = wavelengthDist(m_LocalRandomEngine) * onenm.ToDouble();
+        float r = radiosityDist(m_LocalRandomEngine);
+        m_SignalData.Add(w, r);
+    }
 }
 
 void Wormhole::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset)
@@ -41,7 +51,7 @@ void Wormhole::CanvasRender(const ImVec2& canvasTopLeft, const ImVec2& canvasBot
 
 float Wormhole::GetSignalDifficulty() const
 {
-    return 1.0f + static_cast<float>(m_Depth);
+    return static_cast<float>(m_Depth) * 1000.0f;
 }
 
 const std::string& Wormhole::GetSignalType() const 

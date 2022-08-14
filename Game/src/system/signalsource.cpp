@@ -15,35 +15,36 @@
 // You should have received a copy of the GNU General Public License
 // along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
-#include <sstream>
-
 #include "system/signalsource.hpp"
+
+#include <sstream>
 
 namespace Hyperscape
 {
 
 SignalSource::SignalSource(SystemRandomEngine& systemRandomEngine)
+    : m_LocalRandomEngine(systemRandomEngine)
 {
-	GenerateSignalId(systemRandomEngine);
+    GenerateSignalId();
 }
 
-void SignalSource::GenerateSignalId(SystemRandomEngine& systemRandomEngine)
+void SignalSource::GenerateSignalId()
 {
-	LocalRandomEngine localRandomEngine(systemRandomEngine());
-
-	auto fnLetter = [&localRandomEngine]() -> char { 
-		std::uniform_int_distribution<int> distLetters(0, 26);
-		return ('A' + distLetters(localRandomEngine)); 
-	};
-
-	auto fnNumber = [&localRandomEngine]() -> char {
-        std::uniform_int_distribution<int> distNumbers(0, 9);
-        return ('0' + distNumbers(localRandomEngine));
+    auto fnLetter = [this]() -> char
+    {
+        std::uniform_int_distribution<int> distLetters(0, 26);
+        return ('A' + distLetters(m_LocalRandomEngine));
     };
 
-	std::stringstream id;
-	id << fnLetter() << fnLetter() << "-" << fnNumber() << fnNumber() << fnNumber();
-	m_SignalId = id.str();
+    auto fnNumber = [this]() -> char
+    {
+        std::uniform_int_distribution<int> distNumbers(0, 9);
+        return ('0' + distNumbers(m_LocalRandomEngine));
+    };
+
+    std::stringstream id;
+    id << fnLetter() << fnLetter() << "-" << fnNumber() << fnNumber() << fnNumber();
+    m_SignalId = id.str();
 }
 
 } // namespace Hyperscape

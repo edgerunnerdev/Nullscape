@@ -211,7 +211,7 @@ void System::GenerateWormholes()
         const float distance = distanceDistribution(GetRandomEngine());
         const float angle = angleDistribution(GetRandomEngine());
         const glm::vec2 coordinates(glm::cos(angle) * distance, glm::sin(angle) * distance);
-        SignalSourceSharedPtr pWormhole = std::make_shared<Wormhole>(GetRandomEngine(), coordinates, 0);
+        SignalSourceSharedPtr pWormhole = std::make_shared<Wormhole>(GetRandomEngine(), coordinates, 1);
         m_SignalSources.push_back(std::move(pWormhole));
     }
 }
