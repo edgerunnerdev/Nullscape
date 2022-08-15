@@ -202,11 +202,11 @@ void ParticleManagerRep::Render()
 
 			    if ( pPass->m_GlowEnabled )
 			    {
-				    Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Glow );
+				    Genesis::FrameWork::GetRenderSystem()->SetGlowRenderTarget();
 				    RenderGeometry( pPass, particleRenderData, startIdx, endIdx );
 			    }
 
-			    Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Default );
+			    Genesis::FrameWork::GetRenderSystem()->SetDefaultRenderTarget();
 			    RenderGeometry( pPass, particleRenderData, startIdx, endIdx );
 
 			    startIdx += static_cast<int>(numParticles) * 6;

@@ -41,18 +41,6 @@ enum class BlendMode
     Screen
 };
 
-enum class RenderTargetId
-{
-    None,
-    Default,
-    Glow,
-    GlowBlurHorizontal,
-    GlowBlurVertical,
-    Radar,
-
-    Count
-};
-
 enum class IntersectionResult
 {
     Success,

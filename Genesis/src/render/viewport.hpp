@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "render/rendertarget.h"
 #include "scene/scene.h"
 #include "rendersystem.fwd.h"
 
@@ -37,14 +38,14 @@ public:
     void Render();
 
     const std::string& GetName() const;
-    RenderTarget* GetRenderTarget();
+    RenderTargetSharedPtr GetRenderTarget();
     Scene* GetScene();
     int GetWidth();
     int GetHeight();
 
 private:
     std::string m_Name;
-    RenderTargetUniquePtr m_pRenderTarget;
+    RenderTargetSharedPtr m_pRenderTarget;
     SceneSharedPtr m_pScene;
     int m_Width;
     int m_Height;

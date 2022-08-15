@@ -85,7 +85,7 @@ void EntityViewer::UpdateDebugUI()
 
         ImGui::SameLine();
 
-        Genesis::RenderTarget* pRenderTarget = m_pViewport->GetRenderTarget();
+        Genesis::RenderTargetSharedPtr pRenderTarget = m_pViewport->GetRenderTarget();
         ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
                      ImVec2(static_cast<float>(pRenderTarget->GetWidth()), static_cast<float>(pRenderTarget->GetHeight())), ImVec2(0, 1), // UV1
                      ImVec2(1, 0),                                                                                                        // UV2

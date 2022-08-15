@@ -229,10 +229,10 @@ void HyperspaceGate::Render( const glm::mat4x4& shipTransform )
         const mat4x4 scaling = scale( glm::vec3( m_GateScale, 1.0f, 1.0f ) );
         const mat4x4 modelTransform( shipTransform * translation * scaling );
 
-		Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Glow );
+		Genesis::FrameWork::GetRenderSystem()->SetGlowRenderTarget();
 		m_pModel->Render( modelTransform );
 	
-		Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Default );
+		Genesis::FrameWork::GetRenderSystem()->SetDefaultRenderTarget();
 		m_pModel->Render( modelTransform );
 	}
 }

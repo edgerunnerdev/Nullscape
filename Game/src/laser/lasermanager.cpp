@@ -117,10 +117,10 @@ void LaserManager::Render()
 
 	m_pShader->Use();
 
-	pRenderSystem->SetRenderTarget( RenderTargetId::Glow );
+	pRenderSystem->SetGlowRenderTarget();
 	m_pVertexBuffer->Draw( verticesCount );
 
-	pRenderSystem->SetRenderTarget( RenderTargetId::Default );
+	pRenderSystem->SetDefaultRenderTarget();
 	m_pVertexBuffer->Draw( verticesCount );
 
 	pRenderSystem->SetBlendMode( BlendMode::Disabled );

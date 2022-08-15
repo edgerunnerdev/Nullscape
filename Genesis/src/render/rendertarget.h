@@ -28,9 +28,9 @@ namespace Genesis
 class RenderTarget
 {
 public:
-    static RenderTargetUniquePtr Create(const std::string& name, GLuint, GLuint height, bool hasDepth, bool hasStencil);
+    friend class RenderSystem;
 
-    RenderTarget(const std::string& name, GLuint width, GLuint height, GLuint fbo, GLuint color, GLuint depth, GLuint stencil);
+    RenderTarget(const std::string& name, GLuint width, GLuint height, GLuint fbo, GLuint color, GLuint depth, GLuint stencil, bool autoClear);
     ~RenderTarget();
 
     void Clear();
@@ -42,8 +42,10 @@ public:
     GLuint GetColor() const;
     GLuint GetDepth() const;
     GLuint GetStencil() const;
+    bool GetAutoClear() const;
 
 private:
+    static RenderTargetSharedPtr Create(const std::string& name, GLuint, GLuint height, bool hasDepth, bool hasStencil, bool autoClear);
     static void LogCreationError(const std::string& name, GLenum status);
 
     std::string m_Name;
@@ -53,6 +55,7 @@ private:
     GLuint m_ColorAttachment;
     GLuint m_DepthAttachment;
     GLuint m_StencilAttachment;
+    bool m_AutoClear;
 };
 
 inline const std::string& RenderTarget::GetName() const
@@ -90,6 +93,11 @@ inline GLuint RenderTarget::GetStencil() const
 {
     SDL_assert(m_StencilAttachment != 0);
     return m_StencilAttachment;
+}
+
+inline bool RenderTarget::GetAutoClear() const 
+{ 
+    return m_AutoClear; 
 }
 
 } // namespace Genesis

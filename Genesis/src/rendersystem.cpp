@@ -74,7 +74,6 @@ RenderSystem::RenderSystem()
     , m_BlendMode(BlendMode::Disabled)
     , m_InputCallbackScreenshot(InputManager::sInvalidInputCallbackToken)
     , m_InputCallbackCapture(InputManager::sInvalidInputCallbackToken)
-    , m_pCurrentRenderTarget(nullptr)
     , m_DebugWindowOpen(false)
 {
     // Don't do any OpenGL operations here
@@ -170,11 +169,35 @@ void RenderSystem::CreateRenderTargets()
     // 4) This final Vertical blur render target is composited onto the main scene as part of the post-processing shader.
     const GLuint glowWidth = m_ScreenWidth / 2;
     const GLuint glowHeight = m_ScreenHeight / 2;
-    m_pGlowRenderTarget = RenderTarget::Create("Glow", glowWidth, glowHeight, false, false);
-    m_pGlowBlurRenderTarget[0] = RenderTarget::Create("Glow blur (horizontal)", glowWidth, glowHeight, false, false);
-    m_pGlowBlurRenderTarget[1] = RenderTarget::Create("Glow blur (vertical)", glowWidth, glowHeight, false, false);
 
-    m_RadarRenderTarget = RenderTarget::Create("Radar", 256, 256, false, false);
+    m_GlowRenderTarget = RenderTarget::Create("Glow", glowWidth, glowHeight, false, false, true);
+    m_RenderTargets.push_back(m_GlowRenderTarget);
+
+    m_GlowHorizontalBlurRenderTarget = RenderTarget::Create("Glow blur (horizontal)", glowWidth, glowHeight, false, false, true);
+    m_RenderTargets.push_back(m_GlowHorizontalBlurRenderTarget);
+
+    m_GlowVerticalBlurRenderTarget = RenderTarget::Create("Glow blur (vertical)", glowWidth, glowHeight, false, false, true);
+    m_RenderTargets.push_back(m_GlowVerticalBlurRenderTarget);
+}
+
+RenderTargetSharedPtr RenderSystem::CreateRenderTarget(const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil, bool autoClear) 
+{
+    RenderTargetSharedPtr pRenderTarget = RenderTarget::Create(name, width, height, hasDepth, hasStencil, autoClear);
+    m_RenderTargets.push_back(pRenderTarget);
+    return pRenderTarget;
+}
+
+RenderTargetSharedPtr RenderSystem::GetRenderTarget(const std::string& name) const 
+{
+    for (auto& pRenderTarget : m_RenderTargets)
+    {
+        if (pRenderTarget->GetName() == name)
+        {
+            return pRenderTarget;
+        }
+    }
+
+    return nullptr;
 }
 
 // Clears all render targets and sets the renderer back to a known state.
@@ -183,17 +206,16 @@ void RenderSystem::ClearAll()
     ResetDrawCallCount();
     glScissor(0, 0, Configuration::GetScreenWidth(), Configuration::GetScreenHeight());
 
-    for (RenderTargetId id = RenderTargetId::Default; id != RenderTargetId::Count; id = static_cast<RenderTargetId>(static_cast<int>(id) + 1))
+    for (auto& pRenderTarget : m_RenderTargets)
     {
-        RenderTarget* pRenderTarget = GetRenderTarget(id);
-        if (pRenderTarget != nullptr)
+        if (pRenderTarget->GetAutoClear())
         {
             pRenderTarget->Clear();
         }
     }
 
     SetBlendMode(BlendMode::Disabled);
-    SetRenderTarget(RenderTargetId::Default);
+    SetRenderTarget(m_pPrimaryViewport->GetRenderTarget());
 }
 
 void RenderSystem::DrawDebugWindow()
@@ -218,9 +240,10 @@ void RenderSystem::DrawDebugWindow()
             );
         };
 
-        drawRenderTargetFn(m_pGlowRenderTarget.get());
-        drawRenderTargetFn(m_pGlowBlurRenderTarget[0].get());
-        drawRenderTargetFn(m_pGlowBlurRenderTarget[1].get());
+        for (auto& pRenderTarget : m_RenderTargets)
+        {
+            drawRenderTargetFn(pRenderTarget.get());
+        }
     }
 
     ImGui::End();
@@ -271,34 +294,6 @@ void RenderSystem::InitializeDebug()
     mInternalFormatMap[GL_RGBA16] = "GL_RGBA16";
 }
 
-RenderTarget* RenderSystem::GetRenderTarget(RenderTargetId id)
-{
-    if (id == RenderTargetId::Default)
-    {
-        return m_pPrimaryViewport->GetRenderTarget();
-    }
-    else if (id == RenderTargetId::Glow)
-    {
-        return m_pGlowRenderTarget.get();
-    }
-    else if (id == RenderTargetId::GlowBlurHorizontal)
-    {
-        return m_pGlowBlurRenderTarget[0].get();
-    }
-    else if (id == RenderTargetId::GlowBlurVertical)
-    {
-        return m_pGlowBlurRenderTarget[1].get();
-    }
-    else if (id == RenderTargetId::Radar)
-    {
-        return m_RadarRenderTarget.get();
-    }
-    else
-    {
-        return nullptr;
-    }
-}
-
 // Initializes the shader and vertex buffers required for rendering the primary render target to screen,
 // using a variety of post-processing effects.
 void RenderSystem::InitializePostProcessing()
@@ -310,7 +305,7 @@ void RenderSystem::InitializePostProcessing()
 
     // RenderTargetId::GlowBlurVertical contains the final result of the glow effect.
     ShaderUniformSharedPtr pGlowSampler = m_pPostProcessShader->RegisterUniform("k_sampler1", ShaderUniformType::Texture);
-    pGlowSampler->Set(GetRenderTarget(RenderTargetId::GlowBlurVertical)->GetColor(), GL_TEXTURE1);
+    pGlowSampler->Set(m_GlowVerticalBlurRenderTarget->GetColor(), GL_TEXTURE1);
 
     ShaderUniformSharedPtr pResolution = m_pPostProcessShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
     const float w = static_cast<float>(m_pPrimaryViewport->GetWidth());
@@ -352,8 +347,8 @@ void RenderSystem::InitializeGlowChain()
     m_pGlowShaderDirection = m_pGlowShader->RegisterUniform("k_direction", ShaderUniformType::FloatVector2);
 
     ShaderUniformSharedPtr pResolution = m_pGlowShader->RegisterUniform("k_resolution", ShaderUniformType::FloatVector2);
-    const float w = static_cast<float>(m_pGlowRenderTarget->GetWidth());
-    const float h = static_cast<float>(m_pGlowRenderTarget->GetHeight());
+    const float w = static_cast<float>(m_GlowRenderTarget->GetWidth());
+    const float h = static_cast<float>(m_GlowRenderTarget->GetHeight());
     if (pResolution != nullptr)
     {
         pResolution->Set(glm::vec2(w, h));
@@ -414,7 +409,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
 
     glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
-    // print max # of colorbuffers supported by FBO
+    // print max # of color buffers supported by FBO
     int colorBufferCount = 0;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &colorBufferCount);
     Log::Info() << "> Max Number of Color Buffer Attachment Points: " << colorBufferCount;
@@ -422,7 +417,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
     int objectType;
     int objectId;
 
-    // print info of the colorbuffer attachable image
+    // print info of the color buffer attachable image
     for (int i = 0; i < colorBufferCount; ++i)
     {
         glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &objectType);
@@ -440,7 +435,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
         }
     }
 
-    // print info of the depthbuffer attachable image
+    // print info of the depth buffer attachable image
     glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &objectType);
     if (objectType != GL_NONE)
     {
@@ -456,7 +451,7 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
         Log::Info() << output.str();
     }
 
-    // print info of the stencilbuffer attachable image
+    // print info of the stencil buffer attachable image
     glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &objectType);
     if (objectType != GL_NONE)
     {
@@ -475,41 +470,37 @@ void RenderSystem::PrintFramebufferInfo(GLuint fboId)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void RenderSystem::SetRenderTarget(RenderTargetId renderTargetId)
+void RenderSystem::SetRenderTarget(const RenderTargetSharedPtr& pRenderTarget)
 {
-    SetRenderTarget(GetRenderTarget(renderTargetId));
+    SDL_assert(pRenderTarget != nullptr);
+    glBindFramebuffer(GL_FRAMEBUFFER, pRenderTarget->GetFBO());
+    glViewport(0, 0, pRenderTarget->GetWidth(), pRenderTarget->GetHeight());
 }
 
-void RenderSystem::SetRenderTarget(RenderTarget* pRenderTarget)
+void RenderSystem::SetDefaultRenderTarget() 
 {
-    if (pRenderTarget != nullptr)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, pRenderTarget->GetFBO());
-        glViewport(0, 0, pRenderTarget->GetWidth(), pRenderTarget->GetHeight());
-    }
-    else
-    {
-        glViewport(0, 0, Configuration::GetScreenWidth(), Configuration::GetScreenHeight());
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    SetRenderTarget(m_pPrimaryViewport->GetRenderTarget());
+}
 
-    m_pCurrentRenderTarget = pRenderTarget;
+void RenderSystem::SetGlowRenderTarget() 
+{
+    SetRenderTarget(m_GlowRenderTarget);
 }
 
 void RenderSystem::RenderGlow()
 {
-    RenderTarget* pGlowRenderTarget = GetRenderTarget(RenderTargetId::Glow);
+    RenderTarget* pGlowRenderTarget = m_GlowRenderTarget.get();
     m_ViewMatrix = glm::mat4();
     m_ProjectionMatrix = glm::ortho(0.0f, static_cast<float>(pGlowRenderTarget->GetWidth()), static_cast<float>(pGlowRenderTarget->GetHeight()), 0.0f, -1.0f, 1.0f);
 
-    SetRenderTarget(RenderTargetId::GlowBlurHorizontal);
-    m_pGlowShaderSampler->Set(GetRenderTarget(RenderTargetId::Glow)->GetColor(), GL_TEXTURE0);
+    SetRenderTarget(m_GlowHorizontalBlurRenderTarget);
+    m_pGlowShaderSampler->Set(pGlowRenderTarget->GetColor(), GL_TEXTURE0);
     m_pGlowShaderDirection->Set(glm::vec2(1.0f, 0.0f));
     m_pGlowShader->Use();
     m_pGlowVertexBuffer->Draw();
 
-    SetRenderTarget(RenderTargetId::GlowBlurVertical);
-    m_pGlowShaderSampler->Set(GetRenderTarget(RenderTargetId::GlowBlurHorizontal)->GetColor(), GL_TEXTURE0);
+    SetRenderTarget(m_GlowVerticalBlurRenderTarget);
+    m_pGlowShaderSampler->Set(m_GlowHorizontalBlurRenderTarget->GetColor(), GL_TEXTURE0);
     m_pGlowShaderDirection->Set(glm::vec2(0.0f, 1.0f));
     m_pGlowShader->Use();
     m_pGlowVertexBuffer->Draw();
@@ -531,7 +522,10 @@ TaskStatus RenderSystem::Update(float delta)
     m_pCurrentViewport = m_pPrimaryViewport;
     RenderGlow();
 
-    SetRenderTarget(RenderTargetId::None);
+    // Render directly to screen now.
+    glViewport(0, 0, Configuration::GetScreenWidth(), Configuration::GetScreenHeight());
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     ViewOrtho();
     m_pPostProcessShader->Use();
     m_pPostProcessVertexBuffer->Draw();

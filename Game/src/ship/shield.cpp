@@ -231,10 +231,10 @@ void Shield::RenderRegularShield( const glm::mat4& modelTransform )
 	glm::mat4 shieldTransform = modelTransform * glm::translate( m_pOwner->GetCentre( TransformSpace::Local ) );
 	m_pShader->Use( shieldTransform );
 
-	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( RenderTargetId::Glow );
+	Genesis::FrameWork::GetRenderSystem()->SetGlowRenderTarget();
 	m_pVertexBuffer->Draw();
 
-	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( RenderTargetId::Default );
+	Genesis::FrameWork::GetRenderSystem()->SetDefaultRenderTarget();
 	m_pVertexBuffer->Draw();
 
 	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Disabled );
@@ -290,11 +290,11 @@ void Shield::RenderQuantumShield( const glm::mat4& modelTransform )
 
 	if ( ShaderTweaksDebugWindow::GetQuantumShieldGlowPass() )
 	{
-		Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( RenderTargetId::Glow );
+		Genesis::FrameWork::GetRenderSystem()->SetGlowRenderTarget();
 		m_pVertexBuffer->Draw();
 	}
 
-	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( RenderTargetId::Default );
+	Genesis::FrameWork::GetRenderSystem()->SetDefaultRenderTarget();
 	m_pVertexBuffer->Draw();
 
 	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Disabled );

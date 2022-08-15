@@ -36,7 +36,7 @@ Viewport::Viewport(const std::string& name, int width, int height, bool hasDepth
     SDL_assert(height > 0);
     m_Width = width;
     m_Height = height;
-    m_pRenderTarget = RenderTarget::Create(name, width, height, hasDepth, hasStencil);
+    m_pRenderTarget = std::move(FrameWork::GetRenderSystem()->CreateRenderTarget(name, width, height, hasDepth, hasStencil, true));
     m_pScene = std::make_shared<Genesis::Scene>();
 }
 
@@ -45,18 +45,18 @@ Viewport::~Viewport() {}
 void Viewport::Render()
 {
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    pRenderSystem->SetRenderTarget(m_pRenderTarget.get());
+    pRenderSystem->SetRenderTarget(m_pRenderTarget);
     m_pRenderTarget->Clear();
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_DEPTH_TEST);
     m_pScene->Render(this);
     glDisable(GL_DEPTH_TEST);
-    pRenderSystem->SetRenderTarget(RenderTargetId::Default);
+    pRenderSystem->SetRenderTarget(pRenderSystem->GetPrimaryViewport()->GetRenderTarget());
 }
 
-RenderTarget* Viewport::GetRenderTarget()
+RenderTargetSharedPtr Viewport::GetRenderTarget()
 {
-    return m_pRenderTarget.get();
+    return m_pRenderTarget;
 }
 
 Scene* Viewport::GetScene()

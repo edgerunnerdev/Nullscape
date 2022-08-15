@@ -27,7 +27,7 @@
 namespace Genesis
 {
 
-RenderTargetUniquePtr RenderTarget::Create(const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil)
+RenderTargetSharedPtr RenderTarget::Create(const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil, bool autoClear)
 {
     // Make sure we are working on the correct context at this point.
     // The behaviour is divergent between Windows (NVIDIA drivers) and Linux:
@@ -84,7 +84,7 @@ RenderTargetUniquePtr RenderTarget::Create(const std::string& name, GLuint width
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorId, 0);
 
-    RenderTargetUniquePtr pRenderTarget = std::make_unique<RenderTarget>(name, width, height, fboId, colorId, depthId, stencilId);
+    RenderTargetSharedPtr pRenderTarget = std::make_shared<RenderTarget>(name, width, height, fboId, colorId, depthId, stencilId, autoClear);
 
     SDL_GLContext pContext = SDL_GL_GetCurrentContext();
     if (pContext == nullptr)
@@ -109,7 +109,7 @@ RenderTargetUniquePtr RenderTarget::Create(const std::string& name, GLuint width
     return pRenderTarget;
 }
 
-RenderTarget::RenderTarget(const std::string& name, GLuint width, GLuint height, GLuint fbo, GLuint color, GLuint depth, GLuint stencil)
+RenderTarget::RenderTarget(const std::string& name, GLuint width, GLuint height, GLuint fbo, GLuint color, GLuint depth, GLuint stencil, bool autoClear)
     : m_Name(name)
     , m_Width(width)
     , m_Height(height)
@@ -117,6 +117,7 @@ RenderTarget::RenderTarget(const std::string& name, GLuint width, GLuint height,
     , m_ColorAttachment(color)
     , m_DepthAttachment(depth)
     , m_StencilAttachment(stencil)
+    , m_AutoClear(autoClear)
 {
 }
 

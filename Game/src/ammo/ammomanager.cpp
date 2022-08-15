@@ -265,14 +265,14 @@ void AmmoManager::Update( float delta )
 
 void AmmoManager::Render()
 {
-	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Glow );
+	Genesis::FrameWork::GetRenderSystem()->SetGlowRenderTarget();
 	for ( auto& pAmmo : m_pAmmo )
 	{
 		if ( pAmmo && pAmmo->IsAlive() && pAmmo->IsGlowSource() )
 			pAmmo->Render();
 	}
 
-	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Default );
+	Genesis::FrameWork::GetRenderSystem()->SetDefaultRenderTarget();
 	for ( auto& pAmmo : m_pAmmo )
 	{
 		if ( pAmmo && pAmmo->IsAlive() )

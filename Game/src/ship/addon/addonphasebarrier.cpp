@@ -299,23 +299,23 @@ void AddonPhaseBarrier::Render( const glm::mat4& /*moduleModelTransform*/ )
 	//pShipShaderUniforms->Get( ShipShaderUniform::AmbientColour )->Get( &ambientColour );
 	//m_pAmbientColourUniform->Set( ambientColour );
 
-	m_pActiveUniform->Set( IsActive() ? 1.0f : 0.0f );
+	//m_pActiveUniform->Set( IsActive() ? 1.0f : 0.0f );
 
-	if ( m_pGhost != nullptr )
-	{
-		FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Add );
+	//if ( m_pGhost != nullptr )
+	//{
+	//	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Add );
 
-		m_pShieldStrengthUniform->Set( 1.0f );
-		m_pShader->Use( m_RenderTransform );
+	//	m_pShieldStrengthUniform->Set( 1.0f );
+	//	m_pShader->Use( m_RenderTransform );
 
-		Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Glow );
-		m_pVertexBuffer->Draw();
+	//	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Glow );
+	//	m_pVertexBuffer->Draw();
 
-		Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Default );
-		m_pVertexBuffer->Draw();
+	//	Genesis::FrameWork::GetRenderSystem()->SetRenderTarget( Genesis::RenderTargetId::Default );
+	//	m_pVertexBuffer->Draw();
 
-		FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Disabled );
-	}
+	//	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Disabled );
+	//}
 }
 
 void AddonPhaseBarrier::CreateGeometry()

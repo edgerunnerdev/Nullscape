@@ -55,8 +55,12 @@ public:
     glm::vec3 Raycast(const glm::vec2& screenCoordinates);
 
     inline float GetShaderTimer() const;
-    void SetRenderTarget(RenderTargetId renderTargetId);
-    void SetRenderTarget(RenderTarget* pRenderTarget);
+
+    RenderTargetSharedPtr CreateRenderTarget(const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil, bool autoClear);
+    RenderTargetSharedPtr GetRenderTarget(const std::string& name) const;
+    void SetRenderTarget(const RenderTargetSharedPtr& pRenderTarget);
+    void SetDefaultRenderTarget();
+    void SetGlowRenderTarget();
 
     bool IsScreenshotScheduled() const;
     void BeginCapture();
@@ -98,7 +102,6 @@ private:
     void InitializePostProcessing();
     void InitializeGlowChain();
     void RenderGlow();
-    RenderTarget* GetRenderTarget(RenderTargetId id);
     void ScreenPosToWorldRay(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin,
                              glm::vec3& out_direction);
     IntersectionResult LinePlaneIntersection(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result);
@@ -128,11 +131,11 @@ private:
     ShaderUniformSharedPtr m_pGlowShaderSampler;
     ShaderUniformSharedPtr m_pGlowShaderDirection;
     VertexBuffer* m_pGlowVertexBuffer;
-    RenderTargetUniquePtr m_pGlowRenderTarget;
-    RenderTargetUniquePtr m_pGlowBlurRenderTarget[2];
 
-    // Auxiliary render targets
-    RenderTargetUniquePtr m_RadarRenderTarget;
+    std::vector<RenderTargetSharedPtr> m_RenderTargets;
+    RenderTargetSharedPtr m_GlowRenderTarget;
+    RenderTargetSharedPtr m_GlowHorizontalBlurRenderTarget;
+    RenderTargetSharedPtr m_GlowVerticalBlurRenderTarget;
 
     using InternalFormatMap = std::unordered_map<GLenum, std::string>;
     InternalFormatMap mInternalFormatMap;
@@ -145,7 +148,6 @@ private:
     BlendMode m_BlendMode;
     InputCallbackToken m_InputCallbackScreenshot;
     InputCallbackToken m_InputCallbackCapture;
-    RenderTarget* m_pCurrentRenderTarget;
     bool m_DebugWindowOpen;
 
     using PostProcessBitSet = std::bitset<static_cast<size_t>(PostProcessEffect::Count)>;
