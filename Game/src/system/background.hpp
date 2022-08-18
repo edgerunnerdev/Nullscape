@@ -17,13 +17,14 @@
 
 #pragma once
 
-#include <string>
+#include <render/rendertarget.h>
 #include <resources/resourceshader.hpp>
 #include <scene/sceneobject.h>
+#include <string>
 
 namespace Genesis
 {
-	class VertexBuffer;
+class VertexBuffer;
 }
 
 namespace Hyperscape
@@ -32,19 +33,22 @@ namespace Hyperscape
 class Background : public Genesis::SceneObject
 {
 public:
-								Background(const std::string& seed);
-	virtual						~Background() override;
-    virtual void                Update( float delta ) override;
-	virtual void				Render() override;
+    Background(const std::string& seed);
+    virtual ~Background() override;
+    virtual void Update(float delta) override;
+    virtual void Render() override;
 
-    const glm::vec4&            GetAmbientColour() const;
+    const glm::vec4& GetAmbientColour() const;
 
 private:
-	void						CreateGeometry();
+    void CreateGeometry();
 
-	Genesis::ResourceShader*	m_pShader;
-	Genesis::VertexBuffer*		m_pVertexBuffer;
-    glm::vec4                   m_AmbientColour;
+    Genesis::RenderTargetSharedPtr m_pProteanCloudsRenderTarget;
+    Genesis::ResourceShader* m_pProteanCloudsShader;
+    Genesis::ResourceShader* m_pShader;
+    Genesis::VertexBuffer* m_pVertexBuffer;
+    glm::vec4 m_AmbientColour;
+    bool m_ProteanCloudsGenerated;
 };
 
 inline const glm::vec4& Background::GetAmbientColour() const
@@ -52,4 +56,4 @@ inline const glm::vec4& Background::GetAmbientColour() const
     return m_AmbientColour;
 }
 
-}
+} // namespace Hyperscape

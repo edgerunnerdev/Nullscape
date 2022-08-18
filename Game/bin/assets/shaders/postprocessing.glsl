@@ -49,11 +49,6 @@ void main()
 {
 	color = vec4( texture( k_sampler0, UV ).rgb, 1 );
 
-	if ( k_applyBleachBypass )
-	{
-		color = ApplyBleachBypass( color );
-	}
-
 	if ( k_applyGlow )
 	{
 		color = ApplyGlow( color );
