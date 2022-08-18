@@ -87,7 +87,7 @@ RenderSystem::RenderSystem()
 
 RenderSystem::~RenderSystem()
 {
-    ImGuiImpl::UnregisterMenu("Tools", "Rendering");
+    ImGuiImpl::UnregisterMenu("Engine", "Render system");
 
     InputManager* pInputManager = FrameWork::GetInputManager();
     if (pInputManager != nullptr)
@@ -170,14 +170,9 @@ void RenderSystem::CreateRenderTargets()
     const GLuint glowWidth = m_ScreenWidth / 2;
     const GLuint glowHeight = m_ScreenHeight / 2;
 
-    m_GlowRenderTarget = RenderTarget::Create("Glow", glowWidth, glowHeight, false, false, true);
-    m_RenderTargets.push_back(m_GlowRenderTarget);
-
-    m_GlowHorizontalBlurRenderTarget = RenderTarget::Create("Glow blur (horizontal)", glowWidth, glowHeight, false, false, true);
-    m_RenderTargets.push_back(m_GlowHorizontalBlurRenderTarget);
-
-    m_GlowVerticalBlurRenderTarget = RenderTarget::Create("Glow blur (vertical)", glowWidth, glowHeight, false, false, true);
-    m_RenderTargets.push_back(m_GlowVerticalBlurRenderTarget);
+    m_GlowRenderTarget = CreateRenderTarget("Glow", glowWidth, glowHeight, false, false, true);
+    m_GlowHorizontalBlurRenderTarget = CreateRenderTarget("Glow blur (horizontal)", glowWidth, glowHeight, false, false, true);
+    m_GlowVerticalBlurRenderTarget = CreateRenderTarget("Glow blur (vertical)", glowWidth, glowHeight, false, false, true);
 }
 
 RenderTargetSharedPtr RenderSystem::CreateRenderTarget(const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil, bool autoClear) 
@@ -228,21 +223,39 @@ void RenderSystem::DrawDebugWindow()
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_Appearing);
     ImGui::Begin("Rendering", &m_DebugWindowOpen);
 
-    if (ImGui::CollapsingHeader("Post-processing", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Render targets", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        auto drawRenderTargetFn = [](RenderTarget* pRenderTarget) {
-            ImGui::Text("%s - %d x %d", pRenderTarget->GetName().c_str(), pRenderTarget->GetWidth(), pRenderTarget->GetHeight());
-            ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
-                         ImVec2(static_cast<float>(pRenderTarget->GetWidth()), static_cast<float>(pRenderTarget->GetHeight())), ImVec2(0, 0), // UV1
-                         ImVec2(1, 1),                                                                                                        // UV2
-                         ImVec4(1, 1, 1, 1),                                                                                                  // Tint
-                         ImVec4(1, 1, 1, 1)                                                                                                   // Border
-            );
-        };
-
-        for (auto& pRenderTarget : m_RenderTargets)
+        static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+        if (ImGui::BeginTable("RenderTargetsTable", 4, flags))
         {
-            drawRenderTargetFn(pRenderTarget.get());
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Width", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Height", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Image (half size)");
+            ImGui::TableHeadersRow();
+
+            auto drawRenderTargetFn = [](RenderTarget* pRenderTarget) {
+                ImGui::TableNextColumn();
+                ImGui::Text("%s", pRenderTarget->GetName().c_str());
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", pRenderTarget->GetWidth());
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", pRenderTarget->GetHeight());
+                ImGui::TableNextColumn();
+                ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
+                             ImVec2(static_cast<float>(pRenderTarget->GetWidth()) / 2.0f, static_cast<float>(pRenderTarget->GetHeight()) / 2.0f), ImVec2(0, 0), // UV1
+                             ImVec2(1, 1),                                                                                                        // UV2
+                             ImVec4(1, 1, 1, 1),                                                                                                  // Tint
+                             ImVec4(1, 1, 1, 1)                                                                                                   // Border
+                );
+            };
+
+            for (auto& pRenderTarget : m_RenderTargets)
+            {
+                drawRenderTargetFn(pRenderTarget.get());
+            }
+
+            ImGui::EndTable();
         }
     }
 
@@ -251,7 +264,7 @@ void RenderSystem::DrawDebugWindow()
 
 void RenderSystem::InitializeDebug()
 {
-    ImGuiImpl::RegisterMenu("Tools", "Rendering", &m_DebugWindowOpen);
+    ImGuiImpl::RegisterMenu("Engine", "Render system", &m_DebugWindowOpen);
 
     mInternalFormatMap[GL_STENCIL_INDEX] = "GL_STENCIL_INDEX";
     mInternalFormatMap[GL_DEPTH_COMPONENT] = "GL_DEPTH_COMPONENT";
