@@ -222,10 +222,9 @@ bool Forge::InitializeFileWatcher()
 void Forge::InitializeRPCServer()
 {
     using namespace Core;
-    static const int port = 47563;
-    m_pRPCServer = std::make_unique<rpc::server>(port);
+    m_pRPCServer = std::make_unique<rpc::server>(FORGE_PROCESS_PORT);
     m_pRPCServer->async_run(2);
-    Log::Info() << "Initialized RPC server on port " << port << ".";
+    Log::Info() << "Initialized RPC server on port " << FORGE_PROCESS_PORT << ".";
 
     m_pRPCServer->bind("cache",
                        [this](const std::string& asset, const std::string& sourceFile, const std::string& destinationFile)

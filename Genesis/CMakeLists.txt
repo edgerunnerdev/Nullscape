@@ -3,6 +3,9 @@ project(Genesis)
 
 include(ExternalLibraries)
 
+set(FORGE_PROCESS_PORT 47563)
+set(FORGE_LISTENER_PORT 47564)
+
 add_subdirectory("libs/GenesisCore")
 add_subdirectory("libs/GenesisResComp")
 add_subdirectory("tools")
@@ -58,7 +61,7 @@ else()
     find_package(SDL2_mixer REQUIRED)
 endif()
 
-target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Final>:NDEBUG _FINAL>)
+target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Final>:NDEBUG _FINAL> FORGE_PROCESS_PORT=${FORGE_PROCESS_PORT} FORGE_LISTENER_PORT=${FORGE_LISTENER_PORT})
 
 target_compile_options(Genesis PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:

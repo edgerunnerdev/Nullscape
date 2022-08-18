@@ -32,6 +32,8 @@ else()
     #target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
 endif()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE FORGE_PROCESS_PORT=${FORGE_PROCESS_PORT} FORGE_LISTENER_PORT=${FORGE_LISTENER_PORT})
+
 target_link_directories(${PROJECT_NAME} PRIVATE 
     ${GENESISCORE_LIBRARY_DIRS}
     ${SDL2_LIBRARY_DIRS}

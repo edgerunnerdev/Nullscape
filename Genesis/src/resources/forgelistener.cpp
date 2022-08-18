@@ -16,15 +16,45 @@
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include <filesystem>
-#include <platform.hpp>
-#include <resources/forge.hpp>
 #include <sstream>
 #include <string>
+
+#include "imgui/imgui.h"
+#include "platform.hpp"
+#include "log.hpp"
+
+#include "resources/forgelistener.hpp"
 
 namespace Genesis
 {
 
-Forge::Forge()
+ForgeListener::ForgeListener()
+{
+    // We act as a server, so the Forge process can notify us when an asset has been compiled.
+    Core::Log::Info() << "Starting Forge Listener on port " << FORGE_LISTENER_PORT;
+    m_pRPCServer = std::make_unique<rpc::server>("127.0.0.1", FORGE_LISTENER_PORT);
+    m_pRPCServer->async_run();
+
+    SpawnForgeProcess();
+}
+
+ForgeListener::~ForgeListener() 
+{
+    if (m_pRPCClient)
+    {
+        Core::Log::Info() << "Telling Forge process to quit.";
+        m_pRPCClient->send("quit");
+    }
+
+    if (m_pRPCServer)
+    {
+        Core::Log::Info() << "Stopping Forge Listener.";
+        m_pRPCServer->close_sessions();
+        m_pRPCServer->stop();
+    }
+}
+
+void ForgeListener::SpawnForgeProcess() 
 {
     using namespace std::filesystem;
 
@@ -36,7 +66,8 @@ Forge::Forge()
 
     if (exists(forgePath))
     {
-        m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", 47563);
+        // We act as a client so we can notify the Forge process that it should quit when the game terminates.
+        m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", FORGE_PROCESS_PORT);
 
         path assetsPath = current_path() / "assets";
         path dataPath = current_path() / "data";
@@ -49,11 +80,6 @@ Forge::Forge()
         m_pProcess = std::make_unique<Core::Process>(forgePath, arguments.str());
         m_pProcess->Run();
     }
-}
-
-Forge::~Forge() 
-{
-    m_pRPCClient->send("quit");
 }
 
 } // namespace Genesis

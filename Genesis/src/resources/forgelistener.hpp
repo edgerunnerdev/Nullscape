@@ -22,6 +22,7 @@
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <rpc/client.h>
+#include <rpc/server.h>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -30,15 +31,18 @@
 namespace Genesis
 {
 
-class Forge
+class ForgeListener
 {
 public:
-    Forge();
-    ~Forge();
+    ForgeListener();
+    ~ForgeListener();
 
 private:
+    void SpawnForgeProcess();
+
     std::unique_ptr<Core::Process> m_pProcess;
     std::unique_ptr<rpc::client> m_pRPCClient;
+    std::unique_ptr<rpc::server> m_pRPCServer;
 };
 
 } // namespace Genesis

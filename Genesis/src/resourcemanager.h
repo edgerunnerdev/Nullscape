@@ -31,7 +31,7 @@
 namespace Genesis
 {
 
-class Forge;
+class ForgeListener;
 
 //////////////////////////////////////////////////////////////////////////////
 // ResourceGeneric
@@ -130,7 +130,7 @@ public:
 private:
     ExtensionMap mRegisteredExtensions;
     ResourceMap mResources;
-    std::unique_ptr<Forge> m_pForge;
+    std::unique_ptr<ForgeListener> m_pForgeListener;
 };
 
 } // namespace Genesis

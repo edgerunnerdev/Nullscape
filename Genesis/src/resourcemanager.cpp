@@ -19,7 +19,7 @@
 
 #include "genesis.h"
 #include "memory.h"
-#include "resources/forge.hpp"
+#include "resources/forgelistener.hpp"
 #include "resources/resourcefont.h"
 #include "resources/resourceimage.h"
 #include "resources/resourcemodel.h"
@@ -95,7 +95,7 @@ ResourceManager::ResourceManager()
     };
     RegisterExtension("ivf", fCreateResourceVideo);
 
-    m_pForge = std::make_unique<Forge>();
+    m_pForgeListener = std::make_unique<ForgeListener>();
 }
 
 ResourceManager::~ResourceManager()

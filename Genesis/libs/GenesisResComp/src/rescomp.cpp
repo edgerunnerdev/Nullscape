@@ -92,8 +92,7 @@ bool ResComp::Initialize(int argc, char** argv)
 
     if (IsUsingForge())
     {
-        static const int port = 47563;
-        m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", port);
+        m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", FORGE_PROCESS_PORT);
         Core::Log::AddLogTarget(std::make_shared<ForgeLogger>(m_pRPCClient.get()));
     }
     else
