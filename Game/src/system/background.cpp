@@ -98,13 +98,6 @@ void Background::Render()
         pBackgroundSampler->Set(m_pProteanCloudsRenderTarget->GetColor(), GL_TEXTURE0);
     }
 
-            RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
-        pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
-    m_pProteanCloudsShader->Use();
-    m_pVertexBuffer->Draw();
-    pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
-
     m_pShader->Use();
     m_pVertexBuffer->Draw();
 }
