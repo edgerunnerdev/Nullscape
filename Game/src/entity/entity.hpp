@@ -52,7 +52,11 @@ public:
     virtual void Render() override;
 
     void AddComponent(ComponentUniquePtr pComponent);
-    template<typename T> T* GetComponent() { return nullptr; }
+    template<typename T> T* GetComponent() 
+    { 
+        auto& components = m_Components[static_cast<size_t>(T::sType)];
+        return components.empty() ? nullptr : reinterpret_cast<T*>(components.front().get());
+    }
     std::vector<Component*> GetComponents();
 
     template<typename S>
