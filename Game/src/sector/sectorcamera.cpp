@@ -16,7 +16,7 @@
 #include "shipyard/shipyard.h"
 #include "player.h"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 static const float sZoomMinimum = -2.0f;

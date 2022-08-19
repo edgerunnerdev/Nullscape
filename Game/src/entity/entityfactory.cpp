@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #include "entity/componentserialization.hpp"
 #include "entity/entity.hpp"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 std::unique_ptr<EntityFactory> g_pEntityFactory;
@@ -183,4 +183,4 @@ void EntityFactory::SaveTemplate(const std::string& templateName, Entity* pEntit
     }
 }
 
-} // namespace Hyperscape
+} // namespace Nullscape

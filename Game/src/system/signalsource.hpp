@@ -30,7 +30,7 @@
 #include "system/system.fwd.hpp"
 
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 class SignalSource

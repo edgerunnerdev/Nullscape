@@ -3,7 +3,7 @@
 #include "misc/gui.h"
 #include "menus/eva.h"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 namespace GuiExtended

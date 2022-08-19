@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 #include "entity/component.hpp"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 void Entity::AddComponent(ComponentUniquePtr pComponent) 
@@ -64,4 +64,4 @@ std::vector<Component*> Entity::GetComponents()
 	return components;
 }
 
-} // namespace Hyperscape
+} // namespace Nullscape

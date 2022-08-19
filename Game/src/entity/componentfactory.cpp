@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 std::unique_ptr<ComponentFactory> g_pComponentFactory;
@@ -52,4 +52,4 @@ ComponentUniquePtr ComponentFactory::Create(ComponentType type) const
     return m_Registry[static_cast<size_t>(type)]();
 }
 
-} // namespace Hyperscape
+} // namespace Nullscape

@@ -30,7 +30,7 @@
 #include "entity/components/transformcomponent.hpp"
 #include "entity/component.hpp"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 using ComponentPolymorphicClasses = bitsery::ext::PolymorphicClassesList<Component>;
@@ -43,9 +43,9 @@ namespace bitsery::ext
 // for each base class define DIRECTLY derived classes
 // e.g. PolymorphicBaseClass<Shape> : PolymorphicDerivedClasses<Circle, Rectangle, RoundedRectangle>
 // is incorrect, because RoundedRectangle does not directly derive from Shape
-template<> struct PolymorphicBaseClass<Hyperscape::Component> : PolymorphicDerivedClasses<
-	Hyperscape::ModelComponent,
-	Hyperscape::TransformComponent
+template<> struct PolymorphicBaseClass<Nullscape::Component> : PolymorphicDerivedClasses<
+	Nullscape::ModelComponent,
+	Nullscape::TransformComponent
 >
 {
 };

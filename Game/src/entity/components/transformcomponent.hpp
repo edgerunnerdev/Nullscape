@@ -34,7 +34,7 @@ namespace Genesis
 class ResourceModel;
 }
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 class TransformComponent : public Component

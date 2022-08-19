@@ -1,19 +1,19 @@
 // Copyright 2015 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
-// Hyperscape is free software: you can redistribute it and/or modify
+// Nullscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hyperscape is distributed in the hope that it will be useful,
+// Nullscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -92,7 +92,7 @@
 #include "particles/particlemanager.h"
 #include "particles/particleemitter.h"
 
-namespace Hyperscape {
+namespace Nullscape {
 
 Game* g_pGame = nullptr;
 
@@ -192,7 +192,7 @@ void Game::Initialise()
 	Random::Initialise();
 	RandomShuffle::Initialise();
 
-	Genesis::Core::Log::Info() << "Hyperscape build " << HYPERSCAPE_BUILD;
+	Genesis::Core::Log::Info() << "Nullscape build " << Nullscape_BUILD;
 
 	m_pLoadingScreen = LoadingScreenUniquePtr( new LoadingScreen );
 	m_pBlackboard = std::make_shared<Blackboard>();
@@ -394,7 +394,7 @@ Genesis::TaskStatus Game::Update( float delta )
 	}
 
 	if ( GetState() == GameState::GalaxyView ||
-		 GetState() == GameState::HyperscapeView ||
+		 GetState() == GameState::NullscapeView ||
 		 GetState() == GameState::Combat || 
 		 GetState() == GameState::Shipyard )
 	{
@@ -574,7 +574,7 @@ void Game::SetState( GameState newState )
 	{
 		playlistName = "data/playlists/galaxyview.m3u";
 	}
-	else if ( m_State == GameState::HyperscapeView )
+	else if ( m_State == GameState::NullscapeView )
 	{
 		playlistName = "data/playlists/galaxyview.m3u";
 	}
@@ -805,7 +805,7 @@ int Main(Genesis::CommandLineParameters* parameters)
 	FrameWork::Initialize();
 
 	FrameWork::CreateWindowGL(
-		"Hyperscape", 
+		"Nullscape", 
 		Configuration::GetScreenWidth(),
 		Configuration::GetScreenHeight(), 
 		Configuration::GetMultiSampleSamples() );
@@ -838,5 +838,5 @@ int Main(Genesis::CommandLineParameters* parameters)
 
 int main(int argc, char* argv[])
 {
-	return Hyperscape::Main(Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
+	return Nullscape::Main(Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
 }

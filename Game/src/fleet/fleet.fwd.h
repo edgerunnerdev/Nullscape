@@ -3,7 +3,7 @@
 #include <memory>
 #include <list>
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 class Fleet;

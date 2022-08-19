@@ -20,7 +20,7 @@
 #include "system/signalsource.hpp"
 
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 class Wormhole :  public SignalSource

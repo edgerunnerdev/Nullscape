@@ -8,7 +8,7 @@ if(WIN32)
   set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
 endif()
 
-project(Hyperscape)
+project(Nullscape)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/Genesis/cmake/shared)
 if(WIN32)

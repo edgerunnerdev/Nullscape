@@ -27,7 +27,7 @@
 
 #include <math/misc.h>
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 struct Wavelength

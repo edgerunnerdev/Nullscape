@@ -1,26 +1,26 @@
 // Copyright 2021 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
-// Hyperscape is free software: you can redistribute it and/or modify
+// Nullscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hyperscape is distributed in the hope that it will be useful,
+// Nullscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gui/gui.h>
 #include <imgui/imgui.h>
 
 #include "ui/meter.h"
 
-namespace Hyperscape::UI
+namespace Nullscape::UI
 {
 
 static const char* sMeterPropertyPips = "pips";
@@ -98,4 +98,4 @@ void Meter::UpdatePips()
 	}
 }
 
-} // namespace Hyperscape::UI
+} // namespace Nullscape::UI

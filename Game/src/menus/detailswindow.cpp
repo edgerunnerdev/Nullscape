@@ -4,7 +4,7 @@
 #include "faction/faction.h"
 #include "hexterminate.h"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 DetailsWindow::DetailsWindow()

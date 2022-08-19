@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 
 #include <coredefines.h>
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 GENESIS_DECLARE_SMART_PTR(Entity)
@@ -66,4 +66,4 @@ private:
     std::unordered_map<std::string, EntityTemplate> m_Templates;
 };
 
-} // namespace Hyperscape
+} // namespace Nullscape

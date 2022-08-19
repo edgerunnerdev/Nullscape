@@ -4,14 +4,14 @@
 namespace Xml
 {
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::ModuleRarity& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::ModuleRarity& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hyperscape;
+	using namespace Nullscape;
 
 	static const std::string rarity[ static_cast<size_t>( ModuleRarity::Count ) ] = 
 	{
@@ -35,14 +35,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hypersc
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::WeaponBehaviour& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::WeaponBehaviour& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hyperscape;
+	using namespace Nullscape;
 
 	std::string text( pElement->GetText() );
 	if ( text == "Fixed" )
@@ -59,14 +59,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hypersc
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::TowerBonus& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::TowerBonus& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hyperscape;
+	using namespace Nullscape;
 
 	std::string text( pElement->GetText() );
 	if ( text == "None" )
@@ -108,14 +108,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hypersc
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::FleetState& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::FleetState& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Hyperscape;
+	using namespace Nullscape;
 
 	std::string text( pElement->GetText() );
 	std::string texts[] = { "Idle", "Engaged", "Moving", "Arrived" };
@@ -154,9 +154,9 @@ void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, c
 	Write( xmlDoc, pRootElement, elementName, content ? std::string("true") : std::string("false") );
 }
 
-void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, Hyperscape::FleetState content )
+void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, Nullscape::FleetState content )
 {
-	using namespace Hyperscape;
+	using namespace Nullscape;
 
 	if ( content == FleetState::Idle )
 		Write( xmlDoc, pRootElement, elementName, std::string( "Idle" ) );

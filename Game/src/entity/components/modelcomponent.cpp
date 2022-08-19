@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include <genesis.h>
 
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 ModelComponent::ModelComponent()
@@ -67,4 +67,4 @@ void ModelComponent::Render()
     }
 }
 
-} // namespace Hyperscape
+} // namespace Nullscape

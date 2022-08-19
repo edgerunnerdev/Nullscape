@@ -1,6 +1,6 @@
 // Copyright 2018 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include "eva.h"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 class ConsoleLogTarget;

@@ -3,7 +3,7 @@
 #include <iomanip>
 #include "stringaux.h"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 std::string ToLower( const std::string& str )

@@ -89,7 +89,7 @@ if(USE_STEAM)
   target_link_libraries(Game PRIVATE steam_api64)
 endif()
 
-set_target_properties(Game PROPERTIES OUTPUT_NAME "Hyperscape")
+set_target_properties(Game PROPERTIES OUTPUT_NAME "Nullscape")
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DIRECTORY})
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY})
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY_FINAL ${OUTPUT_DIRECTORY})

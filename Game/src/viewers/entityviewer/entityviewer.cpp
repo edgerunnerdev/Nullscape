@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include "entity/componentfactory.hpp"
 #include "entity/entityfactory.hpp"
 
-namespace Hyperscape
+namespace Nullscape
 {
 
 static const int sViewportWidth = 800;
@@ -265,4 +265,4 @@ void EntityViewer::LoadTemplate(const std::string& templateName)
     m_LoadedTemplate = templateName;
 }
 
-} // namespace Hyperscape
+} // namespace Nullscape
