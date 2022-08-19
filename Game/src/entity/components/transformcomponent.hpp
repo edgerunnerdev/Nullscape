@@ -23,6 +23,7 @@
 #include <externalheadersbegin.hpp>
 #include <bitsery/traits/string.h>
 #include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -48,6 +49,7 @@ public:
     virtual void Render() override {}
 
     const glm::mat4x4& GetTransform() const;
+    const glm::vec3 GetPosition() const;
     void SetTransform(const glm::mat4x4& value);
 
     template <typename S> void serialize(S& s) 
@@ -74,6 +76,12 @@ inline const glm::mat4x4& TransformComponent::GetTransform() const
 {
     return m_Transform;
 }
+
+inline const glm::vec3 TransformComponent::GetPosition() const 
+{
+    return glm::vec3(m_Transform[3]);
+}
+
 inline void TransformComponent::SetTransform(const glm::mat4x4& value)
 {
     m_Transform = value;

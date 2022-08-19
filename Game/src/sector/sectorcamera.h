@@ -40,6 +40,7 @@ private:
 	float			m_ZoomMultTarget;
 	bool			m_Initialised;
 	Genesis::InputCallbackToken m_MouseWheelEventToken;
+	glm::vec3		m_Position;
 	glm::vec2		m_BorderTopLeft;
 	glm::vec2		m_BorderBottomRight;
 };

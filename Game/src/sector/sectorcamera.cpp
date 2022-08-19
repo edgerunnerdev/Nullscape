@@ -6,6 +6,8 @@
 #include <inputmanager.h>
 #include <window.h>
 
+#include "entity/components/transformcomponent.hpp"
+#include "entity/entity.hpp"
 #include "hexterminate.h"
 #include "sector/sector.h"
 #include "sector/sectorcamera.h"
@@ -17,13 +19,9 @@
 namespace Hyperscape
 {
 
-#ifdef _FINAL
-static const float ZOOM_MINIMUM = 0.4f;
-#else
-static const float ZOOM_MINIMUM = 0.3f;
-#endif
-
-static const float ZOOM_MAXIMUM = 3.3f;
+static const float sZoomMinimum = -2.0f;
+static const float sZoomMaximum = 2.0f;
+static const float sZoomSpeed = 6.0f;
 
 float clamp( float fv, float fmin, float fmax )
 {
@@ -33,9 +31,10 @@ float clamp( float fv, float fmin, float fmax )
 }
 
 SectorCamera::SectorCamera() :
-m_ZoomMult( 2.75f ),
-m_ZoomMultTarget( m_ZoomMult ),
-m_Initialised( false )
+m_ZoomMult(0.0f),
+m_ZoomMultTarget(m_ZoomMult),
+m_Initialised(false),
+m_Position(0.0f, 40.0f, 30.0f)
 {
 	m_MouseWheelEventToken = Genesis::FrameWork::GetInputManager()->AddMouseWheelCallback( std::bind( &SectorCamera::OnMouseWheelCallback, this, std::placeholders::_1, std::placeholders::_2 ) );
 }
@@ -55,85 +54,87 @@ void SectorCamera::Update( float delta )
 	}
 
 	Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
-	const PlayerSharedPtr pPlayer = g_pGame->GetPlayer();
-	const Ship* pShip = ( pPlayer != nullptr ) ? pPlayer->GetShip() : nullptr;
+	Entity* pShip = g_pGame->GetCurrentSector()->GetPlayerShip();
+	TransformComponent* pShipTransform = pShip->GetComponent<TransformComponent>();
 
 	// Update our camera zooming. m_ZoomMultTarget is our target zoom, set by the
 	// mouse wheel in OnMouseWheelCallback(). The actual zooming factor is m_ZoomMult, 
 	// which approaches the target every frame, providing a smooth camera movement.
-	if ( pShip != nullptr )
-	{
-		if ( pShip->GetDockingState() == DockingState::Undocked )
-		{
-			m_ZoomMultTarget = clamp( m_ZoomMultTarget, ZOOM_MINIMUM, ZOOM_MAXIMUM );
-		}
-		else
-		{
-			m_ZoomMultTarget = 1.1f;
-		}
-	}
+	m_ZoomMultTarget = clamp(m_ZoomMultTarget, sZoomMinimum, sZoomMaximum);
 
-	if ( delta > fabs( m_ZoomMultTarget - m_ZoomMult ) )
+	if (delta > fabs(m_ZoomMultTarget - m_ZoomMult))
+    {
 		m_ZoomMult = m_ZoomMultTarget;
-	else if ( m_ZoomMult > m_ZoomMultTarget + 0.01f )
-		m_ZoomMult -= delta;
-	else if ( m_ZoomMult < m_ZoomMultTarget - 0.01f )
-		m_ZoomMult += delta;
-
-	if ( pShip == nullptr )
-	{
-		// If there is no player ship, set the camera to the centre of the sector
-		pScene->GetCamera()->SetPosition( 0.0f, 0.01f, 200.0f );
-		pScene->GetCamera()->SetTargetPosition( 0.0f, 0.0f, 0.0f );
+    }
+	else if (m_ZoomMult > m_ZoomMultTarget + 0.01f * sZoomSpeed)
+    {
+        m_ZoomMult -= delta * sZoomSpeed;
 	}
-	else if ( pShip->GetDockingState() == DockingState::Undocked )
-	{
-		// Otherwise, anchor the camera on the centre of the player ship but allow it to pan up to a
-		// certain range away from it.
-		glm::vec3 shipCentre = pShip->GetCentre( TransformSpace::World );
-		Genesis::InputManager* inputManager = Genesis::FrameWork::GetInputManager();
-		const glm::vec2& mousePosition = inputManager->GetMousePosition();
+	else if (m_ZoomMult < m_ZoomMultTarget - 0.01f * sZoomSpeed)
+    {
+		m_ZoomMult += delta * sZoomSpeed;
+    }
 
-		glm::vec2 offset( 
-			(  mousePosition.x - Genesis::FrameWork::GetWindow()->GetWidth() / 2.0f ), 
-			( -mousePosition.y + Genesis::FrameWork::GetWindow()->GetHeight() / 2.0f ) );
-		float len = glm::length( offset );
-		
-		float offsetFactor = 0.0f;
-		if ( len > 0.0f )
-		{
-			offset = glm::normalize( offset );
-			offsetFactor = len / ( Genesis::FrameWork::GetWindow()->GetWidth() / 2.0f );
-			if ( offsetFactor > 1.0f ) offsetFactor = 1.0f;
-		}
+	if (pShipTransform != nullptr)
+    {
+		const glm::vec3 shipPosition(pShipTransform->GetPosition());
+        const glm::vec3 baseCameraPosition(0.0f, shipPosition.y + 39.0f, shipPosition.z + 50.0f);
 
-		// Scale the offset so that the ship always remains visible, even across multiple zoom settings.
-		offset.x *= 100.0f * offsetFactor * m_ZoomMult;
-		offset.y *= 100.0f * offsetFactor * m_ZoomMult;		
+		glm::vec3 toCamera = glm::normalize(shipPosition - baseCameraPosition);
+		glm::vec3 cameraPosition(baseCameraPosition + toCamera * m_ZoomMult * 10.0f);
 
-		// Smoothen the camera's position
-		float cameraEndX = shipCentre.x + offset.x;
-		float cameraEndY = shipCentre.y + offset.y;
+        pScene->GetCamera()->SetPosition(cameraPosition);
+        pScene->GetCamera()->SetTargetPosition(shipPosition);
+    }
 
-		Genesis::Camera* pCamera = pScene->GetCamera();
+	//if ( pShip->GetDockingState() == DockingState::Undocked )
+	//{
+	//	// Otherwise, anchor the camera on the centre of the player ship but allow it to pan up to a
+	//	// certain range away from it.
+	//	glm::vec3 shipCentre = pShip->GetCentre( TransformSpace::World );
+	//	Genesis::InputManager* inputManager = Genesis::FrameWork::GetInputManager();
+	//	const glm::vec2& mousePosition = inputManager->GetMousePosition();
 
-		const float interpolationFactor = clamp(m_Initialised ? delta : 1.0f, 0.0f, 1.0f);
-		float cameraX = pCamera->GetPosition().x + (cameraEndX - pCamera->GetPosition().x) * interpolationFactor;
-		float cameraY = pCamera->GetPosition().y + (cameraEndY - pCamera->GetPosition().y) * interpolationFactor;
+	//	glm::vec2 offset( 
+	//		(  mousePosition.x - Genesis::FrameWork::GetWindow()->GetWidth() / 2.0f ), 
+	//		( -mousePosition.y + Genesis::FrameWork::GetWindow()->GetHeight() / 2.0f ) );
+	//	float len = glm::length( offset );
+	//	
+	//	float offsetFactor = 0.0f;
+	//	if ( len > 0.0f )
+	//	{
+	//		offset = glm::normalize( offset );
+	//		offsetFactor = len / ( Genesis::FrameWork::GetWindow()->GetWidth() / 2.0f );
+	//		if ( offsetFactor > 1.0f ) offsetFactor = 1.0f;
+	//	}
 
-		pCamera->SetPosition( cameraX, cameraY, 200.0f * m_ZoomMult );
-		pCamera->SetTargetPosition( cameraX, cameraY, 0.0f );
+	//	// Scale the offset so that the ship always remains visible, even across multiple zoom settings.
+	//	offset.x *= 100.0f * offsetFactor * m_ZoomMult;
+	//	offset.y *= 100.0f * offsetFactor * m_ZoomMult;		
 
-		m_Initialised = true;
-	}
-	else if ( pShip->GetShipyard() != nullptr )
-	{
-		const glm::vec3& shipyardPosition = pShip->GetShipyard()->GetPosition();
-		glm::vec3 cameraPosition = shipyardPosition - glm::vec3( 0.0f, -70.0f, 0.0f ) - pShip->GetCentreOfMass();
+	//	// Smoothen the camera's position
+	//	float cameraEndX = shipCentre.x + offset.x;
+	//	float cameraEndY = shipCentre.y + offset.y;
 
-		pScene->GetCamera()->SetPosition( cameraPosition.x, cameraPosition.y, 220.0f * m_ZoomMult );
-		pScene->GetCamera()->SetTargetPosition( cameraPosition.x, cameraPosition.y, 0.0f );
-	}
+	//	Genesis::Camera* pCamera = pScene->GetCamera();
+
+	//	const float interpolationFactor = clamp(m_Initialised ? delta : 1.0f, 0.0f, 1.0f);
+	//	float cameraX = pCamera->GetPosition().x + (cameraEndX - pCamera->GetPosition().x) * interpolationFactor;
+	//	float cameraY = pCamera->GetPosition().y + (cameraEndY - pCamera->GetPosition().y) * interpolationFactor;
+
+	//	pCamera->SetPosition( cameraX, cameraY, 200.0f * m_ZoomMult );
+	//	pCamera->SetTargetPosition( cameraX, cameraY, 0.0f );
+
+	//	m_Initialised = true;
+	//}
+	//else if ( pShip->GetShipyard() != nullptr )
+	//{
+	//	const glm::vec3& shipyardPosition = pShip->GetShipyard()->GetPosition();
+	//	glm::vec3 cameraPosition = shipyardPosition - glm::vec3( 0.0f, -70.0f, 0.0f ) - pShip->GetCentreOfMass();
+
+	//	pScene->GetCamera()->SetPosition( cameraPosition.x, cameraPosition.y, 220.0f * m_ZoomMult );
+	//	pScene->GetCamera()->SetTargetPosition( cameraPosition.x, cameraPosition.y, 0.0f );
+	//}
 
 	UpdateListener( delta );
 	UpdateBorders();
@@ -158,11 +159,11 @@ void SectorCamera::OnMouseWheelCallback( float x, float y )
 {
 	if ( y > 0.0f )
 	{
-		m_ZoomMultTarget -= 0.1f;
+		m_ZoomMultTarget += 0.25f;
 	}
 	else if ( y < 0.0f )
 	{
-		m_ZoomMultTarget += 0.1f;
+		m_ZoomMultTarget -= 0.25f;
 	}
 }
 

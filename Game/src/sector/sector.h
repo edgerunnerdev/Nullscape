@@ -30,6 +30,8 @@
 namespace Hyperscape
 {
 
+GENESIS_DECLARE_SMART_PTR(Entity);
+
 class AmmoManager;
 class MuzzleflashManager;
 class MuzzleflashManagerRep;
@@ -84,6 +86,7 @@ public:
     ShipTweaks* GetShipTweaks() const;
     SectorCamera* GetCamera() const;
     const glm::vec2& GetCoordinates() const;
+    Entity* GetPlayerShip() const;
 
     void AddShip(Ship* pShip);
     void RemoveShip(Ship* pShip);
@@ -144,6 +147,8 @@ private:
     FleetList m_TemporaryFleets;
 
     ShipTweaksUniquePtr m_pShipTweaks;
+    std::vector<EntitySharedPtr> m_Entities;
+    EntitySharedPtr m_pPlayerShip;
 };
 
 inline AmmoManager* Sector::GetAmmoManager() const
@@ -204,6 +209,11 @@ inline SectorCamera* Sector::GetCamera() const
 inline const glm::vec2& Sector::GetCoordinates() const
 {
     return m_Coordinates;
+}
+
+inline Entity* Sector::GetPlayerShip() const 
+{
+    return m_pPlayerShip.get();
 }
 
 } // namespace Hyperscape

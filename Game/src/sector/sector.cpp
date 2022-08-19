@@ -19,6 +19,10 @@
 
 #include "achievements.h"
 #include "ammo/ammomanager.h"
+#include "entity/entity.hpp"
+#include "entity/component.hpp"
+#include "entity/componentfactory.hpp"
+#include "entity/entityfactory.hpp"
 #include "faction/faction.h"
 #include "fleet/fleet.h"
 #include "fleet/fleetcommand.h"
@@ -61,6 +65,7 @@
 #include <math/misc.h>
 #include <render/debugrender.h>
 #include <scene/layer.h>
+#include <scene/light.h>
 #include <scene/scene.h>
 #include <scene/sceneobject.h>
 #include <sound/soundinstance.h>
@@ -194,6 +199,16 @@ bool Sector::Initialize()
     Genesis::FrameWork::GetGuiManager()->AddElement(m_pRadar);
 
     DamageTrackerDebugWindow::Register();
+
+    Genesis::LightArray& lights = Genesis::FrameWork::GetScene()->GetLights();
+    lights[0].SetPosition({100.0f, 100.0f, 100.0f});
+    lights[1].SetPosition({100.0f, 0.0f, 0.0f});
+    lights[2].SetPosition({-100.0f, 100.0f, -100.0f});
+
+    EntitySharedPtr pShipEntity = EntityFactory::Get()->Create("dagger");
+    m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(pShipEntity.get(), false);
+    m_Entities.push_back(pShipEntity);
+    m_pPlayerShip = pShipEntity;
 
     return true;
 }
