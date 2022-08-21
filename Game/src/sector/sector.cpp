@@ -206,9 +206,12 @@ bool Sector::Initialize()
     lights[2].SetPosition({-100.0f, 100.0f, -100.0f});
 
     EntitySharedPtr pShipEntity = EntityFactory::Get()->Create("dagger");
-    m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(pShipEntity.get(), false);
-    m_Entities.push_back(pShipEntity);
-    m_pPlayerShip = pShipEntity;
+    if (pShipEntity)
+    {
+        m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(pShipEntity.get(), false);
+        m_Entities.push_back(pShipEntity);
+        m_pPlayerShip = pShipEntity;   
+    }
 
     return true;
 }

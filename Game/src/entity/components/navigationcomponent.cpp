@@ -13,23 +13,35 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
+// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "entity/components/navigationcomponent.hpp"
 
-#include <SDL.h>
+#include <sstream>
+
+#include <imgui/imgui.h>
+#include <genesis.h>
+
+#include "entity/components/transformcomponent.hpp"
+#include "entity/entity.hpp"
 
 namespace Nullscape
 {
 
-enum class ComponentType:uint16_t
+NavigationComponent::NavigationComponent()
+    : m_Version(1)
 {
-	ModelComponent = 0,
-	TransformComponent,
-	RigidBodyComponent,
-	NavigationComponent,
+}
 
-	Count
-};
+void NavigationComponent::Update(float delta)
+{
+    TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
+    if (pTransformComponent)
+    {
+        glm::mat4x4 transform = pTransformComponent->GetTransform();
+        transform[3].x += 1.0f * delta;
+        pTransformComponent->SetTransform(transform);
+    }
+}
 
 } // namespace Nullscape

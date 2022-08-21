@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Hyperscape.
+// This file is part of Nullscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 // clang-format on
 
 #include "entity/components/modelcomponent.hpp"
+#include "entity/components/navigationcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
 #include "entity/component.hpp"
@@ -36,7 +37,7 @@ namespace Nullscape
 
 using ComponentPolymorphicClasses = bitsery::ext::PolymorphicClassesList<Component>;
 
-} // namespace Hyperscape
+} // namespace Nullscape
 
 namespace bitsery::ext
 {
@@ -47,7 +48,8 @@ namespace bitsery::ext
 template<> struct PolymorphicBaseClass<Nullscape::Component> : PolymorphicDerivedClasses<
 	Nullscape::ModelComponent,
 	Nullscape::TransformComponent,
-	Nullscape::RigidBodyComponent
+	Nullscape::RigidBodyComponent,
+	Nullscape::NavigationComponent
 >
 {
 };

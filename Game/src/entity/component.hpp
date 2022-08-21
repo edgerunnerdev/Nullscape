@@ -46,6 +46,7 @@ public:
     virtual void Render() = 0;
 
     void SetOwner(Entity* pEntity);
+    Entity* GetOwner() const;
 
     template <typename S> void serialize(S& s) {}
 
@@ -56,6 +57,11 @@ private:
 inline void Component::SetOwner(Entity* pEntity)
 {
     m_pEntity = pEntity;
+}
+
+inline Entity* Component::GetOwner() const 
+{
+    return m_pEntity;
 }
 
 } // namespace Nullscape

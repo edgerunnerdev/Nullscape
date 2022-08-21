@@ -22,6 +22,7 @@
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
+#include "entity/components/navigationcomponent.hpp"
 
 namespace Nullscape
 {
@@ -33,6 +34,7 @@ std::unique_ptr<ComponentFactory> g_pComponentFactory;
 ComponentFactory::ComponentFactory() 
 {
     REGISTER_COMPONENT(ModelComponent);
+    REGISTER_COMPONENT(NavigationComponent);
     REGISTER_COMPONENT(TransformComponent);
     REGISTER_COMPONENT(RigidBodyComponent);
 }
