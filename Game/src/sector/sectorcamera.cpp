@@ -83,8 +83,12 @@ void SectorCamera::Update( float delta )
 		glm::vec3 toCamera = glm::normalize(shipPosition - baseCameraPosition);
 		glm::vec3 cameraPosition(baseCameraPosition + toCamera * m_ZoomMult * 10.0f);
 
-        pScene->GetCamera()->SetPosition(cameraPosition);
-        pScene->GetCamera()->SetTargetPosition(shipPosition);
+		static glm::vec3 from(-30.0f, 8.0f, 5.0f);
+		static glm::vec3 to(0.0f, 8.0f, 5.0f);
+
+
+        pScene->GetCamera()->SetPosition(from);
+        pScene->GetCamera()->SetTargetPosition(to);
     }
 
 	//if ( pShip->GetDockingState() == DockingState::Undocked )
