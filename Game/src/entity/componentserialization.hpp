@@ -28,6 +28,7 @@
 
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
+#include "entity/components/rigidbodycomponent.hpp"
 #include "entity/component.hpp"
 
 namespace Nullscape
@@ -45,7 +46,8 @@ namespace bitsery::ext
 // is incorrect, because RoundedRectangle does not directly derive from Shape
 template<> struct PolymorphicBaseClass<Nullscape::Component> : PolymorphicDerivedClasses<
 	Nullscape::ModelComponent,
-	Nullscape::TransformComponent
+	Nullscape::TransformComponent,
+	Nullscape::RigidBodyComponent
 >
 {
 };

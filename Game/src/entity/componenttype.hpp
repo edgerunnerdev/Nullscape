@@ -20,11 +20,11 @@
 namespace Nullscape
 {
 
-enum class ComponentType
+enum class ComponentType:uint16_t
 {
 	ModelComponent = 0,
 	TransformComponent,
-	//RigidBodyComponent,
+	RigidBodyComponent,
 	//ShapeAABBComponent,
 
 	Count

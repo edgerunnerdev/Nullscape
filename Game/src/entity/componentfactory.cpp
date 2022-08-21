@@ -21,6 +21,7 @@
 
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
+#include "entity/components/rigidbodycomponent.hpp"
 
 namespace Nullscape
 {
@@ -33,6 +34,7 @@ ComponentFactory::ComponentFactory()
 {
     REGISTER_COMPONENT(ModelComponent);
     REGISTER_COMPONENT(TransformComponent);
+    REGISTER_COMPONENT(RigidBodyComponent);
 }
 
 ComponentFactory::~ComponentFactory() {}
