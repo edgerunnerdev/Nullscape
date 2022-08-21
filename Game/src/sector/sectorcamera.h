@@ -25,24 +25,18 @@ namespace Nullscape
 class SectorCamera
 {
 public:
-					SectorCamera();
-					~SectorCamera();
+    SectorCamera();
+    ~SectorCamera();
 
-	void			Update( float delta );
-	void			GetBorders( glm::vec2& topLeft, glm::vec2& topRight ) const;
+    void Update(float delta);
+    void GetBorders(glm::vec2& topLeft, glm::vec2& topRight) const;
 
 private:
-	void			UpdateListener( float delta );
-	void			UpdateBorders();
-	void			OnMouseWheelCallback( float x, float y );
+    void UpdateListener(float delta);
+    void UpdateBorders();
 
-	float			m_ZoomMult;
-	float			m_ZoomMultTarget;
-	bool			m_Initialised;
-	Genesis::InputCallbackToken m_MouseWheelEventToken;
-	glm::vec3		m_Position;
-	glm::vec2		m_BorderTopLeft;
-	glm::vec2		m_BorderBottomRight;
+    glm::vec2 m_BorderTopLeft;
+    glm::vec2 m_BorderBottomRight;
 };
 
-}
+} // namespace Nullscape
