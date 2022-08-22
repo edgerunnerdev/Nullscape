@@ -17,6 +17,12 @@
 
 #include "entity/entity.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <magic_enum.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include "entity/component.hpp"
 
 namespace Nullscape
@@ -62,6 +68,33 @@ std::vector<Component*> Entity::GetComponents()
     }
 
 	return components;
+}
+
+bool Entity::Serialize(nlohmann::json& data) 
+{
+    using namespace nlohmann;
+    json jComponents = json::array();
+    bool success = true;
+    for (auto& typeComponents : m_Components)
+    {
+        if (!typeComponents.empty())
+        {
+            json jTypeComponents = json::object();   
+            for (auto& pComponent : typeComponents)
+            {
+                json jComponent = json::object();
+                success &= pComponent->Serialize(jComponent);
+                jComponents.push_back(jComponent);
+            }
+        }
+    }
+    data["components"] = jComponents;
+    return success;
+}
+
+bool Entity::Deserialize(const nlohmann::json& data) 
+{
+    return false;
 }
 
 } // namespace Nullscape

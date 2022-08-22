@@ -21,17 +21,7 @@
 #include <unordered_map>
 #include <set>
 #include <string>
-#include <tuple>
 #include <vector>
-
-// clang-format off
-#include <externalheadersbegin.hpp>
-#include <bitsery/bitsery.h>
-#include <bitsery/adapter/buffer.h>
-#include <bitsery/ext/pointer.h>
-#include <bitsery/ext/inheritance.h>
-#include <externalheadersend.hpp>
-// clang-format on
 
 #include <coredefines.h>
 
@@ -51,19 +41,12 @@ public:
     EntitySharedPtr Create(const std::string& templateName) const;
     bool AddBlankTemplate(const std::string& templateName);
     std::set<std::string> GetTemplateNames() const;
-    void SaveTemplate(const std::string& templateName, Entity* pEntity);
+    void SaveTemplate(const std::string& templateName, EntitySharedPtr pEntity);
 
 private:
     void LoadTemplate(const std::filesystem::path& path);
 
-    using EntityTemplate = std::vector<uint8_t>;
-    using SerializationWriter = bitsery::OutputBufferAdapter<EntityTemplate>;
-    using SerializationReader = bitsery::InputBufferAdapter<EntityTemplate>;
-    using SerializationContext = std::tuple<bitsery::ext::PointerLinkingContext, bitsery::ext::PolymorphicContext<bitsery::ext::StandardRTTI>>;
-    using Serializer = bitsery::Serializer<SerializationWriter, SerializationContext>;
-    using Deserializer = bitsery::Deserializer<SerializationReader, SerializationContext>;
-
-    std::unordered_map<std::string, EntityTemplate> m_Templates;
+    std::unordered_map<std::string, EntitySharedPtr> m_Templates;
 };
 
 } // namespace Nullscape

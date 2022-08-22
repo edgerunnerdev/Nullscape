@@ -67,4 +67,14 @@ void ModelComponent::Render()
     }
 }
 
+bool ModelComponent::Serialize(nlohmann::json& data)
+{
+    return true;
+}
+
+bool ModelComponent::Deserialize(const nlohmann::json& data)
+{
+    return true;
+}
+
 } // namespace Nullscape

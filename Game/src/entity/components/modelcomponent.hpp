@@ -19,12 +19,6 @@
 
 #include <string>
 
-// clang-format off
-#include <externalheadersbegin.hpp>
-#include <bitsery/traits/string.h>
-#include <externalheadersend.hpp>
-// clang-format on
-
 #include "entity/component.hpp"
 
 namespace Genesis
@@ -45,12 +39,8 @@ public:
     virtual void Update(float delta) override;
     virtual void UpdateDebugUI() override;
     virtual void Render() override;
-
-    template <typename S> void serialize(S& s) 
-    {
-        s.value2b(m_Version);
-        s.text1b(m_Filename, 256);
-    }
+    virtual bool Serialize(nlohmann::json& data);
+    virtual bool Deserialize(const nlohmann::json& data);
 
     DEFINE_COMPONENT(ModelComponent);
 

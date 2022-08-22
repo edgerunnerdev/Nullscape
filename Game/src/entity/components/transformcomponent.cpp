@@ -17,10 +17,9 @@
 
 #include "entity/components/transformcomponent.hpp"
 
-#include <sstream>
-
-#include <imgui/imgui.h>
 #include <genesis.h>
+#include <imgui/imgui.h>
+#include <sstream>
 
 namespace Nullscape
 {
@@ -31,11 +30,11 @@ TransformComponent::TransformComponent()
 {
 }
 
-void TransformComponent::UpdateDebugUI() 
+void TransformComponent::UpdateDebugUI()
 {
     for (int i = 0; i < 4; ++i)
     {
-        float v[4] = { m_Transform[i][0], m_Transform[i][1], m_Transform[i][2], m_Transform[i][3] };
+        float v[4] = {m_Transform[i][0], m_Transform[i][1], m_Transform[i][2], m_Transform[i][3]};
         std::stringstream label;
         label << "Row " << i;
         if (ImGui::InputFloat4(label.str().c_str(), v))
@@ -43,6 +42,16 @@ void TransformComponent::UpdateDebugUI()
             m_Transform[i] = glm::vec4(v[0], v[1], v[2], v[3]);
         }
     }
+}
+
+bool TransformComponent::Serialize(nlohmann::json& data)
+{
+    return true;
+}
+
+bool TransformComponent::Deserialize(const nlohmann::json& data)
+{
+    return true;
 }
 
 } // namespace Nullscape

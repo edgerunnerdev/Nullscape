@@ -17,6 +17,12 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include "componenttype.hpp"
 
 namespace Nullscape
@@ -44,11 +50,11 @@ public:
     virtual void Update(float delta) = 0;
     virtual void UpdateDebugUI() = 0;
     virtual void Render() = 0;
+    virtual bool Serialize(nlohmann::json& data) = 0;
+    virtual bool Deserialize(const nlohmann::json& data) = 0;
 
     void SetOwner(Entity* pEntity);
     Entity* GetOwner() const;
-
-    template <typename S> void serialize(S& s) {}
 
 private:
     Entity* m_pEntity;

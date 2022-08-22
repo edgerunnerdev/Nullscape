@@ -44,4 +44,14 @@ void NavigationComponent::Update(float delta)
     }
 }
 
+bool NavigationComponent::Serialize(nlohmann::json& data)
+{
+    return true;
+}
+
+bool NavigationComponent::Deserialize(const nlohmann::json& data)
+{
+    return true;
+}
+
 } // namespace Nullscape

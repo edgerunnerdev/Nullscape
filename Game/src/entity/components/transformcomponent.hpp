@@ -21,7 +21,6 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <bitsery/traits/string.h>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <externalheadersend.hpp>
@@ -42,23 +41,13 @@ public:
     virtual void Update(float delta) override {}
     virtual void UpdateDebugUI() override;
     virtual void Render() override {}
+    virtual bool Serialize(nlohmann::json& data);
+    virtual bool Deserialize(const nlohmann::json& data);
 
     const glm::mat4x4& GetTransform() const;
     const glm::vec3 GetPosition() const;
     void SetTransform(const glm::mat4x4& value);
 
-    template <typename S> void serialize(S& s) 
-    {
-        s.value2b(m_Version);
-
-        for (int i = 0; i < 4; ++i)
-        {
-            for (int j = 0; j < 4; ++j)
-            {
-                s.value4b(m_Transform[i][j]);
-            }
-        }
-    }
 
     DEFINE_COMPONENT(TransformComponent);
 

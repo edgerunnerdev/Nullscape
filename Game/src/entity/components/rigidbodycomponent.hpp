@@ -42,19 +42,8 @@ public:
     virtual void Update(float delta) override {}
     virtual void UpdateDebugUI() override;
     virtual void Render() override {}
-
-    template <typename S> void serialize(S& s) 
-    {
-        s.value2b(m_Version);
-
-        //for (int i = 0; i < 4; ++i)
-        //{
-        //    for (int j = 0; j < 4; ++j)
-        //    {
-        //        s.value4b(m_Transform[i][j]);
-        //    }
-        //}
-    }
+    virtual bool Serialize(nlohmann::json& data);
+    virtual bool Deserialize(const nlohmann::json& data);
 
     DEFINE_COMPONENT(RigidBodyComponent);
 

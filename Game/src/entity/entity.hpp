@@ -22,12 +22,7 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <bitsery/bitsery.h>
-#include <bitsery/traits/array.h>
-#include <bitsery/traits/vector.h>
-#include <bitsery/ext/pointer.h>
-#include <bitsery/ext/inheritance.h>
-#include <bitsery/ext/std_smart_ptr.h>
+#include <json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -59,19 +54,8 @@ public:
     }
     std::vector<Component*> GetComponents();
 
-    template<typename S>
-    void serialize(S& s) 
-    {
-        s.container(m_Components, [](S& s, std::vector<ComponentUniquePtr>& components) 
-            {
-                s.container(components, 64, [](S& s, ComponentUniquePtr& pComponent) 
-                {
-                    s.ext(pComponent, bitsery::ext::StdSmartPtr{});
-                });
-            }
-        );
-    }
-
+    bool Serialize(nlohmann::json& data);
+    bool Deserialize(const nlohmann::json& data);
 
 private:
     std::array<std::vector<ComponentUniquePtr>, static_cast<size_t>(ComponentType::Count)> m_Components;

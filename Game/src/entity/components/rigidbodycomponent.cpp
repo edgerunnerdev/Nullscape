@@ -90,4 +90,14 @@ void RigidBodyComponent::UpdateDebugUI()
 
 }
 
+bool RigidBodyComponent::Serialize(nlohmann::json& data)
+{
+    return true;
+}
+
+bool RigidBodyComponent::Deserialize(const nlohmann::json& data)
+{
+    return true;
+}
+
 } // namespace Nullscape

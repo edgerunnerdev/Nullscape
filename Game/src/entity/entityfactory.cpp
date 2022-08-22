@@ -18,14 +18,7 @@
 #include "entity/entityfactory.hpp"
 
 #include <fstream>
-#include <tuple>
 #include <memory>
-
-// clang-format off
-#include <externalheadersbegin.hpp>
-#include <bitsery/traits/vector.h>
-#include <externalheadersend.hpp>
-// clang-format on
 
 #include <log.hpp>
 #include <genesis.h>
@@ -43,7 +36,7 @@ EntityFactory::EntityFactory()
 {
     for (const auto& dirEntry : std::filesystem::directory_iterator("data/templates"))
     {
-        if (dirEntry.is_regular_file() && dirEntry.path().extension() == ".bin")
+        if (dirEntry.is_regular_file() && dirEntry.path().extension() == ".json")
         {
             LoadTemplate(dirEntry.path());
         }
@@ -72,35 +65,40 @@ EntitySharedPtr EntityFactory::Create(const std::string& templateName) const
     {
         return nullptr;
     }
-
-    EntityTemplate const& entityTemplate = it->second;
-    EntitySharedPtr pEntity = std::make_shared<Entity>();
-
-    SerializationContext context{};
-    std::get<1>(context).registerBasesList<Deserializer>(ComponentPolymorphicClasses{});
-    Deserializer deserializer{context, entityTemplate.begin(), entityTemplate.size()};
-    deserializer.object(*pEntity);
-
-    if (deserializer.adapter().error() != bitsery::ReaderError::NoError || !deserializer.adapter().isCompletedSuccessfully())
-    {
-        Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": " << magic_enum::enum_name(deserializer.adapter().error());
-        return nullptr;
-    }
-    else if (!std::get<0>(context).isValid())
-    {
-        Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": dangling pointers.";
-        return nullptr;
-    }
     else
     {
-        for (Component* pComponent : pEntity->GetComponents())
-        {
-            pComponent->SetOwner(pEntity.get());
-            pComponent->Initialize();
-        }
-
+        EntitySharedPtr pEntity = std::make_shared<Entity>();
         return pEntity;
     }
+
+    //EntityTemplate const& entityTemplate = it->second;
+    //EntitySharedPtr pEntity = std::make_shared<Entity>();
+
+    //SerializationContext context{};
+    //std::get<1>(context).registerBasesList<Deserializer>(ComponentPolymorphicClasses{});
+    //Deserializer deserializer{context, entityTemplate.begin(), entityTemplate.size()};
+    //deserializer.object(*pEntity);
+
+    //if (deserializer.adapter().error() != bitsery::ReaderError::NoError || !deserializer.adapter().isCompletedSuccessfully())
+    //{
+    //    Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": " << magic_enum::enum_name(deserializer.adapter().error());
+    //    return nullptr;
+    //}
+    //else if (!std::get<0>(context).isValid())
+    //{
+    //    Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": dangling pointers.";
+    //    return nullptr;
+    //}
+    //else
+    //{
+    //    for (Component* pComponent : pEntity->GetComponents())
+    //    {
+    //        pComponent->SetOwner(pEntity.get());
+    //        pComponent->Initialize();
+    //    }
+
+    //    return pEntity;
+    //}
 }
 
 bool EntityFactory::AddBlankTemplate(const std::string& templateName) 
@@ -110,8 +108,7 @@ bool EntityFactory::AddBlankTemplate(const std::string& templateName)
         return false;
     }
 
-    Entity entity;
-    SaveTemplate(templateName, &entity);
+    SaveTemplate(templateName, std::make_shared<Entity>());
     return true;
 }
 
@@ -127,59 +124,60 @@ std::set<std::string> EntityFactory::GetTemplateNames() const
 
 void EntityFactory::LoadTemplate(const std::filesystem::path& path) 
 {
-    std::ifstream file(path, std::ios::in | std::ios::binary);
+    //std::ifstream file(path, std::ios::in | std::ios::binary);
+    //if (file.good())
+    //{
+    //    file.seekg(0, file.end);
+    //    EntityTemplate buffer;
+    //    std::string templateName = path.stem().generic_string();
+    //    size_t length = static_cast<size_t>(file.tellg());
+    //    if (length > 0)
+    //    {
+    //        file.seekg(0, file.beg);
+    //        buffer.resize(length);
+    //        file.read(reinterpret_cast<char*>(buffer.data()), length);
+    //        m_Templates[templateName] = buffer;
+    //    }
+    //    else
+    //    {
+    //        AddBlankTemplate(templateName);
+    //    }
+
+    //    file.close();
+    //}
+    //else
+    //{
+    //    Genesis::Log::Error() << "Failed to load entity template " << path;
+    //}
+}
+
+void EntityFactory::SaveTemplate(const std::string& templateName, EntitySharedPtr pEntity) 
+{
+    using namespace Genesis;
+
+    m_Templates[templateName] = pEntity;
+
+    // Serialize the entity.
+    nlohmann::json jData;
+    if (!pEntity->Serialize(jData))
+    {
+        Log::Error() << "Failed to serialize entity '" << templateName << "'.";
+        return;
+    }
+
+    // Store to disk.
+    std::filesystem::path templatesPath("data/templates");
+    std::string filename = templateName + ".json";
+    std::ofstream file(templatesPath / filename);
     if (file.good())
     {
-        file.seekg(0, file.end);
-        EntityTemplate buffer;
-        std::string templateName = path.stem().generic_string();
-        size_t length = static_cast<size_t>(file.tellg());
-        if (length > 0)
-        {
-            file.seekg(0, file.beg);
-            buffer.resize(length);
-            file.read(reinterpret_cast<char*>(buffer.data()), length);
-            m_Templates[templateName] = buffer;
-        }
-        else
-        {
-            AddBlankTemplate(templateName);
-        }
-
+        file << std::setw(4) << jData << std::endl;
         file.close();
+        Log::Info() << "Saved template '" << templateName << "' to '" << filename << "'.";
     }
     else
     {
-        Genesis::Log::Error() << "Failed to load entity template " << path;
-    }
-}
-
-void EntityFactory::SaveTemplate(const std::string& templateName, Entity* pEntity) 
-{
-    // Serialize entity to memory.
-    SerializationContext context{};
-    std::get<1>(context).registerBasesList<Serializer>(ComponentPolymorphicClasses{});
-    EntityTemplate buffer;
-    Serializer serializer{context, buffer};
-    serializer.object(*pEntity);
-    serializer.adapter().flush();
-    size_t writtenSize = serializer.adapter().writtenBytesCount();
-
-    if (writtenSize != 0)
-    {
-        buffer.resize(writtenSize);
-    }
-
-    m_Templates[templateName] = buffer;
-
-    // Store template to disk.
-    std::filesystem::path templatesPath("data/templates");
-    std::string filename = templateName + ".bin";
-    std::ofstream file(templatesPath / filename, std::ifstream::binary);
-    if (file.good())
-    {
-        file.write(reinterpret_cast<char*>(buffer.data()), buffer.size());
-        file.close();
+        Log::Error() << "Failed to save template '" << templateName << "' to '" << filename << "'.";
     }
 }
 

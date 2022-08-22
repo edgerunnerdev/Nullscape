@@ -1,0 +1,11 @@
+{
+    "components": [
+        {
+            "test": "woot"
+        },
+        {
+            "test": "woot"
+        },
+        {}
+    ]
+}

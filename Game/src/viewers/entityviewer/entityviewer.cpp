@@ -145,7 +145,7 @@ void EntityViewer::DrawMenu()
             bool canSave = (m_pEntity != nullptr);
             if (ImGui::MenuItem("Save", nullptr, nullptr, canSave))
             {
-                EntityFactory::Get()->SaveTemplate(m_LoadedTemplate, m_pEntity.get());
+                EntityFactory::Get()->SaveTemplate(m_LoadedTemplate, m_pEntity);
             }
 
             ImGui::EndMenu();

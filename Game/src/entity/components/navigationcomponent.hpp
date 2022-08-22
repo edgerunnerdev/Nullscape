@@ -32,11 +32,8 @@ public:
     virtual void Update(float delta) override;
     virtual void UpdateDebugUI() override {}
     virtual void Render() override {}
-
-    template <typename S> void serialize(S& s) 
-    {
-        s.value2b(m_Version);
-    }
+    virtual bool Serialize(nlohmann::json& data);
+    virtual bool Deserialize(const nlohmann::json& data);
 
     DEFINE_COMPONENT(NavigationComponent);
 
