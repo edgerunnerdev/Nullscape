@@ -46,12 +46,14 @@ void TransformComponent::UpdateDebugUI()
 
 bool TransformComponent::Serialize(nlohmann::json& data)
 {
-    return true;
+    bool success = Component::Serialize(data);
+    return success;
 }
 
 bool TransformComponent::Deserialize(const nlohmann::json& data)
 {
-    return true;
+    bool success = Component::Deserialize(data);
+    return success;
 }
 
 } // namespace Nullscape

@@ -29,8 +29,7 @@ namespace Nullscape
 {
 
 ModelComponent::ModelComponent()
-    : m_Version(1)
-    , m_pModel(nullptr)
+    : m_pModel(nullptr)
 {
 }
 
@@ -69,12 +68,14 @@ void ModelComponent::Render()
 
 bool ModelComponent::Serialize(nlohmann::json& data)
 {
-    return true;
+    bool success = Component::Serialize(data);
+    return success;
 }
 
 bool ModelComponent::Deserialize(const nlohmann::json& data)
 {
-    return true;
+    bool success = Component::Deserialize(data);
+    return success;
 }
 
 } // namespace Nullscape

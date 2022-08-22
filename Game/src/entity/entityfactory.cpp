@@ -124,31 +124,35 @@ std::set<std::string> EntityFactory::GetTemplateNames() const
 
 void EntityFactory::LoadTemplate(const std::filesystem::path& path) 
 {
-    //std::ifstream file(path, std::ios::in | std::ios::binary);
-    //if (file.good())
-    //{
-    //    file.seekg(0, file.end);
-    //    EntityTemplate buffer;
-    //    std::string templateName = path.stem().generic_string();
-    //    size_t length = static_cast<size_t>(file.tellg());
-    //    if (length > 0)
-    //    {
-    //        file.seekg(0, file.beg);
-    //        buffer.resize(length);
-    //        file.read(reinterpret_cast<char*>(buffer.data()), length);
-    //        m_Templates[templateName] = buffer;
-    //    }
-    //    else
-    //    {
-    //        AddBlankTemplate(templateName);
-    //    }
+    using namespace nlohmann;
 
-    //    file.close();
-    //}
-    //else
-    //{
-    //    Genesis::Log::Error() << "Failed to load entity template " << path;
-    //}
+    std::ifstream file(path, std::ios::in);
+    if (file.good())
+    {
+        json data = json::parse(file);
+
+        //file.seekg(0, file.end);
+        //EntityTemplate buffer;
+        //std::string templateName = path.stem().generic_string();
+        //size_t length = static_cast<size_t>(file.tellg());
+        //if (length > 0)
+        //{
+        //    file.seekg(0, file.beg);
+        //    buffer.resize(length);
+        //    file.read(reinterpret_cast<char*>(buffer.data()), length);
+        //    m_Templates[templateName] = buffer;
+        //}
+        //else
+        //{
+        //    AddBlankTemplate(templateName);
+        //}
+
+        file.close();
+    }
+    else
+    {
+        Genesis::Log::Error() << "Failed to load entity template " << path;
+    }
 }
 
 void EntityFactory::SaveTemplate(const std::string& templateName, EntitySharedPtr pEntity) 

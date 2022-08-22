@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <string>
+
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <json.hpp>
@@ -39,25 +41,50 @@ class Component
 public:
     Component()
         : m_pEntity(nullptr)
+        , m_Version(1)
     {
     }
 
     virtual ~Component() {}
 
     virtual ComponentType GetType() const = 0;
-
     virtual void Initialize() = 0;
     virtual void Update(float delta) = 0;
     virtual void UpdateDebugUI() = 0;
     virtual void Render() = 0;
-    virtual bool Serialize(nlohmann::json& data) = 0;
-    virtual bool Deserialize(const nlohmann::json& data) = 0;
+
+    virtual bool Serialize(nlohmann::json& data);
+    virtual bool Deserialize(const nlohmann::json& data);
 
     void SetOwner(Entity* pEntity);
     Entity* GetOwner() const;
+    void SetName(const std::string& name);
+    const std::string& GetName() const;
+    int GetVersion() const;
+
+protected:
+    template <typename T>
+    bool TryDeserialize(const nlohmann::json& data, const std::string& name, T& out) 
+    {
+        using namespace nlohmann;
+        json::const_iterator it = data.find(name);
+        if (it == data.cend())
+        {
+            return false;
+        }
+        else
+        {
+            out = it->get<T>();
+            return true;
+        }
+    }
+
+    void SetVersion(int version);
 
 private:
     Entity* m_pEntity;
+    std::string m_Name;
+    int m_Version;
 };
 
 inline void Component::SetOwner(Entity* pEntity)
@@ -68,6 +95,26 @@ inline void Component::SetOwner(Entity* pEntity)
 inline Entity* Component::GetOwner() const 
 {
     return m_pEntity;
+}
+
+inline void Component::SetName(const std::string& name) 
+{
+    m_Name = name;
+}
+
+inline const std::string& Component::GetName() const 
+{
+    return m_Name;
+}
+
+inline void Component::SetVersion(int version)
+{
+    m_Version = version;
+}
+
+inline int Component::GetVersion() const 
+{
+    return m_Version;
 }
 
 } // namespace Nullscape

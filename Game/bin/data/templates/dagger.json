@@ -1,11 +1,19 @@
 {
     "components": [
         {
-            "test": "woot"
+            "name": "",
+            "type": "ModelComponent",
+            "version": 1
         },
         {
-            "test": "woot"
+            "name": "",
+            "type": "TransformComponent",
+            "version": 1
         },
-        {}
+        {
+            "name": "",
+            "type": "TransformComponent",
+            "version": 1
+        }
     ]
 }

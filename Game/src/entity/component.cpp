@@ -13,40 +13,37 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <string>
-
 #include "entity/component.hpp"
 
-namespace Genesis
-{
-class ResourceModel;
-}
+#include <genesis.h>
 
 namespace Nullscape
 {
 
-class ModelComponent : public Component
+bool Component::Serialize(nlohmann::json& data) 
 {
-public:
-    ModelComponent();
-    virtual ~ModelComponent() override;
+    data["type"] = magic_enum::enum_name(GetType());
+    data["version"] = GetVersion();
 
-    virtual void Initialize() override;
-    virtual void Update(float delta) override;
-    virtual void UpdateDebugUI() override;
-    virtual void Render() override;
-    virtual bool Serialize(nlohmann::json& data);
-    virtual bool Deserialize(const nlohmann::json& data);
+    if (!GetName().empty())
+    {
+        data["name"] = GetName();
+    }
 
-    DEFINE_COMPONENT(ModelComponent);
+    return true;
+}
 
-private:
-    std::string m_Filename;
-    Genesis::ResourceModel* m_pModel;
-};
+bool Component::Deserialize(const nlohmann::json& data) 
+{
+    // Type is intentionally not deserialized here, but left to the ComponentFactory to handle.
+    bool success = TryDeserialize(data, "version", m_Version);
+    TryDeserialize(data, "name", m_Name); // "name" is optional.
+    return success;
+}
+
 
 } // namespace Nullscape
