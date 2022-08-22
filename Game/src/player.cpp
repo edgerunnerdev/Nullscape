@@ -6,7 +6,7 @@
 #include "ship/shipinfo.h"
 #include "perks.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "xmlaux.h"
 
 

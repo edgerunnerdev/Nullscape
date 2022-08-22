@@ -26,7 +26,7 @@
 #include "ship/shipinfo.h"
 #include "achievements.h"
 #include "blackboard.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "globals.h"
 #include "stringaux.h"
 #include "xmlaux.h"

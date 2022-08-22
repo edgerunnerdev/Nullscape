@@ -28,7 +28,7 @@
 #include <configuration.h>
 
 #include "menus/audiodebug.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

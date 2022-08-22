@@ -82,4 +82,4 @@ inline void TransformComponent::SetTransform(const glm::mat4x4& value)
     m_Transform = value;
 }
 
-} // namespace Hyperscape
+} // namespace Nullscape

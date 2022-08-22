@@ -24,7 +24,7 @@
 #include <coredefines.h>
 #include <genesis.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

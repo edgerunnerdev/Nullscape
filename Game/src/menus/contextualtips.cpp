@@ -19,7 +19,7 @@
 
 #include "menus/contextualtips.h"
 #include "blackboard.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 
 namespace Nullscape

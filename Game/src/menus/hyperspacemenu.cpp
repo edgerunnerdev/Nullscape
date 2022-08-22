@@ -18,7 +18,7 @@
 #include <sstream>
 #include <genesis.h>
 #include <configuration.h>
-#include "hexterminate.h"
+#include "game.hpp"
 #include "ship/ship.h"
 #include "ship/module.h"
 #include "ship/hyperspacecore.h"

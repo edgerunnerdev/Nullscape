@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "player.h"
 #include "stringaux.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

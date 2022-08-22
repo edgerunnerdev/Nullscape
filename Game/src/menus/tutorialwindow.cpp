@@ -24,7 +24,7 @@
 #include "menus/eva.h"
 #include "menus/pointofinterest.h"
 #include "ship/ship.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 #include "stringaux.h"
 

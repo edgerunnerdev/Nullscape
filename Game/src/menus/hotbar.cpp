@@ -26,7 +26,7 @@
 #include "ship/inventory.h"
 #include "ship/shield.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "globals.h"
 
 namespace Nullscape

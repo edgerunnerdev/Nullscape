@@ -22,7 +22,7 @@
 #include "fleet/fleetcommand.h"
 #include "sector/sector.h"
 #include "ship/ship.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

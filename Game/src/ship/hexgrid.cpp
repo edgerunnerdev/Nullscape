@@ -20,7 +20,7 @@
 
 #include "ship/moduleinfo.h"
 #include "ship/hexgrid.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "xmlaux.h"
 
 

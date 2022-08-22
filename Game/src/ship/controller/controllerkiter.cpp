@@ -17,7 +17,7 @@
 
 #include <render/debugrender.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "menus/shiptweaks.h"
 #include "sector/sector.h"
 #include "ship/ship.h"

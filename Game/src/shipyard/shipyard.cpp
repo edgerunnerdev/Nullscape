@@ -38,7 +38,7 @@
 #include "ship/hyperspacecore.h"
 #include "perks.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "shipyard/shipyard.h"
 
 #ifdef DEV_MODE_ALLOWED

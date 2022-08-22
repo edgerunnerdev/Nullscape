@@ -33,7 +33,7 @@
 #include "ui/radiobutton.h"
 #include "ui/text.h"
 #include "ui/togglegroup.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "savegamestorage.h"
 
 namespace Nullscape

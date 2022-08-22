@@ -22,7 +22,7 @@
 #include "ship/hexgrid.h"
 #include "ship/inventory.h"
 #include "gameevents.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "xmlaux.h"
 
 namespace Nullscape

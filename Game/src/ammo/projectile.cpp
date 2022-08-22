@@ -23,7 +23,7 @@
 #include "ammo/projectile.h"
 #include "muzzleflash/muzzleflashmanager.h"
 #include "sector/sector.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

@@ -17,7 +17,7 @@
 
 #include <render/debugrender.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "ship/ship.h"
 #include "ship/controller/controllerassault.h" 
 

@@ -27,7 +27,7 @@
 #include "ship/hyperspacecore.h"
 #include "ship/moduleinfo.h"
 #include "ship/module.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "perks.h"
 #include "player.h"
 

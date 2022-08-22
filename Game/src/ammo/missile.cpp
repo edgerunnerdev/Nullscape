@@ -28,7 +28,7 @@
 #include "trail/trail.h"
 #include "ship/ship.h"
 #include "ship/weapon.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

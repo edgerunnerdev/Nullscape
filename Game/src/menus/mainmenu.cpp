@@ -20,7 +20,7 @@
 #include <genesis.h>
 #include <gui/gui.h>
 #include <configuration.h>
-#include "hexterminate.h"
+#include "game.hpp"
 #include "menus/eva.h"
 #include "menus/mainmenu.h"
 #include "menus/codexwindow.h"

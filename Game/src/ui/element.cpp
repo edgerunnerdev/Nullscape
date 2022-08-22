@@ -28,7 +28,7 @@
 #include "ui/design.h"
 #include "ui/element.h"
 #include "ui/rootelement.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape::UI
 {

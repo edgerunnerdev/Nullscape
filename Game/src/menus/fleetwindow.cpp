@@ -31,7 +31,7 @@
 #include "ui/rootelement.h"
 #include "ui/scrollingelement.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "stringaux.h"
 
 

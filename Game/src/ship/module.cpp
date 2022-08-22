@@ -48,7 +48,7 @@
 #include "trail/trailmanager.h"
 #include "sector/sector.h"
 #include "globals.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

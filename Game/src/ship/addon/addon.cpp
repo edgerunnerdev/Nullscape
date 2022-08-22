@@ -4,7 +4,7 @@
 #include <math/misc.h>
 #include <sound/soundinstance.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "ship/addon/addon.h"
 #include "ship/hyperspacecore.h"
 #include "ship/ship.h"

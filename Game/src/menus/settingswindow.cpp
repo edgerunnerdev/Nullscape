@@ -32,7 +32,7 @@
 #include "ui/scrollingelement.h"
 #include "ui/slider.h"
 #include "ui/text.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

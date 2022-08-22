@@ -18,7 +18,7 @@
 #ifdef _DEBUG
 #include <sstream>
 #include <render/debugrender.h>
-#include "hexterminate.h"
+#include "game.hpp"
 #endif
 
 #include "particles/particlemanager.h"

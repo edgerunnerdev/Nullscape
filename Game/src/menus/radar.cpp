@@ -26,7 +26,7 @@
 #include "shipyard/shipyard.h"
 #include "menus/radar.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

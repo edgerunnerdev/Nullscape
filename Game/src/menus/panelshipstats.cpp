@@ -26,7 +26,7 @@
 #include "ship/moduleinfo.h"
 #include "ship/shield.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "stringaux.h"
 
 namespace Nullscape

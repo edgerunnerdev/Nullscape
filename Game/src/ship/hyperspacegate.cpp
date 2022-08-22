@@ -30,7 +30,7 @@
 #include "ship/ship.h"
 #include "sector/sector.h"
 #include "globals.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 #include "ship/hyperspacegate.h"
 

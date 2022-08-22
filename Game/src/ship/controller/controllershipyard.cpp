@@ -23,7 +23,7 @@
 #include "shipyard/shipyard.h"
 #include "ship/controller/controllershipyard.h"
 #include "ship/ship.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 
 namespace Nullscape

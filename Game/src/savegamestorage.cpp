@@ -31,7 +31,7 @@
 #include <log.hpp>
 
 #include "menus/popup.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 #include "savegameheader.h"
 #include "savegamestorage.h"

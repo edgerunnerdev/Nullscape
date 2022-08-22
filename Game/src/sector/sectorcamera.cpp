@@ -19,7 +19,7 @@
 
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 #include "sector/sector.h"
 

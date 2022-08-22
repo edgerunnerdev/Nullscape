@@ -45,7 +45,7 @@
 #include "ship/hyperspacecore.h"
 #include "ship/ship.h"
 #include "ship/shipshaderuniforms.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

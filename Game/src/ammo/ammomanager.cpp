@@ -26,7 +26,7 @@
 #include <genesis.h>
 #include <log.hpp>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "sector/sector.h"
 #include "ammo/ammo.h"
 #include "ammo/ammomanager.h"

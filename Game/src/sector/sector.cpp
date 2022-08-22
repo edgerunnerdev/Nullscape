@@ -27,7 +27,7 @@
 #include "fleet/fleet.h"
 #include "fleet/fleetcommand.h"
 #include "fleet/fleetspawner.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "laser/lasermanager.h"
 #include "menus/contextualtips.h"
 #include "menus/deathmenu.h"

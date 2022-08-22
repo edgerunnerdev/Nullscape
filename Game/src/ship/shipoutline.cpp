@@ -18,7 +18,7 @@
 #include "ship/shipoutline.h"
 
 #include "faction/faction.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 #include "ship/hyperspacecore.h"
 #include "ship/ship.h"

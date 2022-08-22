@@ -21,7 +21,7 @@
 
 #include "menus/eva.h"
 #include "menus/loadingscreen.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

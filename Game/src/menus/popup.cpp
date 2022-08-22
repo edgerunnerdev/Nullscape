@@ -18,7 +18,7 @@
 #include <sstream>
 #include <genesis.h>
 #include <configuration.h>
-#include "hexterminate.h"
+#include "game.hpp"
 #include "menus/popup.h"
 
 namespace Nullscape

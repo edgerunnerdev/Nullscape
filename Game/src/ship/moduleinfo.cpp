@@ -25,7 +25,7 @@
 #include <log.hpp>
 #include <genesis.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "globals.h"
 #include "ship/moduleinfo.h"
 #include "stringaux.h"

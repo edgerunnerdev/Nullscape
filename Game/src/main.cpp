@@ -53,7 +53,7 @@
 #include <xml.h>
 #include <window.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "faction/faction.h"
 #include "misc/gui.h"
 #include "misc/random.h"

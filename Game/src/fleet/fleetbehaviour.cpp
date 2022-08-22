@@ -19,7 +19,7 @@
 
 #include "fleet/fleet.h"
 #include "globals.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "misc/randomshuffle.h"
 #include "sector/sector.h"
 #include "sector/sectorinfo.h"

@@ -30,7 +30,7 @@
 #include "laser/lasermanager.h"
 #include "laser/laser.h"
 #include "sector/sector.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 
 namespace Nullscape

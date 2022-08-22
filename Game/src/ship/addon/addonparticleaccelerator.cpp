@@ -42,7 +42,7 @@
 #include "particles/particlemanager.h"
 #include "particles/particleemitter.h"
 #include "achievements.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 
 

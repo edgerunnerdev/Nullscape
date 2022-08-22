@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

@@ -24,7 +24,7 @@
 #include <physics/shape.h>
 #include <render/debugrender.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "menus/shiptweaks.h"
 #include "ship/ship.h"
 #include "ship/hyperspacecore.h"

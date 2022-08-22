@@ -17,7 +17,7 @@
 
 #include "system/background.hpp"
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "player.h"
 
 #include <algorithm>

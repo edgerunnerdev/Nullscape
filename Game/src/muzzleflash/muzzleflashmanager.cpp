@@ -18,7 +18,7 @@
 #include <memory.h>
 
 #include "muzzleflash/muzzleflashmanager.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

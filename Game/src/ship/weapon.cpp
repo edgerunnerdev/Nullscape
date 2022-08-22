@@ -36,7 +36,7 @@
 #include "ship/weapon.h"
 #include "ship/ship.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 
 namespace Nullscape

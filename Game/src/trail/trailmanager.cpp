@@ -19,7 +19,7 @@
 
 #include "trail/trail.h"
 #include "trail/trailmanager.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

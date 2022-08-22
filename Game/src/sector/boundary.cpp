@@ -23,7 +23,7 @@
 #include <rendersystem.h>
 #include <configuration.h>
 #include <vertexbuffer.h>
-#include "hexterminate.h"
+#include "game.hpp"
 #include "ship/ship.h"
 #include "player.h"
 

@@ -2,7 +2,7 @@
 #include "menus/detailswindow.h"
 #include "menus/eva.h"
 #include "faction/faction.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

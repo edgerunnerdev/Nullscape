@@ -22,7 +22,7 @@
 #include "faction/faction.h"
 #include "fleet/fleet.h"
 #include "globals.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "menus/intelwindow.h"
 #include "menus/shiptweaks.h"
 #include "misc/mathaux.h"

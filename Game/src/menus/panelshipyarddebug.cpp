@@ -28,7 +28,7 @@
 #include "ship/inventory.h"
 #include "shipyard/shipyard.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "globals.h"
 #include "stringaux.h"
 #include "menus/panelshipyarddebug.h"

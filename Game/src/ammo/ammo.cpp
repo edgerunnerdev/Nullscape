@@ -21,7 +21,7 @@
 #include <render/debugrender.h>
 #include <resources/resourcemodel.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 #include "sector/sector.h"
 #include "ammo/ammo.h"
 #include "ship/collisionmasks.h"

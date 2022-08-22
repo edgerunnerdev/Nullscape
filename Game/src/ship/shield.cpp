@@ -38,7 +38,7 @@
 #include "ship/ship.h"
 #include "ship/shipcollisioninfo.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "shadertweaks.h"
 
 namespace Nullscape

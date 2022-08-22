@@ -28,7 +28,7 @@
 #include "ship/hexgrid.h"
 #include "ship/moduleinfo.h"
 #include "ship/shipinfo.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "globals.h"
 #include "stringaux.h"
 

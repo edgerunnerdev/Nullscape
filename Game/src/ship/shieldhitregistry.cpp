@@ -23,7 +23,7 @@
 
 #include "ship/shieldhitregistry.h"
 
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

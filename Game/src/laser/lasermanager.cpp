@@ -21,7 +21,7 @@
 
 #include "laser/lasermanager.h"
 
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

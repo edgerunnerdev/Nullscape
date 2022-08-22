@@ -20,7 +20,7 @@
 #include <imgui/imgui_impl.h>
 
 #include "ship/shipoutline.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "shiptweaks.h"
 
 namespace Nullscape

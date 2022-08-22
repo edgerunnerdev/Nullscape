@@ -34,7 +34,7 @@
 #include "sector/sector.h"
 #include "particles/particlemanager.h"
 #include "particles/particleemitter.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 
 namespace Nullscape

@@ -28,7 +28,7 @@
 #include "sector/sector.h"
 #include "achievements.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape 
 {

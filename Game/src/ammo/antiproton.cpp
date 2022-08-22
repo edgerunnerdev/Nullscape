@@ -29,7 +29,7 @@
 #include "misc/mathaux.h"
 #include "muzzleflash/muzzleflashmanager.h"
 #include "sector/sector.h"
-#include "hexterminate.h"
+#include "game.hpp"
 #include "shadertweaks.h"
 
 namespace Nullscape

@@ -23,7 +23,7 @@
 #include "ship/ship.h"
 #include "ship/shipinfo.h"
 #include "globals.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

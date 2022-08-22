@@ -21,7 +21,7 @@
 #include <physics/shape.h>
 #include <physics/simulation.h>
 
-#include "hexterminate.h"
+#include "game.hpp"
 
 #include "entity/components/rigidbodycomponent.hpp"
 

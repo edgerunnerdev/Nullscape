@@ -29,7 +29,7 @@
 #include <sound/soundmanager.h>
 
 #include "menus/musictitle.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {

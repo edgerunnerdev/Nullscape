@@ -25,7 +25,7 @@
 
 #include "ship/moduleinfo.h"
 #include "fleet/fleet.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Xml
 {

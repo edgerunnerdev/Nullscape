@@ -27,7 +27,7 @@
 #include "ship/destructionsequence.h"
 #include "gameevents.h"
 #include "player.h"
-#include "hexterminate.h"
+#include "game.hpp"
 
 namespace Nullscape
 {
