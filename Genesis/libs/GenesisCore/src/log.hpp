@@ -31,8 +31,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 class ILogTarget;
 
@@ -172,5 +170,4 @@ public:
     virtual void Log(const std::string& text, Log::Level type) override;
 };
 
-} // namespace Core
 } // namespace Genesis

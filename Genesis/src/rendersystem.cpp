@@ -103,7 +103,6 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::Initialize(GLuint screenWidth, GLuint screenHeight)
 {
-    using namespace Core;
     GLenum err = glewInit();
     if (err == GLEW_OK)
     {
@@ -418,8 +417,6 @@ std::string RenderSystem::GetTextureParameters(GLuint id)
 
 void RenderSystem::PrintFramebufferInfo(GLuint fboId)
 {
-    using namespace Core;
-
     glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
     // print max # of color buffers supported by FBO
@@ -686,18 +683,18 @@ void RenderSystem::TakeScreenshotAux(bool immediate)
             SDL_FreeSurface(pSurface);
             SDL_FreeSurface(pFlippedSurface);
 
-            Core::Log::Info() << "Screenshot taken: " << filename;
+            Log::Info() << "Screenshot taken: " << filename;
         }
         else
         {
-            Core::Log::Warning() << "Couldn't take screenshot.";
+            Log::Warning() << "Couldn't take screenshot.";
         }
 
         m_ScreenshotScheduled = false;
     }
     else
     {
-        Core::Log::Info() << "Screenshot scheduled...";
+        Log::Info() << "Screenshot scheduled...";
         m_ScreenshotScheduled = true;
     }
 }

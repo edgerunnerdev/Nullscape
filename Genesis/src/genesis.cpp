@@ -64,7 +64,6 @@ CommandLineParameters* FrameWork::m_pCommandLineParameters = nullptr;
 
 bool FrameWork::Initialize()
 {
-    using namespace Core;
     Log::AddLogTarget(std::make_shared<FileLogger>("log.txt"));
     Log::AddLogTarget(std::make_shared<MessageBoxLogger>());
 

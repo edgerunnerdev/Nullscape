@@ -51,7 +51,7 @@ bool ShaderComp::Initialize(int argc, char** argv)
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        Core::Log::Error() << SDL_GetError();
+        Log::Error() << SDL_GetError();
         return false;
     }
 
@@ -69,7 +69,7 @@ bool ShaderComp::Initialize(int argc, char** argv)
     GLenum err = glewInit();
     if (err != GLEW_OK)
     {
-        Core::Log::Error() << "GLEW initialisation failed: " << glewGetErrorString(err);
+        Log::Error() << "GLEW initialisation failed: " << glewGetErrorString(err);
         return false;
     }
     else
@@ -104,13 +104,13 @@ int ShaderComp::Run()
 
     if (std::filesystem::exists(sourceFile) == false)
     {
-        Core::Log::Error() << "Source file " << sourceFile << "doesn't exist.";
+        Log::Error() << "Source file " << sourceFile << "doesn't exist.";
         return -1;
     }
 
     if (ValidateShader(sourceFile) == false)
     {
-        Core::Log::Error() << "Shader validation for " << sourceFile << " failed.";
+        Log::Error() << "Shader validation for " << sourceFile << " failed.";
         return -1;
     }
 
@@ -149,7 +149,7 @@ bool ShaderComp::ValidateShader(const std::filesystem::path& path)
     }
     else
     {
-        Core::Log::Error() << "Couldn't open " << path << ".";
+        Log::Error() << "Couldn't open " << path << ".";
         return false;
     }
 
@@ -171,7 +171,7 @@ bool ShaderComp::ValidateShader(const std::filesystem::path& path)
         glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> vertexShaderErrorMessage(infoLogLength + 1);
         glGetShaderInfoLog(vertexShaderID, infoLogLength, nullptr, &vertexShaderErrorMessage[0]);
-        Core::Log::Error()  << vertexShaderErrorMessage.data();
+        Log::Error()  << vertexShaderErrorMessage.data();
         return false;
     }
 
@@ -187,7 +187,7 @@ bool ShaderComp::ValidateShader(const std::filesystem::path& path)
         glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> fragmentShaderErrorMessage(infoLogLength + 1);
         glGetShaderInfoLog(fragmentShaderID, infoLogLength, nullptr, &fragmentShaderErrorMessage[0]);
-        Core::Log::Error() << fragmentShaderErrorMessage.data();
+        Log::Error() << fragmentShaderErrorMessage.data();
         return false;
     }
 
@@ -205,7 +205,7 @@ bool ShaderComp::ValidateShader(const std::filesystem::path& path)
         glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &infoLogLength);
         std::vector<char> programErrorMessage(infoLogLength + 1);
         glGetProgramInfoLog(programHandle, infoLogLength, nullptr, &programErrorMessage[0]);
-        Core::Log::Error() << &programErrorMessage[0];
+        Log::Error() << &programErrorMessage[0];
         return false;
     }
 

@@ -28,63 +28,63 @@ class HyperspaceGate;
 
 enum class HyperspaceJumpDirection
 {
-	JumpInvalid,
-	JumpIn,
-	JumpOut
+    JumpInvalid,
+    JumpIn,
+    JumpOut
 };
 
 class HyperspaceCore
 {
 public:
-								HyperspaceCore( Ship* pOwner );
-								~HyperspaceCore();
+    HyperspaceCore(Ship* pOwner);
+    ~HyperspaceCore();
 
-	void						Update( float delta );
-	void						EnterHyperspace( bool noChargeUp = false );
-	void						ExitHyperspace();
-	bool						IsCharging() const;
-	float						GetChargeTimer() const;
-	float						GetChargePercentage() const;
-	bool						IsJumping() const;
-	HyperspaceJumpDirection		GetJumpDirection() const;
-	HyperspaceGate*				GetHyperspaceGate() const;
+    void Update(float delta);
+    void EnterHyperspace(bool noChargeUp = false);
+    void ExitHyperspace();
+    bool IsCharging() const;
+    float GetChargeTimer() const;
+    float GetChargePercentage() const;
+    bool IsJumping() const;
+    HyperspaceJumpDirection GetJumpDirection() const;
+    HyperspaceGate* GetHyperspaceGate() const;
 
 private:
-	void						BeginJump();
-	void						EndJump();
+    void BeginJump();
+    void EndJump();
 
-	Ship*						m_pOwner;
-	bool						m_Charging;
-	bool						m_Jumping;
-	float						m_ChargeTimer;
-	HyperspaceJumpDirection		m_JumpDirection;
-	HyperspaceGate*				m_pHyperspaceGate;
-	bool						m_ChargeupReduced;
+    Ship* m_pOwner;
+    bool m_Charging;
+    bool m_Jumping;
+    float m_ChargeTimer;
+    HyperspaceJumpDirection m_JumpDirection;
+    HyperspaceGate* m_pHyperspaceGate;
+    bool m_ChargeupReduced;
 };
 
 inline bool HyperspaceCore::IsCharging() const
 {
-	return m_Charging;
+    return m_Charging;
 }
 
 inline float HyperspaceCore::GetChargeTimer() const
 {
-	return m_ChargeTimer;
+    return m_ChargeTimer;
 }
 
 inline bool HyperspaceCore::IsJumping() const
 {
-	return m_Jumping;
+    return m_Jumping;
 }
 
 inline HyperspaceJumpDirection HyperspaceCore::GetJumpDirection() const
 {
-	return m_JumpDirection;
+    return m_JumpDirection;
 }
 
 inline HyperspaceGate* HyperspaceCore::GetHyperspaceGate() const
 {
-	return m_pHyperspaceGate;
+    return m_pHyperspaceGate;
 }
 
-}
+} // namespace Nullscape

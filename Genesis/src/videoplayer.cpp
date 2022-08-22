@@ -144,14 +144,14 @@ void VideoPlayer::PlayVPXInit(const std::string& filename)
     errno_t err = fopen_s(&m_Data.infile, m_Data.filename.c_str(), "rb");
     if (err != 0)
     {
-        Core::Log::Error() << "Unable to open file: '" << m_Data.filename << "'.";
+        Log::Error() << "Unable to open file: '" << m_Data.filename << "'.";
         return;
     }
 #else
     m_Data.infile = fopen(m_Data.filename.c_str(), "rb");
     if (m_Data.infile == nullptr)
     {
-        Core::Log::Error() << "Unable to open file: '" << m_Data.filename << "'.";
+        Log::Error() << "Unable to open file: '" << m_Data.filename << "'.";
         return;
     }
 #endif
@@ -160,12 +160,12 @@ void VideoPlayer::PlayVPXInit(const std::string& filename)
     if (!(fread(m_Data.file_hdr, 1, IVF_FILE_HDR_SZ, m_Data.infile) == IVF_FILE_HDR_SZ && m_Data.file_hdr[0] == 'D' && m_Data.file_hdr[1] == 'K' && m_Data.file_hdr[2] == 'I' &&
           m_Data.file_hdr[3] == 'F'))
     {
-        Core::Log::Error() << "Not an IVF file: '" << m_Data.filename << "'.";
+        Log::Error() << "Not an IVF file: '" << m_Data.filename << "'.";
         return;
     }
 
     // Initialize codec
-    Core::Log::Info() << "Using " << vpx_codec_iface_name(vpxInterface);
+    Log::Info() << "Using " << vpx_codec_iface_name(vpxInterface);
     if (vpx_codec_dec_init(&m_Data.codec, vpxInterface, nullptr, m_Data.flags))
     {
         PlayVPXDieCodec("Failed to initialize decoder");
@@ -198,14 +198,14 @@ bool VideoPlayer::PlayVPXLoop()
 
     if (m_Data.frame_sz > (int)sizeof(m_Data.frame))
     {
-        Core::Log::Error() << "Frame " << m_Data.frame_sz << " data too big for example code buffer.";
+        Log::Error() << "Frame " << m_Data.frame_sz << " data too big for example code buffer.";
         m_Data.state = -1;
         return false;
     }
 
     if ((int)fread(m_Data.frame, 1, m_Data.frame_sz, m_Data.infile) != m_Data.frame_sz)
     {
-        Core::Log::Error() << "Frame " << m_Data.frame_cnt << " failed to read complete frame.";
+        Log::Error() << "Frame " << m_Data.frame_cnt << " failed to read complete frame.";
         m_Data.state = -1;
         return false;
     }
@@ -213,7 +213,7 @@ bool VideoPlayer::PlayVPXLoop()
     // Decode the frame
     if (vpx_codec_decode(&m_Data.codec, m_Data.frame, m_Data.frame_sz, nullptr, 0))
     {
-        Core::Log::Error() << "Failed to decode frame.";
+        Log::Error() << "Failed to decode frame.";
         m_Data.state = -1;
         return false;
     }
@@ -373,10 +373,10 @@ void VideoPlayer::PlayVPXDeinit()
         return;
     }
 
-    Core::Log::Info() << "Processed " << m_Data.frame_cnt << "frames.";
+    Log::Info() << "Processed " << m_Data.frame_cnt << "frames.";
     if (vpx_codec_destroy(&m_Data.codec))
     {
-        Core::Log::Error() << "Failed to destroy codec.";
+        Log::Error() << "Failed to destroy codec.";
     }
 
     if (m_Data.infile)
@@ -409,6 +409,6 @@ void VideoPlayer::PlayVPXDieCodec(const char* s)
            << "Details: " << pDetails;
     }
 
-    Core::Log::Warning() << ss.str();
+    Log::Warning() << ss.str();
 }
 } // namespace Genesis

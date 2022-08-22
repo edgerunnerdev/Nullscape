@@ -62,7 +62,7 @@ void HyperspaceGate::Initialise()
 
 	if ( m_pModel == nullptr )
 	{
-        Genesis::Core::Log::Error() << "Couldn't find required hyperspace model.";
+        Genesis::Log::Error() << "Couldn't find required hyperspace model.";
 	}
 
 	CalculateBoundingBox();

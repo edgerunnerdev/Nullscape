@@ -22,8 +22,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 std::string ToLower(const std::string& text);
 int CountLines(const std::string& text);
@@ -35,5 +33,4 @@ bool StringStartsWith(const std::wstring& text, const std::wstring& startsWith);
 bool StringEndsWith(const std::string& text, const std::string& endsWith);
 bool StringEndsWith(const std::wstring& text, const std::wstring& endsWith);
 
-} // namespace Core
 } // namespace Genesis

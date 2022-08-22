@@ -95,7 +95,7 @@ void Text::LoadProperties( const json& properties )
         Genesis::ResourceFont* pFont = Fonts::Get( fontName );
         if ( pFont == nullptr )
         {
-            Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "' for UI element '" << GetName() << "'.";
+            Genesis::Log::Warning() << "Couldn't find font '" << fontName << "' for UI element '" << GetName() << "'.";
         }
         else
         {
@@ -175,7 +175,7 @@ void Text::SetFont( const std::string& fontName )
     Genesis::ResourceFont* pFont = Fonts::Get( fontName );
     if ( pFont == nullptr )
     {
-        Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "'.";
+        Genesis::Log::Warning() << "Couldn't find font '" << fontName << "'.";
     }
     else
     {

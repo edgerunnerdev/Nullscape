@@ -95,7 +95,7 @@ bool Blackboard::Read( tinyxml2::XMLElement* pRootElement )
 		const char* pName = pChildElement->Attribute( "name" );
 		if ( pName == nullptr )
 		{
-            Genesis::Core::Log::Warning() << "Empty 'name' attribute in Blackboard::Read(), skipping";
+            Genesis::Log::Warning() << "Empty 'name' attribute in Blackboard::Read(), skipping";
 			continue;
 		}
 

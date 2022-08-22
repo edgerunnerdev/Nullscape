@@ -397,7 +397,7 @@ void WeaponModule::Initialise( Ship* pShip )
 	}
 	else if ( hardpoint.isTurret )
 	{
-        Genesis::Core::Log::Info() << "Turret weapon '" << pInfo->GetFullName() << "' has no hardpoint dummy.";
+        Genesis::Log::Info() << "Turret weapon '" << pInfo->GetFullName() << "' has no hardpoint dummy.";
 	}
 
 	m_pWeapon = new Weapon( pShip, this, pInfo, hardpoint );
@@ -879,7 +879,7 @@ void AddonModule::CreateAddon()
 
 	if ( m_pAddon == nullptr )
 	{
-		Genesis::Core::Log::Error() << "Couldn't create Addon, unrecognised type.";
+		Genesis::Log::Error() << "Couldn't create Addon, unrecognised type.";
 	}
 	else
 	{

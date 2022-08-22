@@ -202,7 +202,7 @@ void PanelShipyard::FillTables()
         ModuleInfo* pModuleInfo = g_pGame->GetModuleInfoManager()->GetModuleByName( item.first );
 		if ( pModuleInfo == nullptr )
 		{
-            Genesis::Core::Log::Error() << "Attempting to add to inventory non-existent module '" << item.first << "'.";
+            Genesis::Log::Error() << "Attempting to add to inventory non-existent module '" << item.first << "'.";
 			continue;
 		}
 		else

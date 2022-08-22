@@ -68,7 +68,7 @@ Genesis::ResourceFont* Fonts::Get( const std::string& fontName )
         }
     }
 
-    Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "'.";
+    Genesis::Log::Warning() << "Couldn't find font '" << fontName << "'.";
     return nullptr;
 }
 

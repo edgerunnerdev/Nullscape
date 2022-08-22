@@ -146,7 +146,7 @@ void AchievementsManager::OnUserStatsReceived( UserStatsReceived_t *pCallback )
 	{
 		if ( k_EResultOK == pCallback->m_eResult )
 		{
-			Genesis::Core::Log::Info() << "Received stats and achievements from Steam";
+			Genesis::Log::Info() << "Received stats and achievements from Steam";
 
 			m_StatsValid = true;
 
@@ -158,7 +158,7 @@ void AchievementsManager::OnUserStatsReceived( UserStatsReceived_t *pCallback )
 		}
 		else
 		{
-			Genesis::Core::Log::Warning() << "RequestStats - failed: " << pCallback->m_eResult;
+			Genesis::Log::Warning() << "RequestStats - failed: " << pCallback->m_eResult;
 		}
 	}
 }

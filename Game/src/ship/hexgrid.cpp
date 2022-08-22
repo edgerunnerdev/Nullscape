@@ -61,7 +61,7 @@ bool WriteHexGridModuleInfo( HexGrid<ModuleInfo*>* pHexGrid, tinyxml2::XMLDocume
 
 bool ReadHexGridModuleInfo( HexGrid<ModuleInfo*>* pHexGrid, tinyxml2::XMLElement* pRootElement )
 {
-	Genesis::Core::Log::Info() << "Loading hexgrid...";
+	Genesis::Log::Info() << "Loading hexgrid...";
 
 	for ( tinyxml2::XMLElement* pElement = pRootElement->FirstChildElement(); pElement != nullptr; pElement = pElement->NextSiblingElement() ) 
 	{
@@ -72,7 +72,7 @@ bool ReadHexGridModuleInfo( HexGrid<ModuleInfo*>* pHexGrid, tinyxml2::XMLElement
 
 			if ( pModuleInfo == nullptr )
 			{
-				Genesis::Core::Log::Warning() << "Unable to find module '" << moduleName << "', skipping.";
+				Genesis::Log::Warning() << "Unable to find module '" << moduleName << "', skipping.";
 				return false;
 			}
 			else

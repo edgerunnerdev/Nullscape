@@ -150,7 +150,7 @@ ResourceGeneric* ResourceManager::GetResource(const Filename& filename)
     ExtensionMap::iterator extensionIter = mRegisteredExtensions.find(extension);
     if (extensionIter == mRegisteredExtensions.end())
     {
-        Core::Log::Warning() << "Trying to load unsupported resource: " << filename.GetFullPath();
+        Log::Warning() << "Trying to load unsupported resource: " << filename.GetFullPath();
         return nullptr;
     }
 

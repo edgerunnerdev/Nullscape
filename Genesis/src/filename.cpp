@@ -30,7 +30,7 @@ void Filename::Initialise(const std::string& filename)
     const std::size_t e = m_FullPath.find_last_of(".");
     if (e == std::string::npos)
     {
-        Core::Log::Error() << "Don't know how to initialise filename '" << filename << "', it has no extension.";
+        Log::Error() << "Don't know how to initialise filename '" << filename << "', it has no extension.";
     }
     else
     {

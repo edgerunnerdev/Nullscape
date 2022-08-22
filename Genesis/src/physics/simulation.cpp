@@ -292,7 +292,7 @@ void Simulation::UnregisterCollisionCallback(CollisionCallbackHandle handle)
         }
     }
 
-    Core::Log::Error() << "Attempting to remove CollisionCallbackHandle '" << handle << "', which doesn't exist.";
+    Log::Error() << "Attempting to remove CollisionCallbackHandle '" << handle << "', which doesn't exist.";
 }
 
 void Simulation::ProcessCollisionCallbacks()

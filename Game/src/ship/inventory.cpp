@@ -33,7 +33,7 @@ void Inventory::AddModule( const std::string& moduleName, unsigned int quantity 
 	ModuleInfo* pModuleInfo = g_pGame->GetModuleInfoManager()->GetModuleByName( moduleName );
 	if ( pModuleInfo == nullptr )
 	{
-		Genesis::Core::Log::Warning() << "Unknown module: " << moduleName;
+		Genesis::Log::Warning() << "Unknown module: " << moduleName;
 	}
 	else
 	{
@@ -140,7 +140,7 @@ bool Inventory::Read( tinyxml2::XMLElement* pRootElement )
 
 void Inventory::UpgradeFromVersion( int version )
 {
-    Genesis::Core::Log::Info() << "Inventory::UpgradeFromVersion(): " << version << " -> " << GetVersion();
+    Genesis::Log::Info() << "Inventory::UpgradeFromVersion(): " << version << " -> " << GetVersion();
 }
 
 bool Inventory::ReadItems( tinyxml2::XMLElement* pRootElement )
@@ -170,12 +170,12 @@ void Inventory::ClearCachedModules()
 		ItemData& itemData = inventoryEntry.second;
 		if ( itemData.cached > 0 )
 		{
-            Genesis::Core::Log::Info() << "Module made permanent: " << inventoryEntry.first << "(" << itemData.cached << ")";
+            Genesis::Log::Info() << "Module made permanent: " << inventoryEntry.first << "(" << itemData.cached << ")";
 			itemData.cached = 0;
 			cachedModulesCleared++;
 		}
 	}
-    Genesis::Core::Log::Info() << cachedModulesCleared << " modules made permanent.";
+    Genesis::Log::Info() << cachedModulesCleared << " modules made permanent.";
 }
 
 // Removes any temporary modules.
@@ -187,12 +187,12 @@ void Inventory::DeductCachedModules()
 		ItemData& itemData = inventoryEntry.second;
 		if ( itemData.cached > 0 )
 		{
-            Genesis::Core::Log::Info() << "Module lost: " << inventoryEntry.first << "(" << itemData.cached << ")";
+            Genesis::Log::Info() << "Module lost: " << inventoryEntry.first << "(" << itemData.cached << ")";
 			itemData.quantity -= itemData.cached;
 			itemData.cached = 0;
 		}
 	}
-    Genesis::Core::Log::Info() << modulesLost << " modules lost.";
+    Genesis::Log::Info() << modulesLost << " modules lost.";
 }
 
 }

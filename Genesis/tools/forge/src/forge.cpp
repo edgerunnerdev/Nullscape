@@ -59,8 +59,6 @@ Forge::~Forge()
 
 bool Forge::Run()
 {
-    using namespace Genesis::Core;
-
     if (!InitializeDirectories())
     {
         Log::Error() << "Failed to initialize directories.";
@@ -111,7 +109,6 @@ CompilerSharedPtr Forge::FindCompiler(const std::string& compilerName) const
 
 bool Forge::InitializeDirectories()
 {
-    using namespace Genesis::Core;
     if (std::filesystem::is_directory(m_AssetsDir) == false)
     {
         Log::Error() << "Invalid asset directory: " << m_AssetsDir;
@@ -154,7 +151,7 @@ void Forge::AggregateCompilers()
 #else
         const bool isExecutable = (std::filesystem::status(path).permissions() & std::filesystem::perms::owner_exec) != std::filesystem::perms::none;
 #endif
-        const bool isCompiler = Genesis::Core::StringEndsWith(fileName, "Comp");
+        const bool isCompiler = Genesis::StringEndsWith(fileName, "Comp");
         if (isExecutable && isCompiler)
         {
             CompilerSharedPtr pCompiler = std::make_shared<Compiler>(path);
@@ -191,7 +188,7 @@ bool Forge::InitializeFileWatcher()
         {
             if (notif.second == FILE_ACTION_MODIFIED)
             {
-                Core::Log::Info() << "Change detected on '" << notif.first << "'.";
+                Log::Info() << "Change detected on '" << notif.first << "'.";
                 compilationNeeded = true;
             }
         }
@@ -204,24 +201,23 @@ bool Forge::InitializeFileWatcher()
 
     m_pFileWatcher->errorEvent = [](int64_t id)
     {
-        Core::Log::Error() << "An error has occurred with file watcher, no further events will be sent for ID= " << id;
+        Log::Error() << "An error has occurred with file watcher, no further events will be sent for ID= " << id;
     };
 
     if (m_pFileWatcher->AddDirectory(1, m_AssetsDir))
     {
-        Core::Log::Info() << "Listening for changes on assets directory.";
+        Log::Info() << "Listening for changes on assets directory.";
         return true;
     }
     else
     {
-        Core::Log::Error() << "Failed to listen for changes on assets directory.";
+        Log::Error() << "Failed to listen for changes on assets directory.";
         return false;
     }
 }
 
 void Forge::InitializeRPCServer()
 {
-    using namespace Core;
     m_pRPCServer = std::make_unique<rpc::server>(FORGE_PROCESS_PORT);
     m_pRPCServer->async_run(2);
     Log::Info() << "Initialized RPC server on port " << FORGE_PROCESS_PORT << ".";
@@ -265,7 +261,7 @@ void Forge::InitializeRPCServer()
 
 bool Forge::CompileAssets()
 {
-    Core::Log::Info() << "Compiling assets...";
+    Log::Info() << "Compiling assets...";
     int errors = 0;
     int compiled = 0;
     int cached = 0;
@@ -287,7 +283,7 @@ bool Forge::CompileAssets()
         }
     }
 
-    Core::Log::Info() << "Forge asset compilation completed, " << compiled << " compiled, " << cached << " cached, " << errors << " errors.";
+    Log::Info() << "Forge asset compilation completed, " << compiled << " compiled, " << cached << " cached, " << errors << " errors.";
 
     return errors == 0;
 }
@@ -296,24 +292,24 @@ Forge::CompileResult Forge::CompileAsset(Asset* pAsset)
 {
     if (pAsset->IsValid() == false)
     {
-        Core::Log::Error() << "Failed to compile " << pAsset->GetPath() << ": Invalid asset.";
+        Log::Error() << "Failed to compile " << pAsset->GetPath() << ": Invalid asset.";
         return CompileResult::Error;
     }
     else if (m_pCache->NeedsRebuild(pAsset))
     {
-        Core::Log::Info() << "Compiling " << pAsset->GetPath() << "...";
+        Log::Info() << "Compiling " << pAsset->GetPath() << "...";
 
         std::stringstream arguments;
         arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << pAsset->GetPath() << " -m forge";
 
-        // Core::Log::Info() << it->second << " " << arguments.str();
+        // Log::Info() << it->second << " " << arguments.str();
 
-        Core::Process process(pAsset->GetCompiler()->GetPath(), arguments.str());
+        Process process(pAsset->GetCompiler()->GetPath(), arguments.str());
         process.Run();
         process.Wait();
         if (process.GetExitCode() != 0)
         {
-            Core::Log::Error() << "Failed to compile " << pAsset->GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
+            Log::Error() << "Failed to compile " << pAsset->GetPath() << ", process exited with error code " << static_cast<int>(process.GetExitCode());
             return CompileResult::Error;
         }
         else
@@ -329,7 +325,7 @@ Forge::CompileResult Forge::CompileAsset(Asset* pAsset)
 
 void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::filesystem::path& sourceFile, const std::filesystem::path& destinationFile)
 {
-    Core::Log::Info() << asset << ": " << sourceFile << " -> " << destinationFile;
+    Log::Info() << asset << ": " << sourceFile << " -> " << destinationFile;
     for (Asset& knownAsset : m_KnownAssets)
     {
         if (knownAsset.GetPath() == asset)
@@ -342,7 +338,7 @@ void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::files
 
 void Forge::OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason)
 {
-    Core::Log::Error() << "Failed to compile " << asset << ": " << reason;
+    Log::Error() << "Failed to compile " << asset << ": " << reason;
 }
 
 } // namespace ResComp

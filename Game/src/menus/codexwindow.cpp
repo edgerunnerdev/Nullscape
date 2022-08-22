@@ -101,7 +101,7 @@ void CodexWindow::LoadEntry( const std::filesystem::path& path )
 		}
 		else
 		{
-            Genesis::Core::Log::Warning() << "Couldn't load codex entry: " << path;
+            Genesis::Log::Warning() << "Couldn't load codex entry: " << path;
 		}
     }
 }

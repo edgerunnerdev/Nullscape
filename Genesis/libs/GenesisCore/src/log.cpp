@@ -27,8 +27,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 //////////////////////////////////////////////////////////////////////////
 // Log
@@ -166,5 +164,4 @@ void VisualStudioLogger::Log(const std::string& text, Log::Level type)
 #endif
 }
 
-} // namespace Core
 } // namespace Genesis

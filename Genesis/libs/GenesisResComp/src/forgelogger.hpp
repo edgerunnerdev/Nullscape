@@ -33,11 +33,11 @@ namespace Genesis
 namespace ResComp
 {
 
-class ForgeLogger : public Core::ILogTarget
+class ForgeLogger : public ILogTarget
 {
 public:
     ForgeLogger(rpc::client* pRPCClient);
-    virtual void Log(const std::string& text, Core::Log::Level type) override;
+    virtual void Log(const std::string& text, Log::Level type) override;
 
 private:
     rpc::client* m_pRPCClient;

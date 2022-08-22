@@ -140,7 +140,7 @@ bool SaveGameStorage::SaveGame( bool killSave /* = false */ )
 		}
 
 		fullPath = gameSaveGameFolder / filename; 
-		Genesis::Core::Log::Info() << "Attempting to save to " << ToString(fullPath);
+		Genesis::Log::Info() << "Attempting to save to " << ToString(fullPath);
 	}
 
 	tinyxml2::XMLDocument xmlDoc;
@@ -189,7 +189,7 @@ bool SaveGameStorage::SaveToLocalStorage( tinyxml2::XMLDocument& xmlDoc, const s
 
 	if ( saveResult == XMLError::XML_SUCCESS )
 	{
-		Genesis::Core::Log::Info() << "Game saved successfully!";
+		Genesis::Log::Info() << "Game saved successfully!";
 		fclose( fp );
 		return true;
 	}
@@ -278,7 +278,7 @@ bool SaveGameStorage::XmlRead( const std::filesystem::path& filename, tinyxml2::
 		const int fileSize = m_pSteamRemoteStorage->GetFileSize( steamFilename.c_str() );
 		if ( fileSize == 0 )
 		{
-            Genesis::Core::Log::Warning() << "SteamWorks gave a file size of 0 for save game '" << steamFilename << "', skipping this save. This is likely a hiccup from Steam.";
+            Genesis::Log::Warning() << "SteamWorks gave a file size of 0 for save game '" << steamFilename << "', skipping this save. This is likely a hiccup from Steam.";
 			return false;
 		}
 		std::vector< char > fileData;
@@ -427,7 +427,7 @@ bool SaveGameStorage::CreateSaveGameFolder( const std::filesystem::path& folder 
 		}
 		else
 		{
-			Genesis::Core::Log::Warning() << "Could not create save game directory: " << errorCode.message();
+			Genesis::Log::Warning() << "Could not create save game directory: " << errorCode.message();
 			return false;
 		}
 	}

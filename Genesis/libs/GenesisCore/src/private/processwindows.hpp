@@ -29,8 +29,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 class ProcessWindows : public ProcessImpl
 {
@@ -54,7 +52,6 @@ private:
     std::atomic_bool m_ProcessExited;
 };
 
-} // namespace Core
 } // namespace Genesis
 
 #endif // TARGET_PLATFORM_WINDOWS

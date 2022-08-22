@@ -28,7 +28,7 @@ ForgeLogger::ForgeLogger(rpc::client* pRPCClient)
     m_pRPCClient = pRPCClient;
 }
 
-void ForgeLogger::Log(const std::string& text, Core::Log::Level type) 
+void ForgeLogger::Log(const std::string& text, Log::Level type) 
 {
     m_pRPCClient->call("log", text, static_cast<int>(type));
 }

@@ -192,7 +192,7 @@ void Game::Initialise()
 	Random::Initialise();
 	RandomShuffle::Initialise();
 
-	Genesis::Core::Log::Info() << "Nullscape build " << Nullscape_BUILD;
+	Genesis::Log::Info() << "Nullscape build " << Nullscape_BUILD;
 
 	m_pLoadingScreen = LoadingScreenUniquePtr( new LoadingScreen );
 	m_pBlackboard = std::make_shared<Blackboard>();
@@ -236,11 +236,11 @@ void Game::Initialise()
 
 	if ( SteamAPI_Init() )
 	{
-        Genesis::Core::Log::Info() << "Steam API initialized.";
+        Genesis::Log::Info() << "Steam API initialized.";
 	}
 	else
 	{
-        Genesis::Core::Log::Warning() << "SteamAPI_Init() failed.";
+        Genesis::Log::Warning() << "SteamAPI_Init() failed.";
 	}
 #endif // USE_STEAM
 
@@ -711,7 +711,7 @@ void Game::LoaderThreadMain()
 		GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
 		if ( result == GL_WAIT_FAILED )
 		{
-			Genesis::Core::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
+			Genesis::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
 			exit( -1 );
 		}
 		else if ( result != GL_TIMEOUT_EXPIRED )
@@ -720,7 +720,7 @@ void Game::LoaderThreadMain()
 		}
 	}
 
-	Genesis::Core::Log::Info() << "All resources loaded.";
+	Genesis::Log::Info() << "All resources loaded.";
 
 	m_AllResourcesLoaded = true;
 	SDL_GL_MakeCurrent( pWindow->GetSDLWindow(), nullptr );
@@ -739,7 +739,7 @@ void Game::RaiseInteractiveWarning( const std::string& text ) const
 		pPopup->Show( PopupMode::Ok, text );
 	}
 
-	Genesis::Core::Log::Warning() << text;
+	Genesis::Log::Warning() << text;
 }
 
 void Game::SetCursorType( CursorType type )

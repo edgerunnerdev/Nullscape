@@ -124,7 +124,7 @@ void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
     {
         if (pLayerObject.pSceneObject == pObject)
         {
-            Core::Log::Warning() << "Object has already been added to the layer!";
+            Log::Warning() << "Object has already been added to the layer!";
         }
     }
 #endif

@@ -31,7 +31,7 @@ namespace Genesis
 ForgeListener::ForgeListener()
 {
     // We act as a server, so the Forge process can notify us when an asset has been compiled.
-    Core::Log::Info() << "Starting Forge Listener on port " << FORGE_LISTENER_PORT;
+    Log::Info() << "Starting Forge Listener on port " << FORGE_LISTENER_PORT;
     m_pRPCServer = std::make_unique<rpc::server>("127.0.0.1", FORGE_LISTENER_PORT);
     m_pRPCServer->async_run();
 
@@ -42,13 +42,13 @@ ForgeListener::~ForgeListener()
 {
     if (m_pRPCClient)
     {
-        Core::Log::Info() << "Telling Forge process to quit.";
+        Log::Info() << "Telling Forge process to quit.";
         m_pRPCClient->send("quit");
     }
 
     if (m_pRPCServer)
     {
-        Core::Log::Info() << "Stopping Forge Listener.";
+        Log::Info() << "Stopping Forge Listener.";
         m_pRPCServer->close_sessions();
         m_pRPCServer->stop();
     }
@@ -77,7 +77,7 @@ void ForgeListener::SpawnForgeProcess()
         std::stringstream arguments;
         arguments << "-m service -a " << assetsPath.generic_string() << " -d " << dataPath.generic_string() << " -c " << compilersPath.generic_string() << " -i " << intermediatesPath.generic_string();
 
-        m_pProcess = std::make_unique<Core::Process>(forgePath, arguments.str());
+        m_pProcess = std::make_unique<Process>(forgePath, arguments.str());
         m_pProcess->Run();
     }
 }

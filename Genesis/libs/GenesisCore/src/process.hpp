@@ -26,8 +26,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 class Process;
 using ProcessSharedPtr = std::shared_ptr<Process>;
@@ -51,5 +49,4 @@ private:
     std::unique_ptr<ProcessImpl> m_pImpl;
 };
 
-} // namespace Core
 } // namespace Genesis

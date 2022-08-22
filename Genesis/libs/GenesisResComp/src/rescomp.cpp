@@ -86,27 +86,27 @@ bool ResComp::Initialize(int argc, char** argv)
     }
     else
     {
-        Core::Log::Error() << "Mode " << modeArg << " not recognized, must be 'standalone' or 'service'.";
+        Log::Error() << "Mode " << modeArg << " not recognized, must be 'standalone' or 'service'.";
         return false;
     }
 
     if (IsUsingForge())
     {
         m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", FORGE_PROCESS_PORT);
-        Core::Log::AddLogTarget(std::make_shared<ForgeLogger>(m_pRPCClient.get()));
+        Log::AddLogTarget(std::make_shared<ForgeLogger>(m_pRPCClient.get()));
     }
     else
     {
-        Core::Log::AddLogTarget(std::make_shared<Core::TTYLogger>());
+        Log::AddLogTarget(std::make_shared<TTYLogger>());
     }
 
     m_AssetsDir = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("a")));
     m_DataDir = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("d")));
     m_File = std::filesystem::canonical(std::filesystem::path(parser.get<std::string>("f")));
 
-    if (Core::StringStartsWith(m_File, m_AssetsDir) == false)
+    if (StringStartsWith(m_File, m_AssetsDir) == false)
     {
-        Core::Log::Error() << "File " << m_File << " it not in " << m_AssetsDir;
+        Log::Error() << "File " << m_File << " it not in " << m_AssetsDir;
         return false;
     }
 

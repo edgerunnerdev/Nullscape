@@ -48,7 +48,7 @@ ResourceSound* LoadSFX(const std::string& filename)
     }
     else
     {
-        Core::Log::Warning() << "Couldn't load SFX '" << filename << "'.";
+        Log::Warning() << "Couldn't load SFX '" << filename << "'.";
         return nullptr;
     }
 }
@@ -103,7 +103,7 @@ void GuiManager::AddElement(GuiElement* pElement)
 {
     if (pElement == nullptr)
     {
-        Core::Log::Error() << "Attempting to add null GuiElement.";
+        Log::Error() << "Attempting to add null GuiElement.";
         return;
     }
 
@@ -251,7 +251,7 @@ void GuiElement::AddElement(GuiElement* pElement)
 {
     if (pElement == nullptr)
     {
-        Core::Log::Error() << "Attempting to add null GuiElement.";
+        Log::Error() << "Attempting to add null GuiElement.";
         return;
     }
 

@@ -133,7 +133,7 @@ void LaserManager::AddLaser( const Laser& laser )
 	const unsigned int numLasers = static_cast<unsigned int>(m_Lasers.size());
 	if ( numLasers == sLaserManagerCapacity )
 	{
-        Genesis::Core::Log::Warning() << "Unable to add laser, manager at capacity (" << sLaserManagerCapacity << ").";
+        Genesis::Log::Warning() << "Unable to add laser, manager at capacity (" << sLaserManagerCapacity << ").";
 	}
 	else
 	{

@@ -73,7 +73,7 @@ void Element::Add( ElementSharedPtr pElement )
     {
         if ( pChild->GetName() == pElement->GetName() )
         {
-            Genesis::Core::Log::Warning() << "UI Element '" << GetName() << "' already contains a child called '" << pElement->GetName();
+            Genesis::Log::Warning() << "UI Element '" << GetName() << "' already contains a child called '" << pElement->GetName();
             return;
         }
     }

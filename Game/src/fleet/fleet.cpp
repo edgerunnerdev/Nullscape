@@ -248,7 +248,7 @@ bool Fleet::Read( tinyxml2::XMLElement* pRootElement )
 
 void Fleet::UpgradeFromVersion( int version )
 {
-    Genesis::Core::Log::Info() << "Fleet::UpgradeFromVersion(): " << version << " -> " << GetVersion();
+    Genesis::Log::Info() << "Fleet::UpgradeFromVersion(): " << version << " -> " << GetVersion();
 }
 
 void Fleet::SetDestination( float x, float y )		
@@ -292,7 +292,7 @@ void Fleet::GenerateProceduralFleet( int pointsToSpend )
 	{
 		if ( doctrine.GetRatio( static_cast<ShipType>( i ) ) > 0.0f && factionShipsByType[ i ].empty() )
 		{
-            Genesis::Core::Log::Error() << "Faction " << GetFaction()->GetName() << "doesn't have the ship types required by its doctrine.";
+            Genesis::Log::Error() << "Faction " << GetFaction()->GetName() << "doesn't have the ship types required by its doctrine.";
 			return;
 		}
 	}

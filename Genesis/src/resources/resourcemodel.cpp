@@ -178,7 +178,7 @@ bool ResourceModel::Load()
     std::ifstream file(GetFilename().GetFullPath(), std::ios::in | std::ios::binary);
     if (file.good() == false)
     {
-        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath();
+        Log::Error() << "Couldn't load " << GetFilename().GetFullPath();
         return false;
     }
 
@@ -187,28 +187,28 @@ bool ResourceModel::Load()
     file.close();
     if (state.first != bitsery::ReaderError::NoError || state.second != true)
     {
-        Core::Log::Error() << "Failed to deserialize " << GetFilename().GetFullPath();
+        Log::Error() << "Failed to deserialize " << GetFilename().GetFullPath();
         return false;
     }
 
     if (ReadHeader(&model) == false)
     {
-        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read header.";
+        Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read header.";
         return false;
     }
     else if (ReadMaterials(&model) == false)
     {
-        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read materials.";
+        Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read materials.";
         return false;
     }
     else if (ReadMeshes(&model) == false)
     {
-        Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read meshes.";
+        Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read meshes.";
         return false;
     }
     else
     {
-        Core::Log::Info() << "Loaded model " << GetFilename().GetFullPath() << ": " << static_cast<int>(model.header.meshes) << " meshes, " << static_cast<int>(model.header.materials) << " materials.";
+        Log::Info() << "Loaded model " << GetFilename().GetFullPath() << ": " << static_cast<int>(model.header.meshes) << " meshes, " << static_cast<int>(model.header.materials) << " materials.";
         m_State = ResourceState::Loaded;
         return true;
     }
@@ -218,7 +218,7 @@ bool ResourceModel::ReadHeader(const Serialization::Model* pModel)
 {
     if (pModel->header.format != "GMDL")
     {
-        Core::Log::Error() << "Header error: not a GMDL file.";
+        Log::Error() << "Header error: not a GMDL file.";
         return false;
     }
     else
@@ -241,7 +241,7 @@ bool ResourceModel::ReadMaterials(const Serialization::Model* pModel)
         ResourceShader* pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>(shaderPath.str());
         if (pShader == nullptr)
         {
-            Core::Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": invalid shader " << shaderName;
+            Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": invalid shader " << shaderName;
             return false;
         }
         else
@@ -258,14 +258,14 @@ bool ResourceModel::ReadMaterials(const Serialization::Model* pModel)
             ShaderUniformSharedPtr pShaderUniform = pShader->RegisterUniform(name.c_str(), ShaderUniformType::Texture);
             if (pShaderUniform == nullptr)
             {
-                Core::Log::Error() << "Model '" << GetFilename().GetFullPath() << "', shader '" << shaderName << "', couldn't find texture uniform named '" << name << "'.";
+                Log::Error() << "Model '" << GetFilename().GetFullPath() << "', shader '" << shaderName << "', couldn't find texture uniform named '" << name << "'.";
                 return false;
             }
 
             ResourceImage* pResourceImage = FrameWork::GetResourceManager()->GetResource<ResourceImage*>(filename);
             if (pResourceImage == nullptr)
             {
-                Core::Log::Error() << "Unable to load " << filename;
+                Log::Error() << "Unable to load " << filename;
                 return false;
             }
             else

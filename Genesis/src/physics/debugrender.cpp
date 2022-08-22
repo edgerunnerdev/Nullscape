@@ -72,7 +72,7 @@ void DebugRender::drawContactPoint(const btVector3& PointOnB, const btVector3& n
 
 void DebugRender::reportErrorWarning(const char* warningString)
 {
-    Core::Log::Warning() << warningString;
+    Log::Warning() << warningString;
 }
 
 void DebugRender::setDebugMode(int debugMode)

@@ -83,12 +83,12 @@ EntitySharedPtr EntityFactory::Create(const std::string& templateName) const
 
     if (deserializer.adapter().error() != bitsery::ReaderError::NoError || !deserializer.adapter().isCompletedSuccessfully())
     {
-        Genesis::Core::Log::Error() << "Failed to create entity from template " << templateName << ": " << magic_enum::enum_name(deserializer.adapter().error());
+        Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": " << magic_enum::enum_name(deserializer.adapter().error());
         return nullptr;
     }
     else if (!std::get<0>(context).isValid())
     {
-        Genesis::Core::Log::Error() << "Failed to create entity from template " << templateName << ": dangling pointers.";
+        Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": dangling pointers.";
         return nullptr;
     }
     else
@@ -150,7 +150,7 @@ void EntityFactory::LoadTemplate(const std::filesystem::path& path)
     }
     else
     {
-        Genesis::Core::Log::Error() << "Failed to load entity template " << path;
+        Genesis::Log::Error() << "Failed to load entity template " << path;
     }
 }
 

@@ -40,7 +40,7 @@ public:
 private:
     void SpawnForgeProcess();
 
-    std::unique_ptr<Core::Process> m_pProcess;
+    std::unique_ptr<Process> m_pProcess;
     std::unique_ptr<rpc::client> m_pRPCClient;
     std::unique_ptr<rpc::server> m_pRPCServer;
 };

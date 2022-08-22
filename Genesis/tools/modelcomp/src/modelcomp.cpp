@@ -105,7 +105,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
         json::iterator it = j.find("source");
         if (it == j.end() || it->is_string() == false)
         {
-            Core::Log::Error() << "Couldn't find required 'source' field in asset " << assetPath;
+            Log::Error() << "Couldn't find required 'source' field in asset " << assetPath;
             return false;
         }
         else
@@ -117,7 +117,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
         it = j.find("materials");
         if (it == j.end() || it->is_array() == false)
         {
-            Core::Log::Error() << "Couldn't find required 'materials' array in asset " << assetPath;
+            Log::Error() << "Couldn't find required 'materials' array in asset " << assetPath;
             return false;
         }
         else
@@ -129,7 +129,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
                 json::iterator materialIt = jMaterial.find("name");
                 if (materialIt == jMaterial.end() || materialIt->is_string() == false)
                 {
-                    Core::Log::Error() << "Couldn't find material name in asset " << assetPath;
+                    Log::Error() << "Couldn't find material name in asset " << assetPath;
                     return false;
                 }
                 else
@@ -140,7 +140,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
                 materialIt = jMaterial.find("shader");
                 if (materialIt == jMaterial.end() || materialIt->is_string() == false)
                 {
-                    Core::Log::Error() << "Couldn't find required 'shader' string for material " << pMaterial->GetName() << " in asset " << assetPath;
+                    Log::Error() << "Couldn't find required 'shader' string for material " << pMaterial->GetName() << " in asset " << assetPath;
                     return false;
                 }
                 else
@@ -151,7 +151,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
                 materialIt = jMaterial.find("bindings");
                 if (materialIt == jMaterial.end() || materialIt->is_array() == false)
                 {
-                    Core::Log::Error() << "Couldn't find required 'bindings' array for material " << pMaterial->GetName() << " in asset " << assetPath;
+                    Log::Error() << "Couldn't find required 'bindings' array for material " << pMaterial->GetName() << " in asset " << assetPath;
                     return false;
                 }
                 else
@@ -162,7 +162,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
                         json::iterator bindingIt = jBinding.find("name");
                         if (bindingIt == jBinding.end() || bindingIt->is_string() == false)
                         {
-                            Core::Log::Error() << "Couldn't find required 'name' string in bindings for material " << pMaterial->GetName() << " in asset " << assetPath;
+                            Log::Error() << "Couldn't find required 'name' string in bindings for material " << pMaterial->GetName() << " in asset " << assetPath;
                             return false;
                         }
                         std::string bindingName = bindingIt->get<std::string>();
@@ -170,7 +170,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
                         bindingIt = jBinding.find("filename");
                         if (bindingIt == jBinding.end() || bindingIt->is_string() == false)
                         {
-                            Core::Log::Error() << "Couldn't find required 'filename' string in bindings for material " << pMaterial->GetName() << " in asset " << assetPath;
+                            Log::Error() << "Couldn't find required 'filename' string in bindings for material " << pMaterial->GetName() << " in asset " << assetPath;
                             return false;
                         }
                         std::string bindingFilename = bindingIt->get<std::string>();
@@ -192,7 +192,7 @@ bool ModelComp::ValidateImport(const aiScene* pScene)
 {
     if (pScene->HasMeshes() == false)
     {
-        Core::Log::Error() << "Model has no meshes.";
+        Log::Error() << "Model has no meshes.";
         return false;
     }
 
@@ -201,27 +201,27 @@ bool ModelComp::ValidateImport(const aiScene* pScene)
         aiMesh* pMesh = pScene->mMeshes[i];
         if (pMesh->HasPositions() == false)
         {
-            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no vertex positions.";
+            Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no vertex positions.";
             return false;
         }
         else if (pMesh->HasNormals() == false)
         {
-            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no normals.";
+            Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no normals.";
             return false;
         }
         else if (pMesh->HasTextureCoords(0) == false)
         {
-            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no texture coordinate set 0.";
+            Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no texture coordinate set 0.";
             return false;
         }
         else if (pMesh->HasTangentsAndBitangents() == false)
         {
-            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no tangents / bitangents.";
+            Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no tangents / bitangents.";
             return false;
         }
         else if (pMesh->HasFaces() == false)
         {
-            Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no faces.";
+            Log::Error() << "Mesh " << pMesh->mName.C_Str() << " has no faces.";
             return false;
         }
 
@@ -230,7 +230,7 @@ bool ModelComp::ValidateImport(const aiScene* pScene)
             const aiFace& face = pMesh->mFaces[j];
             if (face.mNumIndices != 3)
             {
-                Core::Log::Error() << "Mesh " << pMesh->mName.C_Str() << " is not triangulated.";
+                Log::Error() << "Mesh " << pMesh->mName.C_Str() << " is not triangulated.";
                 return false;
             }
         }
@@ -244,7 +244,7 @@ bool ModelComp::ValidateMaterials(const aiScene* pScene)
     bool mismatch = false;
     if (m_Materials.size() != pScene->mNumMaterials)
     {
-        Core::Log::Error() << "Different number of materials between model file and asset.";
+        Log::Error() << "Different number of materials between model file and asset.";
         mismatch = true;
     }
 
@@ -269,18 +269,18 @@ bool ModelComp::ValidateMaterials(const aiScene* pScene)
 
     if (mismatch)
     {
-        Core::Log::Error() << "Material mismatch between asset and model file.";
+        Log::Error() << "Material mismatch between asset and model file.";
 
-        Core::Log::Error() << "Asset:";
+        Log::Error() << "Asset:";
         for (auto& pMaterial : m_Materials)
         {
-            Core::Log::Error() << "- " << pMaterial.first;
+            Log::Error() << "- " << pMaterial.first;
         }
 
-        Core::Log::Error() << "Model file:";
+        Log::Error() << "Model file:";
         for (unsigned int i = 0; i < pScene->mNumMaterials; ++i)
         {
-            Core::Log::Error() << "- " << pScene->mMaterials[i]->GetName().C_Str();
+            Log::Error() << "- " << pScene->mMaterials[i]->GetName().C_Str();
         }
     }
 

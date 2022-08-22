@@ -56,7 +56,7 @@ int GenericComp::Run()
 
     if (std::filesystem::exists(sourceFile) == false)
     {
-        Core::Log::Error() << "Source file " << sourceFile << " doesn't exist.";
+        Log::Error() << "Source file " << sourceFile << " doesn't exist.";
         return -1;
     }
 

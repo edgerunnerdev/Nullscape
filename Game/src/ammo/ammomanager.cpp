@@ -107,7 +107,7 @@ Ammo* AmmoManager::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f *
 	Ammo** ppAmmo = GetFreeAmmo();
 	if ( ppAmmo == nullptr )
 	{
-        Genesis::Core::Log::Error() << "AmmoManager capacity exceeded!";
+        Genesis::Log::Error() << "AmmoManager capacity exceeded!";
 		return nullptr;
 	}
 

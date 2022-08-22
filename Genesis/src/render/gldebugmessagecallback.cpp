@@ -123,11 +123,11 @@ void GLAPIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id, GL
 
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
     {
-        Genesis::Core::Log::Info() << "OpenGL error " << id << ": " << _type << " of " << _severity << " severity, raised from " << _source << ": " << msg;
+        Genesis::Log::Info() << "OpenGL error " << id << ": " << _type << " of " << _severity << " severity, raised from " << _source << ": " << msg;
     }
     else
     {
-        Genesis::Core::Log::Warning() << "OpenGL error " << id << ": " << _type << " of " << _severity << " severity, raised from " << _source << ": " << msg;
+        Genesis::Log::Warning() << "OpenGL error " << id << ": " << _type << " of " << _severity << " severity, raised from " << _source << ": " << msg;
     }
 }
 

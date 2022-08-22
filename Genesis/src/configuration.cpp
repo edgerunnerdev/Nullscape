@@ -113,7 +113,7 @@ void Configuration::Load()
         EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::Glow, glow);
         EnablePostProcessEffect(Genesis::RenderSystem::PostProcessEffect::Vignette, vignette);
 
-        Core::Log::Info() << "Config file loaded.";
+        Log::Info() << "Config file loaded.";
     }
     else
     {
@@ -144,7 +144,7 @@ void Configuration::Save()
 
 void Configuration::CreateDefaultFile()
 {
-    Core::Log::Info() << "Creating default config file.";
+    Log::Info() << "Creating default config file.";
     SetDefaultValues();
     Save();
 }
@@ -175,15 +175,15 @@ void Configuration::EnsureValidResolution()
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
     {
-        Core::Log::Error() << "SDL_GetDesktopDisplayMode failed: " << SDL_GetError();
+        Log::Error() << "SDL_GetDesktopDisplayMode failed: " << SDL_GetError();
     }
     else if (dm.w <= 0)
     {
-        Core::Log::Error() << "Invalid screen width: " << dm.w;
+        Log::Error() << "Invalid screen width: " << dm.w;
     }
     else if (dm.h <= 0)
     {
-        Core::Log::Error() << "Invalid screen height: " << dm.h;
+        Log::Error() << "Invalid screen height: " << dm.h;
     }
 
     m_ScreenWidth = static_cast<unsigned int>(dm.w);

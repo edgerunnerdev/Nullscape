@@ -22,7 +22,7 @@
 
 int main(int argc, char** argv)
 {
-    using namespace Genesis::Core;
+    using namespace Genesis;
     using namespace Genesis::ResComp;
 
     Log::AddLogTarget(std::make_shared<VisualStudioLogger>());

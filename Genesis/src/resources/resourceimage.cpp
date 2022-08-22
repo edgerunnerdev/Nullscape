@@ -73,7 +73,7 @@ bool ResourceImage::Load()
             }
             else
             {
-                Core::Log::Error() << "Failed to create texture for " << GetFilename().GetFullPath() << "', don't know how to handle " << bpp << " bits per pixel.";
+                Log::Error() << "Failed to create texture for " << GetFilename().GetFullPath() << "', don't know how to handle " << bpp << " bits per pixel.";
                 SDL_FreeSurface(m_pTemporarySurface);
                 m_State = ResourceState::Unloaded;
                 return false;            
@@ -89,7 +89,7 @@ bool ResourceImage::Load()
         }
         else
         {
-            Core::Log::Error() << "Don't know how to create texture for extension '" << extension << "'.";
+            Log::Error() << "Don't know how to create texture for extension '" << extension << "'.";
             SDL_FreeSurface(m_pTemporarySurface);
             m_State = ResourceState::Unloaded;
             return false;
@@ -105,7 +105,7 @@ SDL_Surface* ResourceImage::CreateSurface(const std::string& filename)
     SDL_Surface* image = IMG_Load(filename.c_str());
     if (image == nullptr)
     {
-        Core::Log::Warning() << IMG_GetError();
+        Log::Warning() << IMG_GetError();
     }
 
     return image;

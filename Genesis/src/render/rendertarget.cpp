@@ -89,7 +89,7 @@ RenderTargetSharedPtr RenderTarget::Create(const std::string& name, GLuint width
     SDL_GLContext pContext = SDL_GL_GetCurrentContext();
     if (pContext == nullptr)
     {
-        Core::Log::Error() << "Checking for framebuffer status with no current context.";
+        Log::Error() << "Checking for framebuffer status with no current context.";
         return nullptr;
     }
 
@@ -101,7 +101,7 @@ RenderTargetSharedPtr RenderTarget::Create(const std::string& name, GLuint width
     }
     else
     {
-        Core::Log::Info() << "FBO info for render target " << name << ":";
+        Log::Info() << "FBO info for render target " << name << ":";
         FrameWork::GetRenderSystem()->PrintFramebufferInfo(fboId);
     }
 
@@ -152,7 +152,7 @@ void RenderTarget::LogCreationError(const std::string& name, GLenum status)
     default: reason = "Framebuffer unknown error"; break;
     }
 
-    Core::Log::Error() << "Couldn't create render target '" << name << "'. Status code 0x" << std::hex << status << ": " << reason << ".";
+    Log::Error() << "Couldn't create render target '" << name << "'. Status code 0x" << std::hex << status << ": " << reason << ".";
 }
 
 } // namespace Genesis

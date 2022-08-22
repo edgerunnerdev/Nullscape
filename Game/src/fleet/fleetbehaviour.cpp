@@ -205,7 +205,7 @@ bool FleetBehaviourExpansionist::ProcessTurn()
             m_pFleet->SetDestination((static_cast<float>(sectorX) + 0.5f) / NumSectorsX, (static_cast<float>(sectorY) + 0.5f) / NumSectorsY);
 
 #if _DEBUG
-            Genesis::Core::Log::Info() << "[" << m_pFleet->GetFaction() << "] Fleet expanding to sector [" << sectorX << "," << sectorY << "]";
+            Genesis::Log::Info() << "[" << m_pFleet->GetFaction() << "] Fleet expanding to sector [" << sectorX << "," << sectorY << "]";
 #endif
         }
     }

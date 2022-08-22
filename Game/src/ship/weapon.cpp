@@ -386,7 +386,7 @@ void Weapon::SetupMuzzles()
 	// We always need at least one muzzle for the ammo to ejected from.
 	if ( m_MuzzleOffsets.empty() )
 	{
-        Genesis::Core::Log::Info() << "Weapon '" << m_pInfo->GetName() << "' has no valid muzzles!";
+        Genesis::Log::Info() << "Weapon '" << m_pInfo->GetName() << "' has no valid muzzles!";
 		AddMuzzle( glm::vec3( 0.0f, 0.0f, 0.0f ) );
 	}
 }

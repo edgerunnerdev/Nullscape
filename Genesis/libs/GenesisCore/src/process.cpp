@@ -27,8 +27,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 Process::Process(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback, ProcessOnOutputCallback outputCallback)
 {
@@ -58,5 +56,4 @@ uint32_t Process::GetExitCode() const
     return m_pImpl->GetExitCode();
 }
 
-} // namespace Core
 } // namespace Genesis

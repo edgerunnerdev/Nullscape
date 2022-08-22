@@ -1478,7 +1478,7 @@ void Ship::SpawnLoot()
 
     if (matchingModules.empty())
     {
-        Genesis::Core::Log::Warning() << "Attempting to drop module of rarity " << (int)moduleRarity << " but none exists";
+        Genesis::Log::Warning() << "Attempting to drop module of rarity " << (int)moduleRarity << " but none exists";
     }
     else
     {

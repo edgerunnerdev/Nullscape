@@ -27,8 +27,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 void CALLBACK WaitOrTimerCallback(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 {
@@ -70,7 +68,7 @@ void ProcessWindows::Run()
     }
     else
     {
-        RegisterWaitForSingleObject(&m_WaitHandle, m_ProcessInformation.hProcess, &Genesis::Core::WaitOrTimerCallback, this, INFINITE, WT_EXECUTEONLYONCE);
+        RegisterWaitForSingleObject(&m_WaitHandle, m_ProcessInformation.hProcess, &Genesis::WaitOrTimerCallback, this, INFINITE, WT_EXECUTEONLYONCE);
         m_HandlesValid = true;
     }
 }
@@ -107,7 +105,6 @@ bool ProcessWindows::HasExited() const
     return m_HasExited;
 }
 
-} // namespace Core
 } // namespace Genesis
 
 #endif // TARGET_PLATFORM_WINDOWS

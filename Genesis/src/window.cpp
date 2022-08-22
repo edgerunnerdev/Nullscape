@@ -45,7 +45,7 @@ Window::Window(const std::string& title, unsigned int width, unsigned int height
 
     if (m_pWindow == nullptr)
     {
-        Core::Log::Error() << "Failed to create window: " << SDL_GetError();
+        Log::Error() << "Failed to create window: " << SDL_GetError();
         exit(-1);
     }
 
@@ -82,15 +82,15 @@ void Window::SetupSwapInterval()
     const bool lateSwapTearing = (SDL_GL_SetSwapInterval(-1) == 0);
     if (lateSwapTearing == false)
     {
-        Core::Log::Info() << "Couldn't enable late swap tearing: " << SDL_GetError();
+        Log::Info() << "Couldn't enable late swap tearing: " << SDL_GetError();
         const bool vsync = (SDL_GL_SetSwapInterval(1) == 0);
         if (vsync)
         {
-            Core::Log::Info() << "Falling back to vsync: success";
+            Log::Info() << "Falling back to vsync: success";
         }
         else
         {
-            Core::Log::Info() << "Failed to enable vsync: " << SDL_GetError();
+            Log::Info() << "Failed to enable vsync: " << SDL_GetError();
         }
     }
 }

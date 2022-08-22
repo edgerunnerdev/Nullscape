@@ -112,7 +112,7 @@ void Button::LoadResources()
         m_pDefault = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_DefaultPath ) );
         if ( m_pDefault == nullptr )
         {
-            Core::Log::Warning() << "Couldn't load '" << m_DefaultPath << "'.";            
+            Log::Warning() << "Couldn't load '" << m_DefaultPath << "'.";            
         }
         else
         {
@@ -128,7 +128,7 @@ void Button::LoadResources()
         m_pHovered = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_HoveredPath ) );
         if ( m_pHovered == nullptr )
         {
-            Core::Log::Warning() << "Couldn't load '" << m_HoveredPath << "'.";    
+            Log::Warning() << "Couldn't load '" << m_HoveredPath << "'.";    
         }
     }
 
@@ -137,7 +137,7 @@ void Button::LoadResources()
         m_pPressed = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_PressedPath ) );
         if ( m_pPressed == nullptr )
         {
-            Core::Log::Warning() << "Couldn't load '" << m_PressedPath << "'.";    
+            Log::Warning() << "Couldn't load '" << m_PressedPath << "'.";    
         }
         else if ( m_State == State::Selected )
         {
@@ -175,7 +175,7 @@ void Button::SetFont( const std::string& fontName )
     Genesis::ResourceFont* pFont = Fonts::Get( fontName );
     if ( pFont == nullptr )
     {
-        Genesis::Core::Log::Warning() << "Couldn't find font '" << fontName << "' for UI element '" << GetName() << ".";
+        Genesis::Log::Warning() << "Couldn't find font '" << fontName << "' for UI element '" << GetName() << ".";
     }
     else
     {

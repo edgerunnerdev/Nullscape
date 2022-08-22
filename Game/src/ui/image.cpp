@@ -83,7 +83,7 @@ void Image::LoadResources()
         m_pResource = static_cast<ResourceImage*>( FrameWork::GetResourceManager()->GetResource( m_Path ) );
         if ( m_pResource == nullptr )
         {
-            Core::Log::Warning() << "Couldn't load '" << m_Path << "'.";
+            Log::Warning() << "Couldn't load '" << m_Path << "'.";
         }
         else
         {

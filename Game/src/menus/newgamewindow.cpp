@@ -150,7 +150,7 @@ void NewGameWindow::OnShipButtonPressed( const std::any& userData )
 	const ShipInfo* pInfo = g_pGame->GetShipInfoManager()->Get( g_pGame->GetPlayerFaction(), selectedShip );
 	if ( pInfo == nullptr )
 	{
-        Genesis::Core::Log::Error() << "Couldn't find hexgrid '" << selectedShip << "' for player faction";
+        Genesis::Log::Error() << "Couldn't find hexgrid '" << selectedShip << "' for player faction";
 	}
 	else
 	{

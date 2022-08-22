@@ -24,8 +24,6 @@
 
 namespace Genesis
 {
-namespace Core
-{
 
 std::string ToLower(const std::string& str)
 {
@@ -102,5 +100,4 @@ std::wstring ToWString(const std::string& text)
     return converter.from_bytes(text);
 }
 
-} // namespace Core
 } // namespace Genesis
