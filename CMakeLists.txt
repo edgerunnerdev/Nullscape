@@ -24,8 +24,8 @@ set(CMAKE_EXE_LINKER_FLAGS_FINAL "")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # vcpkg dependencies
-find_package(bitsery CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(rpclib CONFIG REQUIRED)
 
 add_subdirectory("Genesis")

@@ -62,5 +62,9 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp"
-    }
+    },
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "/home/hostilenode/Dev/Nullscape/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
+    }      
 }

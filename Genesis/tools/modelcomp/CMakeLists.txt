@@ -6,7 +6,7 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
 find_package(assimp REQUIRED)
-find_package(bitsery CONFIG REQUIRED)
+find_package(bitsery REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
