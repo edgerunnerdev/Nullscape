@@ -10,7 +10,6 @@ find_package(bitsery REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
-find_package(json REQUIRED)
 
 include_directories(
     src/
@@ -18,7 +17,6 @@ include_directories(
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GENESISRESCOMP_INCLUDE_DIRS}
-    ${JSON_INCLUDE_DIRS}
 )
 
 set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin/compilers)

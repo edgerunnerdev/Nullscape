@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include <string>
-
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
+
+#include <string>
 
 #include <coredefines.h>
 

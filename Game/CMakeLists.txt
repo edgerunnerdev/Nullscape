@@ -10,7 +10,6 @@ find_package(bullet3 REQUIRED)
 find_package(Genesis REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
-find_package(json REQUIRED)
 find_package(MagicEnum REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -24,7 +23,6 @@ include_directories(
   ${GENESISCORE_INCLUDE_DIRS}
   ${GLEW_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
-  ${JSON_INCLUDE_DIRS}
   ${MAGICENUM_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIRS}
   ${SDL2_IMAGE_INCLUDE_DIRS}

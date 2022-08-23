@@ -17,19 +17,18 @@
 
 #pragma once
 
-#include <array>
-#include <vector>
-
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
+
+#include <array>
+#include <vector>
 
 #include <scene/sceneobject.h>
 #include <coredefines.h>
 
-#include "entity/componentserialization.hpp"
 #include "entity/componenttype.hpp"
 
 namespace Nullscape

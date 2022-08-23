@@ -17,12 +17,17 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <nlohmann/json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <list>
 #include <memory>
 #include <string>
 
 #include "ui/types.fwd.h"
-#include "json.hpp"
 
 using json = nlohmann::json;
 

@@ -19,7 +19,7 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
@@ -31,7 +31,6 @@
 
 #include "entity/component.hpp"
 #include "entity/componentfactory.hpp"
-#include "entity/componentserialization.hpp"
 #include "entity/entity.hpp"
 
 namespace Nullscape

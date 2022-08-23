@@ -17,9 +17,14 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <nlohmann/json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <GL/glew.h>
 #include <log.hpp>
-#include <json.hpp>
 #include <fstream>
 #include "shadercomp.hpp"
 

@@ -17,12 +17,17 @@
 
 #include "asset.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <nlohmann/json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include "compiler.hpp"
 #include "filehash.hpp"
 #include "forge.hpp"
 
 #include <fstream>
-#include <json.hpp>
 #include <vector>
 #include <xxhash64.h>
 

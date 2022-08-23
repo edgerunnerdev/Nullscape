@@ -17,10 +17,15 @@
 
 #include "cache.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <nlohmann/json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <fstream>
 #include "asset.hpp"
 #include "filehash.hpp"
-#include <json.hpp>
 
 namespace Genesis::ResComp
 {

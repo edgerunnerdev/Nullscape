@@ -15,6 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <nlohmann/json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <filesystem>
 #include <fstream>
 
@@ -29,7 +35,6 @@
 #include "ui/scrollingelement.h"
 #include "ui/text.h"
 #include "ui/togglegroup.h"
-#include "json.hpp"
 #include "savegameheader.h"
 #include "savegamestorage.h"
 
