@@ -16,6 +16,7 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 list(APPEND SOURCE_FILES tools/modelcomp/src/modelserialization.hpp)
 
+find_package(bitsery REQUIRED)
 find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(freetype CONFIG REQUIRED)
@@ -34,6 +35,7 @@ include_directories(
     src/
     src/imgui/
     tools/modelcomp/src/
+    ${BITSERY_INCLUDE_DIRS}
     ${BULLET3_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}

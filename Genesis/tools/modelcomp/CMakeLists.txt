@@ -14,6 +14,7 @@ find_package(GenesisResComp REQUIRED)
 include_directories(
     src/
     ${ASSIMP_INCLUDE_DIRS}
+    ${BITSERY_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
     ${GENESISRESCOMP_INCLUDE_DIRS}

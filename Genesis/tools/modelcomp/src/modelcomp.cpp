@@ -27,7 +27,7 @@
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/stream.h>
 #include <bitsery/traits/string.h>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
 
