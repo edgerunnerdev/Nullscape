@@ -17,9 +17,15 @@
 
 #pragma once
 
+#include "entity/component.hpp"
+
 #include <memory>
 
-#include "entity/component.hpp"
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec3.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
 
 namespace Genesis::Physics
 {
@@ -27,7 +33,7 @@ class RigidBody;
 using RigidBodyUniquePtr = std::unique_ptr<RigidBody>;
 class CompoundShape;
 using CompoundShapeSharedPtr = std::shared_ptr<CompoundShape>;
-}
+} // namespace Genesis::Physics
 
 namespace Nullscape
 {
@@ -42,8 +48,9 @@ public:
     virtual void Update(float delta) override {}
     virtual void UpdateDebugUI() override;
     virtual void Render() override {}
-    virtual bool Serialize(nlohmann::json& data);
-    virtual bool Deserialize(const nlohmann::json& data);
+    virtual bool Serialize(nlohmann::json& data) override;
+    virtual bool Deserialize(const nlohmann::json& data) override;
+    virtual void CloneFrom(Component* pComponent) override;
 
     DEFINE_COMPONENT(RigidBodyComponent);
 

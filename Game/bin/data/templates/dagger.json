@@ -1,18 +1,16 @@
 {
     "components": [
         {
-            "name": "",
+            "filename": "data/models/ships/corvettes/dagger/exported/model.gmdl",
             "type": "ModelComponent",
             "version": 1
         },
         {
-            "name": "",
             "type": "TransformComponent",
             "version": 1
         },
         {
-            "name": "",
-            "type": "TransformComponent",
+            "type": "NavigationComponent",
             "version": 1
         }
     ]

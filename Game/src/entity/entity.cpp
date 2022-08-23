@@ -23,13 +23,32 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <log.hpp>
+
 #include "entity/component.hpp"
+#include "entity/componentfactory.hpp"
 
 namespace Nullscape
 {
 
+Entity::Entity(const Entity& other) 
+{
+    for (Component* pOtherComponent : other.GetComponents())
+    {
+        ComponentUniquePtr pComponent = ComponentFactory::Get()->Create(pOtherComponent->GetType());
+        pComponent->CloneFrom(pOtherComponent);
+        AddComponent(std::move(pComponent));
+    }
+
+    for (Component* pComponent : GetComponents())
+    {
+        pComponent->Initialize();
+    }
+}
+
 void Entity::AddComponent(ComponentUniquePtr pComponent) 
 {
+    pComponent->SetOwner(this);
 	m_Components[static_cast<size_t>(pComponent->GetType())].push_back(std::move(pComponent));
 }
 
@@ -55,7 +74,7 @@ void Entity::Render()
     }
 }
 
-std::vector<Component*> Entity::GetComponents() 
+std::vector<Component*> Entity::GetComponents() const
 {
 	std::vector<Component*> components;
 
@@ -92,9 +111,50 @@ bool Entity::Serialize(nlohmann::json& data)
     return success;
 }
 
-bool Entity::Deserialize(const nlohmann::json& data) 
+bool Entity::Deserialize(const nlohmann::json& jData) 
 {
-    return false;
+    using namespace nlohmann;
+    using namespace Genesis;
+
+    json::const_iterator componentsIt = jData.find("components");
+    if (componentsIt != jData.cend())
+    {
+        for (const json& jComponent : componentsIt.value())
+        {
+            json::const_iterator typeIt = jComponent.find("type");
+            if (typeIt != jComponent.cend())
+            {
+                const std::string& typeName = typeIt.value().get<std::string>();
+                ComponentUniquePtr pComponent = std::move(ComponentFactory::Get()->Create(typeName));
+                if (pComponent == nullptr)
+                {
+                    Log::Error() << "Failed to create component of type '" << typeName << "'.";
+                    return false;
+                }
+                else if (!pComponent->Deserialize(jComponent))
+                {
+                    Log::Error() << "Failed to deserialize component of type '" << typeName << "'.";
+                    return false;
+                }
+                else
+                {
+                    AddComponent(std::move(pComponent));
+                }
+            }
+            else
+            {
+                Log::Error() << "Failed to create component, no 'type' specified.";
+                return false;
+            }
+        }
+    }
+
+    for (Component* pComponent : GetComponents())
+    {
+        pComponent->Initialize();
+    }
+
+    return true;
 }
 
 } // namespace Nullscape

@@ -56,4 +56,9 @@ bool TransformComponent::Deserialize(const nlohmann::json& data)
     return success;
 }
 
+void TransformComponent::CloneFrom(Component* pComponent)
+{
+    Component::CloneFrom(pComponent);
+}
+
 } // namespace Nullscape

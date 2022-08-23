@@ -56,4 +56,9 @@ bool NavigationComponent::Deserialize(const nlohmann::json& data)
     return success;
 }
 
+void NavigationComponent::CloneFrom(Component* pComponent)
+{
+    Component::CloneFrom(pComponent);
+}
+
 } // namespace Nullscape

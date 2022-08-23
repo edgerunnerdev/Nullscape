@@ -102,4 +102,9 @@ bool RigidBodyComponent::Deserialize(const nlohmann::json& data)
     return success;
 }
 
+void RigidBodyComponent::CloneFrom(Component* pComponent)
+{
+    Component::CloneFrom(pComponent);
+}
+
 } // namespace Nullscape

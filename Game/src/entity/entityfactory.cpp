@@ -17,6 +17,12 @@
 
 #include "entity/entityfactory.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <json.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <fstream>
 #include <memory>
 
@@ -24,6 +30,7 @@
 #include <genesis.h>
 
 #include "entity/component.hpp"
+#include "entity/componentfactory.hpp"
 #include "entity/componentserialization.hpp"
 #include "entity/entity.hpp"
 
@@ -63,42 +70,15 @@ EntitySharedPtr EntityFactory::Create(const std::string& templateName) const
     auto it = m_Templates.find(templateName);
     if (it == m_Templates.end())
     {
+        Genesis::Log::Error() << "Failed to create entity from template '" << templateName << "': unknown template.";
         return nullptr;
     }
     else
     {
-        EntitySharedPtr pEntity = std::make_shared<Entity>();
+        EntitySharedPtr pTemplateEntity = it->second;
+        EntitySharedPtr pEntity = std::make_shared<Entity>(*pTemplateEntity);
         return pEntity;
     }
-
-    //EntityTemplate const& entityTemplate = it->second;
-    //EntitySharedPtr pEntity = std::make_shared<Entity>();
-
-    //SerializationContext context{};
-    //std::get<1>(context).registerBasesList<Deserializer>(ComponentPolymorphicClasses{});
-    //Deserializer deserializer{context, entityTemplate.begin(), entityTemplate.size()};
-    //deserializer.object(*pEntity);
-
-    //if (deserializer.adapter().error() != bitsery::ReaderError::NoError || !deserializer.adapter().isCompletedSuccessfully())
-    //{
-    //    Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": " << magic_enum::enum_name(deserializer.adapter().error());
-    //    return nullptr;
-    //}
-    //else if (!std::get<0>(context).isValid())
-    //{
-    //    Genesis::Log::Error() << "Failed to create entity from template " << templateName << ": dangling pointers.";
-    //    return nullptr;
-    //}
-    //else
-    //{
-    //    for (Component* pComponent : pEntity->GetComponents())
-    //    {
-    //        pComponent->SetOwner(pEntity.get());
-    //        pComponent->Initialize();
-    //    }
-
-    //    return pEntity;
-    //}
 }
 
 bool EntityFactory::AddBlankTemplate(const std::string& templateName) 
@@ -125,33 +105,26 @@ std::set<std::string> EntityFactory::GetTemplateNames() const
 void EntityFactory::LoadTemplate(const std::filesystem::path& path) 
 {
     using namespace nlohmann;
+    using namespace Genesis;
 
     std::ifstream file(path, std::ios::in);
     if (file.good())
     {
-        json data = json::parse(file);
+        std::string templateName = path.stem().generic_string();
+        EntitySharedPtr pEntity = std::make_shared<Entity>();
+        m_Templates[templateName] = pEntity;
 
-        //file.seekg(0, file.end);
-        //EntityTemplate buffer;
-        //std::string templateName = path.stem().generic_string();
-        //size_t length = static_cast<size_t>(file.tellg());
-        //if (length > 0)
-        //{
-        //    file.seekg(0, file.beg);
-        //    buffer.resize(length);
-        //    file.read(reinterpret_cast<char*>(buffer.data()), length);
-        //    m_Templates[templateName] = buffer;
-        //}
-        //else
-        //{
-        //    AddBlankTemplate(templateName);
-        //}
-
+        json jData = json::parse(file);
         file.close();
+
+        if (!pEntity->Deserialize(jData))
+        {
+            Log::Error() << "Failed to load entity template '" << path << "', deserialization failed.";
+        }
     }
     else
     {
-        Genesis::Log::Error() << "Failed to load entity template " << path;
+        Log::Error() << "Failed to load entity template '" << path << "', file read failed.";
     }
 }
 

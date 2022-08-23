@@ -45,5 +45,10 @@ bool Component::Deserialize(const nlohmann::json& data)
     return success;
 }
 
+void Component::CloneFrom(Component* pComponent) 
+{
+    m_Version = pComponent->m_Version;
+    m_Name = pComponent->m_Name;
+}
 
 } // namespace Nullscape

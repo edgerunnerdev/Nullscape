@@ -69,13 +69,22 @@ void ModelComponent::Render()
 bool ModelComponent::Serialize(nlohmann::json& data)
 {
     bool success = Component::Serialize(data);
+    data["filename"] = m_Filename;
     return success;
 }
 
 bool ModelComponent::Deserialize(const nlohmann::json& data)
 {
     bool success = Component::Deserialize(data);
+    success &= TryDeserialize(data, "filename", m_Filename);
     return success;
+}
+
+void ModelComponent::CloneFrom(Component* pComponent) 
+{
+    Component::CloneFrom(pComponent);
+    ModelComponent* pModelComponent = reinterpret_cast<ModelComponent*>(pComponent);
+    m_Filename = pModelComponent->m_Filename;
 }
 
 } // namespace Nullscape

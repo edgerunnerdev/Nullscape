@@ -41,6 +41,7 @@ class Entity : public Genesis::SceneObject
 {
 public:
     Entity() {}
+    Entity(const Entity& other);
     virtual ~Entity() override {}
 
     virtual void Update(float delta) override;
@@ -52,7 +53,7 @@ public:
         auto& components = m_Components[static_cast<size_t>(T::sType)];
         return components.empty() ? nullptr : reinterpret_cast<T*>(components.front().get());
     }
-    std::vector<Component*> GetComponents();
+    std::vector<Component*> GetComponents() const;
 
     bool Serialize(nlohmann::json& data);
     bool Deserialize(const nlohmann::json& data);

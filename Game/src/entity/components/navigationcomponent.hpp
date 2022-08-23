@@ -32,8 +32,9 @@ public:
     virtual void Update(float delta) override;
     virtual void UpdateDebugUI() override {}
     virtual void Render() override {}
-    virtual bool Serialize(nlohmann::json& data);
-    virtual bool Deserialize(const nlohmann::json& data);
+    virtual bool Serialize(nlohmann::json& data) override;
+    virtual bool Deserialize(const nlohmann::json& data) override;
+    virtual void CloneFrom(Component* pComponent) override;
 
     DEFINE_COMPONENT(NavigationComponent);
 

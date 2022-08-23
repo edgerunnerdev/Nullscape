@@ -25,10 +25,14 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <coredefines.h>
+
 #include "componenttype.hpp"
 
 namespace Nullscape
 {
+
+GENESIS_DECLARE_SMART_PTR(Component)
 
 #define DEFINE_COMPONENT(COMPONENT_NAME) \
     static const ComponentType sType = ComponentType::COMPONENT_NAME; \
@@ -55,6 +59,7 @@ public:
 
     virtual bool Serialize(nlohmann::json& data);
     virtual bool Deserialize(const nlohmann::json& data);
+    virtual void CloneFrom(Component* pComponent);
 
     void SetOwner(Entity* pEntity);
     Entity* GetOwner() const;

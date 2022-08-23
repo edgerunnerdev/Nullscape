@@ -20,6 +20,7 @@
 #include <array>
 #include <functional>
 #include <string>
+#include <unordered_map>
 
 #include <coredefines.h>
 
@@ -39,11 +40,12 @@ public:
     static ComponentFactory* Get();
 
     ComponentUniquePtr Create(ComponentType type) const;
-    
+    ComponentUniquePtr Create(const std::string& typeName) const;
 
 private:
     using ConstructionFn = std::function<ComponentUniquePtr()>;
-    std::array<ConstructionFn, static_cast<size_t>(ComponentType::Count)> m_Registry;
+    std::array<ConstructionFn, static_cast<size_t>(ComponentType::Count)> m_TypeRegistry;
+    std::unordered_map<std::string, std::function<ComponentUniquePtr()>> m_NameRegistry;
 };
 
 } // namespace Nullscape
