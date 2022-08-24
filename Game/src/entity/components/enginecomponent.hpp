@@ -13,24 +13,37 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
+// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <SDL.h>
+#include <memory>
+
+#include "entity/component.hpp"
 
 namespace Nullscape
 {
 
-enum class ComponentType:uint16_t
-{
-	ModelComponent = 0,
-	TransformComponent,
-	RigidBodyComponent,
-	NavigationComponent,
-	EngineComponent,
+class Trail;
 
-	Count
+class EngineComponent : public Component
+{
+public:
+    EngineComponent();
+    virtual ~EngineComponent() override;
+
+    virtual void Initialize() override {}
+    virtual void Update(float delta) override;
+    virtual void UpdateDebugUI() override;
+    virtual void Render() override;
+    virtual bool Serialize(nlohmann::json& data) override;
+    virtual bool Deserialize(const nlohmann::json& data) override;
+    virtual void CloneFrom(Component* pComponent) override;
+
+    DEFINE_COMPONENT(EngineComponent);
+
+private:
+    std::unique_ptr<Trail> m_pTrail;
 };
 
 } // namespace Nullscape

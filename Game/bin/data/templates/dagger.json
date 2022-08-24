@@ -12,6 +12,10 @@
         {
             "type": "NavigationComponent",
             "version": 1
+        },
+        {
+            "type": "EngineComponent",
+            "version": 1
         }
     ]
 }

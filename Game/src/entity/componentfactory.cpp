@@ -17,6 +17,7 @@
 
 #include "entity/componentfactory.hpp"
 
+#include "entity/components/enginecomponent.hpp"
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/navigationcomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
@@ -40,6 +41,7 @@ std::unique_ptr<ComponentFactory> g_pComponentFactory;
 
 ComponentFactory::ComponentFactory()
 {
+    REGISTER_COMPONENT(EngineComponent);
     REGISTER_COMPONENT(ModelComponent);
     REGISTER_COMPONENT(NavigationComponent);
     REGISTER_COMPONENT(TransformComponent);

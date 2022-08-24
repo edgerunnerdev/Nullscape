@@ -44,7 +44,7 @@ void Trail::AddPoint( const glm::vec3& position )
 
 		// If the first and second points are too far apart, we place a new one
 		TrailPointDataList::iterator secondPointIt = ++(m_Data.begin());
-		static const float sThreshold = 10.0f;
+		static const float sThreshold = 1.0f;
 		if ( glm::distance( secondPointIt->GetPosition(), point.GetPosition() ) >= sThreshold )
 		{
 			m_Data.push_front( point );
