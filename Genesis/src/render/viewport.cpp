@@ -2,18 +2,18 @@
 //
 // This file is part of Genesis.
 //
-// Hexterminate is free software: you can redistribute it and/or modify
+// Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Hexterminate is distributed in the hope that it will be useful,
+// Genesis is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Hexterminate. If not, see <http://www.gnu.org/licenses/>.
+// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
 #include "render/viewport.hpp"
 
@@ -27,7 +27,7 @@
 namespace Genesis
 {
 
-Viewport::Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil)
+Viewport::Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil, SceneSharedPtr pScene /* = nullptr */)
     : m_Width(width)
     , m_Height(height)
     , m_Name(name)
@@ -37,7 +37,15 @@ Viewport::Viewport(const std::string& name, int width, int height, bool hasDepth
     m_Width = width;
     m_Height = height;
     m_pRenderTarget = std::move(FrameWork::GetRenderSystem()->CreateRenderTarget(name, width, height, hasDepth, hasStencil, true));
-    m_pScene = std::make_shared<Genesis::Scene>();
+
+    if (pScene == nullptr)
+    {
+        m_pScene = std::make_shared<Genesis::Scene>();
+    }
+    else
+    {
+        m_pScene = pScene;
+    }
 }
 
 Viewport::~Viewport() {}

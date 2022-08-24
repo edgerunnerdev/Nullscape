@@ -2,6 +2,8 @@
 
 #include "layer.h"
 #include "rendersystem.fwd.h"
+#include "genesis.h"
+#include "taskmanager.h"
 
 namespace Genesis
 {
@@ -12,13 +14,17 @@ namespace Genesis
 
 Scene::Scene()
 {
-    mCamera = new Camera();
+    m_pCamera = std::make_unique<Camera>();
     mMask = 0xFFFFFFFF;
+    FrameWork::GetTaskManager()->AddTask("Scene", this, (TaskFunc)&Scene::Update, TaskPriority::GameLogic);
 }
 
 Scene::~Scene()
 {
-    delete mCamera;
+    if (FrameWork::GetTaskManager())
+    {
+        FrameWork::GetTaskManager()->RemoveTask(this);
+    }
 }
 
 TaskStatus Scene::Update(float delta)

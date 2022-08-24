@@ -52,6 +52,7 @@ enum class LayerId
     Effects,
     Ammo,
     Physics,
+    Debug,
 
     Count
 };

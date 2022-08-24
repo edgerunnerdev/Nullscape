@@ -184,7 +184,7 @@ bool Sector::Initialize()
     m_pBoundary = new Boundary();
     m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pBoundary);
 
-    m_pSystem->GetLayer(LayerId::Physics)->AddSceneObject(Genesis::FrameWork::GetDebugRender(), false);
+    m_pSystem->GetLayer(LayerId::Debug)->AddSceneObject(Genesis::FrameWork::GetDebugRender(), false);
 
     m_pAmmoManager = new AmmoManager();
     m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject(m_pAmmoManager);
@@ -250,6 +250,11 @@ void Sector::Update(float delta)
     m_pMuzzleflashManager->Update(delta);
     m_pCamera->Update(delta);
     m_pLootWindow->Update(delta);
+
+    // Draw axis.
+    Genesis::FrameWork::GetDebugRender()->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    Genesis::FrameWork::GetDebugRender()->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    Genesis::FrameWork::GetDebugRender()->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
     DeleteRemovedShips();
 

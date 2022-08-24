@@ -65,24 +65,33 @@ void TaskManager::AddTask(const std::string& name, Task* task, TaskFunc func, Ta
     mTasks.push_back(info);
 }
 
+void TaskManager::RemoveTask(Task* pTask) 
+{
+    for (auto& pTaskInfo : mTasks)
+    {
+        if (pTaskInfo->task == pTask)
+        {
+            pTaskInfo->remove = true;
+            break;
+        }
+    }
+}
+
 void TaskManager::Update()
 {
     m_Timer.Update();
     const float delta = m_Timer.GetDelta();
 
     bool tasksRemoved = false;
-    TaskInfoList::const_iterator it = mTasks.begin();
-    TaskInfoList::const_iterator itEnd = mTasks.end();
-    while (it != itEnd)
+    for (auto& pTaskInfo : mTasks)
     {
-        Task* task = (*it)->task;
-        TaskFunc func = (*it)->func;
-        if ((*task.*func)(delta) == TaskStatus::Stop)
+        Task* task = pTaskInfo->task;
+        TaskFunc func = pTaskInfo->func;
+        if (pTaskInfo->remove || (*task.*func)(delta) == TaskStatus::Stop)
         {
             tasksRemoved = true;
-            (*it)->remove = true;
+            pTaskInfo->remove = true;
         }
-        it++;
     }
 
     // Only call RemoveMarkedTasks if any task has been stopped during

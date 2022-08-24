@@ -26,6 +26,7 @@
 #include <array>
 #include <SDL.h>
 #include <glm/vec3.hpp>
+#include <memory>
 #include <list>
 
 namespace Genesis
@@ -59,7 +60,7 @@ private:
 
     LayerList mLayerList;
     LayerList mLayersToDelete;
-    Camera* mCamera;
+    std::unique_ptr<Camera> m_pCamera;
     uint32_t mMask;
     LightArray m_Lights;
 };
@@ -67,7 +68,7 @@ GENESIS_DECLARE_SMART_PTR(Scene);
 
 inline Camera* Scene::GetCamera() const
 {
-    return mCamera;
+    return m_pCamera.get();
 }
 
 inline void Scene::SetLayerMask(uint32_t mask)

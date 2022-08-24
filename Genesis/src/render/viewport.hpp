@@ -32,7 +32,7 @@ class Scene;
 class Viewport
 {
 public:
-    Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil);
+    Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil, SceneSharedPtr pScene = nullptr);
     ~Viewport();
 
     void Render();

@@ -24,6 +24,8 @@
 #include <resources/resourcemodel.h>
 #include <genesis.h>
 
+#include "entity/components/transformcomponent.hpp"
+#include "entity/entity.hpp"
 
 namespace Nullscape
 {
@@ -62,7 +64,14 @@ void ModelComponent::Render()
 {
     if (m_pModel != nullptr)
     {
-        m_pModel->Render(glm::mat4(1.0f));
+        glm::mat4 transform(1.0f);
+        TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
+        if (pTransformComponent)
+        {
+            transform = pTransformComponent->GetTransform();
+        }
+
+        m_pModel->Render(transform);
     }
 }
 

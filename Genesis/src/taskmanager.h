@@ -55,6 +55,7 @@ public:
     ~TaskManager();
 
     void AddTask(const std::string& name, Task* pTask, TaskFunc func, TaskPriority priority);
+    void RemoveTask(Task* pTask);
     void Update();
     bool IsRunning() const;
     void Stop();
