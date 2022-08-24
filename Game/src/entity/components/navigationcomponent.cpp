@@ -38,8 +38,9 @@ void NavigationComponent::Update(float delta)
     TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
     if (pTransformComponent)
     {
+        static float xOffset = 10.0f;
         glm::mat4x4 transform = pTransformComponent->GetTransform();
-        transform[3].x += 1.0f * delta;
+        transform[3].x += xOffset * delta;
         pTransformComponent->SetTransform(transform);
     }
 }
