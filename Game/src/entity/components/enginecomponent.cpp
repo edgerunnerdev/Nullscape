@@ -65,7 +65,8 @@ void EngineComponent::Update(float delta)
 
 void EngineComponent::UpdateDebugUI() 
 {
-
+    ImGui::SliderFloat("Width", &m_Width, 0.0f, 20.0f);
+    ImGui::SliderFloat("Decay", &m_Decay, 0.1f, 20.0f);
 }
 
 void EngineComponent::Render()
@@ -76,30 +77,31 @@ void EngineComponent::Render()
 bool EngineComponent::Serialize(nlohmann::json& data)
 {
     bool success = Component::Serialize(data);
-    //    : m_Offset(0.0f)
-    //, m_Width(1.0f)
-    //, m_Decay(1.0f)
-    //, m_Color(1.0f)
-    
     Component::Serialize(data, "offset", m_Offset);
-
-    // 
-    //data["filename"] = m_Filename;
+    Component::Serialize(data, "width", m_Width);
+    Component::Serialize(data, "decay", m_Decay);
+    Component::Serialize(data, "color", m_Color);
     return success;
 }
 
 bool EngineComponent::Deserialize(const nlohmann::json& data)
 {
     bool success = Component::Deserialize(data);
-    //success &= TryDeserialize(data, "filename", m_Filename);
+    success &= TryDeserialize(data, "offset", m_Offset);
+    success &= TryDeserialize(data, "width", m_Width);
+    success &= TryDeserialize(data, "decay", m_Decay);
+    success &= TryDeserialize(data, "color", m_Color);
     return success;
 }
 
 void EngineComponent::CloneFrom(Component* pComponent) 
 {
     Component::CloneFrom(pComponent);
-    //ModelComponent* pModelComponent = reinterpret_cast<ModelComponent*>(pComponent);
-    //m_Filename = pModelComponent->m_Filename;
+    EngineComponent* pOtherComponent = reinterpret_cast<EngineComponent*>(pComponent);
+    m_Offset = pOtherComponent->m_Offset;
+    m_Width = pOtherComponent->m_Width;
+    m_Decay = pOtherComponent->m_Decay;
+    m_Color = pOtherComponent->m_Color;
 }
 
 } // namespace Nullscape
