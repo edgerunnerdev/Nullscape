@@ -120,7 +120,7 @@ void TrailManagerRep::Update( float delta )
             posData.push_back( v[3] );
 
 			PushBackUVs( uvData );
-			PushBackColours( colourData, pTrail->GetColour(), pTrail->GetInitialWidth(), it->GetWidth(), nextIt->GetWidth() );
+			PushBackColours( colourData, pTrail->GetColor(), pTrail->GetInitialWidth(), it->GetWidth(), nextIt->GetWidth() );
 
 			useLast = true;
 		}
@@ -168,14 +168,14 @@ void TrailManagerRep::PushBackUVs( Genesis::UVData& uvData )
     }
 }
 
-void TrailManagerRep::PushBackColours( Genesis::ColourData& colourData, const Genesis::Colour& colour, float initialWidth, float currentWidth, float nextWidth )
+void TrailManagerRep::PushBackColours( Genesis::ColourData& colourData, const glm::vec4& color, float initialWidth, float currentWidth, float nextWidth )
 {
 	using namespace Genesis;
-	const float r = colour.r;
-	const float g = colour.g;
-	const float b = colour.b;
-	const float a1 = currentWidth / initialWidth;
-	const float a2 = nextWidth / initialWidth;
+	const float r = color.r;
+	const float g = color.g;
+	const float b = color.b;
+	const float a1 = currentWidth / initialWidth * color.a;
+	const float a2 = nextWidth / initialWidth * color.a;
 	const glm::vec4 colours[4] = {
 		glm::vec4( r, g, b, a1 ),
 		glm::vec4( r, g, b, a2 ),

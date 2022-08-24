@@ -19,6 +19,13 @@
 
 #include <memory>
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include "entity/component.hpp"
 
 namespace Nullscape
@@ -44,6 +51,10 @@ public:
 
 private:
     std::unique_ptr<Trail> m_pTrail;
+    glm::vec3 m_Offset;
+    float m_Width;
+    float m_Decay;
+    glm::vec4 m_Color;
 };
 
 } // namespace Nullscape

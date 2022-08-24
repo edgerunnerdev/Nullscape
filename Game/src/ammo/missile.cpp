@@ -83,7 +83,7 @@ void Missile::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f */ )
 
 Trail* Missile::CreateTrail() const
 {
-	return new Trail( 2.0f, 2.0f, Genesis::Colour( 0.5f, 0.5f, 0.5f, 0.5f ) );
+	return new Trail( 2.0f, 2.0f, glm::vec4( 0.5f, 0.5f, 0.5f, 0.5f ) );
 }
 
 Ship* Missile::FindClosestShip( const glm::vec3& position )

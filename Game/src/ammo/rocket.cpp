@@ -44,7 +44,7 @@ const std::string Rocket::GetResourceName() const
 
 Trail* Rocket::CreateTrail() const
 {
-	return new Trail( 1.5f, 2.5f, Genesis::Colour( 0.6f, 0.2f, 0.0f, 1.0f ) );
+	return new Trail( 1.5f, 2.5f, glm::vec4(0.6f, 0.2f, 0.0f, 1.0f) );
 }
 
 }

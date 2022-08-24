@@ -20,66 +20,65 @@
 namespace Nullscape
 {
 
-Trail::Trail( float initialWidth, float decay, const Genesis::Colour& colour ):
-m_InitialWidth( initialWidth ),
-m_Decay( decay ),
-m_Colour( colour ),
-m_IsOrphan( false ),
-m_ActivePoints( 0 )
+Trail::Trail(float initialWidth, float decay, const glm::vec4& color)
+    : m_InitialWidth(initialWidth)
+    , m_Decay(decay)
+    , m_Color(color)
+    , m_IsOrphan(false)
+    , m_ActivePoints(0)
 {
-
 }
 
-void Trail::AddPoint( const glm::vec3& position )
+void Trail::AddPoint(const glm::vec3& position)
 {
-	if ( m_Data.size() < 2 )
-	{
-		m_Data.push_front( TrailPointData( position, m_InitialWidth ) );
-	}
-	else
-	{
-		// The first point always remains at the source of the trail
-		TrailPointData point( position, m_InitialWidth );
-		m_Data.front() = point;
+    if (m_Data.size() < 2)
+    {
+        m_Data.push_front(TrailPointData(position, m_InitialWidth));
+    }
+    else
+    {
+        // The first point always remains at the source of the trail
+        TrailPointData point(position, m_InitialWidth);
+        m_Data.front() = point;
 
-		// If the first and second points are too far apart, we place a new one
-		TrailPointDataList::iterator secondPointIt = ++(m_Data.begin());
-		static const float sThreshold = 1.0f;
-		if ( glm::distance( secondPointIt->GetPosition(), point.GetPosition() ) >= sThreshold )
-		{
-			m_Data.push_front( point );
-		}
-	}
+        // If the first and second points are too far apart, we place a new one
+        TrailPointDataList::iterator secondPointIt = ++(m_Data.begin());
+        static const float sThreshold = 1.0f;
+        if (glm::distance(secondPointIt->GetPosition(), point.GetPosition()) >= sThreshold)
+        {
+            m_Data.push_front(point);
+        }
+    }
 }
 
 // The trail decays over time.
 // The decay is faster if the trail has been orphaned, so it doesn't linger around if
 // the source of the trail no longer exists or is no longer powered.
-void Trail::Update( float delta )
+void Trail::Update(float delta)
 {
-	m_ActivePoints = 0;
-	if ( m_Data.empty() == false )
-	{
-		for ( TrailPointDataList::iterator it = m_Data.begin(), itEnd = m_Data.end(); it != itEnd; )
-		{
-			TrailPointData& point = *it;
-			const float pointWidth = point.GetWidth();
-			if ( pointWidth > 0.0f )
-			{
-				const float fadedWidth = pointWidth - m_Decay * delta * ( IsOrphan() ? 3.0f : 1.0f );
-				if ( fadedWidth <= 0.0f )
-				{
-					it = m_Data.erase( it );
-				}
-				else
-				{
-					point.SetWidth( fadedWidth );
-					m_ActivePoints++;
-					it++;
-				}
-			}
-		}
-	}
+    m_ActivePoints = 0;
+    if (m_Data.empty() == false)
+    {
+        for (TrailPointDataList::iterator it = m_Data.begin(), itEnd = m_Data.end(); it != itEnd;)
+        {
+            TrailPointData& point = *it;
+            const float pointWidth = point.GetWidth();
+            if (pointWidth > 0.0f)
+            {
+                const float fadedWidth = pointWidth - m_Decay * delta * (IsOrphan() ? 3.0f : 1.0f);
+                if (fadedWidth <= 0.0f)
+                {
+                    it = m_Data.erase(it);
+                }
+                else
+                {
+                    point.SetWidth(fadedWidth);
+                    m_ActivePoints++;
+                    it++;
+                }
+            }
+        }
+    }
 }
 
-}
+} // namespace Nullscape
