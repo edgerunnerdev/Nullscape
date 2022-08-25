@@ -41,11 +41,10 @@ Cache::Cache(const std::filesystem::path& intermediatesDir)
         std::ifstream file(m_CachePath);
         if (file.good())
         {
-            json j;
-            j << file;
+            json data = json::parse(file);
             file.close();
 
-            m_Cache = j["cache"];
+            m_Cache = data["cache"];
         }
     }
 }
