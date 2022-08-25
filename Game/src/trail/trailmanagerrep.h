@@ -17,16 +17,21 @@
 
 #pragma once
 
-#include <scene/sceneobject.h>
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec4.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <rendersystem.h>
+#include <scene/sceneobject.h>
 #include <vertexbuffer.h>
 
 namespace Genesis
 {
 class ResourceImage;
 class ResourceShader;
-class ShaderParameters;
-}
+} // namespace Genesis
 
 namespace Nullscape
 {
@@ -37,19 +42,19 @@ class Trail;
 class TrailManagerRep : public Genesis::SceneObject
 {
 public:
-								TrailManagerRep( TrailManager* pTrailManager );
-	virtual						~TrailManagerRep() override;
-	virtual void				Update( float delta ) override;
-	virtual void				Render() override;
+    TrailManagerRep(TrailManager* pTrailManager);
+    virtual ~TrailManagerRep() override;
+    virtual void Update(float delta) override;
+    virtual void Render() override;
 
 private:
-    void						PushBackUVs( Genesis::UVData& uvData );
-	void						PushBackColours( Genesis::ColourData& colourData, const Genesis::Colour& colour, float initialWidth, float currentWidth, float nextWidth );
+    void PushBackUVs(Genesis::UVData& uvData);
+    void PushBackColours(Genesis::ColourData& colourData, const glm::vec4& color, float initialWidth, float currentWidth, float nextWidth);
 
-	TrailManager*				m_pTrailManager;
-    Genesis::ResourceShader*    m_pShader;
-    Genesis::VertexBuffer*      m_pVertexBuffer;
-    unsigned int                m_NumVertices;
+    TrailManager* m_pTrailManager;
+    Genesis::ResourceShader* m_pShader;
+    Genesis::VertexBuffer* m_pVertexBuffer;
+    unsigned int m_NumVertices;
 };
 
-}
+} // namespace Nullscape

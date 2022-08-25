@@ -17,7 +17,12 @@
 
 #pragma once
 
-#include <colour.h>
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec4.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include "trail/trailpointdata.h"
 
 namespace Nullscape
@@ -26,61 +31,61 @@ namespace Nullscape
 class Trail
 {
 public:
-								Trail( float initialWidth, float decay, const Genesis::Colour& colour );
-								~Trail() {};
+    Trail(float initialWidth, float decay, const glm::vec4& colour);
+    ~Trail(){};
 
-	void						AddPoint( const glm::vec3& position );
-	const TrailPointDataList&	GetData() const;
-	float						GetInitialWidth() const;
-	void						SetInitialWidth( float value );
-	const Genesis::Colour&		GetColour() const;
-	void						Update( float delta );	
-	void						SetOrphan();
-	bool						IsOrphan() const;
-	int							GetActivePoints() const;
+    void AddPoint(const glm::vec3& position);
+    const TrailPointDataList& GetData() const;
+    float GetInitialWidth() const;
+    void SetInitialWidth(float value);
+    const glm::vec4& GetColor() const;
+    void Update(float delta);
+    void SetOrphan();
+    bool IsOrphan() const;
+    int GetActivePoints() const;
 
 private:
-	TrailPointDataList			m_Data;
-	float						m_InitialWidth;
-	float						m_Decay;
-	Genesis::Colour				m_Colour;
-	bool						m_IsOrphan;
-	int							m_ActivePoints;
+    TrailPointDataList m_Data;
+    float m_InitialWidth;
+    float m_Decay;
+    glm::vec4 m_Color;
+    bool m_IsOrphan;
+    int m_ActivePoints;
 };
 
 inline const TrailPointDataList& Trail::GetData() const
 {
-	return m_Data;
+    return m_Data;
 }
 
 inline float Trail::GetInitialWidth() const
 {
-	return m_InitialWidth;
+    return m_InitialWidth;
 }
 
-inline void Trail::SetInitialWidth( float value )
+inline void Trail::SetInitialWidth(float value)
 {
-	m_InitialWidth = value;
+    m_InitialWidth = value;
 }
 
-inline const Genesis::Colour& Trail::GetColour() const
+inline const glm::vec4& Trail::GetColor() const
 {
-	return m_Colour;
+    return m_Color;
 }
 
 inline void Trail::SetOrphan()
 {
-	m_IsOrphan = true;
+    m_IsOrphan = true;
 }
 
 inline bool Trail::IsOrphan() const
 {
-	return m_IsOrphan;
+    return m_IsOrphan;
 }
 
 inline int Trail::GetActivePoints() const
 {
-	return m_ActivePoints;
+    return m_ActivePoints;
 }
 
-}
+} // namespace Nullscape

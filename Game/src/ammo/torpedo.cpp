@@ -43,7 +43,7 @@ const std::string Torpedo::GetResourceName() const
 
 Trail* Torpedo::CreateTrail() const
 {
-	return new Trail( 5.0f, 2.0f, Genesis::Colour( 0.6f, 0.2f, 0.2f, 0.5f ) );
+	return new Trail( 5.0f, 2.0f, glm::vec4(0.6f, 0.2f, 0.2f, 0.5f) );
 }
 
 }

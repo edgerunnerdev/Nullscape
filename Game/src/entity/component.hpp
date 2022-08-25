@@ -19,6 +19,9 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 #include <nlohmann/json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
@@ -82,6 +85,53 @@ protected:
             out = it->get<T>();
             return true;
         }
+    }
+
+    template <> 
+    bool TryDeserialize(const nlohmann::json& data, const std::string& name, glm::vec3& out)
+    { 
+        return false;
+    }
+
+    template <> 
+    bool TryDeserialize(const nlohmann::json& data, const std::string& name, glm::vec4& out) 
+    { 
+        return false; 
+    }
+
+    template <> 
+    bool TryDeserialize(const nlohmann::json& data, const std::string& name, glm::mat4x4& out) 
+    { 
+        return false; 
+    }
+
+    template <typename T> 
+    void Serialize(nlohmann::json& data, const std::string& name, const T& val) 
+    { 
+        data[name] = val;
+    }
+
+    template <>
+    void Serialize(nlohmann::json& data, const std::string& name, const glm::vec3& vec) 
+    {
+        data[name] = {vec.x, vec.y, vec.z};
+    }
+
+    template <>
+    void Serialize(nlohmann::json& data, const std::string& name, const glm::vec4& vec) 
+    { 
+        data[name] = {vec.x, vec.y, vec.z, vec.w};
+    }
+
+    template <>
+    void Serialize(nlohmann::json& data, const std::string& name, const glm::mat4x4& mat) 
+    {
+        data[name] = {
+            {mat[0].x, mat[0].y, mat[0].z, mat[0].w}, 
+            {mat[1].x, mat[1].y, mat[1].z, mat[1].w}, 
+            {mat[2].x, mat[2].y, mat[2].z, mat[2].w}, 
+            {mat[3].x, mat[3].y, mat[3].z, mat[3].w}
+        };
     }
 
     void SetVersion(int version);

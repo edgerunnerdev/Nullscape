@@ -700,7 +700,8 @@ void EngineModule::UpdateTrail()
 	Ship* pShip = GetOwner();
 	if ( pShip != nullptr && m_pTrail == nullptr && m_Output > 0.0f )
 	{	
-		m_pTrail = new Trail( 10.0f, 3.5f, pShip->GetFaction()->GetColour( pShip->IsFlagship() ? FactionColourId::GlowFlagship : FactionColourId::Glow ) );
+		Genesis::Colour clr = pShip->GetFaction()->GetColour(pShip->IsFlagship() ? FactionColourId::GlowFlagship : FactionColourId::Glow);
+		m_pTrail = new Trail( 10.0f, 3.5f, glm::vec4(clr.r, clr.g, clr.b, clr.a) );
 		g_pGame->GetCurrentSector()->GetTrailManager()->Add( m_pTrail );
 	}
 	else if ( m_pTrail != nullptr && m_Output <= 0.0f )
