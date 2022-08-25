@@ -36,7 +36,7 @@ Viewport::Viewport(const std::string& name, int width, int height, bool hasDepth
     SDL_assert(height > 0);
     m_Width = width;
     m_Height = height;
-    m_pRenderTarget = std::move(FrameWork::GetRenderSystem()->CreateRenderTarget(name, width, height, hasDepth, hasStencil, true));
+    m_pRenderTarget = FrameWork::GetRenderSystem()->CreateRenderTarget(name, width, height, hasDepth, hasStencil, true);
 
     if (pScene == nullptr)
     {

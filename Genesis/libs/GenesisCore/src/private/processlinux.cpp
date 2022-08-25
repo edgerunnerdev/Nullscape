@@ -15,34 +15,50 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
-
 #include "platform.hpp"
 
 #if defined(TARGET_PLATFORM_LINUX)
 
-#include "private/processimpl.hpp"
-#include "process.hpp"
+#include "log.hpp"
+#include "private/processlinux.hpp"
+#include "stringhelpers.hpp"
+
+#include <sstream>
 
 namespace Genesis
 {
 
-class ProcessLinux : public ProcessImpl
+ProcessLinux::ProcessLinux(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback, ProcessOnOutputCallback outputCallback)
+    : ProcessImpl(executable, arguments, completionCallback, outputCallback)
 {
-public:
-    ProcessLinux(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback = nullptr, ProcessOnOutputCallback outputCallback = nullptr);
-    ~ProcessLinux();
+}
 
-    virtual void Run() override;
-    virtual void Wait() override;
-    virtual uint32_t GetExitCode() const override;
-    virtual bool HasExited() const override;
+ProcessLinux::~ProcessLinux()
+{
+}
 
-    void WaitOrTimerCallback();
+void ProcessLinux::Run()
+{
+}
 
-private:
-};
+void ProcessLinux::Wait()
+{
+}
+
+void ProcessLinux::WaitOrTimerCallback() 
+{
+}
+
+uint32_t ProcessLinux::GetExitCode() const
+{
+    return -1;
+}
+
+bool ProcessLinux::HasExited() const
+{
+    return true;
+}
 
 } // namespace Genesis
 
-#endif // TARGET_PLATFORM_LINUX
+#endif // TARGET_PLATFORM_WINDOWS

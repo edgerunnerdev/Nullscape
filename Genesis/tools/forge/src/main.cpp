@@ -17,7 +17,12 @@
 
 #include "forge.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
 #include <cmdparser.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <log.hpp>
 
 int main(int argc, char** argv)

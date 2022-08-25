@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
-
 #include "forge.hpp"
 
 #include "asset.hpp"
