@@ -37,10 +37,10 @@ namespace Nullscape
 {
 
 GENESIS_DECLARE_SMART_PTR(AstronomicalObject);
-GENESIS_DECLARE_SMART_PTR(Background);
 GENESIS_DECLARE_SMART_PTR(Player);
 GENESIS_DECLARE_SMART_PTR(Sector);
 GENESIS_DECLARE_SMART_PTR(SignalSource);
+GENESIS_DECLARE_SMART_PTR(Skybox);
 
 using AstronomicalObjects = std::vector<AstronomicalObjectSharedPtr>;
 using SignalSources = std::vector<SignalSourceSharedPtr>;
@@ -79,7 +79,7 @@ public:
 private:  
     void InitializeRandomEngine();
     void InitializeLayers();
-    void InitializeBackground();
+    void InitializeSkybox();
     void GenerateAstronomicalObjects();
     float GenerateEccentricity();
     int GeneratePlanetCount();
@@ -90,7 +90,7 @@ private:
     bool m_DemoMode;
     SystemRandomEngine m_RandomEngine;
     std::array<Genesis::LayerSharedPtr, static_cast<size_t>(LayerId::Count)> m_Layers;
-	BackgroundUniquePtr m_pBackground;
+	SkyboxUniquePtr m_pSkybox;
 
     AstronomicalObjects m_AstronomicalObjects;
     SignalSources m_SignalSources;

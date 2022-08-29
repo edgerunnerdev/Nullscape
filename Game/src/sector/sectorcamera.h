@@ -17,7 +17,14 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include <inputmanager.h>
 
 namespace Nullscape
 {
@@ -30,6 +37,7 @@ public:
 
     void Update(float delta);
     void GetBorders(glm::vec2& topLeft, glm::vec2& topRight) const;
+    const glm::mat4& GetTransform() const;
 
 private:
     void UpdateListener(float delta);
@@ -37,6 +45,17 @@ private:
 
     glm::vec2 m_BorderTopLeft;
     glm::vec2 m_BorderBottomRight;
+    glm::mat4x4 m_Transform;
+    Genesis::InputCallbackToken m_RightMouseButtonPressed;
+    Genesis::InputCallbackToken m_RightMouseButtonReleased;
+    bool m_CameraOrbit;
+    float m_Pitch;
+    float m_Yaw;
 };
+
+inline const glm::mat4& SectorCamera::GetTransform() const 
+{
+    return m_Transform;
+}
 
 } // namespace Nullscape

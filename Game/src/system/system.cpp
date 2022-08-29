@@ -33,7 +33,7 @@
 #include "system/astronomicalobject/orbit.hpp"
 #include "system/astronomicalobject/planet.hpp"
 #include "system/astronomicalobject/star.hpp"
-#include "system/background.hpp"
+#include "system/skybox.hpp"
 #include "system/wormhole.hpp"
 
 namespace Nullscape
@@ -45,7 +45,7 @@ System::System(const std::string& seed, bool demoMode /* = false*/)
 {
     InitializeRandomEngine();
     InitializeLayers();
-    InitializeBackground();
+    InitializeSkybox();
     GenerateAstronomicalObjects();
     GenerateWormholes();
 }
@@ -113,7 +113,7 @@ void System::InitializeRandomEngine()
 void System::InitializeLayers()
 {
     Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
-    m_Layers[static_cast<size_t>(LayerId::Background)] = pScene->AddLayer(1, true);
+    m_Layers[static_cast<size_t>(LayerId::Background)] = pScene->AddLayer(1);
     m_Layers[static_cast<size_t>(LayerId::Ships)] = pScene->AddLayer(2);
     m_Layers[static_cast<size_t>(LayerId::Effects)] = pScene->AddLayer(3);
     m_Layers[static_cast<size_t>(LayerId::Ammo)] = pScene->AddLayer(4);
@@ -121,10 +121,10 @@ void System::InitializeLayers()
     m_Layers[static_cast<size_t>(LayerId::Debug)] = pScene->AddLayer(6);
 }
 
-void System::InitializeBackground() 
+void System::InitializeSkybox() 
 {
-    m_pBackground = std::make_unique<Background>(m_Seed);
-    GetLayer(LayerId::Background)->AddSceneObject(m_pBackground.get(), false);
+    m_pSkybox = std::make_unique<Skybox>(m_Seed);
+    GetLayer(LayerId::Background)->AddSceneObject(m_pSkybox.get(), false);
 }
 
 void System::GenerateAstronomicalObjects() 
@@ -153,7 +153,7 @@ void System::GenerateAstronomicalObjects()
 // We generate eccentricity values between [0-0.25], but greatly weight the results towards the lower end.
 float System::GenerateEccentricity() 
 {
-    const std::uniform_real_distribution<float> eccentricityDistribution(0.0f, 1.0);
+    std::uniform_real_distribution<float> eccentricityDistribution(0.0f, 1.0);
     const float v = eccentricityDistribution(GetRandomEngine());
     const float fv = glm::clamp(-log10(-v+1.0f)/2.0f, 0.0f, 1.0f) * 0.25f;
     return fv;
@@ -171,7 +171,7 @@ int System::GeneratePlanetCount()
         accum += count[i];
     }
 
-    const std::uniform_int_distribution<int> planetDistribution(0, accum);
+    std::uniform_int_distribution<int> planetDistribution(0, accum);
     const int v = planetDistribution(GetRandomEngine());
     accum = 0;
     for (int i = 0; i < count.size(); ++i)
@@ -190,7 +190,7 @@ std::vector<float> System::GeneratePlanetDistances(int planetCount)
     std::vector<float> distances;
     distances.reserve(planetCount);
 
-    const std::uniform_real_distribution<float> distanceDistribution(0.2f, 0.6f);
+    std::uniform_real_distribution<float> distanceDistribution(0.2f, 0.6f);
     float accumulatedDistance = 0.0f;
     for (int i = 0; i < planetCount; ++i)
     {
@@ -203,9 +203,9 @@ std::vector<float> System::GeneratePlanetDistances(int planetCount)
 
 void System::GenerateWormholes() 
 {
-    const std::uniform_int_distribution<int> countDistribution(2, 4);
-    const std::uniform_real_distribution<float> distanceDistribution(0.3f, 0.6 * m_AstronomicalObjects.size());
-    const std::uniform_real_distribution<float> angleDistribution(-M_PI, M_PI);
+    std::uniform_int_distribution<int> countDistribution(2, 4);
+    std::uniform_real_distribution<float> distanceDistribution(0.3f, 0.6 * m_AstronomicalObjects.size());
+    std::uniform_real_distribution<float> angleDistribution(-M_PI, M_PI);
     int numWormholes = countDistribution(GetRandomEngine());
     for (int i = 0; i < numWormholes; ++i)
     {

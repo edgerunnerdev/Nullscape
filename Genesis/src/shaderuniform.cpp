@@ -66,10 +66,14 @@ ShaderUniform::ShaderUniform(GLuint handle, ShaderUniformType type, bool allowIn
     {
         m_Data.resize(sizeof(glm::mat4) * count);
     }
-    else if (m_Type == ShaderUniformType::Texture)
+    else if (m_Type == ShaderUniformType::Texture || m_Type == ShaderUniformType::Cubemap)
     {
         SDL_assert(count == 1);
         m_Data.resize(sizeof(GLuint), 1);
+    }
+    else
+    {
+        SDL_assert(false); // Type not implemented.
     }
 }
 
@@ -113,6 +117,12 @@ void ShaderUniform::Apply()
     {
         glActiveTexture(m_Slot);
         glBindTexture(GL_TEXTURE_2D, *(GLuint*)m_Data.data());
+        glUniform1i(m_Handle, (int)(m_Slot - GL_TEXTURE0));
+    }
+    else if (m_Type == ShaderUniformType::Cubemap)
+    {
+        glActiveTexture(m_Slot);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, *(GLuint*)m_Data.data());
         glUniform1i(m_Handle, (int)(m_Slot - GL_TEXTURE0));
     }
     else

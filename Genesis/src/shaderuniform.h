@@ -163,7 +163,7 @@ inline void ShaderUniform::Set(ResourceImage* pImage, GLenum textureSlot)
 
 inline void ShaderUniform::Set(GLuint textureID, GLenum textureSlot)
 {
-    SDL_assert(m_Type == ShaderUniformType::Texture);
+    SDL_assert(m_Type == ShaderUniformType::Texture || m_Type == ShaderUniformType::Cubemap);
     *(GLuint*)m_Data.data() = textureID;
     m_Slot = textureSlot;
 }

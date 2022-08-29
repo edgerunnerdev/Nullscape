@@ -33,6 +33,7 @@ enum class ShaderUniformType
     FloatVector3,
     FloatVector4,
     FloatMatrix44,
-    Texture
+    Texture,
+    Cubemap
 };
 } // namespace Genesis

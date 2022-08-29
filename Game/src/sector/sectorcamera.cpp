@@ -25,7 +25,6 @@
 
 #include <configuration.h>
 #include <genesis.h>
-#include <inputmanager.h>
 #include <scene/scene.h>
 #include <sound/soundmanager.h>
 #include <window.h>
@@ -34,11 +33,37 @@ namespace Nullscape
 {
 
 SectorCamera::SectorCamera()
+    : m_Transform(1)
+    , m_RightMouseButtonPressed(Genesis::InputManager::sInvalidInputCallbackToken)
+    , m_RightMouseButtonReleased(Genesis::InputManager::sInvalidInputCallbackToken)
+    , m_CameraOrbit(false)
+    , m_Pitch(0.0f)
+    , m_Yaw(0.0f)
 {
+    using namespace Genesis;
+    m_RightMouseButtonPressed = FrameWork::GetInputManager()->AddMouseCallback(
+        [this]()
+        {
+            m_CameraOrbit = true;
+        },
+        MouseButton::Right, ButtonState::Pressed);
+    m_RightMouseButtonReleased = FrameWork::GetInputManager()->AddMouseCallback(
+        [this]()
+        {
+            m_CameraOrbit = false;
+        },
+        MouseButton::Right, ButtonState::Released);
 }
 
-SectorCamera::~SectorCamera()
+SectorCamera::~SectorCamera() 
 {
+    using namespace Genesis;
+    InputManager* pInputManager = FrameWork::GetInputManager();
+    if (pInputManager)
+    {
+        pInputManager->RemoveMouseCallback(m_RightMouseButtonPressed);
+        pInputManager->RemoveMouseCallback(m_RightMouseButtonReleased);
+    }
 }
 
 void SectorCamera::Update(float delta)
@@ -54,13 +79,17 @@ void SectorCamera::Update(float delta)
     if (pShipTransform != nullptr)
     {
         const glm::vec3 shipPosition(pShipTransform->GetPosition());
+        const glm::vec3 shipDirection(pShipTransform->GetTransform()[0]);
 
-        static glm::vec3 from(-10.0f, 9.0f, 30.0f);
-        static glm::vec3 to(20.0f, 9.0f, 0.0f);
+        m_Transform = glm::translate(shipDirection * glm::vec3(-30.0f, 0.0f, 0.0f));
 
         Genesis::Camera* pCamera = Genesis::FrameWork::GetScene()->GetCamera();
-        pCamera->SetPosition(shipPosition + from);
-        pCamera->SetTargetPosition(shipPosition + to);
+
+        glm::vec4 cameraPosition(m_Transform[3]);
+        glm::vec4 cameraDirection(m_Transform[0]);
+
+        pCamera->SetPosition(glm::vec3(cameraPosition));
+        pCamera->SetTargetPosition(glm::vec3(cameraPosition + cameraDirection));
     }
 
     UpdateListener(delta);
