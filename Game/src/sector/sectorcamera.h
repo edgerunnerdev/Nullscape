@@ -51,6 +51,8 @@ private:
     bool m_CameraOrbit;
     float m_Pitch;
     float m_Yaw;
+    float m_TargetPitch;
+    float m_TargetYaw;
 };
 
 inline const glm::mat4& SectorCamera::GetTransform() const 

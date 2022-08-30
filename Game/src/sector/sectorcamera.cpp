@@ -39,6 +39,8 @@ SectorCamera::SectorCamera()
     , m_CameraOrbit(false)
     , m_Pitch(0.0f)
     , m_Yaw(0.0f)
+    , m_TargetPitch(0.0f)
+    , m_TargetYaw(0.0f)
 {
     using namespace Genesis;
     m_RightMouseButtonPressed = FrameWork::GetInputManager()->AddMouseCallback(
@@ -68,6 +70,16 @@ SectorCamera::~SectorCamera()
 
 void SectorCamera::Update(float delta)
 {
+    constexpr float sMaxPitch = 60.0f; // How far can the camera pitch. Must be smaller than 90 degrees.
+    constexpr float sYawSpeedMultiplier = 0.5f;
+    constexpr float sPitchSpeedMultiplier = 0.33f;
+    constexpr float sTrackingThreshold = 0.25f; // Once the target is within this aperture (in degrees), stop tracking.
+    constexpr float sTrackingSpeedMultiplier = 0.5f;
+
+    static_assert(sMaxPitch >= 0.0f);
+    static_assert(sMaxPitch < 90.0f);
+    static_assert(sTrackingThreshold > 0.0f);
+
     Entity* pShip = g_pGame->GetCurrentSector()->GetPlayerShip();
     if (pShip == nullptr)
     {
@@ -75,40 +87,38 @@ void SectorCamera::Update(float delta)
     }
 
     TransformComponent* pShipTransform = pShip->GetComponent<TransformComponent>();
-
     if (pShipTransform != nullptr)
     {
-        const glm::vec3 shipPosition(pShipTransform->GetPosition());
-        const glm::vec3 shipDirection(pShipTransform->GetTransform()[0]);
-        glm::vec3 shipDirectionXZ = glm::normalize(glm::vec3(shipDirection.x, 0.0f, shipDirection.z));
-
         if (m_CameraOrbit)
         {
-            glm::vec2 mouseDelta = Genesis::FrameWork::GetInputManager()->GetMouseDelta();
-            m_Yaw += mouseDelta.x;
-            m_Pitch += mouseDelta.y;
+            const glm::vec2& mouseDelta = Genesis::FrameWork::GetInputManager()->GetMouseDelta();
+            m_TargetYaw += mouseDelta.x * sYawSpeedMultiplier;
+            m_TargetPitch = glm::clamp(m_TargetPitch + mouseDelta.y * sPitchSpeedMultiplier, -sMaxPitch, sMaxPitch);
         }
 
-        m_Pitch = glm::clamp(m_Pitch, -60.0f, 60.0f);
-
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-        direction.y = sin(glm::radians(m_Pitch));
-        direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+        const float diffPitch = m_TargetPitch - m_Pitch;
+        const float diffYaw = m_TargetYaw - m_Yaw;
+        if (glm::abs(diffPitch) > sTrackingThreshold)
+        {
+            m_Pitch += diffPitch * delta * sTrackingSpeedMultiplier;
+        }
+        if (glm::abs(diffYaw) > sTrackingThreshold)
+        {
+            m_Yaw += diffYaw * delta * sTrackingSpeedMultiplier;
+        }
 
         static glm::vec3 offset(-20.0f, 6.0f, 8.0f);
 
         m_Transform = glm::translate(offset);
 
-        glm::mat4x4 transformYaw = glm::rotate(glm::radians(m_Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4x4 transformPitch = glm::rotate(glm::radians(m_Pitch), glm::vec3(0.0f, 0.0f, 1.0f));
+        const glm::mat4x4 transformYaw = glm::rotate(glm::radians(m_Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+        const glm::mat4x4 transformPitch = glm::rotate(glm::radians(m_Pitch), glm::vec3(0.0f, 0.0f, 1.0f));
         m_Transform = transformYaw * transformPitch * glm::translate(offset);
 
+        const glm::vec4 cameraPosition(m_Transform[3]); // Translation
+        const glm::vec4 cameraDirection(m_Transform[0]); // X axis
+
         Genesis::Camera* pCamera = Genesis::FrameWork::GetScene()->GetCamera();
-
-        glm::vec4 cameraPosition(m_Transform[3]);
-        glm::vec4 cameraDirection(m_Transform[0]);
-
         pCamera->SetPosition(glm::vec3(cameraPosition));
         pCamera->SetTargetPosition(glm::vec3(cameraPosition + cameraDirection));
     }
