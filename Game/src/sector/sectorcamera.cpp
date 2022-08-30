@@ -80,8 +80,29 @@ void SectorCamera::Update(float delta)
     {
         const glm::vec3 shipPosition(pShipTransform->GetPosition());
         const glm::vec3 shipDirection(pShipTransform->GetTransform()[0]);
+        glm::vec3 shipDirectionXZ = glm::normalize(glm::vec3(shipDirection.x, 0.0f, shipDirection.z));
 
-        m_Transform = glm::translate(shipDirection * glm::vec3(-30.0f, 0.0f, 0.0f));
+        if (m_CameraOrbit)
+        {
+            glm::vec2 mouseDelta = Genesis::FrameWork::GetInputManager()->GetMouseDelta();
+            m_Yaw += mouseDelta.x;
+            m_Pitch += mouseDelta.y;
+        }
+
+        m_Pitch = glm::clamp(m_Pitch, -60.0f, 60.0f);
+
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+        direction.y = sin(glm::radians(m_Pitch));
+        direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+
+        static glm::vec3 offset(-20.0f, 6.0f, 8.0f);
+
+        m_Transform = glm::translate(offset);
+
+        glm::mat4x4 transformYaw = glm::rotate(glm::radians(m_Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4x4 transformPitch = glm::rotate(glm::radians(m_Pitch), glm::vec3(0.0f, 0.0f, 1.0f));
+        m_Transform = transformYaw * transformPitch * glm::translate(offset);
 
         Genesis::Camera* pCamera = Genesis::FrameWork::GetScene()->GetCamera();
 
