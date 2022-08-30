@@ -29,6 +29,7 @@ enum class ComponentType:uint16_t
 	RigidBodyComponent,
 	NavigationComponent,
 	EngineComponent,
+	CameraComponent,
 
 	Count
 };
