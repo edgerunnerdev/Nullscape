@@ -75,16 +75,15 @@ void Skybox::CreateGeometry()
     using namespace Genesis;
     m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_INDEX);
 
-    static const GLfloat size = 100.0f;
     const PositionData positions = {
-        {-size,  size,  size}, 
-        {-size, -size,  size},
-        { size, -size,  size},
-        { size,  size,  size},
-        {-size,  size, -size},
-        {-size, -size, -size},
-        { size, -size, -size},
-        { size,  size, -size}
+        {-1.0f,  1.0f,  1.0f}, 
+        {-1.0f, -1.0f,  1.0f},
+        { 1.0f, -1.0f,  1.0f},
+        { 1.0f,  1.0f,  1.0f},
+        {-1.0f,  1.0f, -1.0f},
+        {-1.0f, -1.0f, -1.0f},
+        { 1.0f, -1.0f, -1.0f},
+        { 1.0f,  1.0f, -1.0f}
     };
     m_pVertexBuffer->CopyPositions(positions);
 
@@ -107,27 +106,7 @@ void Skybox::CreateCubemapTexture()
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_Cubemap);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    SDL_Surface* xpos = IMG_Load("data/backgrounds/xpos.png");
-    SDL_Surface* xneg = IMG_Load("data/backgrounds/xneg.png");
-    SDL_Surface* ypos = IMG_Load("data/backgrounds/ypos.png");
-    SDL_Surface* yneg = IMG_Load("data/backgrounds/yneg.png");
-    SDL_Surface* zpos = IMG_Load("data/backgrounds/zpos.png");
-    SDL_Surface* zneg = IMG_Load("data/backgrounds/zneg.png");
-
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, xpos->w, xpos->h, 0, xpos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, xpos->pixels);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, xneg->w, xneg->h, 0, xneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, xneg->pixels);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, ypos->w, ypos->h, 0, ypos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, ypos->pixels);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, yneg->w, yneg->h, 0, yneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, yneg->pixels);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, zpos->w, zpos->h, 0, zpos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, zpos->pixels);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, zneg->w, zneg->h, 0, zneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, zneg->pixels);
-
-    SDL_FreeSurface(xneg);
-    SDL_FreeSurface(xpos);
-    SDL_FreeSurface(yneg);
-    SDL_FreeSurface(ypos);
-    SDL_FreeSurface(zneg);
-    SDL_FreeSurface(zpos);
+    glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, GL_RGBA8, 2048, 2048);
 }
 
 void Skybox::Update(float delta)
@@ -141,26 +120,29 @@ void Skybox::Render()
 
     if (m_ProteanCloudsGenerated == false)
     {
-        static const int sCubemapResolution = 512;
+        static int sCubemapResolution = 2048;
         RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
         Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
-        m_pProteanCloudsRenderTarget = FrameWork::GetRenderSystem()->CreateRenderTarget("Protean clouds", sCubemapResolution, sCubemapResolution, false, false, false);
-        //pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
+        
         pRenderSystem->ViewOrtho(sCubemapResolution, sCubemapResolution);
+        glViewport(0, 0, sCubemapResolution, sCubemapResolution);
         m_pProteanCloudsShader->Use();
 
         VertexBuffer* vb = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
-        vb->CreateTexturedQuad(0.0f, 0.0f, 512.0f, 512.0f);
+        vb->CreateTexturedQuad(0.0f, 0.0f, static_cast<float>(sCubemapResolution), static_cast<float>(sCubemapResolution));
 
         GLuint fbo;
         glGenFramebuffers(1, &fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, m_Cubemap, 0);
 
-        vb->Draw();
+        for (int i = 0; i < 6; ++i)
+        {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_Cubemap, 0);
+            vb->Draw();
+        }
 
-        pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
-        vb->Draw();
+        delete vb;
+        glDeleteFramebuffers(1, &fbo);
 
         pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
         m_ProteanCloudsGenerated = true;
@@ -174,6 +156,8 @@ void Skybox::Render()
         //a += 0.01f;
         transform = glm::rotate(a, glm::vec3(0.0f, 1.0f, 0.0f));
     }
+
+    transform = glm::scale(glm::vec3(100.0f));
 
     m_pShader->Use(transform);
     m_pVertexBuffer->Draw();

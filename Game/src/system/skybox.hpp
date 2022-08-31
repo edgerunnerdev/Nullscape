@@ -45,7 +45,6 @@ private:
     void CreateCubemapTexture();
     void CreateGeometry();
 
-    Genesis::RenderTargetSharedPtr m_pProteanCloudsRenderTarget;
     Genesis::ResourceShader* m_pProteanCloudsShader;
     Genesis::ResourceShader* m_pShader;
     Genesis::VertexBuffer* m_pVertexBuffer;
