@@ -139,20 +139,32 @@ void Skybox::Render()
 {
     using namespace Genesis;
 
-    //if (m_ProteanCloudsGenerated == false)
-    //{
-    //    RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-    //    Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
-    //    m_pProteanCloudsRenderTarget = FrameWork::GetRenderSystem()->CreateRenderTarget("Protean clouds", pPrimaryViewport->GetWidth(), pPrimaryViewport->GetHeight(), false, false, false);
-    //    pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
-    //    m_pProteanCloudsShader->Use();
-    //    m_pVertexBuffer->Draw();
-    //    pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
-    //    m_ProteanCloudsGenerated = true;
+    if (m_ProteanCloudsGenerated == false)
+    {
+        static const int sCubemapResolution = 512;
+        RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
+        Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
+        m_pProteanCloudsRenderTarget = FrameWork::GetRenderSystem()->CreateRenderTarget("Protean clouds", sCubemapResolution, sCubemapResolution, false, false, false);
+        //pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
+        pRenderSystem->ViewOrtho(sCubemapResolution, sCubemapResolution);
+        m_pProteanCloudsShader->Use();
 
-    //    ShaderUniformSharedPtr pSkyboxSampler = m_pShader->RegisterUniform("k_SkyboxSampler", ShaderUniformType::Texture);
-    //    pSkyboxSampler->Set(m_pProteanCloudsRenderTarget->GetColor(), GL_TEXTURE0);
-    //}
+        VertexBuffer* vb = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
+        vb->CreateTexturedQuad(0.0f, 0.0f, 512.0f, 512.0f);
+
+        GLuint fbo;
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, m_Cubemap, 0);
+
+        vb->Draw();
+
+        pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
+        vb->Draw();
+
+        pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
+        m_ProteanCloudsGenerated = true;
+    }
 
     glm::mat4 transform(1);
     Sector* pSector = g_pGame->GetCurrentSector();
