@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
+#include "entity/entitytemplateeditor.hpp"
+
 #include <genesis.h>
 #include <render/rendertarget.h>
 #include <render/viewport.hpp>
@@ -22,8 +24,6 @@
 #include <resources/resourcemodel.h>
 #include <scene/light.h>
 #include <scene/scene.h>
-
-#include "viewers/entityviewer/entityviewer.hpp"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
@@ -41,16 +41,16 @@ namespace Nullscape
 static const int sViewportWidth = 800;
 static const int sViewportHeight = 800;
 
-EntityViewer::EntityViewer()
+EntityTemplateEditor::EntityTemplateEditor()
     : m_IsOpen(false)
     , m_Pitch(0.0f)
     , m_Yaw(-90.0f)
     , m_Position(0.0f, 0.0f, 200.0f)
 {
     using namespace Genesis;
-    ImGuiImpl::RegisterMenu("Game", "Entity viewer", &m_IsOpen);
+    ImGuiImpl::RegisterMenu("Game", "Entity template editor", &m_IsOpen);
 
-    m_pViewport = std::make_shared<Viewport>("Entity viewer", sViewportWidth, sViewportHeight, true, false);
+    m_pViewport = std::make_shared<Viewport>("Entity template editor", sViewportWidth, sViewportHeight, true, false);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
 
     Scene* pScene = m_pViewport->GetScene();
@@ -66,16 +66,16 @@ EntityViewer::EntityViewer()
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
 }
 
-EntityViewer::~EntityViewer()
+EntityTemplateEditor::~EntityTemplateEditor()
 {
     Genesis::FrameWork::GetRenderSystem()->RemoveViewport(m_pViewport);
 }
 
-void EntityViewer::UpdateDebugUI()
+void EntityTemplateEditor::UpdateDebugUI()
 {
     if (Genesis::ImGuiImpl::IsEnabled() && m_IsOpen)
     {
-        ImGui::Begin("Entity template viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
+        ImGui::Begin("Entity template editor", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
 
         DrawMenu();
 
@@ -128,7 +128,7 @@ void EntityViewer::UpdateDebugUI()
     }
 }
 
-void EntityViewer::DrawMenu() 
+void EntityTemplateEditor::DrawMenu() 
 {
     static std::string sNewTemplateName;
     bool openNewTemplatePopup = false;
@@ -192,7 +192,7 @@ void EntityViewer::DrawMenu()
     }
 }
 
-void EntityViewer::DrawTemplateList() 
+void EntityTemplateEditor::DrawTemplateList() 
 {
     ImGui::TextUnformatted("Templates");
     ImGui::Separator();
@@ -207,7 +207,7 @@ void EntityViewer::DrawTemplateList()
     }
 }
 
-void EntityViewer::UpdateCamera(bool acceptInput)
+void EntityTemplateEditor::UpdateCamera(bool acceptInput)
 {
     Genesis::Camera* pCamera = m_pViewport->GetScene()->GetCamera();
 
@@ -252,7 +252,7 @@ void EntityViewer::UpdateCamera(bool acceptInput)
     pCamera->SetTargetPosition(m_Position + direction);
 }
 
-void EntityViewer::LoadTemplate(const std::string& templateName) 
+void EntityTemplateEditor::LoadTemplate(const std::string& templateName) 
 {
     if (m_pEntity != nullptr)
     {

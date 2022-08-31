@@ -53,6 +53,7 @@
 #include <xml.h>
 #include <window.h>
 
+#include "entity/entitytemplateeditor.hpp"
 #include "game.hpp"
 #include "faction/faction.h"
 #include "misc/gui.h"
@@ -69,7 +70,6 @@
 #include "system/systemviewer.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
-#include "viewers/entityviewer/entityviewer.hpp"
 #include "viewers/explorationviewer/explorationviewer.hpp"
 #include "menus/mainmenu.h"
 #include "menus/audiodebug.h"
@@ -225,7 +225,7 @@ void Game::Initialise()
 	SetCursorType( CursorType::Pointer );
 
 	ShaderTweaksDebugWindow::Register();
-    m_pEntityViewer = std::make_unique<EntityViewer>();
+    m_pEntityTemplateEditor = std::make_unique<EntityTemplateEditor>();
 
 #if USE_STEAM
 	if ( SteamAPI_RestartAppIfNecessary( STEAM_APP_ID ) )
@@ -309,7 +309,7 @@ Genesis::TaskStatus Game::Update( float delta )
     m_pSystemViewer->UpdateDebugUI();
 	GetBlackboard()->UpdateDebugUI();
 	GetSaveGameStorage()->UpdateDebugUI();
-	m_pEntityViewer->UpdateDebugUI();
+	m_pEntityTemplateEditor->UpdateDebugUI();
 	ShaderTweaksDebugWindow::Update();
 
 	if ( GetState() == GameState::LoadResources )

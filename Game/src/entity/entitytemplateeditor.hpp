@@ -27,11 +27,11 @@ namespace Nullscape
 
 GENESIS_DECLARE_SMART_PTR(Entity);
 
-class EntityViewer final
+class EntityTemplateEditor final
 {
 public:
-    EntityViewer();
-    ~EntityViewer();
+    EntityTemplateEditor();
+    ~EntityTemplateEditor();
 
     void UpdateDebugUI();
 
