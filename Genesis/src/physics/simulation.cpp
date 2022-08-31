@@ -31,10 +31,10 @@
 #include <log.hpp>
 
 // clang-format off
-#include "beginexternalheaders.h"
+#include <externalheadersbegin.hpp>
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
-#include "endexternalheaders.h"
+#include <externalheadersend.hpp>
 // clang-format on
 
 namespace Genesis

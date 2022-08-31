@@ -57,8 +57,6 @@
 #include "trail/trailmanagerrep.h"
 
 #include <algorithm>
-#include <beginexternalheaders.h>
-#include <endexternalheaders.h>
 #include <genesis.h>
 #include <inputmanager.h>
 #include <log.hpp>
@@ -71,7 +69,12 @@
 #include <sound/soundinstance.h>
 #include <sound/soundmanager.h>
 #include <sstream>
+
+// clang-format off
+#include <externalheadersbegin.hpp>
 #include <tinyxml2.h>
+#include <externalheadersend.hpp>
+// clang-format on
 
 namespace Nullscape
 {

@@ -22,9 +22,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // clang-format off
-#include "beginexternalheaders.h"
+#include <externalheadersbegin.hpp>
 #include <btBulletCollisionCommon.h>
-#include "endexternalheaders.h"
+#include <externalheadersend.hpp>
 // clang-format on
 
 namespace Genesis

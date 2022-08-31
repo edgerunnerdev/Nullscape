@@ -17,10 +17,13 @@
 
 #pragma once
 
-#include "beginexternalheaders.h"
-#include "colour.h"
-#include "endexternalheaders.h"
+// clang-format off
+#include "externalheadersbegin.hpp"
 #include "tinyxml2.h"
+#include "externalheadersend.hpp"
+// clang-format on
+
+#include "colour.h"
 
 #include <string>
 

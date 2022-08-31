@@ -20,12 +20,12 @@
 #include "shape.h"
 
 // clang-format off
-#include "beginexternalheaders.h"
+#include <externalheadersbegin.hpp>
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
-#include "endexternalheaders.h"
+#include <externalheadersend.hpp>
 // clang-format on
 
 namespace Genesis

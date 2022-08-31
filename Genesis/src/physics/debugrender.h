@@ -18,9 +18,9 @@
 #pragma once
 
 // clang-format off
-#include "beginexternalheaders.h"
+#include <externalheadersbegin.hpp>
 #include <LinearMath/btIDebugDraw.h>
-#include "endexternalheaders.h"
+#include <externalheadersend.hpp>
 // clang-format on
 
 namespace Genesis

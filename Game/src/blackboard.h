@@ -19,9 +19,11 @@
 #include <memory>
 #include <string>
 
-#include <beginexternalheaders.h>
+// clang-format off
+#include <externalheadersbegin.hpp>
 #include <tinyxml2.h>
-#include <endexternalheaders.h>
+#include <externalheadersend.hpp>
+// clang-format on
 
 #include "serialisable.h"
 

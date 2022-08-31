@@ -26,9 +26,11 @@
 #include <vector>
 
 #if USE_STEAM
-#include "beginexternalheaders.h"
-#include "endexternalheaders.h"
+// clang-format off
+#include "externalheadersbegin.hpp"
 #include "steam/steam_api.h"
+#include "externalheadersend.hpp"
+// clang-format on
 #endif
 
 #include "blackboard.h"

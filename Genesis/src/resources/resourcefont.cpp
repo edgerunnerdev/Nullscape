@@ -3,11 +3,14 @@
 #include "../genesis.h"
 #include "../rendersystem.h"
 #include "../vertexbuffer.h"
-#include "beginexternalheaders.h"
-#include "endexternalheaders.h"
 #include "rendersystem.fwd.h"
 #include "resourceimage.h"
-#include "tinyxml2.h"
+
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <tinyxml2.h>
+#include <externalheadersend.hpp>
+// clang-format on
 
 namespace Genesis
 {

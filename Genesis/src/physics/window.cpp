@@ -25,9 +25,9 @@
 #include "physics/simulation.h"
 
 // clang-format off
-#include "beginexternalheaders.h"
+#include <externalheadersbegin.hpp>
 #include <btBulletDynamicsCommon.h>
-#include "endexternalheaders.h"
+#include <externalheadersend.hpp>
 // clang-format on
 
 namespace Genesis

@@ -17,6 +17,8 @@
 
 #include <sstream>
 
+// clang-format off
+#include <externalheadersbegin.hpp>
 #ifdef _WIN32
 #include <ShlObj.h>
 #include <windows.h>
@@ -25,15 +27,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+#include <SDL.h>
+#include <tinyxml2.h>
+#include <externalheadersend.hpp>
+// clang-format on
 
-#include "beginexternalheaders.h"
 #include "configuration.h"
-#include "endexternalheaders.h"
 #include "genesis.h"
-#include "tinyxml2.h"
 #include "xml.h"
 
-#include <SDL.h>
 #include <log.hpp>
 
 #define CONFIG_FILENAME "config.xml"
