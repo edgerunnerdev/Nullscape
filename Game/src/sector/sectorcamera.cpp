@@ -17,6 +17,7 @@
 
 #include "sector/sectorcamera.h"
 
+#include "entity/components/cameracomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
 #include "game.hpp"
@@ -107,7 +108,12 @@ void SectorCamera::Update(float delta)
             m_Yaw += diffYaw * delta * sTrackingSpeedMultiplier;
         }
 
-        static glm::vec3 offset(-20.0f, 6.0f, 8.0f);
+        glm::vec3 offset(0.0f);
+        CameraComponent* pCameraComponent = pShip->GetComponent<CameraComponent>();
+        if (pCameraComponent != nullptr)
+        {
+            offset = pCameraComponent->GetOffset();
+        }
 
         m_Transform = glm::translate(offset);
 
