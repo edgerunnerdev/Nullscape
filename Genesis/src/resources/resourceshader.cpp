@@ -58,6 +58,22 @@ ResourceType ResourceShader::GetType() const
 
 bool ResourceShader::Load()
 {
+    if (!CompileShader())
+    {
+        return false;
+    }
+
+    m_State = ResourceState::Loaded;
+    return true;
+}
+
+bool ResourceShader::OnForgeBuild()
+{
+    return CompileShader();
+}
+
+bool ResourceShader::CompileShader() 
+{
     // Create the shaders
     GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -65,7 +81,7 @@ bool ResourceShader::Load()
     std::string shaderCode;
     std::ifstream shaderFile(GetFilename().GetFullPath());
     m_ShaderName = GetFilename().GetName();
-    
+
     if (shaderFile.is_open())
     {
         std::string line = "";
@@ -149,7 +165,6 @@ bool ResourceShader::Load()
 
     RegisterCoreUniforms();
 
-    m_State = ResourceState::Loaded;
     return true;
 }
 

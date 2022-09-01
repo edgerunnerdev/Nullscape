@@ -20,6 +20,7 @@
 #include "SDL.h"
 #include "filename.h"
 #include "resources/resourcetypes.h"
+#include "taskmanager.h"
 
 #include <atomic>
 #include <functional>
@@ -45,6 +46,7 @@ public:
     virtual void Preload(){};
     virtual bool Load() = 0;
     virtual ResourceType GetType() const;
+    virtual bool OnForgeBuild();
 
     ResourceState GetState() const;
     void SetState(ResourceState state);
@@ -73,6 +75,11 @@ inline const Filename& ResourceGeneric::GetFilename() const
 inline ResourceType ResourceGeneric::GetType() const
 {
     return m_Type;
+}
+
+inline bool ResourceGeneric::OnForgeBuild()
+{
+    return true;
 }
 
 typedef std::function<ResourceGeneric*(const Filename&)> ResourceFactoryFunction;
@@ -114,12 +121,13 @@ using ResourceMap = std::unordered_map<std::string, ResourceGeneric*>;
 // ResourceManager
 //////////////////////////////////////////////////////////////////////////////
 
-class ResourceManager
+class ResourceManager : public Task
 {
 public:
     ResourceManager();
     ~ResourceManager();
     void RegisterExtension(const std::string& extension, ResourceFactoryFunction& func);
+    TaskStatus Update(float delta);
 
     bool CanLoadResource(const Filename& filename);
 

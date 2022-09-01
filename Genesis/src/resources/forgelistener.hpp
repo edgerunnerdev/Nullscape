@@ -18,6 +18,8 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
+#include <vector>
 
 // clang-format off
 #include <externalheadersbegin.hpp>
@@ -31,18 +33,24 @@
 namespace Genesis
 {
 
+class ResourceGeneric;
+
 class ForgeListener
 {
 public:
     ForgeListener();
     ~ForgeListener();
+    void Update();
 
 private:
+    void OnResourceBuilt(const std::string& resourceFile);
     void SpawnForgeProcess();
 
     std::unique_ptr<Process> m_pProcess;
     std::unique_ptr<rpc::client> m_pRPCClient;
     std::unique_ptr<rpc::server> m_pRPCServer;
+    std::vector<ResourceGeneric*> m_RebuiltResources;
+    std::mutex m_RebuiltResourcesMutex;
 };
 
 } // namespace Genesis

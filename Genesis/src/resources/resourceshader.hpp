@@ -42,6 +42,7 @@ public:
     virtual ~ResourceShader() override;
     virtual ResourceType GetType() const override;
     virtual bool Load() override;
+    virtual bool OnForgeBuild() override;
 
     const std::string& GetName() const;
 
@@ -51,6 +52,7 @@ public:
     ShaderUniformSharedPtr RegisterUniform(const char* pUniformName, ShaderUniformType type, bool allowInstancingOverride = true, size_t count = 1);
 
 private:
+    bool CompileShader();
     void RegisterCoreUniforms();
 
     void UpdateParameters(const glm::mat4& modelMatrix, ShaderUniformInstances* pShaderUniformInstances);

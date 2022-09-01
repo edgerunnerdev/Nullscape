@@ -126,6 +126,16 @@ void ResourceManager::RegisterExtension(const std::string& extension, ResourceFa
     mRegisteredExtensions[extension] = data;
 }
 
+TaskStatus ResourceManager::Update(float delta)
+{
+    if (m_pForgeListener)
+    {
+        m_pForgeListener->Update();
+    }
+
+    return TaskStatus::Continue;
+}
+
 bool ResourceManager::CanLoadResource(const Filename& filename)
 {
     const std::string& extension = filename.GetExtension();

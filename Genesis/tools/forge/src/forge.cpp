@@ -53,6 +53,11 @@ Forge::~Forge()
         m_pRPCServer->close_sessions();
         m_pRPCServer->stop();
     }
+
+    if (m_pRPCClient)
+    {
+        m_pRPCClient->wait_all_responses();
+    }
 }
 
 bool Forge::Run()
@@ -67,6 +72,7 @@ bool Forge::Run()
     AggregateKnownAssets();
 
     InitializeCache();
+    InitializeRPCClient();
     InitializeRPCServer();
 
     for (auto& compiler : m_CompilersMap)
@@ -186,7 +192,6 @@ bool Forge::InitializeFileWatcher()
         {
             if (notif.second == FILE_ACTION_MODIFIED)
             {
-                Log::Info() << "Change detected on '" << notif.first << "'.";
                 compilationNeeded = true;
             }
         }
@@ -212,6 +217,11 @@ bool Forge::InitializeFileWatcher()
         Log::Error() << "Failed to listen for changes on assets directory.";
         return false;
     }
+}
+
+void Forge::InitializeRPCClient() 
+{
+    m_pRPCClient = std::make_unique<rpc::client>("127.0.0.1", FORGE_LISTENER_PORT);
 }
 
 void Forge::InitializeRPCServer()
@@ -329,6 +339,7 @@ void Forge::OnResourceBuilt(const std::filesystem::path& asset, const std::files
         if (knownAsset.GetPath() == asset)
         {
             m_pCache->Add(&knownAsset);
+            m_pRPCClient->send("resource_built", destinationFile.generic_string());
             break;
         }
     }

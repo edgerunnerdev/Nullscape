@@ -19,6 +19,7 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
+#include <rpc/client.h>
 #include <rpc/server.h>
 #include <externalheadersend.hpp>
 // clang-format on
@@ -43,6 +44,7 @@ using AssetVector = std::vector<Asset>;
 using CacheUniquePtr = std::unique_ptr<Cache>;
 using CompilerSharedPtr = std::shared_ptr<Compiler>;
 using CompilersMap = std::unordered_map<std::string, CompilerSharedPtr>;
+using RPCClientUniquePtr = std::unique_ptr<rpc::client>;
 using RPCServerUniquePtr = std::unique_ptr<rpc::server>;
 
 class Forge
@@ -73,6 +75,7 @@ private:
     void OnAssetCompilationFailed(const std::filesystem::path& asset, const std::string& reason);
 
     void InitializeCache();
+    void InitializeRPCClient();
     void InitializeRPCServer();
     bool InitializeDirectories();
     bool InitializeFileWatcher();
@@ -88,6 +91,7 @@ private:
     std::filesystem::path m_IntermediatesDir;
     AssetVector m_KnownAssets;
     CompilersMap m_CompilersMap;
+    RPCClientUniquePtr m_pRPCClient;
     RPCServerUniquePtr m_pRPCServer;
     CacheUniquePtr m_pCache;
     std::unique_ptr<FileWatcher> m_pFileWatcher;

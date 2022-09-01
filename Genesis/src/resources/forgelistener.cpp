@@ -15,15 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Genesis. If not, see <http://www.gnu.org/licenses/>.
 
+#include "resources/forgelistener.hpp"
+
+#include "genesis.h"
+#include "imgui/imgui.h"
+#include "log.hpp"
+#include "platform.hpp"
+#include "resourcemanager.h"
+
 #include <filesystem>
 #include <sstream>
 #include <string>
-
-#include "imgui/imgui.h"
-#include "platform.hpp"
-#include "log.hpp"
-
-#include "resources/forgelistener.hpp"
 
 namespace Genesis
 {
@@ -35,10 +37,18 @@ ForgeListener::ForgeListener()
     m_pRPCServer = std::make_unique<rpc::server>("127.0.0.1", FORGE_LISTENER_PORT);
     m_pRPCServer->async_run();
 
+    Log::Info() << "Initialized RPC server on port " << FORGE_PROCESS_PORT << ".";
+
+    m_pRPCServer->bind("resource_built",
+                       [this](const std::string& resourceFile)
+                       {
+                           OnResourceBuilt(resourceFile);
+                       });
+
     SpawnForgeProcess();
 }
 
-ForgeListener::~ForgeListener() 
+ForgeListener::~ForgeListener()
 {
     if (m_pRPCClient)
     {
@@ -54,7 +64,21 @@ ForgeListener::~ForgeListener()
     }
 }
 
-void ForgeListener::SpawnForgeProcess() 
+void ForgeListener::Update() 
+{
+    if (!m_RebuiltResources.empty())
+    {
+        std::lock_guard<std::mutex> lock(m_RebuiltResourcesMutex);
+        for (ResourceGeneric* pResource : m_RebuiltResources)
+        {
+            Log::Info() << "Built resource '" << pResource->GetFilename().GetFullPath() << "'.";
+            pResource->OnForgeBuild();
+        }
+        m_RebuiltResources.clear();
+    }
+}
+
+void ForgeListener::SpawnForgeProcess()
 {
     using namespace std::filesystem;
 
@@ -79,6 +103,29 @@ void ForgeListener::SpawnForgeProcess()
 
         m_pProcess = std::make_unique<Process>(forgePath, arguments.str());
         m_pProcess->Run();
+    }
+}
+
+void ForgeListener::OnResourceBuilt(const std::string& resourceFile) 
+{
+    size_t t = resourceFile.rfind("/data/");
+    if (t == std::string::npos)
+    {
+        Log::Warning() << "Resource '" << resourceFile << "' has been built, but it's not in the expected 'data' directory.";
+    }
+    else
+    {
+        const std::string relativeResourceFile(resourceFile.substr(t + 1)); // converts the absolute path to e.g. /data/shaders/antiproton.glsl
+        ResourceGeneric* pResource = FrameWork::GetResourceManager()->GetResource(relativeResourceFile);
+        if (pResource)
+        {
+            std::lock_guard<std::mutex> lock(m_RebuiltResourcesMutex);
+            m_RebuiltResources.push_back(pResource);
+        }
+        else
+        {
+            Log::Warning() << "Built resource '" << relativeResourceFile << "', but it's not loaded.";
+        }
     }
 }
 

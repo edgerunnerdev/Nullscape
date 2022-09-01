@@ -111,6 +111,7 @@ bool FrameWork::Initialize()
     gTaskManager = new TaskManager();
     gTaskManager->AddTask("InputManager", gInputManager, (TaskFunc)&InputManager::Update, TaskPriority::System);
     gTaskManager->AddTask("EventHandler", gEventHandler, (TaskFunc)&EventHandler::Update, TaskPriority::System);
+    gTaskManager->AddTask("ResourceManager", gResourceManager, (TaskFunc)&ResourceManager::Update, TaskPriority::System);
 
     gRenderSystem = new RenderSystem();
     gTaskManager->AddTask("Render", gRenderSystem, (TaskFunc)&RenderSystem::Update, TaskPriority::Rendering);
