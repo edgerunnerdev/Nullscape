@@ -44,13 +44,15 @@ public:
 private:
     void CreateCubemapTexture();
     void CreateGeometry();
+    void RenderProteanClouds();
 
     Genesis::ResourceShader* m_pProteanCloudsShader;
-    Genesis::ResourceShader* m_pShader;
+    Genesis::ResourceShader* m_pSkyboxShader;
     Genesis::VertexBuffer* m_pVertexBuffer;
     glm::vec4 m_AmbientColour;
     bool m_ProteanCloudsGenerated;
     GLuint m_Cubemap;
+    int m_Resolution;
 };
 
 inline const glm::vec4& Skybox::GetAmbientColour() const

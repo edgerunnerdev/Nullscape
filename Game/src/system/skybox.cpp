@@ -15,16 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
-#include <SDL_image.h>
-
 #include "system/skybox.hpp"
+
+#include <algorithm>
+#include <array>
+#include <sstream>
 
 #include "game.hpp"
 #include "player.h"
 #include "sector/sector.h"
 #include "sector/sectorcamera.h"
 
-#include <algorithm>
 #include <configuration.h>
 #include <genesis.h>
 #include <math/misc.h>
@@ -33,7 +34,6 @@
 #include <resources/resourceimage.h>
 #include <resources/resourcemodel.h>
 #include <shaderuniform.h>
-#include <sstream>
 #include <vertexbuffer.h>
 
 namespace Nullscape
@@ -45,10 +45,11 @@ namespace Nullscape
 
 Skybox::Skybox(const std::string& seed)
     : m_pProteanCloudsShader(nullptr)
-    , m_pShader(nullptr)
+    , m_pSkyboxShader(nullptr)
     , m_pVertexBuffer(nullptr)
     , m_AmbientColour(1.0)
     , m_ProteanCloudsGenerated(false)
+    , m_Resolution(2048)
 {
     using namespace Genesis;
 
@@ -59,8 +60,8 @@ Skybox::Skybox(const std::string& seed)
     CreateGeometry();
     CreateCubemapTexture();
 
-    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/skybox.glsl");
-    ShaderUniformSharedPtr pCubemapUniform = m_pShader->RegisterUniform("k_cubemap", ShaderUniformType::Cubemap);
+    m_pSkyboxShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/skybox.glsl");
+    ShaderUniformSharedPtr pCubemapUniform = m_pSkyboxShader->RegisterUniform("k_cubemap", ShaderUniformType::Cubemap);
     pCubemapUniform->Set(m_Cubemap, GL_TEXTURE0);
 }
 
@@ -106,7 +107,7 @@ void Skybox::CreateCubemapTexture()
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_Cubemap);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, GL_RGBA8, 2048, 2048);
+    glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, GL_RGBA8, m_Resolution, m_Resolution);
 }
 
 void Skybox::Update(float delta)
@@ -116,37 +117,7 @@ void Skybox::Update(float delta)
 
 void Skybox::Render()
 {
-    using namespace Genesis;
-
-    if (m_ProteanCloudsGenerated == false)
-    {
-        static int sCubemapResolution = 2048;
-        RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-        Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
-        
-        pRenderSystem->ViewOrtho(sCubemapResolution, sCubemapResolution);
-        glViewport(0, 0, sCubemapResolution, sCubemapResolution);
-        m_pProteanCloudsShader->Use();
-
-        VertexBuffer* vb = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
-        vb->CreateTexturedQuad(0.0f, 0.0f, static_cast<float>(sCubemapResolution), static_cast<float>(sCubemapResolution));
-
-        GLuint fbo;
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-        for (int i = 0; i < 6; ++i)
-        {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_Cubemap, 0);
-            vb->Draw();
-        }
-
-        delete vb;
-        glDeleteFramebuffers(1, &fbo);
-
-        pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
-        m_ProteanCloudsGenerated = true;
-    }
+    RenderProteanClouds();
 
     glm::mat4 transform(1);
     Sector* pSector = g_pGame->GetCurrentSector();
@@ -159,8 +130,64 @@ void Skybox::Render()
 
     transform = glm::scale(glm::vec3(100.0f));
 
-    m_pShader->Use(transform);
+    m_pSkyboxShader->Use(transform);
     m_pVertexBuffer->Draw();
+}
+
+void Skybox::RenderProteanClouds() 
+{
+    using namespace Genesis;
+    if (m_ProteanCloudsGenerated)
+    {
+        return;
+    }
+
+    RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
+    Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
+
+    pRenderSystem->ViewOrtho(m_Resolution, m_Resolution);
+    glViewport(0, 0, m_Resolution, m_Resolution);
+    m_pProteanCloudsShader->Use();
+
+    VertexBuffer* vb = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
+    vb->CreateTexturedQuad(0.0f, 0.0f, static_cast<float>(m_Resolution), static_cast<float>(m_Resolution));
+
+    GLuint fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    constexpr size_t numSides = 6;
+    std::array<GLuint, numSides> textureTargets = 
+    {
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+        GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+        GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+    };
+
+    std::array<glm::vec3, numSides> directions = 
+    {
+        glm::vec3( 1.0f,  0.0f,  0.0f),
+        glm::vec3(-1.0f,  0.0f,  0.0f),
+        glm::vec3( 0.0f,  1.0f,  0.0f),
+        glm::vec3( 0.0f, -1.0f,  0.0f),
+        glm::vec3( 0.0f,  0.0f,  1.0f),
+        glm::vec3( 0.0f,  0.0f, -1.0f)
+    };
+
+    for (int i = 0; i < numSides; ++i)
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTargets[i], m_Cubemap, 0);
+        vb->Draw();
+    }
+
+    delete vb;
+    glDeleteFramebuffers(1, &fbo);
+
+    pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
+    m_ProteanCloudsGenerated = true;
 }
 
 } // namespace Nullscape
