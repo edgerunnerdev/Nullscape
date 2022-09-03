@@ -21,6 +21,7 @@
 #include <render/rendertarget.h>
 #include <resources/resourceshader.hpp>
 #include <scene/sceneobject.h>
+
 #include <string>
 
 namespace Genesis

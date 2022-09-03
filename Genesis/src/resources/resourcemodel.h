@@ -22,6 +22,7 @@
 #include "shaderuniforminstance.h"
 #include "vertexbuffer.h"
 #include "resources/resourceimage.h"
+#include "resources/resourcegeneric.h"
 #include "render/material.hpp"
 
 #include <array>

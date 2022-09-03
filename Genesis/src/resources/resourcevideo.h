@@ -17,8 +17,14 @@
 
 #pragma once
 
-#include "../resourcemanager.h"
-#include "SDL.h"
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <SDL.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include "resources/resourcegeneric.h"
+#include "resourcemanager.h"
 
 namespace Genesis
 {

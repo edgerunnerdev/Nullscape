@@ -38,17 +38,6 @@ namespace Genesis
 {
 
 //////////////////////////////////////////////////////////////////////////////
-// ResourceGeneric
-//////////////////////////////////////////////////////////////////////////////
-
-ResourceGeneric::ResourceGeneric(const Filename& filename)
-    : m_State(ResourceState::Unloaded)
-    , m_Filename(filename)
-    , m_Type(ResourceType::Unknown)
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // ResourceManager
 // The ResourceManager allows for asynchronous pre-loading of assets.
 // This lets us perform most disk I/O outside of the main thread during

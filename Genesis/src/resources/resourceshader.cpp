@@ -67,9 +67,19 @@ bool ResourceShader::Load()
     return true;
 }
 
-bool ResourceShader::OnForgeBuild()
+bool ResourceShader::OnForgeRebuild()
 {
-    return CompileShader();
+    m_pModelViewProjectionUniform = nullptr;
+    m_pModelUniform = nullptr;
+    m_pModelInverseUniform = nullptr;
+    m_pModelInverseTransposeUniform = nullptr;
+    m_pViewInverseUniform = nullptr;
+    m_pTimeUniform = nullptr;
+    m_pResolutionUniform = nullptr;
+    m_pLightPositionUniform = nullptr;
+    m_pLightColorUniform = nullptr;
+    m_Uniforms.clear();
+    return CompileShader() && ResourceGeneric::OnForgeRebuild();
 }
 
 bool ResourceShader::CompileShader() 

@@ -21,6 +21,7 @@
 #include "imgui/imgui.h"
 #include "log.hpp"
 #include "platform.hpp"
+#include "resources/resourcegeneric.h"
 #include "resourcemanager.h"
 
 #include <filesystem>
@@ -72,7 +73,7 @@ void ForgeListener::Update()
         for (ResourceGeneric* pResource : m_RebuiltResources)
         {
             Log::Info() << "Built resource '" << pResource->GetFilename().GetFullPath() << "'.";
-            pResource->OnForgeBuild();
+            pResource->OnForgeRebuild();
         }
         m_RebuiltResources.clear();
     }

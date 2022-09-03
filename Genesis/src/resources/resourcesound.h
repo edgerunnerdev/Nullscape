@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include "../resourcemanager.h"
+#include "resources/resourcegeneric.h"
+#include "resourcemanager.h"
 
 #include <string>
 

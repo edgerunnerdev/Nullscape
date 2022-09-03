@@ -17,14 +17,20 @@
 
 #pragma once
 
-#include "SDL.h"
-#include "rendersystem.fwd.h"
-#include "resourcemanager.h"
-#include "shaderuniformtype.h"
-
+// clang-format off
+#include <externalheadersbegin.hpp>
 #include <GL/glew.h>
 #include <glm/gtx/transform.hpp>
+#include <SDL.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <vector>
+
+#include "rendersystem.fwd.h"
+#include "resources/resourcegeneric.h"
+#include "resourcemanager.h"
+#include "shaderuniformtype.h"
 
 namespace Genesis
 {
@@ -42,7 +48,7 @@ public:
     virtual ~ResourceShader() override;
     virtual ResourceType GetType() const override;
     virtual bool Load() override;
-    virtual bool OnForgeBuild() override;
+    virtual bool OnForgeRebuild() override;
 
     const std::string& GetName() const;
 

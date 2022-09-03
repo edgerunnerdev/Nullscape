@@ -17,14 +17,11 @@
 
 #pragma once
 
-#include "SDL.h"
 #include "filename.h"
 #include "resources/resourcetypes.h"
 #include "taskmanager.h"
 
-#include <atomic>
 #include <functional>
-#include <list>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -33,54 +30,7 @@ namespace Genesis
 {
 
 class ForgeListener;
-
-//////////////////////////////////////////////////////////////////////////////
-// ResourceGeneric
-//////////////////////////////////////////////////////////////////////////////
-
-class ResourceGeneric
-{
-public:
-    ResourceGeneric(const Filename& filename);
-    virtual ~ResourceGeneric() {}
-    virtual void Preload(){};
-    virtual bool Load() = 0;
-    virtual ResourceType GetType() const;
-    virtual bool OnForgeBuild();
-
-    ResourceState GetState() const;
-    void SetState(ResourceState state);
-    const Filename& GetFilename() const;
-
-protected:
-    std::atomic<ResourceState> m_State;
-
-private:
-    Filename m_Filename;
-    ResourceType m_Type;
-};
-
-inline ResourceState ResourceGeneric::GetState() const
-{
-    return m_State;
-}
-inline void ResourceGeneric::SetState(ResourceState state)
-{
-    m_State = state;
-}
-inline const Filename& ResourceGeneric::GetFilename() const
-{
-    return m_Filename;
-}
-inline ResourceType ResourceGeneric::GetType() const
-{
-    return m_Type;
-}
-
-inline bool ResourceGeneric::OnForgeBuild()
-{
-    return true;
-}
+class ResourceGeneric;
 
 typedef std::function<ResourceGeneric*(const Filename&)> ResourceFactoryFunction;
 

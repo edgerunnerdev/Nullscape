@@ -56,6 +56,11 @@ Skybox::Skybox(const std::string& seed)
     ResourceManager* pResourceManager = FrameWork::GetResourceManager();
 
     m_pProteanCloudsShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/proteanclouds.glsl");
+    m_pProteanCloudsShader->RegisterForgeRebuildCallback(this,
+                                                         [this]()
+                                                         {
+                                                             m_ProteanCloudsGenerated = false;
+                                                         });
 
     CreateGeometry();
     CreateCubemapTexture();
@@ -69,6 +74,7 @@ Skybox::~Skybox()
 {
     delete m_pVertexBuffer;
     glDeleteTextures(1, &m_Cubemap);
+    m_pProteanCloudsShader->UnregisterForgeRebuildCallback(this);
 }
 
 void Skybox::CreateGeometry()

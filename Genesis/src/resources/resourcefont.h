@@ -17,13 +17,20 @@
 
 #pragma once
 
-#include "rendersystem.fwd.h"
-#include "resourcemanager.h"
-
+// clang-format off
+#include <externalheadersbegin.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <SDL.h>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <string>
 #include <vector>
+
+#include "resources/resourcegeneric.h"
+#include "resourcemanager.h"
+#include "rendersystem.fwd.h"
 
 namespace Genesis
 {
