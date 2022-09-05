@@ -38,8 +38,10 @@ void main()
 
 */
 
+uniform float k_seed = 0.0;
+uniform vec2 k_cubemapResolution = vec2(512.0, 512.0);
+uniform vec3 k_direction = vec3(1.0, 0.0, 0.0);
 uniform float k_time = 0.0;
-uniform vec2 k_resolution;
 
 in vec2 UV;
 
@@ -50,7 +52,6 @@ const mat3 m3 = mat3(0.33338, 0.56034, -0.71817, -0.87887, 0.32651, -0.15323, 0.
 float mag2(vec2 p){return dot(p,p);}
 float linstep(in float mn, in float mx, in float x){ return clamp((x - mn)/(mx - mn), 0., 1.); }
 float prm1 = 0.;
-vec2 bsMo = vec2(0);
 
 vec2 disp(float t){ return vec2(sin(t*0.22)*1., cos(t*0.175)*1.)*2.; }
 
@@ -58,7 +59,7 @@ vec2 map(vec3 p)
 {
     vec3 p2 = p;
     p2.xy -= disp(p.z).xy;
-    p.xy *= rot(sin(p.z+k_time)*(0.1 + prm1*0.05) + k_time*0.09);
+    p.xy *= rot(sin(p.z+k_seed)*(0.1 + prm1*0.05) + k_seed*0.09);
     float cl = mag2(p2.xy);
     float d = 0.;
     p *= .61;
@@ -67,13 +68,13 @@ vec2 map(vec3 p)
     float dspAmp = 0.1 + prm1*0.2;
     for(int i = 0; i < 5; i++)
     {
-		p += sin(p.zxy*0.75*trk + k_time*trk*.8)*dspAmp;
+		p += sin(p.zxy*0.75*trk + k_seed*trk*.8)*dspAmp;
         d -= abs(dot(cos(p), sin(p.yzx))*z);
         z *= 0.57;
         trk *= 1.4;
         p = p*m3;
     }
-    d = abs(d + prm1*3.)+ prm1*.3 - 2.5 + bsMo.y;
+    d = abs(d + prm1*3.)+ prm1*.3 - 2.5;
     return vec2(d + cl*.2 + 0.25, cl);
 }
 
@@ -135,26 +136,24 @@ vec3 iLerp(in vec3 a, in vec3 b, in float x)
 
 void main()
 {
-	float q = k_resolution.y / k_resolution.x;
-    vec2 p = (UV * k_resolution - 0.5 * k_resolution) / k_resolution.y; //(gl_FragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
-    bsMo = vec2(0); //(iMouse.xy - 0.5*iResolution.xy)/iResolution.y;
+    vec2 p = UV * 2.0 - 1.0;
     
-    float time = k_time*3.;
-    vec3 ro = vec3(0,0,time);
-    
-    ro += vec3(sin(k_time)*0.5,sin(k_time*1.)*0.,0);
+    float time = k_seed*3. + k_time;
+    vec3 ro = vec3(sin(k_seed)*0.5,sin(k_seed*1.)*0.,0);
         
     float dspAmp = .85;
     ro.xy += disp(ro.z)*dspAmp;
     float tgtDst = 3.5;
     
-    vec3 target = normalize(ro - vec3(disp(time + tgtDst)*dspAmp, time + tgtDst));
-    ro.x -= bsMo.x*2.;
-    vec3 rightdir = normalize(cross(target, vec3(0,1,0)));
+    vec3 target = k_direction;
+    vec3 rightdir = normalize(cross(target, vec3(0,-1,0)));
+    if (target.y != 0)
+    {
+        rightdir = normalize(cross(target, vec3(0,0,1)));
+    }
     vec3 updir = normalize(cross(rightdir, target));
     rightdir = normalize(cross(updir, target));
 	vec3 rd=normalize((p.x*rightdir + p.y*updir)*1. - target);
-    rd.xy *= rot(-disp(time + 3.5).x*0.2 + bsMo.x);
     prm1 = smoothstep(-0.4, 0.4,sin(k_time*0.3));
 	vec4 scn = render(ro, rd, time);
 		

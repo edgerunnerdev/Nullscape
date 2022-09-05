@@ -148,13 +148,23 @@ void Skybox::RenderProteanClouds()
         return;
     }
 
+    ShaderUniformSharedPtr pCubemapResolutionUniform = m_pProteanCloudsShader->RegisterUniform("k_cubemapResolution", ShaderUniformType::FloatVector2);
+    if (pCubemapResolutionUniform)
+    {
+        pCubemapResolutionUniform->Set(glm::vec2(static_cast<float>(m_Resolution), static_cast<float>(m_Resolution)));
+    }
+
+    ShaderUniformSharedPtr pSeedUniform = m_pProteanCloudsShader->RegisterUniform("k_seed", ShaderUniformType::Float);
+    if (pSeedUniform)
+    {
+        pSeedUniform->Set(0.0f); // TODO: Get system's seed.
+    }
+
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
     Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
-
     pRenderSystem->ViewOrtho(m_Resolution, m_Resolution);
     glViewport(0, 0, m_Resolution, m_Resolution);
-    m_pProteanCloudsShader->Use();
-
+   
     VertexBuffer* vb = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
     vb->CreateTexturedQuad(0.0f, 0.0f, static_cast<float>(m_Resolution), static_cast<float>(m_Resolution));
 
@@ -183,8 +193,14 @@ void Skybox::RenderProteanClouds()
         glm::vec3( 0.0f,  0.0f, -1.0f)
     };
 
+    ShaderUniformSharedPtr pDirectionUniform = m_pProteanCloudsShader->RegisterUniform("k_direction", ShaderUniformType::FloatVector3);
     for (int i = 0; i < numSides; ++i)
     {
+        if (pDirectionUniform)
+        {
+            pDirectionUniform->Set(directions[i]);
+        }
+        m_pProteanCloudsShader->Use();
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTargets[i], m_Cubemap, 0);
         vb->Draw();
     }
