@@ -102,6 +102,7 @@ private:
     void InitializePostProcessing();
     void InitializeGlowChain();
     void RenderGlow();
+    void RegisterPostProcessingUniforms();
     void ScreenPosToWorldRay(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin,
                              glm::vec3& out_direction);
     IntersectionResult LinePlaneIntersection(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result);

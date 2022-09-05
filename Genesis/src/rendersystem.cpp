@@ -96,6 +96,11 @@ RenderSystem::~RenderSystem()
         pInputManager->RemoveKeyboardCallback(m_InputCallbackCapture);
     }
 
+    if (m_pPostProcessShader)
+    {
+        m_pPostProcessShader->UnregisterForgeRebuildCallback(this);
+    }
+
     delete m_pPostProcessVertexBuffer;
 
     ImGuiImpl::Shutdown();
@@ -311,7 +316,25 @@ void RenderSystem::InitializeDebug()
 void RenderSystem::InitializePostProcessing()
 {
     m_pPostProcessShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/postprocessing.glsl");
+    m_pPostProcessShader->RegisterForgeRebuildCallback(this,
+                                                       [this]()
+                                                       {
+                                                           RegisterPostProcessingUniforms();
+                                                       });
 
+    RegisterPostProcessingUniforms();
+
+    const float w = static_cast<float>(m_pPrimaryViewport->GetWidth());
+    const float h = static_cast<float>(m_pPrimaryViewport->GetHeight());
+    m_pPostProcessVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
+    m_pPostProcessVertexBuffer->CreateUntexturedQuad(0.0f, 0.0f, w, h);
+
+    const float uvs[] = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+    m_pPostProcessVertexBuffer->CopyData(uvs, 12, VBO_UV);
+}
+
+void RenderSystem::RegisterPostProcessingUniforms() 
+{
     ShaderUniformSharedPtr pBaseSampler = m_pPostProcessShader->RegisterUniform("k_sampler0", ShaderUniformType::Texture);
     pBaseSampler->Set(m_pPrimaryViewport->GetRenderTarget()->GetColor(), GL_TEXTURE0);
 
@@ -327,7 +350,8 @@ void RenderSystem::InitializePostProcessing()
         pResolution->Set(glm::vec2(w, h));
     }
 
-    auto LinkPostProcessEffect = [this](const char* pUniformName, PostProcessEffect effect) {
+    auto LinkPostProcessEffect = [this](const char* pUniformName, PostProcessEffect effect)
+    {
         ShaderUniformSharedPtr pShaderUniform = m_pPostProcessShader->RegisterUniform(pUniformName, ShaderUniformType::Boolean);
         if (pShaderUniform != nullptr)
         {
@@ -339,12 +363,6 @@ void RenderSystem::InitializePostProcessing()
     LinkPostProcessEffect("k_applyBleachBypass", PostProcessEffect::BleachBypass);
     LinkPostProcessEffect("k_applyGlow", PostProcessEffect::Glow);
     LinkPostProcessEffect("k_applyVignette", PostProcessEffect::Vignette);
-
-    m_pPostProcessVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
-    m_pPostProcessVertexBuffer->CreateUntexturedQuad(0.0f, 0.0f, w, h);
-
-    const float uvs[] = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f};
-    m_pPostProcessVertexBuffer->CopyData(uvs, 12, VBO_UV);
 }
 
 // Initializes the shader and vertex buffer used by the glow effect.
