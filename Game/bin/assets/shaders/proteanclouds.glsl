@@ -149,7 +149,7 @@ void main()
     vec3 rightdir = normalize(cross(target, vec3(0,-1,0)));
     if (target.y != 0)
     {
-        rightdir = normalize(cross(target, vec3(0,0,1)));
+        rightdir = normalize(cross(target, vec3(0,0,target.y)));
     }
     vec3 updir = normalize(cross(rightdir, target));
     rightdir = normalize(cross(updir, target));
