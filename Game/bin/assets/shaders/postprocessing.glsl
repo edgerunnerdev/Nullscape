@@ -56,7 +56,7 @@ void main()
 
 	if ( k_applyVignette )
 	{
-		color *= 0.2 + 0.8 * pow( 16.0 * UV.x *UV.y * ( 1.0 - UV.x ) * ( 1.0 - UV.y ), 0.15 );
+		color *= 0.3 + 0.7 * pow( 24.0 * UV.x * UV.y * ( 1.0 - UV.x ) * ( 1.0 - UV.y ), 0.12 );
 	}
 }
 
