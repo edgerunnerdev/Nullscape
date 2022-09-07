@@ -182,6 +182,7 @@ void Forge::InitializeCache()
 
 bool Forge::InitializeFileWatcher() 
 {
+#ifdef TARGET_PLATFORM_WINDOWS
     m_pFileWatcher = std::make_unique<FileWatcher>();
 
     m_pFileWatcher->changeEvent = [this](int64_t id, const std::set<std::pair<std::wstring, uint32_t>>& notifications)
@@ -217,6 +218,13 @@ bool Forge::InitializeFileWatcher()
         Log::Error() << "Failed to listen for changes on assets directory.";
         return false;
     }
+#elif defined TARGET_PLATFORM_LINUX
+    Log::Warning() << "Failed to initialize file watcher.";
+    return false;
+#else
+    static_assert(false); // Not implemented.
+    return false;
+#endif
 }
 
 void Forge::InitializeRPCClient() 
@@ -243,7 +251,7 @@ void Forge::InitializeRPCServer()
                        });
 
     m_pRPCServer->bind("log",
-                       [this](const std::string& text, int level)
+                       [](const std::string& text, int level)
                        {
                            Log::Level logLevel = static_cast<Log::Level>(level);
                            if (logLevel == Log::Level::Info)

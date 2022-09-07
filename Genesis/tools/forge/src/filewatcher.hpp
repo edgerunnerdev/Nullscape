@@ -32,6 +32,10 @@
 
 #pragma once
 
+#include <platform.hpp>
+
+#if defined TARGET_PLATFORM_WINDOWS
+
 #include <atomic>
 #include <functional>
 #include <map>
@@ -92,3 +96,19 @@ private:
 };
 
 } // namespace Genesis::ResComp
+
+#else
+
+namespace Genesis::ResComp
+{
+
+class FileWatcher final
+{
+public:
+    FileWatcher() {}
+    ~FileWatcher() {}
+};
+
+} // namespace Genesis::ResComp
+
+#endif

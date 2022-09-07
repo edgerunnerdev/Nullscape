@@ -32,6 +32,8 @@
 
 #include "filewatcher.hpp"
 
+#if defined TARGET_PLATFORM_WINDOWS
+
 #include <array>
 #include <iostream>
 #include <type_traits>
@@ -409,3 +411,5 @@ void WatchInfo::processNotification(const FILE_NOTIFY_INFORMATION& notIf, std::s
 }
 
 } // namespace Genesis::ResComp
+
+#endif // #if defined TARGET_PLATFORM_WINDOWS
