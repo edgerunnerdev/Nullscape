@@ -61,6 +61,7 @@ if(WIN32)
 	set_target_properties(Genesis PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
 else()
     find_package(SDL2_mixer REQUIRED)
+    target_link_libraries(Genesis PRIVATE pthread)
 endif()
 
 target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Final>:NDEBUG _FINAL> FORGE_PROCESS_PORT=${FORGE_PROCESS_PORT} FORGE_LISTENER_PORT=${FORGE_LISTENER_PORT})

@@ -25,11 +25,16 @@
 
 #include <sstream>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 namespace Genesis
 {
 
 ProcessLinux::ProcessLinux(const std::filesystem::path& executable, const std::string& arguments, ProcessOnCompletionCallback completionCallback, ProcessOnOutputCallback outputCallback)
     : ProcessImpl(executable, arguments, completionCallback, outputCallback)
+    , m_Pid(-1)
+    , m_Status(0)
 {
 }
 
@@ -39,24 +44,50 @@ ProcessLinux::~ProcessLinux()
 
 void ProcessLinux::Run()
 {
+    m_Pid = fork();
+    if (m_Pid == -1)
+    {
+        Log::Error() << "fork() failed.";
+    }
+    else
+    {
+        std::string executableName = GetExecutable().filename();
+            char** ppArguments = new char*[2];
+
+        // Executable name
+        ppArguments[0] = new char[executableName.size() + 1];
+        memcpy(ppArguments[0], executableName.data(), executableName.size());
+        ppArguments[0][executableName.size()] = '\0';
+
+        // Arguments
+        ppArguments[1] = new char[GetArguments().size() + 1];
+        memcpy(ppArguments[1], GetArguments().data(), GetArguments().size());
+        ppArguments[1][GetArguments().size()] = '\0';
+
+        if (execv(GetExecutable().c_str(), ppArguments) == -1)
+        {
+            Log::Error() << "execv() failed: " << strerror(errno); 
+        }
+    }
 }
 
 void ProcessLinux::Wait()
 {
-}
-
-void ProcessLinux::WaitOrTimerCallback() 
-{
+    waitpid(m_Pid, &m_Status, 0);
+    if (OnCompletion != nullptr)
+    {
+        OnCompletion(GetExitCode());
+    }
 }
 
 uint32_t ProcessLinux::GetExitCode() const
 {
-    return -1;
+    return WEXITSTATUS(m_Status);
 }
 
 bool ProcessLinux::HasExited() const
 {
-    return true;
+    return WIFEXITED(m_Status);
 }
 
 } // namespace Genesis

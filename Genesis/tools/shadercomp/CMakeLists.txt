@@ -9,6 +9,7 @@ find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(SDL2 REQUIRED)
 
 include_directories(
     src/
@@ -31,7 +32,7 @@ if(WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
 else()
 	add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-    #target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
+    target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
 endif()
 
 target_link_directories(${PROJECT_NAME} PRIVATE 

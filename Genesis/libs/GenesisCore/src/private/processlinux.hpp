@@ -21,6 +21,8 @@
 
 #if defined(TARGET_PLATFORM_LINUX)
 
+#include <unistd.h>
+
 #include "private/processimpl.hpp"
 #include "process.hpp"
 
@@ -41,6 +43,8 @@ public:
     void WaitOrTimerCallback();
 
 private:
+    pid_t m_Pid;
+    int m_Status;
 };
 
 } // namespace Genesis
