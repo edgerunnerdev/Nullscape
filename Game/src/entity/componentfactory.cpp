@@ -21,6 +21,7 @@
 #include "entity/components/enginecomponent.hpp"
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/navigationcomponent.hpp"
+#include "entity/components/playercontrollercomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 
@@ -46,6 +47,7 @@ ComponentFactory::ComponentFactory()
     REGISTER_COMPONENT(EngineComponent);
     REGISTER_COMPONENT(ModelComponent);
     REGISTER_COMPONENT(NavigationComponent);
+    REGISTER_COMPONENT(PlayerControllerComponent);
     REGISTER_COMPONENT(TransformComponent);
     REGISTER_COMPONENT(RigidBodyComponent);
 }

@@ -30,6 +30,7 @@ enum class ComponentType:uint16_t
 	NavigationComponent,
 	EngineComponent,
 	CameraComponent,
+	PlayerControllerComponent,
 
 	Count
 };

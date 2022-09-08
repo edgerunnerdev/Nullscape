@@ -211,6 +211,7 @@ bool Sector::Initialize()
     EntitySharedPtr pShipEntity = EntityFactory::Get()->Create("dagger");
     if (pShipEntity)
     {
+        pShipEntity->AddComponent(ComponentFactory::Get()->Create(ComponentType::PlayerControllerComponent));
         m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(pShipEntity.get(), false);
         m_Entities.push_back(pShipEntity);
         m_pPlayerShip = pShipEntity;   

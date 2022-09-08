@@ -19,22 +19,17 @@
 
 #include "entity/component.hpp"
 
-#include <array>
-
-// clang-format off
-#include <externalheadersbegin.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <externalheadersend.hpp>
-// clang-format on
+#include <genesis.h>
+#include <inputmanager.h>
 
 namespace Nullscape
 {
 
-class NavigationComponent : public Component
+class PlayerControllerComponent : public Component
 {
 public:
-    NavigationComponent();
-    virtual ~NavigationComponent() override {}
+    PlayerControllerComponent();
+    virtual ~PlayerControllerComponent() override;
 
     virtual void Initialize() override {}
     virtual void Update(float delta) override;
@@ -44,23 +39,13 @@ public:
     virtual bool Deserialize(const nlohmann::json& data) override;
     virtual void CloneFrom(Component* pComponent) override;
 
-    void FlyTowards(const glm::vec3& direction);
-
-    DEFINE_COMPONENT(NavigationComponent);
+    DEFINE_COMPONENT(PlayerControllerComponent);
 
 private:
-    enum class Mode
-    {
-        None,
-        Direction
-    };
+    void OnLeftMouseButtonDown();
 
-    uint16_t m_Version;
-    Mode m_Mode;
-
-    glm::quat m_SourceRotation;
-    glm::quat m_TargetRotation;
-    float m_TargetInterpolation;
+    Genesis::InputCallbackToken m_MoveToken;
+    float m_MoveTimer;
 };
 
 } // namespace Nullscape
