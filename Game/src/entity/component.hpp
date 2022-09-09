@@ -64,6 +64,7 @@ public:
     virtual bool Serialize(nlohmann::json& data);
     virtual bool Deserialize(const nlohmann::json& data);
     virtual void CloneFrom(Component* pComponent);
+    virtual bool UpdatesInEditor() const;
 
     void SetOwner(Entity* pEntity);
     Entity* GetOwner() const;
@@ -103,6 +104,11 @@ private:
     std::string m_Name;
     int m_Version;
 };
+
+inline bool Component::UpdatesInEditor() const
+{
+    return true;
+}
 
 inline void Component::SetOwner(Entity* pEntity)
 {

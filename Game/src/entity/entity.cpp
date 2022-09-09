@@ -23,7 +23,11 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <genesis.h>
 #include <log.hpp>
+#include <render/viewport.hpp>
+#include <rendersystem.h>
+#include <scene/scene.h>
 
 #include "entity/component.hpp"
 #include "entity/componentfactory.hpp"
@@ -32,6 +36,7 @@ namespace Nullscape
 {
 
 Entity::Entity(const Entity& other) 
+    : m_IsEditorEntity(false)
 {
     for (Component* pOtherComponent : other.GetComponents())
     {
@@ -58,6 +63,11 @@ void Entity::Update(float delta)
     {
         for (auto& pComponent : m_Components[i])
         {
+            if (IsEditorEntity() && pComponent->UpdatesInEditor() == false)
+            {
+                continue;
+            }
+
             pComponent->Update(delta);
         }
     }

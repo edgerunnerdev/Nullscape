@@ -17,21 +17,10 @@
 
 #pragma once
 
-#include <memory>
-
-// clang-format off
-#include <externalheadersbegin.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <externalheadersend.hpp>
-// clang-format on
-
 #include "entity/component.hpp"
 
 namespace Nullscape
 {
-
-class Trail;
 
 class EngineComponent : public Component
 {
@@ -49,12 +38,49 @@ public:
 
     DEFINE_COMPONENT(EngineComponent);
 
+    float GetAlignmentTime() const;
+    float GetCurrentSpeed() const;
+    float GetMaximumSpeed() const;
+    float GetAcceleration() const;
+    float GetTargetThrottle() const;
+    void SetTargetThrottle(float value);
+
 private:
-    std::unique_ptr<Trail> m_pTrail;
-    glm::vec3 m_Offset;
-    float m_Width;
-    float m_Decay;
-    glm::vec4 m_Color;
+    float m_AlignmentTime;
+    float m_CurrentSpeed;
+    float m_MaximumSpeed;
+    float m_Acceleration;
+    float m_TargetThrottle;
 };
+
+inline float EngineComponent::GetAlignmentTime() const 
+{
+    return m_AlignmentTime;
+}
+
+inline float EngineComponent::GetCurrentSpeed() const
+{
+    return m_CurrentSpeed;
+}
+
+inline float EngineComponent::GetMaximumSpeed() const
+{
+    return m_MaximumSpeed;
+}
+
+inline float EngineComponent::GetAcceleration() const
+{
+    return m_Acceleration;
+}
+
+inline float EngineComponent::GetTargetThrottle() const
+{
+    return m_TargetThrottle;
+}
+
+inline void EngineComponent::SetTargetThrottle(float value)
+{
+    m_TargetThrottle = value;
+}
 
 } // namespace Nullscape

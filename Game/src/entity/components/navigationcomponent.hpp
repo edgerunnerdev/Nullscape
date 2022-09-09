@@ -43,6 +43,7 @@ public:
     virtual bool Serialize(nlohmann::json& data) override;
     virtual bool Deserialize(const nlohmann::json& data) override;
     virtual void CloneFrom(Component* pComponent) override;
+    virtual bool UpdatesInEditor() const override;
 
     void FlyTowards(const glm::vec3& direction);
 
@@ -62,5 +63,10 @@ private:
     glm::quat m_TargetRotation;
     float m_TargetInterpolation;
 };
+
+inline bool NavigationComponent::UpdatesInEditor() const
+{
+    return false;
+}
 
 } // namespace Nullscape

@@ -28,6 +28,7 @@
 #include <imgui/imgui.h>
 #include <genesis.h>
 
+#include "entity/components/enginecomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
 
@@ -55,7 +56,14 @@ void NavigationComponent::Update(float delta)
     glm::mat4x4 translationTransform(glm::translate(glm::vec3(pTransformComponent->GetTransform()[3])));
     glm::mat4x4 rotationTransform(glm::slerp(m_SourceRotation, m_TargetRotation, m_TargetInterpolation));
 
-    glm::mat4x4 newTransform = translationTransform * rotationTransform * glm::translate(glm::vec3(1.0f, 0.0f, 0.0f));
+    float speed = 0.0f;
+    EngineComponent* pEngineComponent = GetOwner()->GetComponent<EngineComponent>();
+    if (pEngineComponent != nullptr)
+    {
+        speed = pEngineComponent->GetCurrentSpeed() * delta;
+    }
+
+    glm::mat4x4 newTransform = translationTransform * rotationTransform * glm::translate(glm::vec3(speed, 0.0f, 0.0f));
     pTransformComponent->SetTransform(newTransform);
 }
 
@@ -99,6 +107,12 @@ void NavigationComponent::FlyTowards(const glm::vec3& direction)
     m_SourceRotation = glm::quat(currentTransform);
     m_TargetRotation = glm::quat(directionTransform);
     m_TargetInterpolation = 0.0f;
+
+    EngineComponent* pEngineComponent = GetOwner()->GetComponent<EngineComponent>();
+    if (pEngineComponent != nullptr)
+    {
+        pEngineComponent->SetTargetThrottle(1.0f);
+    }
 }
 
 } // namespace Nullscape

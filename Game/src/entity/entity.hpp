@@ -57,8 +57,22 @@ public:
     bool Serialize(nlohmann::json& data);
     bool Deserialize(const nlohmann::json& data);
 
+    bool IsEditorEntity() const;
+    void SetEditorEntity(bool state);
+
 private:
     std::array<std::vector<ComponentUniquePtr>, static_cast<size_t>(ComponentType::Count)> m_Components;
+    bool m_IsEditorEntity;
 };
+
+inline bool Entity::IsEditorEntity() const
+{
+    return m_IsEditorEntity;
+}
+
+inline void Entity::SetEditorEntity(bool state)
+{
+    m_IsEditorEntity = state;
+}
 
 } // namespace Nullscape

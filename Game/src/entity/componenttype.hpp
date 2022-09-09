@@ -31,6 +31,7 @@ enum class ComponentType:uint16_t
 	EngineComponent,
 	CameraComponent,
 	PlayerControllerComponent,
+	TrailComponent,
 
 	Count
 };

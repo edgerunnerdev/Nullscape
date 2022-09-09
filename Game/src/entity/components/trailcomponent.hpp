@@ -17,41 +17,44 @@
 
 #pragma once
 
-#include "entity/component.hpp"
+#include <memory>
 
-#include <genesis.h>
-#include <inputmanager.h>
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include "entity/component.hpp"
 
 namespace Nullscape
 {
 
-class PlayerControllerComponent : public Component
+class Trail;
+
+class TrailComponent : public Component
 {
 public:
-    PlayerControllerComponent();
-    virtual ~PlayerControllerComponent() override;
+    TrailComponent();
+    virtual ~TrailComponent() override;
 
     virtual void Initialize() override {}
     virtual void Update(float delta) override;
-    virtual void UpdateDebugUI() override {}
-    virtual void Render() override {}
+    virtual void UpdateDebugUI() override;
+    virtual void Render() override;
     virtual bool Serialize(nlohmann::json& data) override;
     virtual bool Deserialize(const nlohmann::json& data) override;
     virtual void CloneFrom(Component* pComponent) override;
-    virtual bool UpdatesInEditor() const override;
 
-    DEFINE_COMPONENT(PlayerControllerComponent);
+    DEFINE_COMPONENT(TrailComponent);
 
 private:
-    void OnLeftMouseButtonDown();
-
-    Genesis::InputCallbackToken m_MoveToken;
-    float m_MoveTimer;
+    std::unique_ptr<Trail> m_pTrail;
+    glm::vec3 m_Offset;
+    float m_Width;
+    float m_Decay;
+    glm::vec4 m_Color;
 };
-
-inline bool PlayerControllerComponent::UpdatesInEditor() const
-{
-    return false;
-}
 
 } // namespace Nullscape

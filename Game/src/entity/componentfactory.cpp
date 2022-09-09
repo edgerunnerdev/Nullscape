@@ -23,6 +23,7 @@
 #include "entity/components/navigationcomponent.hpp"
 #include "entity/components/playercontrollercomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
+#include "entity/components/trailcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 
 #include <memory>
@@ -50,6 +51,7 @@ ComponentFactory::ComponentFactory()
     REGISTER_COMPONENT(PlayerControllerComponent);
     REGISTER_COMPONENT(TransformComponent);
     REGISTER_COMPONENT(RigidBodyComponent);
+    REGISTER_COMPONENT(TrailComponent);
 }
 
 ComponentFactory::~ComponentFactory() {}

@@ -261,6 +261,7 @@ void EntityTemplateEditor::LoadTemplate(const std::string& templateName)
     }
 
     m_pEntity = EntityFactory::Get()->Create(templateName);
+    m_pEntity->SetEditorEntity(true);
     m_pMainLayer->AddSceneObject(m_pEntity.get(), false);
     m_LoadedTemplate = templateName;
 }
