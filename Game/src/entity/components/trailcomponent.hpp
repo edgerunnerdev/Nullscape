@@ -31,7 +31,7 @@
 namespace Nullscape
 {
 
-class Trail;
+GENESIS_DECLARE_SMART_PTR(Trail);
 
 class TrailComponent : public Component
 {
@@ -50,7 +50,7 @@ public:
     DEFINE_COMPONENT(TrailComponent);
 
 private:
-    std::unique_ptr<Trail> m_pTrail;
+    TrailWeakPtr m_pTrail;
     glm::vec3 m_Offset;
     float m_Width;
     float m_Decay;

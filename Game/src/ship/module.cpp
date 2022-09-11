@@ -702,7 +702,7 @@ void EngineModule::UpdateTrail()
 	{	
 		Genesis::Colour clr = pShip->GetFaction()->GetColour(pShip->IsFlagship() ? FactionColourId::GlowFlagship : FactionColourId::Glow);
 		m_pTrail = new Trail( 10.0f, 3.5f, glm::vec4(clr.r, clr.g, clr.b, clr.a) );
-		g_pGame->GetCurrentSector()->GetTrailManager()->Add( m_pTrail );
+		//g_pGame->GetCurrentSector()->GetTrailManager()->Add( m_pTrail );
 	}
 	else if ( m_pTrail != nullptr && m_Output <= 0.0f )
 	{
@@ -757,24 +757,24 @@ void EngineModule::UpdateGlow( float delta )
 
 void EngineModule::RemoveTrail()
 {
-	if ( m_pTrail != nullptr && g_pGame != nullptr && g_pGame->GetCurrentSector() != nullptr )
-	{
-		TrailManager* pTrailManager = g_pGame->GetCurrentSector()->GetTrailManager();
-		if ( pTrailManager != nullptr )
-		{
-			if ( m_pTrail->IsOrphan() )
-			{
-				pTrailManager->Remove( m_pTrail );
-			}
-			else
-			{
-				pTrailManager->Remove( m_pTrail );
-				delete m_pTrail;
-			}
-		}
-	}
+	//if ( m_pTrail != nullptr && g_pGame != nullptr && g_pGame->GetCurrentSector() != nullptr )
+	//{
+	//	TrailManager* pTrailManager = g_pGame->GetCurrentSector()->GetTrailManager();
+	//	if ( pTrailManager != nullptr )
+	//	{
+	//		if ( m_pTrail->IsOrphan() )
+	//		{
+	//			pTrailManager->Remove( m_pTrail );
+	//		}
+	//		else
+	//		{
+	//			pTrailManager->Remove( m_pTrail );
+	//			delete m_pTrail;
+	//		}
+	//	}
+	//}
 
-	m_pTrail = nullptr;
+	//m_pTrail = nullptr;
 }
 
 void EngineModule::TriggerEMP()

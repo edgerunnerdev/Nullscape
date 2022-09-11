@@ -15,77 +15,43 @@
 // You should have received a copy of the GNU General Public License
 // along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
-#include <memory.h>
-
-#include "trail/trail.h"
 #include "trail/trailmanager.h"
+
 #include "game.hpp"
+#include "trail/trail.h"
+
+#include <memory.h>
 
 namespace Nullscape
 {
 
-TrailManager::TrailManager()
+void TrailManager::Update(float delta)
 {
+    if (g_pGame->IsPaused() == false)
+    {
+        m_Trails.remove_if(
+            [](TrailSharedPtr pTrail)
+            {
+                return pTrail->IsOrphan() && pTrail->GetActivePoints() == 0;
+            });
 
+        for (auto& pTrail : m_Trails)
+        {
+            pTrail->Update(delta);
+        }
+    }
 }
 
-TrailManager::~TrailManager()
+TrailWeakPtr TrailManager::Add(float initialWidth, float decay, const glm::vec4& color)
 {
-	for ( auto& pTrail : m_Trails )
-	{
-		delete pTrail;
-	}
+    TrailSharedPtr pTrail = std::make_shared<Trail>(initialWidth, decay, color);
+    m_Trails.push_back(pTrail);
+    return pTrail;
 }
 
-void TrailManager::Update( float delta )
+void TrailManager::Remove(TrailWeakPtr pTrail)
 {
-	if ( g_pGame->IsPaused() == false )
-	{
-		for ( auto& pTrail : m_Trails )
-		{
-			pTrail->Update( delta );
-		}
-	}
-
-	ProcessOrphanedTrails();
+    m_Trails.remove(pTrail.lock());
 }
 
-void TrailManager::Add( Trail* pTrail )
-{
-	for ( auto& pCurrentTrail : m_Trails )
-	{
-		if ( pCurrentTrail == pTrail )
-		{
-			return;
-		}
-	}
-
-	m_Trails.push_back( pTrail );
-}
-
-void TrailManager::Remove( Trail* pTrail )
-{
-	m_Trails.remove( pTrail );
-	if ( pTrail->IsOrphan() )
-	{
-		delete pTrail;
-	}
-}
-
-void TrailManager::ProcessOrphanedTrails()
-{
-	for ( TrailList::iterator it = m_Trails.begin(); it != m_Trails.end(); )
-	{
-		if ( (*it)->IsOrphan() && (*it)->GetActivePoints() == 0 )
-		{
-			delete *it;
-			it = m_Trails.erase( it );
-		}
-		else
-		{
-			it++;
-		}
-	}
-}
-
-}
+} // namespace Nullscape

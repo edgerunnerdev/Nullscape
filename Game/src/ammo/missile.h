@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <coredefines.h>
+
 #include "ammo/ammo.h"
 
 namespace Genesis
@@ -27,8 +29,9 @@ namespace Genesis
 namespace Nullscape
 {
 
+GENESIS_DECLARE_SMART_PTR(Trail);
+
 class Weapon;
-class Trail;
 class Ship;
 
 enum class MissileType
@@ -59,7 +62,7 @@ public:
 protected:
 	virtual MissileType			GetType() const;
 	virtual const std::string	GetResourceName() const;
-	virtual Trail*				CreateTrail() const;
+	virtual void				GetTrailProperties(float& initialWidth, float& decay, glm::vec4& color) const;
 
 	void						SetGlowSize( float size );
 	float						GetGlowSize() const;
@@ -71,9 +74,10 @@ private:
 	void						UpdateTarget( float delta );
 	void						TrackTarget( float delta );
 	void						UpdateGlow();
+    void CreateTrail();
 
 	Genesis::ResourceModel*		m_pModel;
-	Trail*						m_pTrail;
+	TrailWeakPtr				m_pTrail;
 	Ship*						m_pTargetShip;
 	float						m_LaunchTimer;
 	float						m_SwarmTimer;

@@ -27,23 +27,25 @@ namespace Nullscape
 
 Torpedo::Torpedo()
 {
-	SetGlowColour( Genesis::Colour( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    SetGlowColour(Genesis::Colour(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 MissileType Torpedo::GetType() const
 {
-	return MissileType::Torpedo;
+    return MissileType::Torpedo;
 }
 
 const std::string Torpedo::GetResourceName() const
 {
-	static const std::string sResourceName( "data/models/ammo/torpedo.tmf" );
-	return sResourceName;
+    static const std::string sResourceName("data/models/ammo/torpedo.tmf");
+    return sResourceName;
 }
 
-Trail* Torpedo::CreateTrail() const
+void Torpedo::GetTrailProperties(float& initialWidth, float& decay, glm::vec4& color) const
 {
-	return new Trail( 5.0f, 2.0f, glm::vec4(0.6f, 0.2f, 0.2f, 0.5f) );
+    initialWidth = 5.0f;
+    decay = 2.0f;
+    color = glm::vec4(0.6f, 0.2f, 0.2f, 0.5f);
 }
 
 }

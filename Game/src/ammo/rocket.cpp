@@ -16,6 +16,7 @@
 // along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ammo/rocket.h"
+
 #include "trail/trail.h"
 
 namespace Nullscape
@@ -27,24 +28,26 @@ namespace Nullscape
 
 Rocket::Rocket()
 {
-	SetGlowSize( 25.0f );
-	SetGlowColour( Genesis::Colour( 1.0f, 0.4f, 0.0f, 1.0f ) );
+    SetGlowSize(25.0f);
+    SetGlowColour(Genesis::Colour(1.0f, 0.4f, 0.0f, 1.0f));
 }
 
 MissileType Rocket::GetType() const
 {
-	return MissileType::Rocket;
+    return MissileType::Rocket;
 }
 
 const std::string Rocket::GetResourceName() const
 {
-	static const std::string sResourceName( "data/models/ammo/missile.tmf" );
-	return sResourceName;
+    static const std::string sResourceName("data/models/ammo/missile.tmf");
+    return sResourceName;
 }
 
-Trail* Rocket::CreateTrail() const
+void Rocket::GetTrailProperties(float& initialWidth, float& decay, glm::vec4& color) const
 {
-	return new Trail( 1.5f, 2.5f, glm::vec4(0.6f, 0.2f, 0.0f, 1.0f) );
+    initialWidth = 1.5f;
+    decay = 0.2f;
+    color = glm::vec4(0.6f, 0.2f, 0.0f, 1.0f);
 }
 
-}
+} // namespace Nullscape

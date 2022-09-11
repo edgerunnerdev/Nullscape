@@ -26,14 +26,15 @@ namespace Nullscape
 // Torpedo
 ///////////////////////////////////////////////////////////////////////////////
 
-class Torpedo: public Missile
+class Torpedo : public Missile
 {
 public:
-								Torpedo();
+    Torpedo();
+
 protected:
-	virtual MissileType			GetType() const override;
-	virtual const std::string	GetResourceName() const override;
-	virtual Trail*				CreateTrail() const override;
+    virtual MissileType GetType() const override;
+    virtual const std::string GetResourceName() const override;
+    virtual void GetTrailProperties(float& initialWidth, float& decay, glm::vec4& color) const override;
 };
 
-}
+} // namespace Nullscape

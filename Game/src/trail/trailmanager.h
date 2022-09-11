@@ -17,33 +17,41 @@
 
 #pragma once
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/vec4.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
+#include <coredefines.h>
+
 #include <list>
 
 namespace Nullscape
 {
 
-class Trail;
-typedef std::list< Trail* > TrailList;
+GENESIS_DECLARE_SMART_PTR(Trail);
+
+using TrailList = std::list<TrailSharedPtr>;
 
 class TrailManager
 {
 public:
-						TrailManager();
-						~TrailManager();
+    TrailManager() {}
+    ~TrailManager() {}
 
-	void				Update( float delta );
-	const TrailList&	GetTrails() const;
-	void				Add( Trail* pTrail );
-	void				Remove( Trail* pTrail );
+    void Update(float delta);
+    const TrailList& GetTrails() const;
+    TrailWeakPtr Add(float initialWidth, float decay, const glm::vec4& color);
+    void Remove(TrailWeakPtr pTrail);
 
 private:
-	void				ProcessOrphanedTrails();
-	TrailList			m_Trails;
+    TrailList m_Trails;
 };
 
 inline const TrailList& TrailManager::GetTrails() const
 {
-	return m_Trails;
+    return m_Trails;
 }
 
-}
+} // namespace Nullscape

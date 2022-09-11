@@ -17,6 +17,12 @@
 
 #include "entity/components/enginecomponent.hpp"
 
+// clang-format off
+#include <externalheadersbegin.hpp>
+#include <glm/glm.hpp>
+#include <externalheadersend.hpp>
+// clang-format on
+
 #include <imgui/imgui.h>
 #include <genesis.h>
 
@@ -40,13 +46,35 @@ EngineComponent::~EngineComponent()
 
 void EngineComponent::Update(float delta) 
 {
+    float targetSpeed = m_MaximumSpeed * m_TargetThrottle;
+    if (m_CurrentSpeed < targetSpeed)
+    {
+        m_CurrentSpeed += m_Acceleration * delta;
+    }
+    else if (m_CurrentSpeed > targetSpeed)
+    {
+        m_CurrentSpeed -= m_Acceleration * delta;
+    }
 
+    m_CurrentSpeed = glm::clamp(m_CurrentSpeed, 0.0f, m_MaximumSpeed);
 }
 
 void EngineComponent::UpdateDebugUI() 
 {
-    ImGui::SliderFloat("Alignment time", &m_AlignmentTime, 1.0f, 20.0f);
-    ImGui::SliderFloat("Maximum speed", &m_MaximumSpeed, 0.1f, 20.0f);
+    if (ImGui::InputFloat("Alignment time", &m_AlignmentTime))
+    {
+        m_AlignmentTime = glm::max(m_AlignmentTime, 0.1f);
+    }
+
+    if (ImGui::InputFloat("Maximum speed", &m_MaximumSpeed))
+    {
+        m_MaximumSpeed = glm::max(m_MaximumSpeed, 0.0f);
+    }
+
+    if (ImGui::InputFloat("Acceleration", &m_Acceleration))
+    {
+        m_Acceleration = glm::max(m_Acceleration, 0.0f);
+    }
 }
 
 void EngineComponent::Render()

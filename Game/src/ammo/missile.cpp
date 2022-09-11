@@ -35,7 +35,6 @@ namespace Nullscape
 
 Missile::Missile():
 m_pModel( nullptr ),
-m_pTrail( nullptr ),
 m_pTargetShip( nullptr ),
 m_LaunchTimer( 0.0f ),
 m_GlowSize( 30.0f ),
@@ -46,13 +45,10 @@ m_GlowColour( 0.8f, 0.8f, 0.8f, 1.0f )
 
 Missile::~Missile()
 {
-	// If the current sector is null then it has been destroyed, and with it the
-	// trail manager and any associated trails, so this trail would no longer be
-	// valid.
-	if ( m_pTrail != nullptr && g_pGame->GetCurrentSector() != nullptr )
-	{
-		g_pGame->GetCurrentSector()->GetTrailManager()->Remove( m_pTrail );
-		delete m_pTrail;
+    TrailSharedPtr pTrail = m_pTrail.lock();
+    if (pTrail)
+    {
+        pTrail->SetOrphan();
 	}
 }
 
@@ -72,18 +68,29 @@ void Missile::Create( Weapon* pWeapon, float additionalRotation /* = 0.0f */ )
 	Ammo::Create( pWeapon, additionalRotation );
 
 	m_pModel = (Genesis::ResourceModel*)Genesis::FrameWork::GetResourceManager()->GetResource( GetResourceName() );
-
-	m_pTrail = CreateTrail();
-
-	m_pTrail->AddPoint( m_Src );
-	g_pGame->GetCurrentSector()->GetTrailManager()->Add( m_pTrail );
-
 	m_pTargetShip = FindClosestShip( pWeapon->GetTargetPosition() );
+    CreateTrail();
 }
 
-Trail* Missile::CreateTrail() const
+void Missile::GetTrailProperties(float& initialWidth, float& decay, glm::vec4& color) const 
 {
-	return new Trail( 2.0f, 2.0f, glm::vec4( 0.5f, 0.5f, 0.5f, 0.5f ) );
+    initialWidth = 2.0f;
+    decay = 2.0f;
+	color = glm::vec4( 0.5f, 0.5f, 0.5f, 0.5f );
+}
+
+void Missile::CreateTrail() 
+{
+    float initialWidth;
+    float decay;
+    glm::vec4 color;
+    GetTrailProperties(initialWidth, decay, color);
+    m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(initialWidth, decay, color);
+    TrailSharedPtr pTrail = m_pTrail.lock();
+    if (pTrail)
+    {
+        pTrail->AddPoint(m_Src);
+	}
 }
 
 Ship* Missile::FindClosestShip( const glm::vec3& position )
@@ -133,7 +140,11 @@ void Missile::Update( float delta )
 		m_Src += m_Dir * m_Speed * delta;
 		m_Dst += m_Dir * m_Speed * delta;
 
-		m_pTrail->AddPoint( m_Dst );
+		TrailSharedPtr pTrail = m_pTrail.lock();
+        if (pTrail)
+        {
+            pTrail->AddPoint(m_Dst);
+		}
 
 		m_Range -= m_Speed * delta;
 
@@ -202,10 +213,11 @@ void Missile::Kill()
 	// We want to destroy the missile but leave the trail to fade, so we orphan it so the
 	// TrailManager handles its ownership. The trail will only be destroyed when it no
 	// longer has any valid points.
-	if ( m_pTrail != nullptr )
+    TrailSharedPtr pTrail = m_pTrail.lock();
+	if (pTrail)
 	{
-		m_pTrail->SetOrphan();
-		m_pTrail = nullptr;
+		pTrail->SetOrphan();
+        pTrail = nullptr;
 	}
 }
 

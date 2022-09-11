@@ -23,10 +23,14 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <coredefines.h>
+
 #include "trail/trailpointdata.h"
 
 namespace Nullscape
 {
+
+GENESIS_DECLARE_SMART_PTR(Trail);
 
 class Trail
 {

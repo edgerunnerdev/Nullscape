@@ -41,25 +41,28 @@ TrailComponent::TrailComponent()
 
 TrailComponent::~TrailComponent()
 {
-    if (m_pTrail && g_pGame->GetCurrentSector())
+    TrailSharedPtr pTrail = m_pTrail.lock();
+    if (pTrail)
     {
-        g_pGame->GetCurrentSector()->GetTrailManager()->Remove(m_pTrail.get());
+        pTrail->SetOrphan();
     }
 }
 
 void TrailComponent::Update(float delta)
 {
-    if (!m_pTrail && g_pGame->GetCurrentSector())
+    if (m_pTrail.expired() && g_pGame->GetCurrentSector())
     {
-        TrailManager* pTrailManager = g_pGame->GetCurrentSector()->GetTrailManager();
-        m_pTrail = std::make_unique<Trail>(m_Width, m_Decay, m_Color);
-        pTrailManager->Add(m_pTrail.get());
+        m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(m_Width, m_Decay, m_Color);
     }
 
     TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
-    if (m_pTrail && pTransformComponent)
+    if (pTransformComponent)
     {
-        m_pTrail->AddPoint(pTransformComponent->GetPosition());
+        TrailSharedPtr pTrail = m_pTrail.lock();
+        if (pTrail)
+        {
+            pTrail->AddPoint(pTransformComponent->GetPosition());
+        }
     }
 }
 

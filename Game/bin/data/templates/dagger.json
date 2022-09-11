@@ -14,10 +14,10 @@
             "version": 1
         },
         {
-            "acceleration": 0.25,
+            "acceleration": 10.0,
             "alignment_time": 1.0,
             "current_speed": 0.0,
-            "maximum_speed": 10.0,
+            "maximum_speed": 50.0,
             "target_throttle": 0.0,
             "type": "EngineComponent",
             "version": 1
@@ -30,6 +30,23 @@
             ],
             "type": "CameraComponent",
             "version": 1
+        },
+        {
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "decay": 0.10000000149011612,
+            "offset": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "type": "TrailComponent",
+            "version": 1,
+            "width": 1.0
         }
     ]
 }
