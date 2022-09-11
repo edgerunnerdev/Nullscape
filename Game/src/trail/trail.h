@@ -19,6 +19,8 @@
 
 // clang-format off
 #include <externalheadersbegin.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
@@ -38,7 +40,9 @@ public:
     Trail(float initialWidth, float decay, const glm::vec4& colour);
     ~Trail(){};
 
+    void AddPoint(const glm::mat4x4& transform);
     void AddPoint(const glm::vec3& position);
+    void AddPoint(const glm::vec4& position);
     const TrailPointDataList& GetData() const;
     float GetInitialWidth() const;
     void SetInitialWidth(float value);
@@ -90,6 +94,17 @@ inline bool Trail::IsOrphan() const
 inline int Trail::GetActivePoints() const
 {
     return m_ActivePoints;
+}
+
+
+inline void Trail::AddPoint(const glm::mat4x4& transform) 
+{
+    AddPoint(glm::vec3(transform[3]));
+}
+
+inline void Trail::AddPoint(const glm::vec4& position) 
+{
+    AddPoint(glm::vec3(position));
 }
 
 } // namespace Nullscape

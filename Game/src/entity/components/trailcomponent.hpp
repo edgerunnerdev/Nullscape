@@ -55,6 +55,7 @@ private:
     float m_Width;
     float m_Decay;
     glm::vec4 m_Color;
+    bool m_DebugRender;
 };
 
 } // namespace Nullscape

@@ -156,6 +156,14 @@ void DebugRender::RenderText()
     m_Texts.clear();
 }
 
+void DebugRender::DrawCross(const glm::vec3& origin, float size, const glm::vec3& color) 
+{
+    const float halfSize = size / 2.0f;
+    DrawLine(origin + glm::vec3(halfSize, 0.0f, 0.0f), origin - glm::vec3(halfSize, 0.0f, 0.0f), color);
+    DrawLine(origin + glm::vec3(0.0f, halfSize, 0.0f), origin - glm::vec3(0.0f, halfSize, 0.0f), color);
+    DrawLine(origin + glm::vec3(0.0f, 0.0f, halfSize), origin - glm::vec3(0.0f, 0.0f, halfSize), color);
+}
+
 void DebugRender::DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec3& colour)
 {
     DrawLine(glm::vec3(start, 0.0f), glm::vec3(end, 0.0f), colour);

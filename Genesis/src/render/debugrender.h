@@ -47,6 +47,7 @@ public:
 
     virtual void Render() override;
 
+    void DrawCross(const glm::vec3& origin, float size, const glm::vec3& color);
     void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec3& colour);
     void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec3& colour);
     void DrawCircle(const glm::vec2& origin, float radius, const glm::vec3& colour);

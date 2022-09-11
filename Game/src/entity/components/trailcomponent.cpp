@@ -19,6 +19,7 @@
 
 #include <imgui/imgui.h>
 #include <genesis.h>
+#include <render/debugrender.h>
 
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
@@ -35,6 +36,7 @@ TrailComponent::TrailComponent()
     , m_Width(1.0f)
     , m_Decay(1.0f)
     , m_Color(1.0f)
+    , m_DebugRender(false)
 {
 
 }
@@ -61,20 +63,45 @@ void TrailComponent::Update(float delta)
         TrailSharedPtr pTrail = m_pTrail.lock();
         if (pTrail)
         {
-            pTrail->AddPoint(pTransformComponent->GetPosition());
+            pTrail->AddPoint(pTransformComponent->GetTransform() * glm::translate(m_Offset));
         }
     }
 }
 
 void TrailComponent::UpdateDebugUI()
 {
-    ImGui::SliderFloat("Width", &m_Width, 0.0f, 20.0f);
-    ImGui::SliderFloat("Decay", &m_Decay, 0.1f, 20.0f);
+    ImGui::Checkbox("Debug render", &m_DebugRender);
+    
+    if (ImGui::InputFloat("Width", &m_Width))
+    {
+        m_Width = glm::max(0.1f, m_Width);
+    }
+
+    if (ImGui::InputFloat("Decay", &m_Decay))
+    {
+        m_Decay = glm::max(0.1f, m_Decay);
+    }
+
+    float v[3] = {m_Offset.x, m_Offset.y, m_Offset.z};
+    ImGui::InputFloat3("Offset", v);
+    m_Offset = glm::vec3(v[0], v[1], v[2]);
 }
 
 void TrailComponent::Render() 
 {
+    using namespace Genesis;
+    if (m_DebugRender)
+    {
+        glm::mat4x4 transform(1.0f);
 
+        TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
+        if (pTransformComponent)
+        {
+            transform = pTransformComponent->GetTransform() * glm::translate(m_Offset);
+        }
+
+        Genesis::FrameWork::GetDebugRender()->DrawCross(glm::vec3(transform[3]), m_Width, glm::vec3(1.0f));
+    }
 }
 
 bool TrailComponent::Serialize(nlohmann::json& data)
