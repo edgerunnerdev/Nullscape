@@ -103,7 +103,7 @@ void TrailManagerRep::Update(float delta)
             }
 
             glm::vec3 toCamera = glm::normalize(cameraPosition - p1);
-            glm::vec3 perp = glm::cross(glm::normalize(d), toCamera);
+            glm::vec3 perp = glm::normalize(glm::cross(glm::normalize(d), toCamera));
 
             d = perp * it->GetWidth() * 0.5f;
 

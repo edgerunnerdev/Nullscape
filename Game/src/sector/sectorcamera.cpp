@@ -87,8 +87,8 @@ void SectorCamera::Update(float delta)
         return;
     }
 
-    TransformComponent* pShipTransform = pShip->GetComponent<TransformComponent>();
-    if (pShipTransform != nullptr)
+    TransformComponent* pShipTransformComponent = pShip->GetComponent<TransformComponent>();
+    if (pShipTransformComponent != nullptr)
     {
         if (m_CameraOrbit)
         {
@@ -115,11 +115,9 @@ void SectorCamera::Update(float delta)
             offset = pCameraComponent->GetOffset();
         }
 
-        m_Transform = glm::translate(offset);
-
         const glm::mat4x4 transformYaw = glm::rotate(glm::radians(m_Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
         const glm::mat4x4 transformPitch = glm::rotate(glm::radians(m_Pitch), glm::vec3(0.0f, 0.0f, 1.0f));
-        m_Transform = transformYaw * transformPitch * glm::translate(offset);
+        m_Transform = glm::translate(glm::vec3(pShipTransformComponent->GetTransform()[3])) * transformYaw * transformPitch * glm::translate(offset);
 
         const glm::vec4 cameraPosition(m_Transform[3]); // Translation
         const glm::vec4 cameraDirection(m_Transform[0]); // X axis

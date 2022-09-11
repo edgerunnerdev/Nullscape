@@ -127,14 +127,16 @@ void Skybox::Render()
 
     glm::mat4 transform(1);
     Sector* pSector = g_pGame->GetCurrentSector();
-    if (pSector != nullptr)
+   
+    static const float sScaleFactor = 100.0f;
+    if (pSector == nullptr)
     {
-        static float a = 0.0f;
-        //a += 0.01f;
-        transform = glm::rotate(a, glm::vec3(0.0f, 1.0f, 0.0f));
+        transform = glm::scale(glm::vec3(sScaleFactor));
     }
-
-    transform = glm::scale(glm::vec3(100.0f));
+    else
+    {
+        transform = glm::translate(glm::vec3(pSector->GetCamera()->GetTransform()[3])) * glm::scale(glm::vec3(sScaleFactor));
+    }
 
     m_pSkyboxShader->Use(transform);
     m_pVertexBuffer->Draw();
