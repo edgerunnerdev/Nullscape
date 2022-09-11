@@ -53,6 +53,8 @@ TrailManagerRep::TrailManagerRep(TrailManager* pTrailManager)
     pDiffuseSamplerUniform->Set(pTexture, GL_TEXTURE0);
 
     m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_COLOUR);
+
+    SetRenderHint(RenderHint::Transparent);
 }
 
 TrailManagerRep::~TrailManagerRep()

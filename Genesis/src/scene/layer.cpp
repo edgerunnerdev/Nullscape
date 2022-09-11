@@ -132,7 +132,14 @@ void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
     LayerObject obj;
     obj.pSceneObject = pObject;
     obj.hasOwnership = hasOwnership;
-    mObjectList.push_back(obj);
+    if (pObject->GetRenderHint() == RenderHint::Transparent)
+    {
+        mObjectList.push_back(obj);
+    }
+    else 
+    {
+        mObjectList.push_front(obj);
+    }
 }
 
 // We can't remove the objects immediately, since they may be
