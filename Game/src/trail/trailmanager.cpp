@@ -42,9 +42,9 @@ void TrailManager::Update(float delta)
     }
 }
 
-TrailWeakPtr TrailManager::Add(float initialWidth, float decay, const glm::vec4& color)
+TrailWeakPtr TrailManager::Add(float initialWidth, float lifetime, const glm::vec4& color)
 {
-    TrailSharedPtr pTrail = std::make_shared<Trail>(initialWidth, decay, color);
+    TrailSharedPtr pTrail = std::make_shared<Trail>(initialWidth, lifetime, color);
     m_Trails.push_back(pTrail);
     return pTrail;
 }

@@ -18,7 +18,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
 #include <list>
 
 namespace Nullscape
@@ -27,38 +26,56 @@ namespace Nullscape
 class TrailPointData
 {
 public:
-	TrailPointData( const glm::vec3& position, float width ) : m_Position( position ), m_Width( width ) {}
-	const glm::vec3& GetPosition() const;
-	float GetWidth() const;
-	void SetWidth( float w );
+    TrailPointData(const glm::vec3& position, float width, float lifetime)
+        : m_Position(position)
+        , m_Width(width)
+        , m_Lifetime(lifetime)
+    {
+    }
+    const glm::vec3& GetPosition() const;
+    float GetWidth() const;
+    void SetWidth(float value);
+    float GetLifetime() const;
+    void SetLifetime(float value);
 
-	float DistanceTo( const TrailPointData& point ) const;
+    float DistanceTo(const TrailPointData& point) const;
 
 private:
-	glm::vec3 m_Position;
-	float m_Width;
+    glm::vec3 m_Position;
+    float m_Width;
+    float m_Lifetime;
 };
 
 inline const glm::vec3& TrailPointData::GetPosition() const
 {
-	return m_Position;
+    return m_Position;
 }
 
 inline float TrailPointData::GetWidth() const
 {
-	return m_Width;
+    return m_Width;
 }
 
-inline void TrailPointData::SetWidth( float width )
+inline void TrailPointData::SetWidth(float width)
 {
-	m_Width = width;
+    m_Width = width;
 }
 
-inline float TrailPointData::DistanceTo( const TrailPointData& point ) const
+inline float TrailPointData::GetLifetime() const
 {
-	return glm::distance( m_Position, point.GetPosition() );
+    return m_Lifetime;
 }
 
-typedef std::list< TrailPointData > TrailPointDataList;
-
+inline void TrailPointData::SetLifetime(float value)
+{
+    m_Lifetime = value;
 }
+
+inline float TrailPointData::DistanceTo(const TrailPointData& point) const
+{
+    return glm::distance(m_Position, point.GetPosition());
+}
+
+typedef std::list<TrailPointData> TrailPointDataList;
+
+} // namespace Nullscape

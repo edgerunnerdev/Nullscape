@@ -34,7 +34,7 @@ namespace Nullscape
 TrailComponent::TrailComponent()
     : m_Offset(0.0f)
     , m_Width(1.0f)
-    , m_Decay(1.0f)
+    , m_Lifetime(1.0f)
     , m_Color(1.0f)
     , m_DebugRender(false)
 {
@@ -54,7 +54,7 @@ void TrailComponent::Update(float delta)
 {
     if (m_pTrail.expired() && g_pGame->GetCurrentSector())
     {
-        m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(m_Width, m_Decay, m_Color);
+        m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(m_Width, m_Lifetime, m_Color);
     }
 
     TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
@@ -77,9 +77,9 @@ void TrailComponent::UpdateDebugUI()
         m_Width = glm::max(0.1f, m_Width);
     }
 
-    if (ImGui::InputFloat("Decay", &m_Decay))
+    if (ImGui::InputFloat("Lifetime", &m_Lifetime))
     {
-        m_Decay = glm::max(0.1f, m_Decay);
+        m_Lifetime = glm::max(0.1f, m_Lifetime);
     }
 
     float v[3] = {m_Offset.x, m_Offset.y, m_Offset.z};
@@ -109,7 +109,7 @@ bool TrailComponent::Serialize(nlohmann::json& data)
     bool success = Component::Serialize(data);
     Component::Serialize(data, "offset", m_Offset);
     Component::Serialize(data, "width", m_Width);
-    Component::Serialize(data, "decay", m_Decay);
+    Component::Serialize(data, "lifetime", m_Lifetime);
     Component::Serialize(data, "color", m_Color);
     return success;
 }
@@ -119,7 +119,7 @@ bool TrailComponent::Deserialize(const nlohmann::json& data)
     bool success = Component::Deserialize(data);
     success &= TryDeserialize(data, "offset", m_Offset);
     success &= TryDeserialize(data, "width", m_Width);
-    success &= TryDeserialize(data, "decay", m_Decay);
+    success &= TryDeserialize(data, "lifetime", m_Lifetime);
     success &= TryDeserialize(data, "color", m_Color);
     return success;
 }
@@ -130,7 +130,7 @@ void TrailComponent::CloneFrom(Component* pComponent)
     TrailComponent* pOtherComponent = reinterpret_cast<TrailComponent*>(pComponent);
     m_Offset = pOtherComponent->m_Offset;
     m_Width = pOtherComponent->m_Width;
-    m_Decay = pOtherComponent->m_Decay;
+    m_Lifetime = pOtherComponent->m_Lifetime;
     m_Color = pOtherComponent->m_Color;
 }
 

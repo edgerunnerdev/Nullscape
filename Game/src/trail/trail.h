@@ -37,7 +37,7 @@ GENESIS_DECLARE_SMART_PTR(Trail);
 class Trail
 {
 public:
-    Trail(float initialWidth, float decay, const glm::vec4& colour);
+    Trail(float initialWidth, float lifetime, const glm::vec4& colour);
     ~Trail(){};
 
     void AddPoint(const glm::mat4x4& transform);
@@ -55,7 +55,7 @@ public:
 private:
     TrailPointDataList m_Data;
     float m_InitialWidth;
-    float m_Decay;
+    float m_InitialLifetime;
     glm::vec4 m_Color;
     bool m_IsOrphan;
     int m_ActivePoints;

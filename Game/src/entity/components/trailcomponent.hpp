@@ -53,7 +53,7 @@ private:
     TrailWeakPtr m_pTrail;
     glm::vec3 m_Offset;
     float m_Width;
-    float m_Decay;
+    float m_Lifetime;
     glm::vec4 m_Color;
     bool m_DebugRender;
 };
