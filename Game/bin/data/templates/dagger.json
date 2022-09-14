@@ -46,7 +46,7 @@
             ],
             "type": "TrailComponent",
             "version": 1,
-            "width": 2.0
+            "width": 1.5
         },
         {
             "color": [
@@ -63,7 +63,7 @@
             ],
             "type": "TrailComponent",
             "version": 1,
-            "width": 2.0
+            "width": 1.5
         }
     ]
 }

@@ -742,11 +742,9 @@ void EngineModule::UpdateGlow( float delta )
 
 		glm::vec3 source = GetWorldPosition() - glm::vec3( size / 2.0f, 0.0f, 0.0f );
 		source -= forward * 10.0f;
-		glm::vec3 destination = source + glm::vec3( size, 0.0f, 0.0f );
 
 		Sprite sprite(
 			source,
-			destination,
 			Genesis::Colour( 1.0f, 1.0f, 1.0f, 1.0f ),
 			size,
 			0 );

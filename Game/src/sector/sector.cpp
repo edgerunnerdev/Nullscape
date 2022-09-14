@@ -190,13 +190,13 @@ bool Sector::Initialize()
     m_pSystem->GetLayer(LayerId::Debug)->AddSceneObject(Genesis::FrameWork::GetDebugRender(), false);
 
     m_pAmmoManager = new AmmoManager();
-    m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject(m_pAmmoManager);
+    m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pAmmoManager);
 
     m_pLaserManager = new LaserManager();
-    m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject(m_pLaserManager);
+    m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pLaserManager);
 
     m_pSpriteManager = new SpriteManager();
-    m_pSystem->GetLayer(LayerId::Ammo)->AddSceneObject(m_pSpriteManager);
+    m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pSpriteManager);
 
     m_pRadar = new Radar();
     Genesis::FrameWork::GetGuiManager()->AddElement(m_pRadar);

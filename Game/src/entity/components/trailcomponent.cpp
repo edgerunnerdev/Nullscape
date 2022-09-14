@@ -24,6 +24,8 @@
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
 #include "sector/sector.h"
+#include "sprite/sprite.h"
+#include "sprite/spritemanager.h"
 #include "trail/trailmanager.h"
 #include "trail/trail.h"
 #include "game.hpp"
@@ -58,14 +60,24 @@ void TrailComponent::Update(float delta)
     }
 
     TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
+    glm::mat4x4 transform(1.0f);
     if (pTransformComponent)
     {
+        transform = pTransformComponent->GetTransform() * glm::translate(m_Offset);
+
         TrailSharedPtr pTrail = m_pTrail.lock();
         if (pTrail)
         {
-            pTrail->AddPoint(pTransformComponent->GetTransform() * glm::translate(m_Offset));
+            pTrail->AddPoint(transform);
         }
     }
+    else
+    {
+        transform = glm::translate(m_Offset);
+    }
+
+    Sprite sprite(glm::vec3(transform[3]), Genesis::Colour(1.0f, 1.0f, 1.0f, 1.0f), 10.0f, 0);
+    g_pGame->GetCurrentSector()->GetSpriteManager()->AddSprite(sprite);
 }
 
 void TrailComponent::UpdateDebugUI()

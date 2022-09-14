@@ -182,11 +182,9 @@ void Missile::UpdateGlow()
 	const float size = GetGlowSize();
 	glm::vec3 source = m_Src - glm::vec3( size / 2.0f, 0.0f, 0.0f );
 	source -= m_Dir * size / 10.0f;
-	glm::vec3 destination = source + glm::vec3( size, 0.0f, 0.0f );
 
 	Sprite sprite(
 		source,
-		destination,
 		GetGlowColour(),
 		size,
 		0 );

@@ -24,66 +24,59 @@ namespace Nullscape
 
 ///////////////////////////////////////////////////////////////////////////////
 // Sprite
-// It needs to be passed to the SpriteManager every frame it needs to be 
+// It needs to be passed to the SpriteManager every frame it needs to be
 // rendered and deals entirely in world space coordinates.
 ///////////////////////////////////////////////////////////////////////////////
 
 class Sprite
 {
 public:
-								Sprite() :
-									m_Source( 0.0f, 0.0f, 0.0f ),
-									m_Destination( 1.0f, 0.0f, 0.0f ),
-									m_Colour( 1.0f, 1.0f, 1.0f, 1.0f ),
-									m_Width( 1.0f ),
-									m_SpriteIdx( 0 )
-								{}
+    Sprite()
+        : m_Position(0.0f, 0.0f, 0.0f)
+        , m_Colour(1.0f, 1.0f, 1.0f, 1.0f)
+        , m_Size(1.0f)
+        , m_SpriteIdx(0)
+    {
+    }
 
-								Sprite( const glm::vec3& source, const glm::vec3& destination, const Genesis::Colour& colour, float width, unsigned int spriteIdx ) :
-									m_Source( source ),
-									m_Destination( destination ),
-									m_Colour( colour ),
-									m_Width( width ),
-									m_SpriteIdx( spriteIdx )
-								{}
+    Sprite(const glm::vec3& position, const Genesis::Colour& colour, float size, unsigned int spriteIdx)
+        : m_Position(position)
+        , m_Colour(colour)
+        , m_Size(size)
+        , m_SpriteIdx(spriteIdx)
+    {
+    }
 
-	const glm::vec3&			GetSource() const;
-	const glm::vec3&			GetDestination() const;
-	const Genesis::Colour&		GetColour() const;
-	float						GetWidth() const;
-	unsigned int				GetIndex() const;
+    const glm::vec3& GetPosition() const;
+    const Genesis::Colour& GetColour() const;
+    float GetSize() const;
+    unsigned int GetIndex() const;
 
 private:
-	glm::vec3					m_Source;
-	glm::vec3					m_Destination;
-	Genesis::Colour				m_Colour;
-	float						m_Width;
-	unsigned int				m_SpriteIdx;
+    glm::vec3 m_Position;
+    Genesis::Colour m_Colour;
+    float m_Size;
+    unsigned int m_SpriteIdx;
 };
 
-inline const glm::vec3& Sprite::GetSource() const
+inline const glm::vec3& Sprite::GetPosition() const
 {
-	return m_Source;
-}
-
-inline const glm::vec3& Sprite::GetDestination() const
-{
-	return m_Destination;
+    return m_Position;
 }
 
 inline const Genesis::Colour& Sprite::GetColour() const
 {
-	return m_Colour;
+    return m_Colour;
 }
 
-inline float Sprite::GetWidth() const
+inline float Sprite::GetSize() const
 {
-	return m_Width;
+    return m_Size;
 }
 
 inline unsigned int Sprite::GetIndex() const
 {
-	return m_SpriteIdx;
+    return m_SpriteIdx;
 }
 
-}
+} // namespace Nullscape

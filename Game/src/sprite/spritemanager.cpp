@@ -17,6 +17,7 @@
 
 #include <resources/resourceshader.hpp>
 #include <rendersystem.h>
+#include <scene/scene.h>
 #include <shaderuniform.h>
 
 #include "sprite/spritemanager.h"
@@ -58,6 +59,8 @@ void SpriteManager::Update( float delta )
 		return;
 	}
 
+	const glm::vec3& cameraPosition = FrameWork::GetScene()->GetCamera()->GetPosition();
+
 	PositionData posData;
 	UVData uvData;
 	ColourData colourData;
@@ -67,20 +70,21 @@ void SpriteManager::Update( float delta )
 	uvData.reserve( numVertices );
 	colourData.reserve( numVertices );
 
+	const glm::vec3 worldY(0.0f, 1.0f, 0.0f);
 	for ( auto& sprite : m_Sprites )
 	{
-		const float halfWidth = sprite.GetWidth() / 2.0f;
-		const glm::vec3& src = sprite.GetSource();
-		const glm::vec3& dst = sprite.GetDestination();
-		glm::vec3 dir = glm::normalize( dst - src );
-		glm::vec3 perp( -dir.y * halfWidth, dir.x * halfWidth, 0.0f );
+        const glm::vec3 toCamera = glm::normalize(cameraPosition - sprite.GetPosition());
+        const glm::vec3 localX = glm::normalize(glm::cross(worldY, toCamera));
+        const glm::vec3 localY = glm::normalize(glm::cross(localX, toCamera));
+		const float halfSize = sprite.GetSize() / 2.0f;
+		const glm::vec3& pos = sprite.GetPosition();
 
-		posData.emplace_back( src.x + perp.x, src.y + perp.y, src.z ); // 0
-		posData.emplace_back( src.x - perp.x, src.y - perp.y, src.z ); // 1
-		posData.emplace_back( dst.x - perp.x, dst.y - perp.y, src.z ); // 2
-		posData.emplace_back( src.x + perp.x, src.y + perp.y, src.z ); // 0
-		posData.emplace_back( dst.x - perp.x, dst.y - perp.y, src.z ); // 2
-		posData.emplace_back( dst.x + perp.x, dst.y + perp.y, src.z ); // 3
+		posData.emplace_back(pos + localX * halfSize - localY * halfSize); // 0
+        posData.emplace_back(pos - localX * halfSize - localY * halfSize); // 1
+		posData.emplace_back(pos - localX * halfSize + localY * halfSize); // 2
+        posData.emplace_back(pos + localX * halfSize - localY * halfSize); // 0
+        posData.emplace_back(pos - localX * halfSize + localY * halfSize); // 2
+        posData.emplace_back(pos + localX * halfSize + localY * halfSize); // 2
 
 		uvData.emplace_back( 1.0f, 0.0f ); // 0
 		uvData.emplace_back( 0.0f, 0.0f ); // 1
@@ -109,6 +113,7 @@ void SpriteManager::Render()
 		return;
 
 	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Add );
+        glDisable(GL_DEPTH_TEST);
 
 	m_pShader->Use();
 	m_pVertexBuffer->Draw( m_Sprites.size() * 6 );
@@ -119,6 +124,7 @@ void SpriteManager::Render()
 	}
 
 	FrameWork::GetRenderSystem()->SetBlendMode( BlendMode::Disabled );
+        glEnable(GL_DEPTH_TEST);
 }
 
 void SpriteManager::AddSprite( const Sprite& Sprite )
