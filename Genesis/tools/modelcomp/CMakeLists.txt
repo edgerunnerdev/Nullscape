@@ -43,6 +43,7 @@ target_link_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
+    CGAL::CGAL
     GenesisCore
     GenesisResComp
     SDL2main

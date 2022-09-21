@@ -50,15 +50,17 @@ private:
     bool ValidateMaterials(const aiScene* pImportedScene);
     std::filesystem::path GetTargetModelPath(const std::filesystem::path& sourceModelPath) const;
     bool Compile(const aiScene* pImportedScene, std::filesystem::path& targetModelPath);
-    void WriteHeader(Serialization::Model& model, const aiScene* pImportedScene);
-    void WriteMaterials(Serialization::Model& model);
-    void WriteMeshes(Serialization::Model& model, const aiScene* pImportedScene);
+    bool WriteHeader(Serialization::Model& model, const aiScene* pImportedScene);
+    bool WriteMaterials(Serialization::Model& model);
+    bool  WriteMeshes(Serialization::Model& model, const aiScene* pImportedScene);
     void WriteMeshHeader(Serialization::Mesh& mesh, const aiMesh* pImportedMesh);
     void WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh);
+    bool WritePhysicsMesh(Serialization::Model& model, const aiScene* pImportedScene);
 
     using MaterialMap = std::unordered_map<std::string, MaterialUniquePtr>;
     MaterialMap m_Materials;
     std::filesystem::path m_SourceModelPath;
+    bool m_GeneratePhysicsMesh;
 };
 
 } // namespace ResComp

@@ -1,6 +1,7 @@
 {
   "source": "model.fbx",
   "compiler": "ModelComp",
+  "generate_physics_mesh": true,
   "materials": [
     {
       "name": "Material",

@@ -40,6 +40,7 @@ struct ModelHeader
     uint8_t version;
     uint8_t materials;
     uint8_t meshes;
+    uint8_t hasPhysicsMesh;
 };
 
 template <typename S> void serialize(S& s, ModelHeader& header)
@@ -48,6 +49,7 @@ template <typename S> void serialize(S& s, ModelHeader& header)
     s.value1b(header.version);
     s.value1b(header.materials);
     s.value1b(header.meshes);
+    s.value1b(header.hasPhysicsMesh);
 }
 
 struct ModelMaterial
@@ -162,6 +164,7 @@ struct Model
     ModelHeader header;
     std::vector<ModelMaterial> materials;
     std::vector<Mesh> meshes;
+    Mesh physicsMesh;
 };
 
 template <typename S> void serialize(S& s, Model& model)
@@ -169,6 +172,7 @@ template <typename S> void serialize(S& s, Model& model)
     s.object(model.header);
     s.container(model.materials, 256);
     s.container(model.meshes, 256);
+    s.object(model.physicsMesh);
 }
 
 } // namespace Genesis::Serialization

@@ -25,6 +25,10 @@
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/stream.h>
 #include <bitsery/traits/string.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/convex_hull_3.h>
 #include <nlohmann/json.hpp>
 #include <externalheadersend.hpp>
 // clang-format on
@@ -35,12 +39,14 @@
 #include <fstream>
 #include <log.hpp>
 
-namespace Genesis
-{
-namespace ResComp
+namespace Genesis::ResComp
 {
 
-ModelComp::ModelComp() {}
+ModelComp::ModelComp()
+    : m_GeneratePhysicsMesh(false)
+{
+}
+
 ModelComp::~ModelComp() {}
 
 int ModelComp::Run()
@@ -110,6 +116,12 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
         {
             m_SourceModelPath = assetPath;
             m_SourceModelPath = m_SourceModelPath.remove_filename() / it->get<std::string>();
+        }
+
+        it = j.find("generate_physics_mesh");
+        if (it != j.end() && it->is_boolean())
+        {
+            m_GeneratePhysicsMesh = it->get<bool>();
         }
 
         it = j.find("materials");
@@ -186,7 +198,7 @@ bool ModelComp::ReadAsset(const std::filesystem::path& assetPath)
     return false;
 }
 
-bool ModelComp::ValidateImport(const aiScene* pScene) 
+bool ModelComp::ValidateImport(const aiScene* pScene)
 {
     if (pScene->HasMeshes() == false)
     {
@@ -298,17 +310,31 @@ bool ModelComp::Compile(const aiScene* pImportedScene, std::filesystem::path& ta
     std::ofstream file(targetModelPath, std::ios::out | std::ios::trunc | std::ios::binary);
     if (file.good())
     {
+        bool success = true;
         Serialization::Model model;
-        WriteHeader(model, pImportedScene);
-        WriteMaterials(model);
-        WriteMeshes(model, pImportedScene);
+        success &= WriteHeader(model, pImportedScene);
+        success &= WriteMaterials(model);
+        success &= WriteMeshes(model, pImportedScene);
 
-        bitsery::Serializer<bitsery::OutputBufferedStreamAdapter> ser{file};
-        ser.object(model);
-        ser.adapter().flush();
+        if (m_GeneratePhysicsMesh)
+        {
+            success &= WritePhysicsMesh(model, pImportedScene);
+        }
 
-        file.close();
-        return true;
+        if (success)
+        {
+            bitsery::Serializer<bitsery::OutputBufferedStreamAdapter> ser{file};
+            ser.object(model);
+            ser.adapter().flush();
+
+            file.close();
+            return true;
+        }
+        else
+        {
+            file.close();
+            return false;
+        }
     }
     else
     {
@@ -316,15 +342,17 @@ bool ModelComp::Compile(const aiScene* pImportedScene, std::filesystem::path& ta
     }
 }
 
-void ModelComp::WriteHeader(Serialization::Model& model, const aiScene* pImportedScene)
+bool ModelComp::WriteHeader(Serialization::Model& model, const aiScene* pImportedScene)
 {
     model.header.format = "GMDL";
-    model.header.version = 1;
+    model.header.version = 2;
     model.header.materials = static_cast<uint8_t>(pImportedScene->mNumMaterials);
     model.header.meshes = static_cast<uint8_t>(pImportedScene->mNumMeshes);
+    model.header.hasPhysicsMesh = m_GeneratePhysicsMesh ? 1 : 0;
+    return true;
 }
 
-void ModelComp::WriteMaterials(Serialization::Model& model)
+bool ModelComp::WriteMaterials(Serialization::Model& model)
 {
     for (auto& materialPair : m_Materials)
     {
@@ -335,9 +363,10 @@ void ModelComp::WriteMaterials(Serialization::Model& model)
         material.bindings = pMaterial->GetBindings();
         model.materials.push_back(std::move(material));
     }
+    return true;
 }
 
-void ModelComp::WriteMeshes(Serialization::Model& model, const aiScene* pImportedScene)
+bool ModelComp::WriteMeshes(Serialization::Model& model, const aiScene* pImportedScene)
 {
     for (unsigned int i = 0; i < pImportedScene->mNumMeshes; ++i)
     {
@@ -347,6 +376,7 @@ void ModelComp::WriteMeshes(Serialization::Model& model, const aiScene* pImporte
         WriteMesh(mesh, pImportedMesh);
         model.meshes.push_back(std::move(mesh));
     }
+    return true;
 }
 
 void ModelComp::WriteMeshHeader(Serialization::Mesh& mesh, const aiMesh* pImportedMesh)
@@ -361,7 +391,6 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
 {
     aiMatrix4x4 rotX;
     aiMatrix4x4::RotationX(-AI_MATH_HALF_PI, rotX);
-    //aiMatrix4x4::RotationX(0.0f, rotX);
 
     mesh.vertices.reserve(mesh.header.vertices);
     for (uint32_t i = 0; i < mesh.header.vertices; ++i)
@@ -390,13 +419,13 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
     }
 
     mesh.normals.reserve(mesh.header.vertices);
-    mesh.tangents.reserve(mesh.header.vertices);
+    mesh.tangents.reserve(mesh.header.vertices); 
     mesh.bitangents.reserve(mesh.header.vertices);
     for (uint32_t i = 0; i < mesh.header.vertices; ++i)
     {
         aiVector3D normal = rotX * pImportedMesh->mNormals[i];
         mesh.normals.push_back({normal.x, normal.y, normal.z});
-        
+
         aiVector3D tangent = rotX * pImportedMesh->mTangents[i];
         mesh.tangents.push_back({tangent.x, tangent.y, tangent.z});
 
@@ -405,5 +434,74 @@ void ModelComp::WriteMesh(Serialization::Mesh& mesh, const aiMesh* pImportedMesh
     }
 }
 
-} // namespace ResComp
-} // namespace Genesis
+bool ModelComp::WritePhysicsMesh(Serialization::Model& model, const aiScene* pImportedScene)
+{
+    using K = CGAL::Exact_predicates_inexact_constructions_kernel;
+    using Polyhedron_3 = CGAL::Polyhedron_3<K>;
+    using Point_3 = K::Point_3;
+    using Surface_mesh = CGAL::Surface_mesh<Point_3>;
+
+    uint32_t numTriangles = 0;
+    std::vector<Point_3> points;
+    aiMatrix4x4 rotX;
+    aiMatrix4x4::RotationX(-AI_MATH_HALF_PI, rotX);
+
+    for (unsigned int i = 0; i < pImportedScene->mNumMeshes; ++i)
+    {
+        const aiMesh* pImportedMesh = pImportedScene->mMeshes[i];
+        const size_t numVertices = pImportedMesh->mNumVertices;
+        numTriangles += pImportedMesh->mNumFaces;
+        points.reserve(points.size() + numVertices);
+        for (uint32_t j = 0; j < numVertices; ++j)
+        {
+            aiVector3D vertex = rotX * pImportedMesh->mVertices[j];
+            points.push_back({vertex.x, vertex.y, vertex.z});
+        }
+    }
+
+    // define polyhedron to hold convex hull
+    Polyhedron_3 poly;
+    Surface_mesh sm;
+    // compute convex hull of non-collinear points
+    CGAL::convex_hull_3(points.begin(), points.end(), poly);
+    CGAL::convex_hull_3(points.begin(), points.end(), sm);
+
+    Serialization::Mesh mesh;
+
+    mesh.vertices.reserve(poly.size_of_vertices());
+    for (const auto& vertex : poly.points())
+    {
+        mesh.vertices.push_back({static_cast<float>(vertex.x()), static_cast<float>(vertex.y()), static_cast<float>(vertex.z())});
+    }
+
+    for (auto& faceIndex : sm.faces())
+    {
+        auto verticesAroundFace = sm.vertices_around_face(sm.halfedge(faceIndex));
+        if (verticesAroundFace.size() != 3)
+        {
+            Log::Error() << "Generated physics mesh with non-triangular face.";
+            return false;
+        }
+
+        uint32_t faceIndices[3] = {0, 0, 0};
+        int i = 0;
+        for (auto& vertexIndex : verticesAroundFace)
+        {
+            faceIndices[i++] = vertexIndex.idx();
+        }
+        mesh.triangles.push_back({faceIndices[0], faceIndices[1], faceIndices[2]});
+    }
+
+    mesh.header.materialIndex = 0;
+    mesh.header.uvChannels = 0;
+    mesh.header.vertices = static_cast<uint32_t>(mesh.vertices.size());
+    mesh.header.triangles = static_cast<uint32_t>(mesh.triangles.size());
+
+    Log::Info() << "Generated physics convex hull with " << mesh.header.vertices << " vertices and " << mesh.header.triangles << " triangles from base mesh with " << points.size() << " vertices and "
+                << numTriangles << " triangles.";
+
+    model.physicsMesh = std::move(mesh);
+    return true;
+}
+
+} // namespace Genesis::ResComp
