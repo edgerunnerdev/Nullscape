@@ -485,7 +485,7 @@ bool ModelComp::WritePhysicsMesh(Serialization::Model& model, const aiScene* pIm
 
         uint32_t faceIndices[3] = {0, 0, 0};
         int i = 0;
-        for (auto& vertexIndex : verticesAroundFace)
+        for (const auto& vertexIndex : verticesAroundFace)
         {
             faceIndices[i++] = vertexIndex.idx();
         }

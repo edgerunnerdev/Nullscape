@@ -22,4 +22,4 @@
 	`./vcpkg install --triplet x64-linux`
 	
 You'll need to install the following packages:
-sudo apt install clang cmake libsdl2-dev libsdl2-image-dev libbullet-dev libglew-dev libvpx-dev libsdl2-mixer-dev
+sudo apt install autoconf autoconf-archive clang cmake libsdl2-dev libsdl2-image-dev libtool libbullet-dev libglew-dev libvpx-dev libsdl2-mixer-dev
