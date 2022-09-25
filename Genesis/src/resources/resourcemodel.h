@@ -91,6 +91,7 @@ private:
     bool ReadHeader(const Serialization::Model* pModel);
     bool ReadMaterials(const Serialization::Model* pModel);
     bool ReadMeshes(const Serialization::Model* pModel);
+    bool ReadPhysicsMesh(const Serialization::Model* pModel);
 
     using Meshes = std::vector<MeshUniquePtr>;
 

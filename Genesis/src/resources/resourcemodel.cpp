@@ -48,7 +48,7 @@ namespace Genesis
 
 Mesh::Mesh(const Serialization::Mesh* pMesh)
     : m_NumVertices(pMesh->header.vertices)
-    , m_NumUVs(pMesh->uvChannels[0].uvs.size())
+    , m_NumUVs(pMesh->uvChannels.empty() ? 0 : pMesh->uvChannels[0].uvs.size())
     , m_NumTriangles(pMesh->header.triangles)
     , m_MaterialIndex(pMesh->header.materialIndex)
 {
@@ -253,6 +253,11 @@ bool ResourceModel::Load()
         Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to read meshes.";
         return false;
     }
+    else if (ReadPhysicsMesh(&model) == false)
+    {
+        Log::Error() << "Couldn't load " << GetFilename().GetFullPath() << ": Failed to load physics mesh.";
+        return false;
+    }
     else
     {
         Log::Info() << "Loaded model " << GetFilename().GetFullPath() << ": " << static_cast<int>(model.header.meshes) << " meshes, " << static_cast<int>(model.header.materials) << " materials.";
@@ -336,6 +341,15 @@ bool ResourceModel::ReadMeshes(const Serialization::Model* pModel)
     {
         MeshUniquePtr pMesh = std::make_unique<Mesh>(&serializationMesh);
         m_Meshes.push_back(std::move(pMesh));
+    }
+    return true;
+}
+
+bool ResourceModel::ReadPhysicsMesh(const Serialization::Model* pModel)
+{
+    if (pModel->header.hasPhysicsMesh)
+    {
+        m_pPhysicsMesh = std::make_unique<Mesh>(&pModel->physicsMesh);
     }
     return true;
 }
