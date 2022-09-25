@@ -68,9 +68,10 @@ public:
     enum DebugRenderFlags
     {
         None = 0,
-        Normals = 1,
-        Tangents = 2,
-        Bitangents = 4
+        Normals = 1 << 0,
+        Tangents = 1 << 1,
+        Bitangents = 1 << 2,
+        PhysicsMesh = 1 << 3
     };
 
     ResourceModel(const Filename& filename);
@@ -87,8 +88,6 @@ public:
     size_t GetTriangleCount() const;
 
 private:
-    void AddTMFDummy(FILE* fp);
-
     bool ReadHeader(const Serialization::Model* pModel);
     bool ReadMaterials(const Serialization::Model* pModel);
     bool ReadMeshes(const Serialization::Model* pModel);
@@ -97,7 +96,8 @@ private:
 
     Materials m_Materials;
     Meshes m_Meshes;
-    DummyMap mDummyMap;
+    MeshUniquePtr m_pPhysicsMesh;
+    DebugRenderFlags m_DebugRenderFlags;
 };
 
 inline Materials& ResourceModel::GetMaterials()

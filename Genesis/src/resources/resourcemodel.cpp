@@ -52,6 +52,8 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
     , m_NumTriangles(pMesh->header.triangles)
     , m_MaterialIndex(pMesh->header.materialIndex)
 {
+    unsigned int vboFlags = VBO_POSITION | VBO_INDEX;
+
     IndexData indices;
     indices.reserve(m_NumTriangles * 3);
     for (uint32_t i = 0; i < m_NumTriangles; i++)
@@ -63,40 +65,84 @@ Mesh::Mesh(const Serialization::Mesh* pMesh)
 
     PositionData positions;
     positions.reserve(m_NumVertices);
-
-    UVData uvs;
-    uvs.reserve(m_NumVertices);
-
-    NormalData normals;
-    normals.reserve(m_NumVertices);
-
-    TangentData tangents;
-    tangents.reserve(m_NumVertices);
-
-    BitangentData bitangents;
-    bitangents.reserve(m_NumVertices);
-
     for (uint32_t i = 0; i < m_NumVertices; i++)
     {
         positions.emplace_back(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z);
-        uvs.emplace_back(pMesh->uvChannels[0].uvs[i].u, pMesh->uvChannels[0].uvs[i].v);
-        normals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
-        tangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
-        bitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
-
         m_DebugPositions.emplace_back(pMesh->vertices[i].x, pMesh->vertices[i].y, pMesh->vertices[i].z);
-        m_DebugNormals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
-        m_DebugTangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
-        m_DebugBitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
     }
 
-    m_pVertexBuffer = std::make_shared<VertexBuffer>(GeometryType::Triangle, VBO_POSITION | VBO_UV | VBO_NORMAL | VBO_TANGENT | VBO_BITANGENT | VBO_INDEX);
-    m_pVertexBuffer->CopyPositions(positions);
-    m_pVertexBuffer->CopyUVs(uvs);
-    m_pVertexBuffer->CopyNormals(normals);
-    m_pVertexBuffer->CopyTangents(tangents);
-    m_pVertexBuffer->CopyBitangents(bitangents);
-    m_pVertexBuffer->CopyIndices(indices);
+    UVData uvs;
+    if (!pMesh->uvChannels.empty())
+    {
+        vboFlags |= VBO_UV;
+        uvs.reserve(m_NumVertices);
+        for (uint32_t i = 0; i < m_NumVertices; i++)
+        {
+            uvs.emplace_back(pMesh->uvChannels[0].uvs[i].u, pMesh->uvChannels[0].uvs[i].v);
+        }
+    }
+
+    NormalData normals;
+    if (!pMesh->normals.empty())
+    {
+        vboFlags |= VBO_NORMAL;
+        normals.reserve(m_NumVertices);
+        for (uint32_t i = 0; i < m_NumVertices; i++)
+        {
+            normals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
+            m_DebugNormals.emplace_back(pMesh->normals[i].x, pMesh->normals[i].y, pMesh->normals[i].z);
+        }
+    }
+
+    TangentData tangents;
+    if (!pMesh->tangents.empty())
+    {
+        vboFlags |= VBO_TANGENT;
+        tangents.reserve(m_NumVertices);
+        for (uint32_t i = 0; i < m_NumVertices; i++)
+        {
+            tangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
+            m_DebugTangents.emplace_back(pMesh->tangents[i].x, pMesh->tangents[i].y, pMesh->tangents[i].z);
+        }
+    }
+
+    BitangentData bitangents;
+    if (!pMesh->bitangents.empty())
+    {
+        vboFlags |= VBO_BITANGENT;
+        bitangents.reserve(m_NumVertices);
+        for (uint32_t i = 0; i < m_NumVertices; i++)
+        {
+            bitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
+            m_DebugBitangents.emplace_back(pMesh->bitangents[i].x, pMesh->bitangents[i].y, pMesh->bitangents[i].z);
+        }
+    }
+
+    m_pVertexBuffer = std::make_shared<VertexBuffer>(GeometryType::Triangle, vboFlags);
+    if (vboFlags & VBO_POSITION)
+    {
+        m_pVertexBuffer->CopyPositions(positions);
+    }
+    if (vboFlags & VBO_UV)
+    {
+        m_pVertexBuffer->CopyUVs(uvs);
+    }
+    if (vboFlags & VBO_NORMAL)
+    {
+        m_pVertexBuffer->CopyNormals(normals);
+    }
+    if (vboFlags & VBO_TANGENT)
+    {
+        m_pVertexBuffer->CopyTangents(tangents);
+    }
+    if (vboFlags & VBO_BITANGENT)
+    {
+        m_pVertexBuffer->CopyBitangents(bitangents);
+    }
+    if (vboFlags & VBO_INDEX)
+    {
+        m_pVertexBuffer->CopyIndices(indices);
+    }
 }
 
 Mesh::~Mesh()
@@ -165,6 +211,7 @@ size_t Mesh::GetTriangleCount() const
 
 ResourceModel::ResourceModel(const Filename& filename)
     : ResourceGeneric(filename)
+    , m_DebugRenderFlags(DebugRenderFlags::None)
 {
 }
 
@@ -295,47 +342,8 @@ bool ResourceModel::ReadMeshes(const Serialization::Model* pModel)
 
 bool ResourceModel::GetDummy(const std::string& name, glm::vec3* pPosition) const
 {
-    std::string nameLowerCase(name);
-    std::transform(nameLowerCase.begin(), nameLowerCase.end(), nameLowerCase.begin(),
-                   [](char c) -> char
-                   {
-                       return static_cast<char>(std::tolower(c));
-                   });
-
-    DummyMap::const_iterator it = mDummyMap.find(nameLowerCase);
-    if (it == mDummyMap.end())
-    {
-        return false;
-    }
-    else
-    {
-        *pPosition = it->second;
-        return true;
-    }
-}
-
-void ResourceModel::AddTMFDummy(FILE* fp)
-{
-    int len;
-    fread(&len, sizeof(uint32_t), 1, fp);
-    char* pBuffer = new char[len];
-    fread(pBuffer, sizeof(char), len, fp);
-
-    glm::vec3 pos;
-    fread(&pos.x, sizeof(float), 1, fp);
-    fread(&pos.y, sizeof(float), 1, fp);
-    fread(&pos.z, sizeof(float), 1, fp);
-
-    std::string dummyName(pBuffer);
-    std::transform(dummyName.begin(), dummyName.end(), dummyName.begin(),
-                   [](char c) -> char
-                   {
-                       return static_cast<char>(std::tolower(c));
-                   });
-
-    mDummyMap[dummyName] = pos;
-
-    delete[] pBuffer;
+    // No longer used, use an entity component instead.
+    return false;
 }
 
 // You can optionally pass an override material to be used instead of the normal materials this model would use.
@@ -354,6 +362,11 @@ void ResourceModel::Render(const glm::mat4& modelTransform, Material* pOverrideM
         {
             pMesh->Render(modelTransform, pOverrideMaterial);
         }
+    }
+
+    if (m_pPhysicsMesh && (m_DebugRenderFlags & DebugRenderFlags::PhysicsMesh))
+    {
+        m_pPhysicsMesh->Render(modelTransform, nullptr);
     }
 }
 

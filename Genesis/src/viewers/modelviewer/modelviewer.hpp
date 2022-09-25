@@ -63,6 +63,7 @@ private:
     bool m_DrawNormals;
     bool m_DrawTangents;
     bool m_DrawBitangents;
+    bool m_DrawPhysicsMesh;
 };
 
 } // namespace Genesis

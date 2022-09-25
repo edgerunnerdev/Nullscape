@@ -48,6 +48,7 @@ ModelViewer::ModelViewer()
     , m_DrawNormals(false)
     , m_DrawTangents(false)
     , m_DrawBitangents(false)
+    , m_DrawPhysicsMesh(false)
 {
     ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
 
@@ -147,6 +148,10 @@ void ModelViewer::DrawDebugModel()
         {
             flags |= ResourceModel::DebugRenderFlags::Bitangents;
         }
+        if (m_DrawPhysicsMesh)
+        {
+            flags |= ResourceModel::DebugRenderFlags::PhysicsMesh;
+        }
         m_pModel->DebugRender(m_pDebugRender, flags);
     }
 }
@@ -238,6 +243,7 @@ void ModelViewer::ShowOverlays()
         ImGui::Checkbox("Draw normals", &m_DrawNormals);
         ImGui::Checkbox("Draw tangents", &m_DrawTangents);
         ImGui::Checkbox("Draw bitangents", &m_DrawBitangents);
+        ImGui::Checkbox("Draw physics mesh", &m_DrawPhysicsMesh);
     }
 }
 
