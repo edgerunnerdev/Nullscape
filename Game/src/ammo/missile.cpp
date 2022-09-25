@@ -81,16 +81,16 @@ void Missile::GetTrailProperties(float& initialWidth, float& decay, glm::vec4& c
 
 void Missile::CreateTrail() 
 {
-    float initialWidth;
-    float decay;
-    glm::vec4 color;
-    GetTrailProperties(initialWidth, decay, color);
-    m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(initialWidth, decay, color);
-    TrailSharedPtr pTrail = m_pTrail.lock();
-    if (pTrail)
-    {
-        pTrail->AddPoint(m_Src);
-	}
+ //   float initialWidth;
+ //   float decay;
+ //   glm::vec4 color;
+ //   GetTrailProperties(initialWidth, decay, color);
+ //   m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(initialWidth, decay, color);
+ //   TrailSharedPtr pTrail = m_pTrail.lock();
+ //   if (pTrail)
+ //   {
+ //       pTrail->AddPoint(m_Src);
+	//}
 }
 
 Ship* Missile::FindClosestShip( const glm::vec3& position )
@@ -189,7 +189,7 @@ void Missile::UpdateGlow()
 		size,
 		0 );
 
-	g_pGame->GetCurrentSector()->GetSpriteManager()->AddSprite( sprite );
+	//g_pGame->GetCurrentSector()->GetSpriteManager()->AddSprite( sprite );
 }
 
 void Missile::Render()

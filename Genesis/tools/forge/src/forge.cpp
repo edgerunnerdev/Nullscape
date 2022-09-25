@@ -318,7 +318,7 @@ Forge::CompileResult Forge::CompileAsset(Asset* pAsset)
         std::stringstream arguments;
         arguments << "-a " << m_AssetsDir << " -d " << m_DataDir << " -f " << pAsset->GetPath() << " -m forge";
 
-        // Log::Info() << it->second << " " << arguments.str();
+        Log::Info() << pAsset->GetCompiler()->GetPath() << " " << arguments.str();
 
         Process process(pAsset->GetCompiler()->GetPath(), arguments.str());
         process.Run();

@@ -32,6 +32,8 @@ namespace Nullscape
 {
 
 GENESIS_DECLARE_SMART_PTR(Trail);
+class SpriteManager;
+class TrailManager;
 
 class TrailComponent : public Component
 {
@@ -46,6 +48,8 @@ public:
     virtual bool Serialize(nlohmann::json& data) override;
     virtual bool Deserialize(const nlohmann::json& data) override;
     virtual void CloneFrom(Component* pComponent) override;
+    virtual void OnAddedToScene(Genesis::Scene* pScene);
+    virtual void OnRemovedFromScene();
 
     DEFINE_COMPONENT(TrailComponent);
 
@@ -56,6 +60,8 @@ private:
     float m_Lifetime;
     glm::vec4 m_Color;
     bool m_DebugRender;
+    SpriteManager* m_pSpriteManager;
+    TrailManager* m_pTrailManager;
 };
 
 } // namespace Nullscape

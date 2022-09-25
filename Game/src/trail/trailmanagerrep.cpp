@@ -135,17 +135,17 @@ void TrailManagerRep::Update(float delta)
         }
     }
 
-    if (g_pGame->GetCurrentSector()->GetShipTweaks()->GetDrawTrails())
-    {
-        int l = static_cast<int>(posData.size());
-        for (int i = 0; i < l - 1; ++i)
-        {
-            if (l > 2)
-            {
-                Genesis::FrameWork::GetDebugRender()->DrawLine(posData[i], posData[i + 1], glm::vec3(1.0f, 0.0f, 0.0f));
-            }
-        }
-    }
+    //if (g_pGame->GetCurrentSector()->GetShipTweaks()->GetDrawTrails())
+    //{
+    //    int l = static_cast<int>(posData.size());
+    //    for (int i = 0; i < l - 1; ++i)
+    //    {
+    //        if (l > 2)
+    //        {
+    //            Genesis::FrameWork::GetDebugRender()->DrawLine(posData[i], posData[i + 1], glm::vec3(1.0f, 0.0f, 0.0f));
+    //        }
+    //    }
+    //}
 
     if (posData.empty() == false)
     {

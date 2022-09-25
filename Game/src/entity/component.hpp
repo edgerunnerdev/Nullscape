@@ -29,6 +29,7 @@
 #include <string>
 
 #include <coredefines.h>
+#include <scene/scene.h>
 
 #include "entity/componenttype.hpp"
 #include "jsonserialization.hpp"
@@ -65,6 +66,9 @@ public:
     virtual bool Deserialize(const nlohmann::json& data);
     virtual void CloneFrom(Component* pComponent);
     virtual bool UpdatesInEditor() const;
+
+    virtual void OnAddedToScene(Genesis::Scene* pScene) {}
+    virtual void OnRemovedFromScene() {}
 
     void SetOwner(Entity* pEntity);
     Entity* GetOwner() const;

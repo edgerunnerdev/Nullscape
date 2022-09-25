@@ -76,6 +76,7 @@ LayerSharedPtr Scene::AddLayer(uint32_t depth, bool isBackground /* = false */)
     }
 
     LayerSharedPtr pLayer = std::make_shared<Layer>(depth, isBackground);
+    pLayer->SetScene(this);
     mLayerList.push_back(pLayer);
     return pLayer;
 }

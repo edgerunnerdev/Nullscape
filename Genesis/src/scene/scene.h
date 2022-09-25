@@ -23,11 +23,11 @@
 #include "rendersystem.fwd.h"
 #include "scene/light.h"
 
-#include <array>
 #include <SDL.h>
+#include <array>
 #include <glm/vec3.hpp>
-#include <memory>
 #include <list>
+#include <memory>
 
 namespace Genesis
 {
@@ -54,6 +54,22 @@ public:
     Camera* GetCamera() const;
     const LightArray& GetLights() const;
     LightArray& GetLights();
+
+    template <typename T> T* Find()
+    {
+        for (auto& pLayer : mLayerList)
+        {
+            for (auto& pObject : pLayer->GetSceneObjects())
+            {
+                T* pResult = dynamic_cast<T*>(pObject.pSceneObject);
+                if (pResult != nullptr)
+                {
+                    return pResult;
+                }
+            }
+        }
+        return nullptr;
+    }
 
 private:
     using LayerList = std::list<LayerSharedPtr>;

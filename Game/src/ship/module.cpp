@@ -749,7 +749,7 @@ void EngineModule::UpdateGlow( float delta )
 			size,
 			0 );
 
-		g_pGame->GetCurrentSector()->GetSpriteManager()->AddSprite( sprite );
+		//g_pGame->GetCurrentSector()->GetSpriteManager()->AddSprite( sprite );
 	}
 }
 

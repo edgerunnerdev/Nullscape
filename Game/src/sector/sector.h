@@ -78,11 +78,9 @@ public:
 
     AmmoManager* GetAmmoManager() const;
     LaserManager* GetLaserManager() const;
-    SpriteManager* GetSpriteManager() const;
     ParticleManager* GetParticleManager() const;
     MuzzleflashManager* GetMuzzleflashManager() const;
     const ShipList& GetShipList() const;
-    TrailManager* GetTrailManager() const;
     ShipTweaks* GetShipTweaks() const;
     SectorCamera* GetCamera() const;
     const glm::vec2& GetCoordinates() const;
@@ -161,19 +159,9 @@ inline LaserManager* Sector::GetLaserManager() const
     return m_pLaserManager;
 }
 
-inline SpriteManager* Sector::GetSpriteManager() const
-{
-    return m_pSpriteManager;
-}
-
 inline const ShipList& Sector::GetShipList() const
 {
     return m_ShipList;
-}
-
-inline TrailManager* Sector::GetTrailManager() const
-{
-    return m_pTrailManager;
 }
 
 inline ParticleManager* Sector::GetParticleManager() const

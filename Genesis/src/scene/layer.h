@@ -26,6 +26,7 @@
 namespace Genesis
 {
 
+class Scene;
 class SceneObject;
 
 struct LayerObject
@@ -50,6 +51,9 @@ public:
     bool IsBackground() const;
     bool IsMarkedForDeletion() const;
     void MarkForDeletion();
+    const LayerObjectList& GetSceneObjects() const;
+    void SetScene(Scene* pScene);
+    Scene* GetScene() const;
 
 private:
     LayerObjectList mObjectList;
@@ -57,6 +61,7 @@ private:
     uint32_t mDepth;
     bool mIsBackground;
     bool mMarkedForDeletion;
+    Scene* m_pScene;
 };
 GENESIS_DECLARE_SMART_PTR(Layer);
 
@@ -76,4 +81,20 @@ inline void Layer::MarkForDeletion()
 {
     mMarkedForDeletion = true;
 }
+
+inline const LayerObjectList& Layer::GetSceneObjects() const 
+{
+    return mObjectList;
+}
+
+inline void Layer::SetScene(Scene* pScene)
+{
+    m_pScene = pScene;
+}
+
+inline Scene* Layer::GetScene() const
+{
+    return m_pScene;
+}
+
 } // namespace Genesis

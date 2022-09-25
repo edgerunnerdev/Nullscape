@@ -34,6 +34,9 @@
 #include "entity/component.hpp"
 #include "entity/componentfactory.hpp"
 #include "entity/entityfactory.hpp"
+#include "sprite/spritemanager.h"
+#include "trail/trailmanager.h"
+#include "trail/trailmanagerrep.h"
 
 namespace Nullscape
 {
@@ -64,6 +67,11 @@ EntityTemplateEditor::EntityTemplateEditor()
 
     m_pDebugRender = new Render::DebugRender();
     m_pMainLayer->AddSceneObject(m_pDebugRender, true);
+    m_pMainLayer->AddSceneObject(new SpriteManager(), true);
+
+    TrailManager* pTrailManager = new TrailManager();
+    m_pMainLayer->AddSceneObject(pTrailManager, true);
+    m_pMainLayer->AddSceneObject(new TrailManagerRep(pTrailManager), true);
 }
 
 EntityTemplateEditor::~EntityTemplateEditor()

@@ -20,6 +20,7 @@
 #include <imgui/imgui.h>
 #include <genesis.h>
 #include <render/debugrender.h>
+#include <scene/scene.h>
 
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
@@ -39,8 +40,9 @@ TrailComponent::TrailComponent()
     , m_Lifetime(1.0f)
     , m_Color(1.0f)
     , m_DebugRender(false)
+    , m_pSpriteManager(nullptr)
+    , m_pTrailManager(nullptr)
 {
-
 }
 
 TrailComponent::~TrailComponent()
@@ -54,9 +56,9 @@ TrailComponent::~TrailComponent()
 
 void TrailComponent::Update(float delta)
 {
-    if (m_pTrail.expired() && g_pGame->GetCurrentSector())
+    if (m_pTrail.expired() && m_pTrailManager)
     {
-        m_pTrail = g_pGame->GetCurrentSector()->GetTrailManager()->Add(m_Width, m_Lifetime, m_Color);
+        m_pTrail = m_pTrailManager->Add(m_Width, m_Lifetime, m_Color);
     }
 
     TransformComponent* pTransformComponent = GetOwner()->GetComponent<TransformComponent>();
@@ -76,8 +78,11 @@ void TrailComponent::Update(float delta)
         transform = glm::translate(m_Offset);
     }
 
-    Sprite sprite(glm::vec3(transform[3]), Genesis::Colour(1.0f, 1.0f, 1.0f, 1.0f), 10.0f, 0);
-    g_pGame->GetCurrentSector()->GetSpriteManager()->AddSprite(sprite);
+    if (m_pSpriteManager != nullptr)
+    {
+        Sprite sprite(glm::vec3(transform[3]), Genesis::Colour(1.0f, 1.0f, 1.0f, 1.0f), 10.0f, 0);
+        m_pSpriteManager->AddSprite(sprite);
+    }
 }
 
 void TrailComponent::UpdateDebugUI()
@@ -144,6 +149,18 @@ void TrailComponent::CloneFrom(Component* pComponent)
     m_Width = pOtherComponent->m_Width;
     m_Lifetime = pOtherComponent->m_Lifetime;
     m_Color = pOtherComponent->m_Color;
+}
+
+void TrailComponent::OnAddedToScene(Genesis::Scene* pScene) 
+{
+    m_pSpriteManager = pScene->Find<SpriteManager>();
+    m_pTrailManager = pScene->Find<TrailManager>();
+}
+
+void TrailComponent::OnRemovedFromScene() 
+{
+    m_pSpriteManager = nullptr;
+    m_pTrailManager = nullptr;
 }
 
 } // namespace Nullscape

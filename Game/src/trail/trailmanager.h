@@ -24,6 +24,7 @@
 // clang-format on
 
 #include <coredefines.h>
+#include <scene/sceneobject.h>
 
 #include <list>
 
@@ -34,13 +35,14 @@ GENESIS_DECLARE_SMART_PTR(Trail);
 
 using TrailList = std::list<TrailSharedPtr>;
 
-class TrailManager
+class TrailManager : public Genesis::SceneObject
 {
 public:
     TrailManager() {}
     ~TrailManager() {}
 
-    void Update(float delta);
+    void Update(float delta) override;
+    void Render() override {}
     const TrailList& GetTrails() const;
     TrailWeakPtr Add(float initialWidth, float decay, const glm::vec4& color);
     void Remove(TrailWeakPtr pTrail);

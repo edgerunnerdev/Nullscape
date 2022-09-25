@@ -170,6 +170,7 @@ bool Sector::Initialize()
     }
 
     m_pTrailManager = new TrailManager();
+    m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pTrailManager);
     m_pTrailManagerRep = new TrailManagerRep(m_pTrailManager);
     m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pTrailManagerRep);
 
@@ -246,12 +247,6 @@ void Sector::Update(float delta)
     m_pShipTweaks->Update(delta);
 #endif
 
-    m_pTrailManager->Update(delta);
-    m_pAmmoManager->Update(delta);
-    m_pLaserManager->Update(delta);
-    m_pSpriteManager->Update(delta);
-    m_pParticleManager->Update(delta);
-    m_pMuzzleflashManager->Update(delta);
     m_pCamera->Update(delta);
     m_pLootWindow->Update(delta);
 

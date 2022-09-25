@@ -8,6 +8,7 @@ namespace Genesis
 SceneObject::SceneObject()
     : m_Terminating(false)
     , m_RenderHint(RenderHint::None)
+    , m_pScene(nullptr)
 {
 }
 

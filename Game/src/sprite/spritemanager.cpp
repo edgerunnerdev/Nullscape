@@ -59,7 +59,7 @@ void SpriteManager::Update( float delta )
 		return;
 	}
 
-	const glm::vec3& cameraPosition = FrameWork::GetScene()->GetCamera()->GetPosition();
+	const glm::vec3& cameraPosition = GetScene()->GetCamera()->GetPosition();
 
 	PositionData posData;
 	UVData uvData;

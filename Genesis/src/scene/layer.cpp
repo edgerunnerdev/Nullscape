@@ -31,6 +31,7 @@ Layer::Layer(uint32_t depth, bool isBackground)
     : mDepth(depth)
     , mIsBackground(isBackground)
     , mMarkedForDeletion(false)
+    , m_pScene(nullptr)
 {
 }
 
@@ -71,6 +72,7 @@ void Layer::Update(float delta)
             {
                 if (it2->pSceneObject == *it)
                 {
+                    it2->pSceneObject->SetScene(nullptr);
                     if (it2->hasOwnership)
                     {
                         delete *it;
@@ -131,6 +133,7 @@ void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
 
     LayerObject obj;
     obj.pSceneObject = pObject;
+    obj.pSceneObject->SetScene(GetScene());
     obj.hasOwnership = hasOwnership;
     if (pObject->GetRenderHint() == RenderHint::Transparent)
     {

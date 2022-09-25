@@ -46,6 +46,9 @@ public:
     virtual void Update(float delta) override;
     virtual void Render() override;
 
+    virtual void OnAddedToScene(Genesis::Scene* pScene);
+    virtual void OnRemovedFromScene();
+
     void AddComponent(ComponentUniquePtr pComponent);
     template<typename T> T* GetComponent() 
     { 

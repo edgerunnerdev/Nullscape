@@ -84,6 +84,28 @@ void Entity::Render()
     }
 }
 
+void Entity::OnAddedToScene(Genesis::Scene* pScene)
+{
+    for (auto& components : m_Components)
+    {
+        for (auto& pComponent : components)
+        {
+            pComponent->OnAddedToScene(pScene);
+        }
+    }
+}
+
+void Entity::OnRemovedFromScene() 
+{
+    for (auto& components : m_Components)
+    {
+        for (auto& pComponent : components)
+        {
+            pComponent->OnRemovedFromScene();
+        }
+    }
+}
+
 std::vector<Component*> Entity::GetComponents() const
 {
 	std::vector<Component*> components;
