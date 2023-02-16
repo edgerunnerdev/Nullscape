@@ -25,7 +25,6 @@
 #include "resources/resourcemodel.h"
 #include "resources/resourceshader.hpp"
 #include "resources/resourcesound.h"
-#include "resources/resourcevideo.h"
 
 #include <algorithm>
 #include <cctype>
@@ -78,11 +77,6 @@ ResourceManager::ResourceManager()
         return new ResourceFont(filename);
     };
     RegisterExtension("fnt", fCreateResourceFont);
-
-    ResourceFactoryFunction fCreateResourceVideo = [](const Filename& filename) {
-        return new ResourceVideo(filename);
-    };
-    RegisterExtension("ivf", fCreateResourceVideo);
 
     m_pForgeListener = std::make_unique<ForgeListener>();
 }

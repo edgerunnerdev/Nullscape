@@ -32,7 +32,6 @@
 #include "sound/soundmanager.h"
 #include "taskmanager.h"
 #include "timer.h"
-#include "videoplayer.h"
 #include "window.h"
 
 #include <log.hpp>
@@ -181,9 +180,6 @@ bool FrameWork::CreateWindowGL(const std::string& name, uint32_t width, uint32_t
 
     GetGuiManager()->Initialize();
     ImGuiImpl::Initialise();
-
-    gVideoPlayer = new VideoPlayer();
-    gTaskManager->AddTask("VideoPlayer", gVideoPlayer, (TaskFunc)&VideoPlayer::Update, TaskPriority::System);
 
     gDebugRender = new Render::DebugRender();
 

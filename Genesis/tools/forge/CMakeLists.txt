@@ -20,10 +20,8 @@ set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin)
 
 if(WIN32)
     add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-    target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_LIBRARY_DIRS}/SDL2.dll ${OUTPUT_DIRECTORY})
     set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
 else()
 	add_executable(${PROJECT_NAME} ${SOURCE_FILES})
@@ -33,15 +31,12 @@ endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE FORGE_PROCESS_PORT=${FORGE_PROCESS_PORT} FORGE_LISTENER_PORT=${FORGE_LISTENER_PORT})
 
 target_link_directories(${PROJECT_NAME} PRIVATE 
-    ${GENESISCORE_LIBRARY_DIRS}
-    ${SDL2_LIBRARY_DIRS}
-    ${RPC_LIBRARY_DIRS}
+    nlohmann_json::nlohmann_json
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     GenesisCore
-    SDL2main
-    SDL2
+    nlohmann_json::nlohmann_json
     rpclib::rpc
 )
 

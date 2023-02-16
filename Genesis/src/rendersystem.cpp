@@ -38,7 +38,6 @@
 #include "resources/resourcemodel.h"
 #include "scene/scene.h"
 #include "shaderuniform.h"
-#include "videoplayer.h"
 #include "window.h"
 
 #include <SDL_image.h>

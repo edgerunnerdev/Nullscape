@@ -5,19 +5,22 @@ project(${PROJECT_NAME})
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 
-find_package(SDL2 REQUIRED)
-
 include_directories(
   src/
-  ${SDL2_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/$<IF:$<CONFIG:Debug>,Debug,Release>)
 
 if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC UNICODE _UNICODE _HASEXCEPTIONS=0)
+    target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:/MTd> $<$<CONFIG:Release>:/MT>)
+    target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:/Ob2 /GL>)
+    target_compile_options(${PROJECT_NAME} PUBLIC /Zi) # Debug information format: Program database.
+    target_compile_options(${PROJECT_NAME} PUBLIC /MP) # Enable parallel compilation.
 endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:

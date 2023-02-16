@@ -1,16 +1,39 @@
 {
-  "name": "nullscape",
+  "name": "hyperscape",
   "version-string": "0.0.1",
   "license": "GPL-3.0-or-later",
   "dependencies": [
-    { "name": "assimp" },
-    { "name": "cgal" },
-    { "name": "freetype" },
-    { "name": "nlohmann-json" },
+    {
+      "name": "assimp"
+    },
+    {
+      "name": "bullet3"
+    },
+    {
+      "name": "cgal"
+    },
+    {
+      "name": "freetype"
+    },
+    {
+      "name": "glew"
+    },
+    {
+      "name": "nlohmann-json"
+    },
     {
       "name": "rpclib",
       "version>=": "2.3.0"
+    },
+    {
+      "name": "sdl2"
+    },
+    {
+      "name": "sdl2-image",
+      "features": [
+        "libjpeg-turbo"
+      ]
     }
   ],
-  "builtin-baseline": "de176433e9a8769eed0e43d61758f4cdc1dc6e20"
+  "builtin-baseline": "93895b28ea7bc8cda10f156c5d336f3fc070f8b1"
 }

@@ -1,2 +1,0 @@
-set(FMOD_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/fmodex/include" CACHE STRING "FMOD - include directory")
-set(FMOD_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/Genesis/libs/fmodex/lib" CACHE STRING "FMOD - library directory")

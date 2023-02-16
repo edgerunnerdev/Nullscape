@@ -1,5 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.15)
-project(Genesis)
+set(PROJECT_NAME "Genesis")
+project(${PROJECT_NAME})
 
 include(ExternalLibraries)
 
@@ -17,56 +18,48 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src FILES ${SOURCE_FILES})
 list(APPEND SOURCE_FILES tools/modelcomp/src/modelserialization.hpp)
 
 find_package(bitsery REQUIRED)
-find_package(bullet3 REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(GenesisCore REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(MagicEnum REQUIRED)
 find_package(rpclib REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(VPX REQUIRED)
 
-find_path(SYSTEM_INCLUDE_DIR zlib.h)
-message(STATUS "vcpkg include directory: ${SYSTEM_INCLUDE_DIR}")
 include_directories(
     src/
     src/imgui/
     tools/modelcomp/src/
     ${BITSERY_INCLUDE_DIRS}
-    ${BULLET3_INCLUDE_DIRS}
     ${CMDPARSER_INCLUDE_DIRS}
     ${GENESISCORE_INCLUDE_DIRS}
-    ${GLEW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
     ${MAGICENUM_INCLUDE_DIRS}
-    ${SDL2_INCLUDE_DIRS}
-    ${SDL2_IMAGE_INCLUDE_DIRS}
-    ${VPX_INCLUDE_DIRS}
-	${SYSTEM_INCLUDE_DIR}
 )
 
 BuildExternalLibraries()
 
-add_library(Genesis STATIC ${SOURCE_FILES})
-set_target_properties(Genesis PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/libs/Genesis/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/${CMAKE_BUILD_TYPE})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/libs/Genesis/${CMAKE_HOST_SYSTEM_NAME}/${CMAKE_HOST_SYSTEM_PROCESSOR}/${CMAKE_BUILD_TYPE})
 
 if(WIN32)
-    find_package(FMOD REQUIRED)
-    target_include_directories(Genesis PRIVATE ${FMOD_INCLUDE_DIRS})
-    target_compile_definitions(Genesis PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
-    target_compile_options(Genesis PUBLIC $<$<CONFIG:Final>:/Ob2 /GL>)
-	set_target_properties(Genesis PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
-else()
-    find_package(SDL2_mixer REQUIRED)
-    target_link_libraries(Genesis PRIVATE pthread)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC UNICODE _UNICODE _HASEXCEPTIONS=0)
+    target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:/MTd> $<$<CONFIG:Release>:/MT>)
+    target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:/Ob2 /GL>)
+    target_compile_options(${PROJECT_NAME} PUBLIC /Zi) # Debug information format: Program database.
+    target_compile_options(${PROJECT_NAME} PUBLIC /MP) # Enable parallel compilation.
 endif()
 
-target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Final>:NDEBUG _FINAL> FORGE_PROCESS_PORT=${FORGE_PROCESS_PORT} FORGE_LISTENER_PORT=${FORGE_LISTENER_PORT})
+target_compile_definitions(${PROJECT_NAME} PRIVATE FORGE_PROCESS_PORT=${FORGE_PROCESS_PORT} FORGE_LISTENER_PORT=${FORGE_LISTENER_PORT})
 
-target_compile_options(Genesis PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC 
+    GLEW::GLEW
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+    $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
+    LinearMath Bullet3Common BulletDynamics BulletCollision
+    rpclib::rpc
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
           -Wall 
           -Werror
@@ -86,5 +79,5 @@ target_compile_options(Genesis PRIVATE
           >
 )
 
-target_compile_definitions(Genesis PRIVATE $<$<CONFIG:Debug>:OPENGL_ERROR_CHECKING=1> $<$<CONFIG:Release>:OPENGL_ERROR_CHECKING=1> $<$<CONFIG:Final>:OPENGL_ERROR_CHECKING=0>)
-add_dependencies(Genesis MagicEnum xxhash)
+target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:OPENGL_ERROR_CHECKING=1>)
+add_dependencies(${PROJECT_NAME} bitsery MagicEnum xxhash)

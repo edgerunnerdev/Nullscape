@@ -52,7 +52,6 @@ using ModelViewerUniquePtr = std::unique_ptr<ModelViewer>;
 namespace Gui
 {
 class Text;
-class Video;
 } // namespace Gui
 
 namespace Physics
@@ -231,7 +230,6 @@ private:
     Genesis::Gui::Text* m_pFrameText;
     bool m_ContextualTipsEnabled;
     bool m_QuitRequested;
-    Genesis::Gui::Video* m_pVideoElement;
     CursorType m_CursorType;
     GameState m_LoadToState;
     std::filesystem::path m_GameToLoad;

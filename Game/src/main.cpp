@@ -65,7 +65,6 @@
 #include <configuration.h>
 #include <genesis.h>
 #include <gui/gui.h>
-#include <gui/video.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
 #include <implot/implot.h>
@@ -78,7 +77,6 @@
 #include <resourcemanager.h>
 #include <resources/resourcemodel.h>
 #include <resources/resourcesound.h>
-#include <resources/resourcevideo.h>
 #include <sound/soundmanager.h>
 #include <sstream>
 #include <string>
@@ -86,7 +84,6 @@
 #include <taskmanager.h>
 #include <time.h>
 #include <timer.h>
-#include <videoplayer.h>
 #include <viewers/modelviewer/modelviewer.hpp>
 #include <window.h>
 #include <xml.h>
@@ -117,7 +114,6 @@ Game::Game()
     , m_pFrameText(nullptr)
     , m_ContextualTipsEnabled(true)
     , m_QuitRequested(false)
-    , m_pVideoElement(nullptr)
     , m_CursorType(CursorType::Pointer)
     , m_LoadToState(GameState::Unknown)
     , m_KillSave(false)
@@ -396,7 +392,7 @@ Genesis::TaskStatus Game::Update(float delta)
         }
     }
 
-    if (GetState() == GameState::Intro && Genesis::FrameWork::GetVideoPlayer()->IsPlaying() == false)
+    if (GetState() == GameState::Intro)
     {
         SetState(GameState::LoadResources);
     }
@@ -572,23 +568,6 @@ void Game::SetState(GameState newState)
     {
         ResourceSound* pPlaylistResource = FrameWork::GetResourceManager()->GetResource<ResourceSound*>(playlistName);
         FrameWork::GetSoundManager()->SetPlaylist(pPlaylistResource);
-    }
-
-    if (m_State == GameState::Intro && m_pVideoElement == nullptr)
-    {
-        ShowCursor(false);
-
-        m_pVideoElement = new Genesis::Gui::Video();
-        m_pVideoElement->SetSize((int)Configuration::GetScreenWidth(), (int)Configuration::GetScreenHeight());
-        m_pVideoElement->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-        m_pVideoElement->SetBorderMode(Genesis::Gui::PANEL_BORDER_NONE);
-        m_pVideoElement->SetPosition(0, 0);
-        FrameWork::GetGuiManager()->AddElement(m_pVideoElement);
-    }
-    else if (m_pVideoElement != nullptr)
-    {
-        FrameWork::GetGuiManager()->RemoveElement(m_pVideoElement);
-        m_pVideoElement = nullptr;
     }
 }
 

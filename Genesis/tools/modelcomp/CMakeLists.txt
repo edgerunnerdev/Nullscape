@@ -9,6 +9,7 @@ find_package(bitsery REQUIRED)
 find_package(CmdParser REQUIRED)
 find_package(GenesisCore REQUIRED)
 find_package(GenesisResComp REQUIRED)
+find_package(SDL2 REQUIRED)
 
 include_directories(
     src/
@@ -22,11 +23,8 @@ set(OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../bin/compilers)
 
 if(WIN32)
     add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-    target_include_directories(${PROJECT_NAME} PRIVATE ${FMOD_INCLUDE_DIRS})
     target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE _HASEXCEPTIONS=0)
     target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Final>:/INCREMENTAL:NO /LTCG>)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_LIBRARY_DIRS}/SDL2.dll ${OUTPUT_DIRECTORY})
-    set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_VcpkgEnableManifest true)
 else()
 	add_executable(${PROJECT_NAME} ${SOURCE_FILES})
     target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
@@ -35,7 +33,6 @@ endif()
 target_link_directories(${PROJECT_NAME} PRIVATE 
     ${GENESISCORE_LIBRARY_DIRS}
     ${GENESISRESCOMP_LIBRARY_DIRS}
-    ${SDL2_LIBRARY_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
@@ -43,9 +40,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     CGAL::CGAL
     GenesisCore
     GenesisResComp
-    SDL2main
-    SDL2
-    rpclib::rpc
 )
 
 add_dependencies(${PROJECT_NAME} GenesisCore)
