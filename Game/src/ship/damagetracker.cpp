@@ -95,12 +95,12 @@ std::list<DamageTracker*> DamageTrackerDebugWindow::m_Trackers;
 
 void DamageTrackerDebugWindow::Register()
 {
-	Genesis::ImGuiImpl::RegisterMenu( "Sector", "Damage tracker", &m_Open );
+	Genesis::ImGuiImpl::RegisterDevMenu( "Sector", "Damage tracker", &m_Open );
 }
 
 void DamageTrackerDebugWindow::Unregister()
 {
-	Genesis::ImGuiImpl::UnregisterMenu( "Sector", "Damage tracker" );
+	Genesis::ImGuiImpl::UnregisterDevMenu( "Sector", "Damage tracker" );
 }
 
 void DamageTrackerDebugWindow::Update()

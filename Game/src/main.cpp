@@ -20,7 +20,7 @@
 #include "Shlwapi.h"
 
 #include <windows.h>
-#pragma comment(lib, "Shlwapi.lib")
+#pragma comment( lib, "Shlwapi.lib" )
 #endif
 
 #include "achievements.h"
@@ -57,7 +57,7 @@
 #include "system/systemviewer.hpp"
 #include "ui/editor.h"
 #include "ui/rootelement.h"
-#include "ui2.hpp"
+#include "ui2/ui2.hpp"
 #include "viewers/explorationviewer/explorationviewer.hpp"
 #include "xmlaux.h"
 
@@ -98,48 +98,48 @@ Game* g_pGame = nullptr;
 //-------------------------------------------------------------------
 
 Game::Game()
-    : m_pMainMenu(nullptr)
-    , m_pConsole(nullptr)
-    , m_pAudioDebug(nullptr)
-    , m_pPlayer(nullptr)
-    , m_pMusicTitle(nullptr)
-    , m_pTutorialWindow(nullptr)
-    , m_State(GameState::Menu)
-    , m_pIntelWindow(nullptr)
-    , m_pAchievementsManager(nullptr)
-    , m_PlayedTime(0.0f)
-    , m_IsPaused(false)
-    , m_IsInputBlocked(false)
-    , m_InputBlockedTimer(0.0f)
-    , m_pFrameText(nullptr)
-    , m_ContextualTipsEnabled(true)
-    , m_QuitRequested(false)
-    , m_CursorType(CursorType::Pointer)
-    , m_LoadToState(GameState::Unknown)
-    , m_KillSave(false)
-    , m_ShowImGuiDemoWindow(false)
-    , m_ShowImPlotDemoWindow(false)
-    , m_AllResourcesLoaded(false)
-    , m_pModuleInfoManager(nullptr)
-    , m_pPhysicsSimulation(nullptr)
-    , m_pPopup(nullptr)
-    , m_pShipInfoManager(nullptr)
+    : m_pMainMenu( nullptr )
+    , m_pConsole( nullptr )
+    , m_pAudioDebug( nullptr )
+    , m_pPlayer( nullptr )
+    , m_pMusicTitle( nullptr )
+    , m_pTutorialWindow( nullptr )
+    , m_State( GameState::Menu )
+    , m_pIntelWindow( nullptr )
+    , m_pAchievementsManager( nullptr )
+    , m_PlayedTime( 0.0f )
+    , m_IsPaused( false )
+    , m_IsInputBlocked( false )
+    , m_InputBlockedTimer( 0.0f )
+    , m_pFrameText( nullptr )
+    , m_ContextualTipsEnabled( true )
+    , m_QuitRequested( false )
+    , m_CursorType( CursorType::Pointer )
+    , m_LoadToState( GameState::Unknown )
+    , m_KillSave( false )
+    , m_ShowImGuiDemoWindow( false )
+    , m_ShowImPlotDemoWindow( false )
+    , m_AllResourcesLoaded( false )
+    , m_pModuleInfoManager( nullptr )
+    , m_pPhysicsSimulation( nullptr )
+    , m_pPopup( nullptr )
+    , m_pShipInfoManager( nullptr )
 {
     using namespace Genesis;
 
-    srand((unsigned int)time(nullptr));
+    srand( (unsigned int)time( nullptr ) );
 
     TaskManager* taskManager = FrameWork::GetTaskManager();
-    taskManager->AddTask("GameLoop", this, (TaskFunc)&Game::Update, TaskPriority::GameLogic);
+    taskManager->AddTask( "GameLoop", this, (TaskFunc)&Game::Update, TaskPriority::GameLogic );
 
-    for (int i = 0; i < (int)FactionId::Count; ++i)
+    for ( int i = 0; i < (int)FactionId::Count; ++i )
     {
-        m_pFaction[i] = nullptr;
+        m_pFaction[ i ] = nullptr;
     }
 
 #ifndef _FINAL
     InputManager* pInputManager = FrameWork::GetInputManager();
-    m_ImGuiToggleToken = pInputManager->AddKeyboardCallback(std::bind(&Game::ToggleImGui, this), SDL_SCANCODE_F1, ButtonState::Pressed);
+    m_ImGuiToggleToken = pInputManager->AddKeyboardCallback( std::bind( &Game::ToggleDevMenu, this ), SDL_SCANCODE_F1, ButtonState::Pressed );
 #endif
 }
 
@@ -158,22 +158,22 @@ Game::~Game()
     delete m_pIntelWindow;
     delete m_pAchievementsManager;
 
-    for (unsigned int i = 0; i < (unsigned int)FactionId::Count; ++i)
+    for ( unsigned int i = 0; i < (unsigned int)FactionId::Count; ++i )
     {
-        delete m_pFaction[i];
+        delete m_pFaction[ i ];
     }
 
     delete m_pPhysicsSimulation;
 
 #ifndef _FINAL
     Genesis::InputManager* pInputManager = Genesis::FrameWork::GetInputManager();
-    if (pInputManager != nullptr)
+    if ( pInputManager != nullptr )
     {
-        pInputManager->RemoveKeyboardCallback(m_ImGuiToggleToken);
+        pInputManager->RemoveKeyboardCallback( m_ImGuiToggleToken );
     }
 #endif
 
-    if (m_LoaderThread.joinable())
+    if ( m_LoaderThread.joinable() )
     {
         m_LoaderThread.join();
     }
@@ -190,7 +190,7 @@ void Game::Initialise()
 
     Genesis::Log::Info() << "Nullscape build " << Nullscape_BUILD;
 
-    m_pLoadingScreen = LoadingScreenUniquePtr(new LoadingScreen);
+    m_pLoadingScreen = LoadingScreenUniquePtr( new LoadingScreen );
     m_pBlackboard = std::make_shared<Blackboard>();
     m_pModuleInfoManager = new ModuleInfoManager();
     m_pShipInfoManager = new ShipInfoManager();
@@ -198,7 +198,7 @@ void Game::Initialise()
     m_pShipInfoManager->Initialise();
 
     m_pPhysicsSimulation = new Genesis::Physics::Simulation();
-    Genesis::FrameWork::GetTaskManager()->AddTask("Physics", m_pPhysicsSimulation, (Genesis::TaskFunc)&Genesis::Physics::Simulation::Update, Genesis::TaskPriority::Physics);
+    Genesis::FrameWork::GetTaskManager()->AddTask( "Physics", m_pPhysicsSimulation, (Genesis::TaskFunc)&Genesis::Physics::Simulation::Update, Genesis::TaskPriority::Physics );
 
     m_pPopup = new Popup();
 
@@ -209,23 +209,23 @@ void Game::Initialise()
     m_pMusicTitle = new MusicTitle();
 
 #ifndef _FINAL
-    m_pFrameText = GuiExtended::CreateText(8, 8, 1024, 128, "", nullptr);
-    m_pFrameText->SetColour(1.0f, 0.4f, 0.0f, 1.0f);
+    m_pFrameText = GuiExtended::CreateText( 8, 8, 1024, 128, "", nullptr );
+    m_pFrameText->SetColour( 1.0f, 0.4f, 0.0f, 1.0f );
 #endif
 
-    SetCursorType(CursorType::Pointer);
+    SetCursorType( CursorType::Pointer );
 
     ShaderTweaksDebugWindow::Register();
     m_pEntityTemplateEditor = std::make_unique<EntityTemplateEditor>();
 
 #if USE_STEAM
-    if (SteamAPI_RestartAppIfNecessary(STEAM_APP_ID))
+    if ( SteamAPI_RestartAppIfNecessary( STEAM_APP_ID ) )
     {
         Quit();
         return;
     }
 
-    if (SteamAPI_Init())
+    if ( SteamAPI_Init() )
     {
         Genesis::Log::Info() << "Steam API initialized.";
     }
@@ -235,8 +235,9 @@ void Game::Initialise()
     }
 #endif // USE_STEAM
 
-    Genesis::ImGuiImpl::RegisterMenu("Tools", "ImGui demo window", &m_ShowImGuiDemoWindow);
-    Genesis::ImGuiImpl::RegisterMenu("Tools", "ImPlot demo window", &m_ShowImPlotDemoWindow);
+    Genesis::ImGuiImpl::Enable( true );
+    Genesis::ImGuiImpl::RegisterDevMenu( "Tools", "ImGui demo window", &m_ShowImGuiDemoWindow );
+    Genesis::ImGuiImpl::RegisterDevMenu( "Tools", "ImPlot demo window", &m_ShowImPlotDemoWindow );
 
     UI2::Initialize();
 
@@ -249,7 +250,7 @@ void Game::Initialise()
     m_pModelViewer = std::make_unique<Genesis::ModelViewer>();
     m_pSystemViewer = std::make_unique<SystemViewer>();
 
-    SetState(GameState::Intro);
+    SetState( GameState::Intro );
 }
 
 SaveGameStorage* Game::GetSaveGameStorage() const
@@ -257,18 +258,18 @@ SaveGameStorage* Game::GetSaveGameStorage() const
     return m_pSaveGameStorage.get();
 }
 
-void Game::ToggleImGui()
+void Game::ToggleDevMenu()
 {
 #ifndef _FINAL
-    Genesis::ImGuiImpl::Enable(!Genesis::ImGuiImpl::IsEnabled());
+    Genesis::ImGuiImpl::EnableDevMenu( !Genesis::ImGuiImpl::IsDevMenuEnabled() );
 #endif
 }
 
-void Game::SetInputBlocked(bool state)
+void Game::SetInputBlocked( bool state )
 {
     m_IsInputBlocked = state;
 
-    if (m_IsInputBlocked)
+    if ( m_IsInputBlocked )
         m_InputBlockedTimer = 0.2f;
 }
 
@@ -277,20 +278,20 @@ bool Game::IsInputBlocked() const
     return m_InputBlockedTimer > 0.0f || Genesis::ImGuiImpl::IsEnabled();
 }
 
-Genesis::TaskStatus Game::Update(float delta)
+Genesis::TaskStatus Game::Update( float delta )
 {
 #if USE_STEAM
     SteamAPI_RunCallbacks();
 #endif
 
-    if (m_ShowImGuiDemoWindow)
+    if ( m_ShowImGuiDemoWindow )
     {
-        ImGui::ShowDemoWindow(&m_ShowImGuiDemoWindow);
+        ImGui::ShowDemoWindow( &m_ShowImGuiDemoWindow );
     }
 
-    if (m_ShowImPlotDemoWindow)
+    if ( m_ShowImPlotDemoWindow )
     {
-        ImPlot::ShowDemoWindow(&m_ShowImPlotDemoWindow);
+        ImPlot::ShowDemoWindow( &m_ShowImPlotDemoWindow );
     }
 
     m_pUIRootElement->Update();
@@ -303,12 +304,14 @@ Genesis::TaskStatus Game::Update(float delta)
     m_pEntityTemplateEditor->UpdateDebugUI();
     ShaderTweaksDebugWindow::Update();
 
-    if (GetState() == GameState::LoadResources)
+    UI2::Update( delta );
+
+    if ( GetState() == GameState::LoadResources )
     {
-        if (m_AllResourcesLoaded)
+        if ( m_AllResourcesLoaded )
         {
-            m_pLoadingScreen->Show(false);
-            SetState(GameState::Menu);
+            m_pLoadingScreen->Show( false );
+            SetState( GameState::Menu );
         }
         else
         {
@@ -316,107 +319,107 @@ Genesis::TaskStatus Game::Update(float delta)
         }
     }
 
-    if (m_LoadToState != GameState::Unknown)
+    if ( m_LoadToState != GameState::Unknown )
     {
-        m_pLoadingScreen->Show(false);
-        SetState(m_LoadToState);
+        m_pLoadingScreen->Show( false );
+        SetState( m_LoadToState );
         m_LoadToState = GameState::Unknown;
     }
 
-    if (m_GameToLoad.empty() == false)
+    if ( m_GameToLoad.empty() == false )
     {
         LoadGameAux();
     }
 
-    if (m_IsInputBlocked == false && m_InputBlockedTimer > 0.0f)
+    if ( m_IsInputBlocked == false && m_InputBlockedTimer > 0.0f )
     {
-        m_InputBlockedTimer = std::max(0.0f, m_InputBlockedTimer - delta);
+        m_InputBlockedTimer = std::max( 0.0f, m_InputBlockedTimer - delta );
     }
 
-    if (m_pPopup)
+    if ( m_pPopup )
     {
-        m_pPopup->Update(delta);
+        m_pPopup->Update( delta );
     }
 
-    if (m_pTutorialWindow)
+    if ( m_pTutorialWindow )
     {
-        m_pTutorialWindow->Update(delta);
+        m_pTutorialWindow->Update( delta );
     }
 
-    if (m_pMusicTitle)
+    if ( m_pMusicTitle )
     {
-        m_pMusicTitle->Update(delta);
+        m_pMusicTitle->Update( delta );
     }
 
-    if (m_pSystem)
+    if ( m_pSystem )
     {
-        m_pSystem->Update(delta);
+        m_pSystem->Update( delta );
     }
 
-    if (m_pIntelWindow)
+    if ( m_pIntelWindow )
     {
-        m_pIntelWindow->Update(delta);
+        m_pIntelWindow->Update( delta );
     }
 
-    if (m_pAchievementsManager)
+    if ( m_pAchievementsManager )
     {
         m_pAchievementsManager->Update();
     }
 
-    if (m_pAudioDebug)
+    if ( m_pAudioDebug )
     {
-        m_pAudioDebug->Update(delta);
+        m_pAudioDebug->Update( delta );
     }
 
     Genesis::InputManager* pInputManager = Genesis::FrameWork::GetInputManager();
     static bool sConsoleToggle = false;
-    if (pInputManager->IsButtonPressed(SDL_SCANCODE_GRAVE) && !sConsoleToggle)
+    if ( pInputManager->IsButtonPressed( SDL_SCANCODE_GRAVE ) && !sConsoleToggle )
     {
-        if (m_pAudioDebug != nullptr)
+        if ( m_pAudioDebug != nullptr )
         {
-            m_pAudioDebug->Show(!m_pAudioDebug->IsVisible());
+            m_pAudioDebug->Show( !m_pAudioDebug->IsVisible() );
         }
 
         sConsoleToggle = true;
     }
-    else if (!pInputManager->IsButtonPressed(SDL_SCANCODE_GRAVE))
+    else if ( !pInputManager->IsButtonPressed( SDL_SCANCODE_GRAVE ) )
     {
         sConsoleToggle = false;
     }
 
-    if (GetState() == GameState::GalaxyView || GetState() == GameState::NullscapeView || GetState() == GameState::Combat || GetState() == GameState::Shipyard)
+    if ( GetState() == GameState::GalaxyView || GetState() == GameState::NullscapeView || GetState() == GameState::Combat || GetState() == GameState::Shipyard )
     {
-        if (IsPaused() == false)
+        if ( IsPaused() == false )
         {
             m_PlayedTime += delta;
         }
     }
 
-    if (GetState() == GameState::Intro)
+    if ( GetState() == GameState::Intro )
     {
-        SetState(GameState::LoadResources);
+        SetState( GameState::LoadResources );
     }
 
     return Genesis::TaskStatus::Continue;
 }
 
-void Game::StartNewGame(const ShipCustomisationData& customisationData)
+void Game::StartNewGame( const ShipCustomisationData& customisationData )
 {
-    SDL_assert(GetPlayer() == nullptr);
+    SDL_assert( GetPlayer() == nullptr );
 
-    m_pPlayer = std::make_shared<Player>(customisationData);
-    m_pMainMenu->Show(false);
+    m_pPlayer = std::make_shared<Player>( customisationData );
+    m_pMainMenu->Show( false );
 
-    SetPlayedTime(0.0f);
+    SetPlayedTime( 0.0f );
 
     m_pSystem = nullptr;
-    m_pSystem = std::make_shared<System>("17260877307600676");
-    m_pSystemViewer->View(m_pSystem);
-    m_pExplorationViewer->View(m_pSystem);
+    m_pSystem = std::make_shared<System>( "17260877307600676" );
+    m_pSystemViewer->View( m_pSystem );
+    m_pExplorationViewer->View( m_pSystem );
 
-    m_pSystem->JumpTo(m_pPlayer, {-0.5f, 0.3f});
+    m_pSystem->JumpTo( m_pPlayer, { -0.5f, 0.3f } );
 
-    SetState(GameState::Combat);
+    SetState( GameState::Combat );
 }
 
 void Game::EndGame() {}
@@ -427,17 +430,17 @@ void Game::EndGameAux()
 
     delete m_pTutorialWindow;
 
-    if (m_pIntelWindow != nullptr)
+    if ( m_pIntelWindow != nullptr )
     {
         m_pIntelWindow->Clear();
     }
 
     m_pPlayer = nullptr;
 
-    m_pMainMenu->Show(true);
-    m_pMainMenu->SetOption(MainMenuOption::NewGame);
+    m_pMainMenu->Show( true );
+    m_pMainMenu->SetOption( MainMenuOption::NewGame );
 
-    SetState(GameState::Menu);
+    SetState( GameState::Menu );
 }
 
 void Game::KillSaveGame()
@@ -447,25 +450,25 @@ void Game::KillSaveGame()
 
 bool Game::SaveGame()
 {
-    return GetSaveGameStorage()->SaveGame(m_KillSave);
+    return GetSaveGameStorage()->SaveGame( m_KillSave );
 }
 
-void Game::LoadGame(SaveGameHeaderWeakPtr pSaveGameHeaderWeakPtr)
+void Game::LoadGame( SaveGameHeaderWeakPtr pSaveGameHeaderWeakPtr )
 {
     SaveGameHeaderSharedPtr pSaveGameHeader = pSaveGameHeaderWeakPtr.lock();
-    if (pSaveGameHeader == nullptr)
+    if ( pSaveGameHeader == nullptr )
     {
-        g_pGame->RaiseInteractiveWarning("Couldn't load game, header is null.");
+        g_pGame->RaiseInteractiveWarning( "Couldn't load game, header is null." );
         return;
     }
 
-    if (pSaveGameHeader->IsValid() == false)
+    if ( pSaveGameHeader->IsValid() == false )
     {
-        g_pGame->RaiseInteractiveWarning("Couldn't load game, header is invalid.");
+        g_pGame->RaiseInteractiveWarning( "Couldn't load game, header is invalid." );
         return;
     }
 
-    m_pLoadingScreen->Show(true);
+    m_pLoadingScreen->Show( true );
     m_GameToLoad = pSaveGameHeader->GetFilename();
 }
 
@@ -473,7 +476,7 @@ void Game::LoadGameAux()
 {
     using namespace tinyxml2;
 
-    if (m_GameToLoad.empty())
+    if ( m_GameToLoad.empty() )
     {
         return;
     }
@@ -482,7 +485,7 @@ void Game::LoadGameAux()
     m_GameToLoad.clear();
 
     tinyxml2::XMLDocument xmlDoc;
-    if (m_pSaveGameStorage->LoadGame(filename, xmlDoc) == false)
+    if ( m_pSaveGameStorage->LoadGame( filename, xmlDoc ) == false )
     {
         return;
     }
@@ -490,58 +493,58 @@ void Game::LoadGameAux()
     bool hasErrors = false;
     XMLElement* pRootElem = xmlDoc.FirstChildElement();
 
-    if (!hasErrors)
+    if ( !hasErrors )
     {
         // Load the Player and therefore the Inventory / ship's hexgrid template
-        for (XMLElement* pElem = pRootElem->FirstChildElement(); pElem != nullptr; pElem = pElem->NextSiblingElement())
+        for ( XMLElement* pElem = pRootElem->FirstChildElement(); pElem != nullptr; pElem = pElem->NextSiblingElement() )
         {
-            const std::string value(pElem->Value());
-            if (value == "Player")
+            const std::string value( pElem->Value() );
+            if ( value == "Player" )
             {
                 m_pPlayer = std::make_shared<Player>();
-                hasErrors = (m_pPlayer->Read(pElem) == false);
+                hasErrors = ( m_pPlayer->Read( pElem ) == false );
                 break;
             }
         }
     }
 
-    if (!hasErrors)
+    if ( !hasErrors )
     {
-        m_pMainMenu->Show(false);
-        m_ContextualTipsEnabled = m_pBlackboard->Exists("#contextual_tips");
-        SetState(GameState::GalaxyView);
+        m_pMainMenu->Show( false );
+        m_ContextualTipsEnabled = m_pBlackboard->Exists( "#contextual_tips" );
+        SetState( GameState::GalaxyView );
     }
     else
     {
         m_pPlayer = nullptr;
-        RaiseInteractiveWarning("Invalid save file.");
+        RaiseInteractiveWarning( "Invalid save file." );
     }
 
-    m_pLoadingScreen->Show(false);
+    m_pLoadingScreen->Show( false );
 }
 
-void Game::SetState(GameState newState)
+void Game::SetState( GameState newState )
 {
     m_State = newState;
 
     using namespace Genesis;
     std::string playlistName;
 
-    if (m_State == GameState::LoadResources)
+    if ( m_State == GameState::LoadResources )
     {
         LoadResourcesAsync();
         playlistName = "data/playlists/menu.m3u";
     }
-    else if (m_State == GameState::Menu)
+    else if ( m_State == GameState::Menu )
     {
         m_KillSave = false;
         playlistName = "data/playlists/menu.m3u";
 
-        if (m_pMainMenu == nullptr)
+        if ( m_pMainMenu == nullptr )
         {
-            ShowCursor(true);
+            ShowCursor( true );
 
-            if (m_pIntelWindow == nullptr)
+            if ( m_pIntelWindow == nullptr )
             {
                 m_pIntelWindow = new IntelWindow();
             }
@@ -552,53 +555,53 @@ void Game::SetState(GameState newState)
             data.m_CaptainName = "TestCaptain";
             data.m_pModuleInfoHexGrid = nullptr;
             data.m_ShipName = "TestShip";
-            StartNewGame(data);
+            StartNewGame( data );
         }
     }
-    else if (m_State == GameState::GalaxyView)
+    else if ( m_State == GameState::GalaxyView )
     {
         playlistName = "data/playlists/galaxyview.m3u";
     }
-    else if (m_State == GameState::NullscapeView)
+    else if ( m_State == GameState::NullscapeView )
     {
         playlistName = "data/playlists/galaxyview.m3u";
     }
 
-    if (playlistName.empty() == false)
+    if ( playlistName.empty() == false )
     {
-        ResourceSound* pPlaylistResource = FrameWork::GetResourceManager()->GetResource<ResourceSound*>(playlistName);
-        FrameWork::GetSoundManager()->SetPlaylist(pPlaylistResource);
+        ResourceSound* pPlaylistResource = FrameWork::GetResourceManager()->GetResource<ResourceSound*>( playlistName );
+        FrameWork::GetSoundManager()->SetPlaylist( pPlaylistResource );
     }
 }
 
-void Game::LoadToState(GameState state)
+void Game::LoadToState( GameState state )
 {
-    m_pLoadingScreen->Show(true);
+    m_pLoadingScreen->Show( true );
     m_LoadToState = state;
 }
 
-Faction* Game::GetFaction(const std::string& name) const
+Faction* Game::GetFaction( const std::string& name ) const
 {
-    for (int i = 0; i < (int)FactionId::Count; ++i)
+    for ( int i = 0; i < (int)FactionId::Count; ++i )
     {
-        if (m_pFaction[i] && m_pFaction[i]->GetName() == name)
-            return m_pFaction[i];
+        if ( m_pFaction[ i ] && m_pFaction[ i ]->GetName() == name )
+            return m_pFaction[ i ];
     }
     return nullptr;
 }
 
 Faction* Game::GetPlayerFaction() const
 {
-    return m_pFaction[(int)FactionId::Player];
+    return m_pFaction[ (int)FactionId::Player ];
 }
 
 FleetWeakPtr Game::GetPlayerFleet() const
 {
     Faction* pPlayerFaction = GetPlayerFaction();
-    if (pPlayerFaction != nullptr)
+    if ( pPlayerFaction != nullptr )
     {
         const FleetList& fleets = pPlayerFaction->GetFleets();
-        if (fleets.empty() == false)
+        if ( fleets.empty() == false )
         {
             return fleets.back();
         }
@@ -611,31 +614,31 @@ SectorInfo* Game::FindSpawnSector() const
     return nullptr;
 }
 
-void Game::AddFleetCommandIntel(const std::string& text, ModuleInfo* pModuleInfo /* = nullptr */)
+void Game::AddFleetCommandIntel( const std::string& text, ModuleInfo* pModuleInfo /* = nullptr */ )
 {
-    if (GetIntelWindow() != nullptr)
+    if ( GetIntelWindow() != nullptr )
     {
-        GetIntelWindow()->AddFragment(IntelFragment(GameCharacter::FleetIntelligence, "Fleet Intelligence Officer", text, pModuleInfo));
+        GetIntelWindow()->AddFragment( IntelFragment( GameCharacter::FleetIntelligence, "Fleet Intelligence Officer", text, pModuleInfo ) );
     }
 }
 
 // The "canBeQueued" parameter is meant to be used for intel that is only relevant if displayed at this very moment.
 // If "canBeQueued" is false but the queue already has intel in it, the fragment will be discarded.
-void Game::AddIntel(GameCharacter character, const std::string& text, bool canBeQueued /* = true */)
+void Game::AddIntel( GameCharacter character, const std::string& text, bool canBeQueued /* = true */ )
 {
     IntelWindow* pIntelWindow = GetIntelWindow();
-    if (pIntelWindow != nullptr)
+    if ( pIntelWindow != nullptr )
     {
-        static const std::string characterNames[static_cast<unsigned int>(GameCharacter::Count)] = {"Fleet Intelligence Officer"};
+        static const std::string characterNames[ static_cast<unsigned int>( GameCharacter::Count ) ] = { "Fleet Intelligence Officer" };
 
-        pIntelWindow->AddFragment(IntelFragment(character, characterNames[static_cast<unsigned int>(character)], text, nullptr, canBeQueued));
+        pIntelWindow->AddFragment( IntelFragment( character, characterNames[ static_cast<unsigned int>( character ) ], text, nullptr, canBeQueued ) );
     }
 }
 
 void Game::LoadResourcesAsync()
 {
-    m_pLoadingScreen->Show(true);
-    m_LoaderThread = std::thread(&Game::LoaderThreadMain, this);
+    m_pLoadingScreen->Show( true );
+    m_LoaderThread = std::thread( &Game::LoaderThreadMain, this );
 }
 
 void Game::LoaderThreadMain()
@@ -644,42 +647,42 @@ void Game::LoaderThreadMain()
     size_t maximumProgress = 0;
 
     Genesis::Window* pWindow = Genesis::FrameWork::GetWindow();
-    SDL_GL_MakeCurrent(pWindow->GetSDLWindow(), pWindow->GetSDLThreadGLContext());
+    SDL_GL_MakeCurrent( pWindow->GetSDLWindow(), pWindow->GetSDLThreadGLContext() );
 
     using namespace Genesis;
     ResourceManager* pResourceManager = FrameWork::GetResourceManager();
     std::vector<std::string> filesToLoad;
-    filesToLoad.reserve(512);
-    std::filesystem::path dataPath("data");
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(dataPath))
+    filesToLoad.reserve( 512 );
+    std::filesystem::path dataPath( "data" );
+    for ( const auto& entry : std::filesystem::recursive_directory_iterator( dataPath ) )
     {
-        const std::string entryPath = ToString(entry.path().c_str());
-        if (entry.is_regular_file() && pResourceManager->CanLoadResource(entryPath))
+        const std::string entryPath = ToString( entry.path().c_str() );
+        if ( entry.is_regular_file() && pResourceManager->CanLoadResource( entryPath ) )
         {
-            filesToLoad.push_back(entryPath);
+            filesToLoad.push_back( entryPath );
         }
     }
     maximumProgress += filesToLoad.size();
 
-    for (const auto& entryPath : filesToLoad)
+    for ( const auto& entryPath : filesToLoad )
     {
-        pResourceManager->GetResource(entryPath);
-        m_pLoadingScreen->SetProgress(++currentProgress, maximumProgress);
+        pResourceManager->GetResource( entryPath );
+        m_pLoadingScreen->SetProgress( ++currentProgress, maximumProgress );
     }
 
     // Ensure all GPU commands are complete so our render context can use the resources
     // this thread has loaded.
-    const GLsync fenceId = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    const GLsync fenceId = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
     const GLuint64 timeout = 5000000000; // 5 second timeout
-    while (true)
+    while ( true )
     {
-        GLenum result = glClientWaitSync(fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout);
-        if (result == GL_WAIT_FAILED)
+        GLenum result = glClientWaitSync( fenceId, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
+        if ( result == GL_WAIT_FAILED )
         {
             Genesis::Log::Error() << "glClientWaitSync failed: GL_WAIT_FAILED.";
-            exit(-1);
+            exit( -1 );
         }
-        else if (result != GL_TIMEOUT_EXPIRED)
+        else if ( result != GL_TIMEOUT_EXPIRED )
         {
             break;
         }
@@ -688,7 +691,7 @@ void Game::LoaderThreadMain()
     Genesis::Log::Info() << "All resources loaded.";
 
     m_AllResourcesLoaded = true;
-    SDL_GL_MakeCurrent(pWindow->GetSDLWindow(), nullptr);
+    SDL_GL_MakeCurrent( pWindow->GetSDLWindow(), nullptr );
 }
 
 bool Game::IsDevelopmentModeActive() const
@@ -696,46 +699,46 @@ bool Game::IsDevelopmentModeActive() const
     return true;
 }
 
-void Game::RaiseInteractiveWarning(const std::string& text) const
+void Game::RaiseInteractiveWarning( const std::string& text ) const
 {
     Popup* pPopup = GetPopup();
-    if (pPopup != nullptr)
+    if ( pPopup != nullptr )
     {
-        pPopup->Show(PopupMode::Ok, text);
+        pPopup->Show( PopupMode::Ok, text );
     }
 
     Genesis::Log::Warning() << text;
 }
 
-void Game::SetCursorType(CursorType type)
+void Game::SetCursorType( CursorType type )
 {
     using namespace Genesis;
     ResourceImage* pCursorTexture = nullptr;
-    if (type == CursorType::Pointer)
+    if ( type == CursorType::Pointer )
     {
-        pCursorTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/ui/cursor.png");
+        pCursorTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/ui/cursor.png" );
     }
-    else if (type == CursorType::Crosshair)
+    else if ( type == CursorType::Crosshair )
     {
-        pCursorTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource("data/ui/crosshair.png");
+        pCursorTexture = (ResourceImage*)FrameWork::GetResourceManager()->GetResource( "data/ui/crosshair.png" );
     }
 
-    FrameWork::GetGuiManager()->GetCursor()->SetTexture(pCursorTexture);
+    FrameWork::GetGuiManager()->GetCursor()->SetTexture( pCursorTexture );
     m_CursorType = type;
 }
 
-void Game::ShowCursor(bool state)
+void Game::ShowCursor( bool state )
 {
-    Genesis::FrameWork::GetGuiManager()->GetCursor()->Show(state);
+    Genesis::FrameWork::GetGuiManager()->GetCursor()->Show( state );
 }
 
 void Game::Pause()
 {
     m_IsPaused = true;
 
-    if (GetPhysicsSimulation() != nullptr)
+    if ( GetPhysicsSimulation() != nullptr )
     {
-        GetPhysicsSimulation()->Pause(true);
+        GetPhysicsSimulation()->Pause( true );
     }
 }
 
@@ -743,9 +746,9 @@ void Game::Unpause()
 {
     m_IsPaused = false;
 
-    if (GetPhysicsSimulation() != nullptr)
+    if ( GetPhysicsSimulation() != nullptr )
     {
-        GetPhysicsSimulation()->Pause(false);
+        GetPhysicsSimulation()->Pause( false );
     }
 }
 
@@ -763,22 +766,22 @@ Sector* Game::GetCurrentSector() const
 // Main
 //-------------------------------------------------------------------
 
-int Main(Genesis::CommandLineParameters* parameters)
+int Main( Genesis::CommandLineParameters* parameters )
 {
     using namespace Genesis;
     FrameWork::Initialize();
 
-    Log::AddLogTarget(std::make_shared<TTYLogger>());
-    Log::AddLogTarget(std::make_shared<VisualStudioLogger>());
+    Log::AddLogTarget( std::make_shared<TTYLogger>() );
+    Log::AddLogTarget( std::make_shared<VisualStudioLogger>() );
 
-    FrameWork::CreateWindowGL("Nullscape", Configuration::GetScreenWidth(), Configuration::GetScreenHeight(), Configuration::GetMultiSampleSamples());
+    FrameWork::CreateWindowGL( "Nullscape", Configuration::GetScreenWidth(), Configuration::GetScreenHeight(), Configuration::GetMultiSampleSamples() );
 
     TaskManager* taskManager = FrameWork::GetTaskManager();
 
     g_pGame = new Game();
     g_pGame->Initialise();
 
-    while (taskManager->IsRunning() && g_pGame->IsQuitRequested() == false)
+    while ( taskManager->IsRunning() && g_pGame->IsQuitRequested() == false )
     {
         taskManager->Update();
     }
@@ -798,7 +801,7 @@ int Main(Genesis::CommandLineParameters* parameters)
 // Entry point
 //-----------------------------------------------------------------------------
 
-int main(int argc, char* argv[])
+int main( int argc, char* argv[] )
 {
-    return Nullscape::Main(Genesis::FrameWork::CreateCommandLineParameters((const char**)argv, (int)argc));
+    return Nullscape::Main( Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
 }

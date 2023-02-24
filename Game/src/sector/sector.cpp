@@ -31,7 +31,6 @@
 #include "laser/lasermanager.h"
 #include "menus/contextualtips.h"
 #include "menus/deathmenu.h"
-#include "menus/hotbar.h"
 #include "menus/hyperspacemenu.h"
 #include "menus/intelwindow.h"
 #include "menus/lootwindow.h"
@@ -55,6 +54,8 @@
 #include "system/system.hpp"
 #include "trail/trailmanager.h"
 #include "trail/trailmanagerrep.h"
+#include "ui2/ui2.hpp"
+#include "windows/sidebarwindow.hpp"
 
 #include <algorithm>
 #include <genesis.h>
@@ -107,8 +108,6 @@ Sector::Sector(System* pSystem, const glm::vec2& coordinates)
     m_pDeathMenu = new DeathMenu();
     m_pLootWindow = new LootWindow();
 
-    m_pHotbar = std::make_unique<Hotbar>();
-
     for (int i = 0; i < (int)FactionId::Count; ++i)
     {
         m_TowerBonus[i] = TowerBonus::None;
@@ -118,6 +117,8 @@ Sector::Sector(System* pSystem, const glm::vec2& coordinates)
     g_pGame->SetCursorType(CursorType::Crosshair);
 
     m_pShipTweaks = std::make_unique<ShipTweaks>();
+
+    m_pSidebarWindow = UI2::OpenWindow<SidebarWindow>();
 }
 
 Sector::~Sector()

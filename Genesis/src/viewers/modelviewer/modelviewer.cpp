@@ -50,7 +50,7 @@ ModelViewer::ModelViewer()
     , m_DrawBitangents(false)
     , m_DrawPhysicsMesh(false)
 {
-    ImGuiImpl::RegisterMenu("Tools", "Model viewer", &m_IsOpen);
+    ImGuiImpl::RegisterDevMenu("Tools", "Model viewer", &m_IsOpen);
 
     m_pViewport = std::make_shared<Viewport>("Model viewer", sViewportWidth, sViewportHeight, true, false);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);

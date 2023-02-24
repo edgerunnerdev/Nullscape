@@ -43,12 +43,12 @@ m_GlobalDamageMultiplier( 1.6f ),
 m_EmpireDamageMultiplier( 1.75f ),
 m_OutlineThickness( 2.0f )
 {
-	Genesis::ImGuiImpl::RegisterMenu( "Sector", "Ship tweaks", &m_Open );
+	Genesis::ImGuiImpl::RegisterDevMenu( "Sector", "Ship tweaks", &m_Open );
 }
 
 ShipTweaks::~ShipTweaks()
 {
-	Genesis::ImGuiImpl::UnregisterMenu( "Sector", "Ship tweaks" );
+	Genesis::ImGuiImpl::UnregisterDevMenu( "Sector", "Ship tweaks" );
 }
 
 void ShipTweaks::Update( float delta )

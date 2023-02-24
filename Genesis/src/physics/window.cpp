@@ -44,12 +44,12 @@ Window::Window(Simulation* pSimulation)
     , m_ModeRayTests(false)
     , m_ModeContactPoints(false)
 {
-    Genesis::ImGuiImpl::RegisterMenu("Tools", "Physics", &m_Open);
+    Genesis::ImGuiImpl::RegisterDevMenu("Tools", "Physics", &m_Open);
 }
 
 Window::~Window()
 {
-    Genesis::ImGuiImpl::UnregisterMenu("Tools", "Physics");
+    Genesis::ImGuiImpl::UnregisterDevMenu("Tools", "Physics");
 }
 
 void Window::Update(float delta)

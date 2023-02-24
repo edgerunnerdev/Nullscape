@@ -38,12 +38,12 @@ float ShaderTweaksDebugWindow::m_AntiprotonExternalRadius = 1.0f;
 
 void ShaderTweaksDebugWindow::Register()
 {
-	Genesis::ImGuiImpl::RegisterMenu( "Tools", "Shader tweaks", &m_Open );
+	Genesis::ImGuiImpl::RegisterDevMenu( "Tools", "Shader tweaks", &m_Open );
 }
 
 void ShaderTweaksDebugWindow::Unregister()
 {
-	Genesis::ImGuiImpl::UnregisterMenu( "Tools", "Shader tweaks" );
+	Genesis::ImGuiImpl::UnregisterDevMenu( "Tools", "Shader tweaks" );
 }
 
 void ShaderTweaksDebugWindow::Update()

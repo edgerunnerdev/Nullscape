@@ -47,7 +47,7 @@ m_CloudStorageActive( false ),
 m_pXmlReadThread( nullptr ),
 m_Ready( false )
 {
-	Genesis::ImGuiImpl::RegisterMenu( "Game", "Save game storage", &m_DebugWindowOpen );
+	Genesis::ImGuiImpl::RegisterDevMenu( "Game", "Save game storage", &m_DebugWindowOpen );
 
 #if USE_STEAM
 	m_pSteamRemoteStorage = SteamRemoteStorage();

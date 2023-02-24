@@ -1,4 +1,4 @@
-// Copyright 2022 Pedro Nunes
+// Copyright 2023 Pedro Nunes
 //
 // This file is part of Nullscape.
 //
@@ -17,7 +17,12 @@
 
 #pragma once
 
+#include <array>
 #include <filesystem>
+#include <memory>
+#include <vector>
+
+#include <coredefines.h>
 
 // clang-format off
 #include <externalheadersbegin.hpp>
@@ -26,31 +31,21 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
-namespace Nullscape
+#include "ui2/fonts.hpp"
+
+namespace Nullscape::UI2
 {
 
-class UI2
+GENESIS_DECLARE_SMART_PTR( Window );
+
+namespace Private
 {
-public:
-	enum class FontId
-    {
-		Default,
-		JuraRegular20,
-		ArconRegular18,
-		ArconBold18,
+    extern std::array<ImFont*, static_cast<size_t>( UI2::FontId::Count )> sRegisteredFonts;
+    extern std::vector<WindowWeakPtr> sWindows;
 
-		Count
-	};
+    void RegisterDefaultFont();
+    void RegisterFont( FontId id, const std::filesystem::path& path, float size );
+    void SetupStyle();
 
-	static void Initialize();
-	static void PushFont(FontId id);
-	static void PopFont();
-    static ImVec2 ToCanvasCoordinates(const ImVec2& canvasTopLeft, const ImVec2& canvasBottomRight, const ImVec2& canvasOffset, const glm::vec2& coordinates);
-
-private:
-	static void RegisterDefaultFont();
-	static void RegisterFont(FontId id, const std::filesystem::path& path, float size);
-	static void SetupStyle();
-};
-
-} // namespace Nullscape
+} // namespace Private
+} // namespace Nullscape::UI2

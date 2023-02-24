@@ -32,13 +32,17 @@ namespace Nullscape
 
 GENESIS_DECLARE_SMART_PTR(Entity);
 
+namespace UI2
+{
+GENESIS_DECLARE_SMART_PTR(Window);
+}
+
 class AmmoManager;
 class MuzzleflashManager;
 class MuzzleflashManagerRep;
 class LaserManager;
 class SpriteManager;
 class SectorCamera;
-class Hotbar;
 class Dust;
 class ShipInfo;
 class Faction;
@@ -57,7 +61,6 @@ class FleetCommand;
 class Boundary;
 class System;
 
-using HotbarUniquePtr = std::unique_ptr<Hotbar>;
 using FleetCommandUniquePtr = std::unique_ptr<FleetCommand>;
 using FleetCommandVector = std::vector<FleetCommandUniquePtr>;
 
@@ -121,8 +124,6 @@ private:
     SectorCamera* m_pCamera;
     Radar* m_pRadar;
 
-    HotbarUniquePtr m_pHotbar;
-
     FleetSharedPtr m_pRegionalFleet;
     IntVector m_AvailableSpawnPoints;
 
@@ -147,6 +148,8 @@ private:
     ShipTweaksUniquePtr m_pShipTweaks;
     std::vector<EntitySharedPtr> m_Entities;
     EntitySharedPtr m_pPlayerShip;
+
+    UI2::WindowSharedPtr m_pSidebarWindow;
 };
 
 inline AmmoManager* Sector::GetAmmoManager() const

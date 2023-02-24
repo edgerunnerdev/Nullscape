@@ -29,7 +29,7 @@ namespace Nullscape::UI
 Editor::Editor() :
 m_IsOpen( false )
 {
-    Genesis::ImGuiImpl::RegisterMenu( "Tools", "UI editor", &m_IsOpen );
+    Genesis::ImGuiImpl::RegisterDevMenu( "Tools", "UI editor", &m_IsOpen );
 }
 
 Editor::~Editor()

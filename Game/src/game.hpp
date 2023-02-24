@@ -80,7 +80,6 @@ class ShipInfoManager;
 class MainMenu;
 class Console;
 class AudioDebug;
-class Hotbar;
 class IntelWindow;
 class Galaxy;
 class Fleet;
@@ -199,7 +198,7 @@ private:
     void LoaderThreadMain();
     void EndGameAux();
     void LoadGameAux();
-    void ToggleImGui();
+    void ToggleDevMenu();
 
     MainMenu* m_pMainMenu;
     Console* m_pConsole;

@@ -86,7 +86,7 @@ RenderSystem::RenderSystem()
 
 RenderSystem::~RenderSystem()
 {
-    ImGuiImpl::UnregisterMenu("Engine", "Render system");
+    ImGuiImpl::UnregisterDevMenu("Engine", "Render system");
 
     InputManager* pInputManager = FrameWork::GetInputManager();
     if (pInputManager != nullptr)
@@ -267,7 +267,7 @@ void RenderSystem::DrawDebugWindow()
 
 void RenderSystem::InitializeDebug()
 {
-    ImGuiImpl::RegisterMenu("Engine", "Render system", &m_DebugWindowOpen);
+    ImGuiImpl::RegisterDevMenu("Engine", "Render system", &m_DebugWindowOpen);
 
     mInternalFormatMap[GL_STENCIL_INDEX] = "GL_STENCIL_INDEX";
     mInternalFormatMap[GL_DEPTH_COMPONENT] = "GL_DEPTH_COMPONENT";

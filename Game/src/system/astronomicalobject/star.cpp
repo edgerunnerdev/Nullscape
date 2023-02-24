@@ -22,7 +22,7 @@
 #include <genesis.h>
 
 #include "system/astronomicalobject/orbit.hpp"
-#include "ui2.hpp"
+#include "ui2/ui2.hpp"
 
 namespace Nullscape
 {

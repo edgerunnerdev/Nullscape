@@ -32,7 +32,7 @@ namespace Nullscape
 Blackboard::Blackboard() :
 m_DebugUIOpen( false )
 {
-	Genesis::ImGuiImpl::RegisterMenu( "Game", "Blackboard", &m_DebugUIOpen );
+	Genesis::ImGuiImpl::RegisterDevMenu( "Game", "Blackboard", &m_DebugUIOpen );
 }
 
 void Blackboard::Add( const std::string& text, int value /* = 1 */ )

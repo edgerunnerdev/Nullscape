@@ -28,7 +28,7 @@
 #include "sector/sector.h"
 #include "system/astronomicalobject/astronomicalobject.hpp"
 #include "system/system.hpp"
-#include "ui2.hpp"
+#include "ui2/ui2.hpp"
 
 namespace Nullscape
 {
@@ -65,7 +65,7 @@ ExplorationViewer::ExplorationViewer()
     , m_ScanTimer(0.0f)
     , m_SignalsInArc(0)
 {
-    Genesis::ImGuiImpl::RegisterMenu("Game", "Sensors", &m_IsOpen);
+    Genesis::ImGuiImpl::RegisterDevMenu("Game", "Sensors", &m_IsOpen);
 }
    
 ExplorationViewer::~ExplorationViewer() {

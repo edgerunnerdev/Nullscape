@@ -33,7 +33,7 @@ namespace Nullscape
 SystemViewer::SystemViewer()
     : m_IsOpen(false)
 {
-    Genesis::ImGuiImpl::RegisterMenu("Game", "System viewer", &m_IsOpen);
+    Genesis::ImGuiImpl::RegisterDevMenu("Game", "System viewer", &m_IsOpen);
 }
    
 SystemViewer::~SystemViewer()

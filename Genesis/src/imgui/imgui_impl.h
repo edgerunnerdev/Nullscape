@@ -26,8 +26,10 @@ public:
     static bool IsInitialised();
     static bool IsEnabled();
     static void Enable(bool state);
-    static void RegisterMenu(const std::string& menuRoot, const std::string& menuName, bool* pShow);
-    static void UnregisterMenu(const std::string& menuRoot, const std::string& menuName);
+    static bool IsDevMenuEnabled();
+    static void EnableDevMenu(bool state);
+    static void RegisterDevMenu(const std::string& menuRoot, const std::string& menuName, bool* pShow);
+    static void UnregisterDevMenu(const std::string& menuRoot, const std::string& menuName);
     static void CreateFontsTexture();
 
 private:
@@ -41,6 +43,7 @@ private:
     static VertexBuffer* m_pVertexBuffer;
     static bool m_Initialised;
     static bool m_Enabled;
+    static bool m_DevMenuEnabled;
 
     struct Menu
     {

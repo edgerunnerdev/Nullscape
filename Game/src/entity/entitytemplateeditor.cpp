@@ -51,7 +51,7 @@ EntityTemplateEditor::EntityTemplateEditor()
     , m_Position(0.0f, 0.0f, 200.0f)
 {
     using namespace Genesis;
-    ImGuiImpl::RegisterMenu("Game", "Entity template editor", &m_IsOpen);
+    ImGuiImpl::RegisterDevMenu("Game", "Entity template editor", &m_IsOpen);
 
     m_pViewport = std::make_shared<Viewport>("Entity template editor", sViewportWidth, sViewportHeight, true, false);
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
