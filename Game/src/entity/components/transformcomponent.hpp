@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
@@ -28,7 +28,7 @@
 
 #include "entity/component.hpp"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 class TransformComponent : public Component
@@ -72,4 +72,4 @@ inline void TransformComponent::SetTransform(const glm::mat4x4& value)
     m_Transform = value;
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

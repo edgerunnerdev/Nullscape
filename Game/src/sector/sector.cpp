@@ -1,19 +1,19 @@
 // Copyright 2015 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
-// Nullscape is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Nullscape is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sector.h"
 
@@ -31,7 +31,6 @@
 #include "menus/hyperspacemenu.h"
 #include "menus/intelwindow.h"
 #include "menus/lootwindow.h"
-#include "menus/radar.h"
 #include "menus/shiptweaks.h"
 #include "muzzleflash/muzzleflashmanager.h"
 #include "muzzleflash/muzzleflashmanagerrep.h"
@@ -74,7 +73,7 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -91,7 +90,6 @@ Sector::Sector(System* pSystem, const glm::vec2& coordinates)
     , m_pSpriteManager(nullptr)
     , m_pTrailManager(nullptr)
     , m_pTrailManagerRep(nullptr)
-    , m_pRadar(nullptr)
     , m_pShipyard(nullptr)
     , m_IsPlayerVictorious(false)
     , m_pLootWindow(nullptr)
@@ -145,11 +143,6 @@ Sector::~Sector()
         delete m_pMuzzleflashManager;
     }
 
-    if (m_pRadar != nullptr)
-    {
-        Genesis::FrameWork::GetGuiManager()->RemoveElement(m_pRadar);
-    }
-
     g_pGame->SetCursorType(CursorType::Pointer);
 }
 
@@ -195,9 +188,6 @@ bool Sector::Initialize()
 
     m_pSpriteManager = new SpriteManager();
     m_pSystem->GetLayer(LayerId::Ships)->AddSceneObject(m_pSpriteManager);
-
-    m_pRadar = new Radar();
-    Genesis::FrameWork::GetGuiManager()->AddElement(m_pRadar);
 
     DamageTrackerDebugWindow::Register();
 
@@ -384,4 +374,4 @@ void Sector::DebugDrawFleetSpawnPositions()
     }
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

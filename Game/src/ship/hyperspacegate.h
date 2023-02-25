@@ -11,7 +11,7 @@ class ResourceSound;
 
 }
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 class Ship;

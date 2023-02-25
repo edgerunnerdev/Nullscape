@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

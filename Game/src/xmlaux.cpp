@@ -4,14 +4,14 @@
 namespace Xml
 {
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::ModuleRarity& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::ModuleRarity& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Nullscape;
+	using namespace Hyperscape;
 
 	static const std::string rarity[ static_cast<size_t>( ModuleRarity::Count ) ] = 
 	{
@@ -35,14 +35,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullsca
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::WeaponBehaviour& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::WeaponBehaviour& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Nullscape;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	if ( text == "Fixed" )
@@ -59,14 +59,14 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullsca
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::TowerBonus& value )
+bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Hyperscape::TowerBonus& value )
 {
 	SDL_assert( pElement != nullptr );
 
 	if ( name != pElement->Value() )
 		return false;
 
-	using namespace Nullscape;
+	using namespace Hyperscape;
 
 	std::string text( pElement->GetText() );
 	if ( text == "None" )

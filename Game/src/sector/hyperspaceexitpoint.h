@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 class HyperspaceExitPoint

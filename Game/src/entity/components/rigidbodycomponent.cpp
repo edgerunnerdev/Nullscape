@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include <imgui/imgui.h>
 #include <genesis.h>
@@ -25,7 +25,7 @@
 
 #include "entity/components/rigidbodycomponent.hpp"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 RigidBodyComponent::RigidBodyComponent()
@@ -107,4 +107,4 @@ void RigidBodyComponent::CloneFrom(Component* pComponent)
     Component::CloneFrom(pComponent);
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

@@ -4,7 +4,7 @@
 #include "faction/faction.h"
 #include "game.hpp"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 DetailsWindow::DetailsWindow()

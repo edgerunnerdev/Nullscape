@@ -10,7 +10,7 @@
 #include "xmlaux.h"
 
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 Player::Player():

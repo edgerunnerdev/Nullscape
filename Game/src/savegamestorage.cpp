@@ -1,19 +1,19 @@
 // Copyright 2018 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
-// Nullscape is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Nullscape is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -38,7 +38,7 @@
 #include "stringaux.h"
 #include "xmlaux.h"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 SaveGameStorage::SaveGameStorage() :
@@ -74,7 +74,7 @@ m_Ready( false )
 
 	if ( m_CloudStorageActive == false )
 	{
-		std::filesystem::path saveGameDirectory = Genesis::Configuration::GetSystemSaveGameFolder() / "Nullscape";
+		std::filesystem::path saveGameDirectory = Genesis::Configuration::GetSystemSaveGameFolder() / "Hyperscape";
 		if ( std::filesystem::exists( saveGameDirectory ) )
 		{
 			for ( const auto& filename : std::filesystem::directory_iterator( saveGameDirectory ) )
@@ -131,7 +131,7 @@ bool SaveGameStorage::SaveGame( bool killSave /* = false */ )
 	if ( m_CloudStorageActive == false )
 	{
 		std::filesystem::path systemSaveGameFolder = Genesis::Configuration::GetSystemSaveGameFolder();
-		std::filesystem::path gameSaveGameFolder = systemSaveGameFolder / "Nullscape";
+		std::filesystem::path gameSaveGameFolder = systemSaveGameFolder / "Hyperscape";
 
 		if ( !CreateSaveGameFolder( gameSaveGameFolder ) )
 		{
@@ -357,7 +357,7 @@ void SaveGameStorage::UpdateStorageFiles( const std::filesystem::path& filename,
 void SaveGameStorage::CreateSaveGameData( tinyxml2::XMLDocument& xmlDoc, bool killSave )
 {
 	using namespace tinyxml2;
-	XMLElement* pRootElement = xmlDoc.NewElement( "Nullscape" );
+	XMLElement* pRootElement = xmlDoc.NewElement( "Hyperscape" );
 	xmlDoc.InsertFirstChild( pRootElement );
 
 	bool result = true;

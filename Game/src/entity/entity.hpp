@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 
 #include "entity/componenttype.hpp"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 GENESIS_DECLARE_SMART_PTR(Component)
@@ -78,4 +78,4 @@ inline void Entity::SetEditorEntity(bool state)
     m_IsEditorEntity = state;
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

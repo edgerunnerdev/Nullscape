@@ -1,19 +1,19 @@
 // Copyright 2015 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
-// Nullscape is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Nullscape is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -87,7 +87,7 @@
 #include <window.h>
 #include <xml.h>
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 Game* g_pGame = nullptr;
@@ -187,7 +187,7 @@ void Game::Initialise()
     Random::Initialise();
     RandomShuffle::Initialise();
 
-    Genesis::Log::Info() << "Nullscape build " << Nullscape_BUILD;
+    Genesis::Log::Info() << "Hyperscape build " << HYPERSCAPE_BUILD;
 
     m_pLoadingScreen = LoadingScreenUniquePtr( new LoadingScreen );
     m_pBlackboard = std::make_shared<Blackboard>();
@@ -780,7 +780,7 @@ int Main( Genesis::CommandLineParameters* parameters )
     return 0;
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape
 
 //-----------------------------------------------------------------------------
 // Entry point
@@ -788,5 +788,5 @@ int Main( Genesis::CommandLineParameters* parameters )
 
 int main( int argc, char* argv[] )
 {
-    return Nullscape::Main( Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
+    return Hyperscape::Main( Genesis::FrameWork::CreateCommandLineParameters( (const char**)argv, (int)argc ) );
 }

@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include "entity/components/navigationcomponent.hpp"
 
@@ -32,7 +32,7 @@
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 NavigationComponent::NavigationComponent()
@@ -115,4 +115,4 @@ void NavigationComponent::FlyTowards(const glm::vec3& direction)
     }
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

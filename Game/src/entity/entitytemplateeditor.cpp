@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 #include "trail/trailmanager.h"
 #include "trail/trailmanagerrep.h"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 static const int sViewportWidth = 800;
@@ -274,4 +274,4 @@ void EntityTemplateEditor::LoadTemplate(const std::string& templateName)
     m_LoadedTemplate = templateName;
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

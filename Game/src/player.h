@@ -7,7 +7,7 @@
 #include "ship/ship.h"
 #include "serialisable.h"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 class Inventory;

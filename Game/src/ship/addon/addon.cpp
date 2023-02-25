@@ -13,7 +13,7 @@
 #include "ship/weapon.h"
 #include "ship/shipinfo.h"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 bool AddonModuleSortPredicate( AddonModule* pModule1, AddonModule* pModule2 )

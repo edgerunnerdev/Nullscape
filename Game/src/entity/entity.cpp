@@ -1,6 +1,6 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
 // Genesis is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include "entity/component.hpp"
 #include "entity/componentfactory.hpp"
 
-namespace Nullscape
+namespace Hyperscape
 {
 
 Entity::Entity(const Entity& other) 
@@ -189,4 +189,4 @@ bool Entity::Deserialize(const nlohmann::json& jData)
     return true;
 }
 
-} // namespace Nullscape
+} // namespace Hyperscape

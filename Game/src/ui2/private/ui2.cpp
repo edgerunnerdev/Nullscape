@@ -1,19 +1,19 @@
 // Copyright 2022 Pedro Nunes
 //
-// This file is part of Nullscape.
+// This file is part of Hyperscape.
 //
-// Nullscape is free software: you can redistribute it and/or modify
+// Hyperscape is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Nullscape is distributed in the hope that it will be useful,
+// Hyperscape is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Nullscape. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ui2/private/ui2.hpp"
 
@@ -24,7 +24,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
 
-namespace Nullscape::UI2::Private
+namespace Hyperscape::UI2::Private
 {
 
 std::array<ImFont*, static_cast<size_t>( UI2::FontId::Count )> sRegisteredFonts;
@@ -57,4 +57,4 @@ void SetupStyle()
     style.Colors[ ImGuiCol_SliderGrabActive ] = ImColor( 0, 255, 209, 255 );
 }
 
-} // namespace Nullscape::UI2::Private
+} // namespace Hyperscape::UI2::Private
