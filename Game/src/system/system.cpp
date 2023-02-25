@@ -33,7 +33,7 @@
 #include "system/astronomicalobject/orbit.hpp"
 #include "system/astronomicalobject/planet.hpp"
 #include "system/astronomicalobject/star.hpp"
-#include "system/skybox.hpp"
+#include "system/background.hpp"
 #include "system/wormhole.hpp"
 
 namespace Hyperscape
@@ -45,7 +45,7 @@ System::System(const std::string& seed, bool demoMode /* = false*/)
 {
     InitializeRandomEngine();
     InitializeLayers();
-    InitializeSkybox();
+    InitializeBackground();
     GenerateAstronomicalObjects();
     GenerateWormholes();
 }
@@ -113,7 +113,7 @@ void System::InitializeRandomEngine()
 void System::InitializeLayers()
 {
     Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
-    m_Layers[static_cast<size_t>(LayerId::Background)] = pScene->AddLayer(1);
+    m_Layers[static_cast<size_t>(LayerId::Background)] = pScene->AddLayer(1, true);
     m_Layers[static_cast<size_t>(LayerId::Ships)] = pScene->AddLayer(2);
     m_Layers[static_cast<size_t>(LayerId::Effects)] = pScene->AddLayer(3);
     m_Layers[static_cast<size_t>(LayerId::Ammo)] = pScene->AddLayer(4);
@@ -121,10 +121,10 @@ void System::InitializeLayers()
     m_Layers[static_cast<size_t>(LayerId::Debug)] = pScene->AddLayer(6);
 }
 
-void System::InitializeSkybox() 
+void System::InitializeBackground() 
 {
-    m_pSkybox = std::make_unique<Skybox>(m_Seed);
-    GetLayer(LayerId::Background)->AddSceneObject(m_pSkybox.get(), false);
+    m_pBackground = std::make_unique<Background>(m_Seed);
+    GetLayer(LayerId::Background)->AddSceneObject(m_pBackground.get(), false);
 }
 
 void System::GenerateAstronomicalObjects() 

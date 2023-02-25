@@ -40,38 +40,38 @@ namespace Hyperscape
 ///////////////////////////////////////////////////////////////////////////////
 
 Background::Background(const std::string& seed)
-    : m_pProteanCloudsShader(nullptr)
-    , m_pShader(nullptr)
-    , m_pVertexBuffer(nullptr)
+    : m_pShader(nullptr)
     , m_AmbientColour(1.0)
-    , m_ProteanCloudsGenerated(false)
+    , m_Size(512.0f)
 {
     using namespace Genesis;
 
     ResourceManager* pResourceManager = FrameWork::GetResourceManager();
 
-    m_pProteanCloudsShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/proteanclouds.glsl");
     m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/sectorbackground.glsl");
 
-    //ResourceImage* pBackground = (ResourceImage*)pResourceManager->GetResource("data/backgrounds/HeartOfFire.jpg");
-    //ShaderUniformSharedPtr pBackgroundSampler = m_pShader->RegisterUniform("k_backgroundSampler", ShaderUniformType::Texture);
-    //pBackgroundSampler->Set(pBackground, GL_TEXTURE0);
+    ResourceImage* pBackground = (ResourceImage*)pResourceManager->GetResource("data/backgrounds/background1.jpg");
 
-    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_UV);
+    const glm::vec2 screenSize(static_cast<float>(Configuration::GetScreenWidth()), static_cast<float>(Configuration::GetScreenHeight()));
+    const glm::vec2 imageSize(static_cast<float>(pBackground->GetWidth()), static_cast<float>(pBackground->GetHeight()));
+    m_Size = glm::max(glm::max(screenSize.x, screenSize.y), glm::max(imageSize.x, imageSize.y));
+
+    ShaderUniformSharedPtr pBackgroundSampler = m_pShader->RegisterUniform("k_backgroundSampler", ShaderUniformType::Texture);
+    pBackgroundSampler->Set(pBackground, GL_TEXTURE0);
+
     CreateGeometry();
 }
 
 Background::~Background()
 {
-    delete m_pVertexBuffer;
+
 }
 
 void Background::CreateGeometry()
 {
     using namespace Genesis;
-
-    const glm::vec2 screenSize(static_cast<float>(Configuration::GetScreenWidth()), static_cast<float>(Configuration::GetScreenHeight()));
-    m_pVertexBuffer->CreateTexturedQuad(0.0f, 0.0f, screenSize.x, screenSize.y);
+    m_pVertexBuffer = std::make_unique<VertexBuffer>(GeometryType::Triangle, VBO_POSITION | VBO_UV);
+    m_pVertexBuffer->CreateTexturedQuad(0.0f, 0.0f, m_Size, m_Size);
 }
 
 void Background::Update(float delta)
@@ -81,23 +81,6 @@ void Background::Update(float delta)
 
 void Background::Render()
 {
-    using namespace Genesis;
-
-    if (m_ProteanCloudsGenerated == false)
-    {
-        RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
-        Viewport* pPrimaryViewport = pRenderSystem->GetPrimaryViewport();
-        m_pProteanCloudsRenderTarget = FrameWork::GetRenderSystem()->CreateRenderTarget("Protean clouds", pPrimaryViewport->GetWidth(), pPrimaryViewport->GetHeight(), false, false, false);
-        pRenderSystem->SetRenderTarget(m_pProteanCloudsRenderTarget);
-        m_pProteanCloudsShader->Use();
-        m_pVertexBuffer->Draw();
-        pRenderSystem->SetRenderTarget(pPrimaryViewport->GetRenderTarget());
-        m_ProteanCloudsGenerated = true;
-
-        ShaderUniformSharedPtr pBackgroundSampler = m_pShader->RegisterUniform("k_backgroundSampler", ShaderUniformType::Texture);
-        pBackgroundSampler->Set(m_pProteanCloudsRenderTarget->GetColor(), GL_TEXTURE0);
-    }
-
     m_pShader->Use();
     m_pVertexBuffer->Draw();
 }

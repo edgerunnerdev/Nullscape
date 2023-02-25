@@ -20,6 +20,8 @@
 #include <render/rendertarget.h>
 #include <resources/resourceshader.hpp>
 #include <scene/sceneobject.h>
+#include <vertexbuffer.h>
+
 #include <string>
 
 namespace Genesis
@@ -43,12 +45,10 @@ public:
 private:
     void CreateGeometry();
 
-    Genesis::RenderTargetSharedPtr m_pProteanCloudsRenderTarget;
-    Genesis::ResourceShader* m_pProteanCloudsShader;
     Genesis::ResourceShader* m_pShader;
-    Genesis::VertexBuffer* m_pVertexBuffer;
+    Genesis::VertexBufferUniquePtr m_pVertexBuffer;
     glm::vec4 m_AmbientColour;
-    bool m_ProteanCloudsGenerated;
+    float m_Size;
 };
 
 inline const glm::vec4& Background::GetAmbientColour() const
