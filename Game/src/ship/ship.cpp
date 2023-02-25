@@ -20,7 +20,6 @@
 #include "achievements.h"
 #include "collisionmasks.h"
 #include "faction/faction.h"
-#include "fleet/fleet.h"
 #include "globals.h"
 #include "game.hpp"
 #include "menus/intelwindow.h"
@@ -91,14 +90,12 @@ Ship::Ship()
     , m_AmountToRepair(0.0f)
     , m_RepairTimer(0.0f)
     , m_RepairStep(0.0f)
-    , m_pFleet(nullptr)
     , m_IsTerminating(false)
     , m_IsDestroyed(false)
     , m_UpdatingLinks(false)
     , m_pShipInfo(nullptr)
     , m_pUniforms(nullptr)
     , m_EngineDisruptionTimer(0.0f)
-    , m_Order(FleetCommandOrder::Engage)
     , m_RammingSpeedTimer(0.0f)
     , m_RammingSpeedCooldown(0.0f)
     , m_pDamageTracker(nullptr)
@@ -161,38 +158,6 @@ Ship::~Ship()
     if (m_CollisionCallbackHandle != Genesis::Physics::InvalidCollisionCallbackHandle && g_pGame != nullptr)
     {
         g_pGame->GetPhysicsSimulation()->UnregisterCollisionCallback(m_CollisionCallbackHandle);
-    }
-}
-
-void Ship::SetInitialisationParameters(Faction* pFaction, FleetWeakPtr pFleetWeakPtr, const ShipCustomisationData& shipCustomisationData, const ShipSpawnData& shipSpawnData, const ShipInfo* pShipInfo)
-{
-    m_pFaction = pFaction;
-    m_pFleet = pFleetWeakPtr.lock();
-    m_ShipCustomisationData = shipCustomisationData;
-    m_ShipSpawnData = shipSpawnData;
-    m_pShipInfo = pShipInfo;
-
-    ModuleEditLock();
-
-    int x1, y1, x2, y2;
-    shipCustomisationData.m_pModuleInfoHexGrid->GetBoundingBox(x1, y1, x2, y2);
-    for (int x = x1; x <= x2; ++x)
-    {
-        for (int y = y1; y <= y2; ++y)
-        {
-            ModuleInfo* pInfo = shipCustomisationData.m_pModuleInfoHexGrid->Get(x, y);
-            if (pInfo != nullptr)
-            {
-                AddModule(pInfo, x, y);
-            }
-        }
-    }
-
-    ModuleEditUnlock();
-
-    if (m_Engines.empty() == false)
-    {
-        m_pHyperspaceCore = new HyperspaceCore(this);
     }
 }
 
@@ -1335,15 +1300,6 @@ void Ship::OnShipDestroyed()
     m_IsDestroyed = true;
 
     PlayDestructionSequence();
-
-    // Removes an instance of this ship from the owning fleet
-    // The exact ship doesn't matter as other than the player's ship, they're all created
-    // from a ShipInfo.
-    const ShipInfo* pShipInfo = GetShipInfo();
-    if (pShipInfo != nullptr && m_pFleet != nullptr)
-    {
-        m_pFleet->RemoveShip(pShipInfo);
-    }
 
     if (m_pEngineSound != nullptr && m_pEngineSound->IsPlaying())
     {

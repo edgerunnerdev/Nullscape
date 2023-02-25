@@ -23,7 +23,6 @@
 #include "ship/module.h"
 #include "ship/hyperspacecore.h"
 #include "sector/sector.h"
-#include "fleet/fleet.h"
 #include "player.h"
 #include "menus/hyperspacemenu.h"
 

@@ -24,9 +24,6 @@
 #include "entity/componentfactory.hpp"
 #include "entity/entityfactory.hpp"
 #include "faction/faction.h"
-#include "fleet/fleet.h"
-#include "fleet/fleetcommand.h"
-#include "fleet/fleetspawner.h"
 #include "game.hpp"
 #include "laser/lasermanager.h"
 #include "menus/contextualtips.h"
@@ -95,7 +92,6 @@ Sector::Sector(System* pSystem, const glm::vec2& coordinates)
     , m_pTrailManager(nullptr)
     , m_pTrailManagerRep(nullptr)
     , m_pRadar(nullptr)
-    , m_pRegionalFleet(nullptr)
     , m_pShipyard(nullptr)
     , m_IsPlayerVictorious(false)
     , m_pLootWindow(nullptr)
@@ -276,11 +272,6 @@ void Sector::Update(float delta)
     m_pHyperspaceMenu->Update(delta);
     m_pDeathMenu->Update(delta);
 
-    for (auto& pFleetCommand : m_FleetCommands)
-    {
-        pFleetCommand->Update();
-    }
-
     DamageTrackerDebugWindow::Update();
 }
 
@@ -293,35 +284,6 @@ void Sector::DeleteRemovedShips()
     }
 
     m_ShipsToRemove.clear();
-}
-
-bool Sector::Reinforce(FleetSharedPtr pFleet, ShipVector* pSpawnedShips /* = nullptr */)
-{
-    if (pFleet == nullptr)
-    {
-        return false;
-    }
-
-    float spawnPointX, spawnPointY;
-    if (GetFleetSpawnPosition(pFleet->GetFaction(), spawnPointX, spawnPointY))
-    {
-        FleetSpawner::Spawn(pFleet, this, pSpawnedShips, spawnPointX, spawnPointY);
-
-        if (Faction::sIsEnemyOf(pFleet->GetFaction(), g_pGame->GetPlayerFaction()))
-        {
-            g_pGame->AddFleetCommandIntel("Detected waveform collapse, an enemy fleet is entering the sector.");
-        }
-        else
-        {
-            g_pGame->AddFleetCommandIntel("Captain, reinforcements have arrived.");
-        }
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 void Sector::AddShip(Ship* pShip)
@@ -420,11 +382,6 @@ void Sector::DebugDrawFleetSpawnPositions()
         glm::vec2 origin(spawnData.m_PositionX, spawnData.m_PositionY);
         Genesis::FrameWork::GetDebugRender()->DrawCircle(origin, 25.0f, glm::vec3(1.0f, 0.0f, 0.0f));
     }
-}
-
-void Sector::AddFleetCommand(FleetCommandUniquePtr pFleetCommand)
-{
-    m_FleetCommands.push_back(std::move(pFleetCommand));
 }
 
 } // namespace Nullscape

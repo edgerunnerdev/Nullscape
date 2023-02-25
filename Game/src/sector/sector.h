@@ -18,7 +18,6 @@
 #pragma once
 
 #include "faction/faction.h"
-#include "fleet/fleet.fwd.h"
 #include "ship/moduleinfo.h"
 #include "ship/ship.fwd.h"
 
@@ -46,7 +45,6 @@ class SectorCamera;
 class Dust;
 class ShipInfo;
 class Faction;
-class Fleet;
 class SectorInfo;
 class Shipyard;
 class HyperspaceMenu;
@@ -57,12 +55,8 @@ class ParticleManager;
 class ParticleManagerRep;
 class DeathMenu;
 class LootWindow;
-class FleetCommand;
 class Boundary;
 class System;
-
-using FleetCommandUniquePtr = std::unique_ptr<FleetCommand>;
-using FleetCommandVector = std::vector<FleetCommandUniquePtr>;
 
 static const float sSpawnPointSize = 1000.0f;
 static const int sSectorSpawnPoints = 9;
@@ -92,11 +86,7 @@ public:
     void AddShip(Ship* pShip);
     void RemoveShip(Ship* pShip);
 
-    FleetWeakPtr GetRegionalFleet() const;
-
-    bool Reinforce(FleetSharedPtr pFleet, ShipVector* pSpawnedShips = nullptr);
     bool IsPlayerVictorious() const;
-    void AddFleetCommand(FleetCommandUniquePtr pFleetCommand);
 
 private:
     void DeleteRemovedShips();
@@ -124,7 +114,6 @@ private:
     SectorCamera* m_pCamera;
     Radar* m_pRadar;
 
-    FleetSharedPtr m_pRegionalFleet;
     IntVector m_AvailableSpawnPoints;
 
     ShipSpawnDataVector m_DebugShipSpawnData;
@@ -139,11 +128,9 @@ private:
     float m_TowerBonusMagnitude[static_cast<unsigned int>(FactionId::Count)];
 
     LootWindow* m_pLootWindow;
-    FleetCommandVector m_FleetCommands;
 
     unsigned int m_AdditionalWaves;
     unsigned int m_AdditionalWavesSpawned;
-    FleetList m_TemporaryFleets;
 
     ShipTweaksUniquePtr m_pShipTweaks;
     std::vector<EntitySharedPtr> m_Entities;
@@ -175,11 +162,6 @@ inline ParticleManager* Sector::GetParticleManager() const
 inline MuzzleflashManager* Sector::GetMuzzleflashManager() const
 {
     return m_pMuzzleflashManager;
-}
-
-inline FleetWeakPtr Sector::GetRegionalFleet() const
-{
-    return m_pRegionalFleet;
 }
 
 inline bool Sector::IsPlayerVictorious() const

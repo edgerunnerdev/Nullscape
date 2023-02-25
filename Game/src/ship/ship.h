@@ -25,8 +25,6 @@
 #include <scene/sceneobject.h>
 #include <sound/soundmanager.h>
 
-#include "fleet/fleet.fwd.h"
-#include "fleet/fleetcommand.h"
 #include "ship/addon/addon.h"
 #include "ship/ship.fwd.h"
 #include "ship/shipcollisioninfo.h"
@@ -148,7 +146,6 @@ public:
 	virtual void					Update(float fDelta);
 	virtual void					Render();
 
-	void							SetInitialisationParameters( Faction* pFaction, FleetWeakPtr pFleetWeakPtr, const ShipCustomisationData& ShipCustomisationData, const ShipSpawnData& shipSpawnData, const ShipInfo* pShipInfo );
 	void							Initialise();
 
 	void							ModuleEditLock();									// ModuleEditLock() needs to be called before any modules are added or removed
@@ -231,8 +228,6 @@ public:
 	void							FlipQuantumState();
 	int								GetIntegrity() const;
 
-	FleetCommandOrder				GetFleetCommandOrder() const;
-	void							SetFleetCommandOrder( FleetCommandOrder order );
 	const glm::vec2&				GetFormationPosition() const;
 	void							SetFormationPosition( const glm::vec2& position );
 	const glm::vec2&				GetFormationDirection() const;
@@ -317,7 +312,6 @@ protected:
 	float							m_RepairTimer;
 	float							m_RepairStep;
 
-	FleetSharedPtr					m_pFleet;
 	unsigned int					m_Flags;
 
 	bool							m_IsTerminating;
@@ -334,7 +328,6 @@ protected:
     ShipShaderUniforms*             m_pUniforms;
 	float							m_EngineDisruptionTimer;
 
-	FleetCommandOrder				m_Order;
 	glm::vec2						m_FormationPosition;
 	glm::vec2						m_FormationDirection;
 
@@ -515,16 +508,6 @@ inline void Ship::DisruptEngines()
 inline bool Ship::AreEnginesDisrupted() const
 {
 	return ( m_EngineDisruptionTimer > 0.0f );
-}
-
-inline FleetCommandOrder Ship::GetFleetCommandOrder() const
-{
-	return m_Order;
-}
-
-inline void Ship::SetFleetCommandOrder( FleetCommandOrder order )
-{
-	m_Order = order;
 }
 
 inline const glm::vec2&	Ship::GetFormationPosition() const

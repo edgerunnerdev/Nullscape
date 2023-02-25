@@ -22,7 +22,6 @@
 #include <genesis.h>
 #include <configuration.h>
 
-#include "fleet/fleet.h"
 #include "ship/shipinfo.h"
 #include "ui/button.h"
 #include "ui/image.h"

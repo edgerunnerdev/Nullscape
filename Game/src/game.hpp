@@ -82,7 +82,6 @@ class Console;
 class AudioDebug;
 class IntelWindow;
 class Galaxy;
-class Fleet;
 class HyperspaceMenu;
 class Popup;
 class MusicTitle;
@@ -149,7 +148,6 @@ public:
     Faction* GetFaction(FactionId faction) const;
     Faction* GetPlayerFaction() const;
     PlayerSharedPtr GetPlayer() const;
-    FleetWeakPtr GetPlayerFleet() const;
     Galaxy* GetGalaxy() const;
     IntelWindow* GetIntelWindow() const;
     Popup* GetPopup() const;

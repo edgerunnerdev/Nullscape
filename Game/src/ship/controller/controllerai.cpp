@@ -89,38 +89,7 @@ void ControllerAI::ResetAlternatorTimer()
 
 void ControllerAI::HandleOrders( float delta )
 {
-	FleetCommandOrder order = GetShip()->GetFleetCommandOrder();
-	if ( order == FleetCommandOrder::StickToFormation )
-	{
-		const glm::vec2& formationPosition = GetShip()->GetFormationPosition();
-		const glm::vec2& formationDirection = GetShip()->GetFormationDirection();
 
-        const float goalRadius = 60.0f;
-
-		bool result = MoveToPosition( formationPosition, goalRadius, formationDirection );
-		if ( g_pGame->GetCurrentSector()->GetShipTweaks()->GetDrawNavigation() )
-		{
-			if ( result )
-			{
-				Genesis::FrameWork::GetDebugRender()->DrawCircle( glm::vec3( formationPosition.x, formationPosition.y, 0.0f ), goalRadius, glm::vec3( 0.0f, 1.0f, 0.0f ) );
-			}
-			else
-			{
-				Genesis::FrameWork::GetDebugRender()->DrawCircle( glm::vec3( formationPosition.x, formationPosition.y, 0.0f ), goalRadius, glm::vec3( 1.0f, 1.0f, 1.0f ) );
-			}
-		}
-	}
-	else if ( order == FleetCommandOrder::Patrol )
-	{
-        if ( MoveToPosition( m_PatrolPosition, 60.0f ) )
-        {
-            m_PatrolTimer -= delta;
-            if ( m_PatrolTimer <= 0.0f )
-            {
-                GenerateNextPatrolPoint();
-            }
-        }
-	}
 }
 
 // Tries to acquire the closest hostile target. It checks if there is a closer ship every couple of seconds.

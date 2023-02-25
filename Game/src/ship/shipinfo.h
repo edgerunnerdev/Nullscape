@@ -31,7 +31,6 @@
 namespace Nullscape
 {
 
-class Fleet;
 class ShipInfo;
 typedef std::vector< const ShipInfo* > ShipInfoVector;
 

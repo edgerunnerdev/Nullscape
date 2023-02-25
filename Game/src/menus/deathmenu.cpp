@@ -23,7 +23,6 @@
 #include "ship/ship.h"
 #include "ship/module.h"
 #include "sector/sector.h"
-#include "fleet/fleet.h"
 #include "player.h"
 #include "menus/deathmenu.h"
 

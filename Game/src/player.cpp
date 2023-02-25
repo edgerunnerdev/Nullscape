@@ -35,23 +35,7 @@ Player::~Player()
 
 Ship* Player::CreateShip( float spawnPointX, float spawnPointY )
 {
-	SDL_assert( m_pShip == nullptr );
-
-	ShipSpawnData spawnData;
-	spawnData.m_PositionX = spawnPointX;
-	spawnData.m_PositionY = spawnPointY;
-
-	m_pShip = new Ship();
-	m_pShip->SetInitialisationParameters(
-		g_pGame->GetPlayerFaction(),
-		g_pGame->GetPlayerFleet(),
-		m_ShipCustomisationData,
-		spawnData,
-		nullptr );
-
-	m_pShip->Initialise();
-
-	return m_pShip;
+	return nullptr;
 }
 
 bool Player::Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement )

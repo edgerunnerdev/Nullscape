@@ -26,7 +26,6 @@
 #include "achievements.h"
 #include "entity/entitytemplateeditor.hpp"
 #include "faction/faction.h"
-#include "fleet/fleet.h"
 #include "game.hpp"
 #include "menus/audiodebug.h"
 #include "menus/intelwindow.h"
@@ -593,20 +592,6 @@ Faction* Game::GetFaction( const std::string& name ) const
 Faction* Game::GetPlayerFaction() const
 {
     return m_pFaction[ (int)FactionId::Player ];
-}
-
-FleetWeakPtr Game::GetPlayerFleet() const
-{
-    Faction* pPlayerFaction = GetPlayerFaction();
-    if ( pPlayerFaction != nullptr )
-    {
-        const FleetList& fleets = pPlayerFaction->GetFleets();
-        if ( fleets.empty() == false )
-        {
-            return fleets.back();
-        }
-    }
-    return FleetWeakPtr();
 }
 
 SectorInfo* Game::FindSpawnSector() const

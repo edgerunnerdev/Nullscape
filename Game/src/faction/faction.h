@@ -23,15 +23,12 @@
 #include <rendersystem.h>
 #include "ship/ship.fwd.h"
 #include "sector/sectorinfo.h"
-#include "fleet/fleetdoctrine.h"
-#include "fleet/fleet.fwd.h"
 #include "loot/lootprobability.h"
 #include "serialisable.h"
 
 namespace Nullscape
 {
 
-class Fleet;
 class ShipInfo;
 typedef std::list<int> TurnQueue;
 typedef std::vector< std::string > StringVector;
@@ -80,7 +77,6 @@ struct FactionInfo
 	Genesis::Colour m_Colours[ static_cast<unsigned int>( FactionColourId::Count ) ];
 	int			    m_BaseFleetPoints;				// Initial fleet size (in points) when the game starts.
 	float			m_SectorToShipyardRatio;		// Optimal number of shipyards for the amount of sectors controlled by this faction.
-	FleetDoctrine	m_Doctrine;
 	unsigned int	m_CollisionLayerShip;
 	unsigned int	m_CollisionLayerAmmo;
 	LootProbability m_LootProbability;				// When a ship gets destroyed, the quality of the item it drops is given by this LootProbability 
@@ -107,12 +103,8 @@ public:
 	virtual void					AddControlledSector( SectorInfo* pSector, bool immediate, bool takenByPlayer );
 	void							RemoveControlledSector( SectorInfo* pSector, bool immediate = false );
 	inline const SectorInfoVector&	GetControlledSectors() const			{ return m_ControlledSectors; }
-	inline const FleetList&			GetFleets() const						{ return m_Fleets; }
 	inline const TurnQueue&			GetFleetsInConstruction() const			{ return m_FleetsInConstruction; }
-	inline const FleetDoctrine&		GetFleetDoctrine() const				{ return m_Info.m_Doctrine; }
 	inline FactionId				GetFactionId() const					{ return m_FactionId; }
-	FleetWeakPtr					BuildFleet( SectorInfo* pInitialSector );
-	void							DestroyFleet( FleetWeakPtr pFleet );
 	unsigned int					GetCollisionLayerShip() const			{ return m_Info.m_CollisionLayerShip; }
 	unsigned int					GetCollisionLayerAmmo() const			{ return m_Info.m_CollisionLayerAmmo; }
 	const LootProbability&			GetLootProbability( bool isFlagship ) const;
@@ -159,9 +151,7 @@ private:
 	SectorInfoVector				m_ControlledSectors;
 	SectorInfoVector				m_ControlledSectorsToAdd;
 	SectorInfoVector				m_ControlledSectorsToRemove;
-	FleetList						m_Fleets;
 	TurnQueue						m_FleetsInConstruction;
-	FleetList						m_FleetsToDestroy;
 	mutable ShipInfoVector			m_FlagshipFleetShips;
 	SectorInfo*						m_pHomeworld;
 	bool							m_StartedWithHomeworld;

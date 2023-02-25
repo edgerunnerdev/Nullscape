@@ -108,30 +108,6 @@ bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullsca
 	return false;
 }
 
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::FleetState& value )
-{
-	SDL_assert( pElement != nullptr );
-
-	if ( name != pElement->Value() )
-		return false;
-
-	using namespace Nullscape;
-
-	std::string text( pElement->GetText() );
-	std::string texts[] = { "Idle", "Engaged", "Moving", "Arrived" };
-	FleetState states[] = { FleetState::Idle, FleetState::Engaged, FleetState::Moving, FleetState::Arrived };
-	for ( int i = 0; i < 4; ++i )
-	{
-		if ( text == texts[ i ] )
-		{
-			value = states[ i ];
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, const std::string& content )
 {
 	tinyxml2::XMLElement* pElement = xmlDoc.NewElement( elementName.c_str() );
@@ -152,20 +128,6 @@ void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, c
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, bool content )
 {
 	Write( xmlDoc, pRootElement, elementName, content ? std::string("true") : std::string("false") );
-}
-
-void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, Nullscape::FleetState content )
-{
-	using namespace Nullscape;
-
-	if ( content == FleetState::Idle )
-		Write( xmlDoc, pRootElement, elementName, std::string( "Idle" ) );
-	else if ( content == FleetState::Engaged )
-		Write( xmlDoc, pRootElement, elementName, std::string( "Engaged" ) );
-	else if ( content == FleetState::Moving )
-		Write( xmlDoc, pRootElement, elementName, std::string( "Moving" ) );
-	else if ( content == FleetState::Arrived )
-		Write( xmlDoc, pRootElement, elementName, std::string( "Arrived" ) );
 }
 
 }

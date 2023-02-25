@@ -34,11 +34,6 @@ ControllerKiter::ControllerKiter( Ship* pShip ): ControllerAI( pShip )
 void ControllerKiter::HandleOrders( float delta )
 {
 	ControllerAI::HandleOrders( delta );
-
-	if ( GetShip()->GetFleetCommandOrder() == FleetCommandOrder::Engage && GetTargetShip() )
-	{
-		OrbitTargetShip();
-	}
 }
 
 bool ControllerKiter::OrbitTargetShip()

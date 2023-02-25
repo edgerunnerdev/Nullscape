@@ -24,7 +24,6 @@
 #include <log.hpp>
 #include <xml.h>
 
-#include "fleet/fleet.h"
 #include "ship/hexgrid.h"
 #include "ship/moduleinfo.h"
 #include "ship/shipinfo.h"

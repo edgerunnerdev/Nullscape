@@ -26,7 +26,6 @@
 // clang-format on
 
 #include "ship/moduleinfo.h"
-#include "fleet/fleet.h"
 #include "game.hpp"
 
 namespace Xml
@@ -35,12 +34,10 @@ namespace Xml
 bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::ModuleRarity& value );
 bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::WeaponBehaviour& value );
 bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::TowerBonus& value );
-bool Serialise( tinyxml2::XMLElement* pElement, const std::string& name, Nullscape::FleetState& value );
 
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, const std::string& content );
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, int content );
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, float content );
 void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, bool content );
-void Write( tinyxml2::XMLDocument& xmlDoc, tinyxml2::XMLElement* pRootElement, const std::string& elementName, Nullscape::FleetState content );
 
 }

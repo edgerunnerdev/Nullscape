@@ -32,20 +32,6 @@ ControllerAssault::ControllerAssault( Ship* pShip ): ControllerAI( pShip )
 void ControllerAssault::HandleOrders( float delta )
 {
 	ControllerAI::HandleOrders( delta );
-
-	if ( GetShip()->GetFleetCommandOrder() == FleetCommandOrder::Engage && GetTargetShip() )
-	{
-		if ( ApproachTargetShip() ) // Have we managed to get in range of the ship?
-		{
-			FactionId factionId = GetShip()->GetFaction()->GetFactionId();
-
-			if ( ( factionId == FactionId::Marauders || factionId == FactionId::Hegemon ) && 
-				GetShip()->GetRammingSpeedCooldown() <= 0.0f && GetShip()->AreEnginesDisrupted() == false )
-			{
-				GetShip()->RammingSpeed();
-			}
-		}
-	}
 }
 
 bool ControllerAssault::ApproachTargetShip()
