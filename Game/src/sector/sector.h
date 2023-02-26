@@ -30,6 +30,7 @@ namespace Hyperscape
 {
 
 GENESIS_DECLARE_SMART_PTR(Entity);
+GENESIS_DECLARE_SMART_PTR(Fleet);
 
 namespace UI2
 {
@@ -135,6 +136,9 @@ private:
     EntitySharedPtr m_pPlayerShip;
 
     UI2::WindowSharedPtr m_pSidebarWindow;
+
+    FleetSharedPtr m_pPlayerFleet;
+    FleetSharedPtr m_pOtherFleet;
 };
 
 inline AmmoManager* Sector::GetAmmoManager() const

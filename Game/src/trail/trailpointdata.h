@@ -33,6 +33,7 @@ public:
     {
     }
     const glm::vec3& GetPosition() const;
+    void SetPosition( glm::vec3& position );
     float GetWidth() const;
     void SetWidth(float value);
     float GetLifetime() const;
@@ -49,6 +50,11 @@ private:
 inline const glm::vec3& TrailPointData::GetPosition() const
 {
     return m_Position;
+}
+
+inline void TrailPointData::SetPosition( glm::vec3& position )
+{
+    m_Position = position;
 }
 
 inline float TrailPointData::GetWidth() const

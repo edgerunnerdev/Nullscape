@@ -1,4 +1,4 @@
-// Copyright 2022 Pedro Nunes
+// Copyright 2023 Pedro Nunes
 //
 // This file is part of Hyperscape.
 //
@@ -17,24 +17,19 @@
 
 #pragma once
 
-#include <SDL.h>
+#include <fleet/fleet.hpp>
 
 namespace Hyperscape
 {
 
-enum class ComponentType:uint16_t
+void Fleet::AddShip( EntitySharedPtr& pShip )
 {
-	ModelComponent = 0,
-	TransformComponent,
-	RigidBodyComponent,
-	NavigationComponent,
-	EngineComponent,
-	CameraComponent,
-	PlayerControllerComponent,
-	TrailComponent,
-	SwayComponent,
+    m_Ships.push_back( pShip );
+}
 
-	Count
-};
+void Fleet::RemoveShip( EntitySharedPtr& pShipToRemove )
+{
+    m_Ships.erase(std::remove_if( m_Ships.begin(), m_Ships.end(), [&pShipToRemove]( EntitySharedPtr pShip ) { return pShipToRemove == pShip; }));
+}
 
 } // namespace Hyperscape

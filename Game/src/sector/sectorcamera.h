@@ -46,13 +46,6 @@ private:
     glm::vec2 m_BorderTopLeft;
     glm::vec2 m_BorderBottomRight;
     glm::mat4x4 m_Transform;
-    Genesis::InputCallbackToken m_RightMouseButtonPressed;
-    Genesis::InputCallbackToken m_RightMouseButtonReleased;
-    bool m_CameraOrbit;
-    float m_Pitch;
-    float m_Yaw;
-    float m_TargetPitch;
-    float m_TargetYaw;
 };
 
 inline const glm::mat4& SectorCamera::GetTransform() const 

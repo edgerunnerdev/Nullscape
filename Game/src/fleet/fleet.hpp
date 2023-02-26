@@ -1,4 +1,4 @@
-// Copyright 2022 Pedro Nunes
+// Copyright 2023 Pedro Nunes
 //
 // This file is part of Hyperscape.
 //
@@ -17,24 +17,31 @@
 
 #pragma once
 
-#include <SDL.h>
+#include <coredefines.h>
+
+#include <vector>
 
 namespace Hyperscape
 {
 
-enum class ComponentType:uint16_t
-{
-	ModelComponent = 0,
-	TransformComponent,
-	RigidBodyComponent,
-	NavigationComponent,
-	EngineComponent,
-	CameraComponent,
-	PlayerControllerComponent,
-	TrailComponent,
-	SwayComponent,
+GENESIS_DECLARE_SMART_PTR( Entity );
 
-	Count
+class Fleet
+{
+public:
+    Fleet() {}
+
+    void AddShip( EntitySharedPtr& pShip );
+    void RemoveShip( EntitySharedPtr& pShip );
+    const std::vector<EntitySharedPtr>& GetShips() const;
+
+private:
+    std::vector<EntitySharedPtr> m_Ships;
 };
+
+inline const std::vector<EntitySharedPtr>& Fleet::GetShips() const
+{
+    return m_Ships;
+}
 
 } // namespace Hyperscape

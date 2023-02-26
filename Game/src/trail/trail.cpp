@@ -81,6 +81,10 @@ void Trail::Update(float delta)
                 {
                     point.SetLifetime(point.GetLifetime() - delta);
                     point.SetWidth(fadedWidth);
+
+                    // TODO: FIXME
+                    point.SetPosition( point.GetPosition() + glm::vec3( -20.0f * delta, 0.0f, 0.0f ) );
+
                     m_ActivePoints++;
                     it++;
                 }
