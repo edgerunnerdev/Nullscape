@@ -40,7 +40,7 @@ public:
 	MuzzleflashManagerRep( MuzzleflashManager* pManager );
 	virtual	~MuzzleflashManagerRep() override;
 	virtual void Update( float delta ) override;
-	virtual void Render() override;
+	virtual void Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 	void SetManager( MuzzleflashManager* pManager );
 
 private:

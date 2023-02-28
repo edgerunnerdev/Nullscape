@@ -38,7 +38,7 @@ public:
     Background(const std::string& seed);
     virtual ~Background() override;
     virtual void Update(float delta) override;
-    virtual void Render() override;
+    virtual void Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
     const glm::vec4& GetAmbientColour() const;
 

@@ -55,25 +55,27 @@
 #include "ui2/ui2.hpp"
 #include "windows/sidebarwindow.hpp"
 
-#include <algorithm>
+#include <configuration.h>
 #include <genesis.h>
 #include <inputmanager.h>
 #include <log.hpp>
 #include <math/misc.h>
-#include <render/debugrender.h>
-#include <scene/layer.h>
+#include <render/rendertarget.h>
+#include <rendersystem.h>
 #include <scene/light.h>
 #include <scene/scene.h>
 #include <scene/sceneobject.h>
 #include <sound/soundinstance.h>
 #include <sound/soundmanager.h>
-#include <sstream>
 
 // clang-format off
 #include <externalheadersbegin.hpp>
 #include <tinyxml2.h>
 #include <externalheadersend.hpp>
 // clang-format on
+
+#include <algorithm>
+#include <sstream>
 
 namespace Hyperscape
 {
@@ -227,7 +229,18 @@ bool Sector::Initialize()
         pShipEntity->GetComponent<TransformComponent>()->SetTransform( glm::translate( glm::vec3( 50.0f, -15.0f, -5.0f ) ) );
     }
 
+    CreateOtherFleetViewport();
+
     return true;
+}
+
+void Sector::CreateOtherFleetViewport()
+{
+    using namespace Genesis;
+    m_pOtherFleetCamera = std::make_shared<SceneCamera>();
+    FrameWork::GetScene()->AddCamera( m_pOtherFleetCamera );
+    m_pOtherFleetViewport = std::make_shared<Viewport>( "Other fleet", static_cast<int>( Configuration::GetScreenWidth() ), static_cast<int>( Configuration::GetScreenHeight() ), FrameWork::GetScene(), m_pOtherFleetCamera );
+    FrameWork::GetRenderSystem()->AddViewport( m_pOtherFleetViewport );
 }
 
 void Sector::SelectPlaylist()

@@ -85,7 +85,7 @@ void Boundary::Update( float delta )
 	}
 }
 
-void Boundary::Render()
+void Boundary::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	using namespace Genesis;
 

@@ -263,7 +263,7 @@ void AmmoManager::Update( float delta )
 	}
 }
 
-void AmmoManager::Render()
+void AmmoManager::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	Genesis::FrameWork::GetRenderSystem()->SetGlowRenderTarget();
 	for ( auto& pAmmo : m_pAmmo )

@@ -68,7 +68,7 @@ void SectorCamera::UpdateListener( float delta )
 {
     using namespace Genesis;
 
-    const Scene* pScene = FrameWork::GetScene();
+    const SceneSharedPtr pScene = FrameWork::GetScene();
     const Camera* pCamera = pScene->GetCamera();
 
     const glm::vec3& position = pCamera->GetPosition();

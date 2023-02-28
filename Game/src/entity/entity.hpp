@@ -44,7 +44,7 @@ public:
     virtual ~Entity() override {}
 
     virtual void Update(float delta) override;
-    virtual void Render() override;
+    virtual void Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
     virtual void OnAddedToScene(Genesis::Scene* pScene);
     virtual void OnRemovedFromScene();

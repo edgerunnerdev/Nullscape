@@ -32,7 +32,7 @@ public:
     ModelViewerBackground(int width, int height);
     virtual ~ModelViewerBackground() override;
     virtual void Update(float delta) override;
-    virtual void Render() override;
+    virtual void Render( const SceneCameraSharedPtr& pCamera ) override;
 
 private:
     ResourceShader* m_pShader;

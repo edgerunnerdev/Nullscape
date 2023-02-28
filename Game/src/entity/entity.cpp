@@ -73,7 +73,7 @@ void Entity::Update(float delta)
     }
 }
 
-void Entity::Render()
+void Entity::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
     for (size_t i = 0; i < m_Components.size(); ++i)
     {

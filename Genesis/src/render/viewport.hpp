@@ -17,9 +17,10 @@
 
 #pragma once
 
+#include "coredefines.h"
 #include "render/rendertarget.h"
-#include "scene/scene.h"
 #include "rendersystem.fwd.h"
+#include "scene/scene.h"
 
 #include <memory>
 #include <string>
@@ -27,28 +28,73 @@
 namespace Genesis
 {
 
-class Scene;
+GENESIS_DECLARE_SMART_PTR( Scene );
+GENESIS_DECLARE_SMART_PTR( SceneCamera );
 
 class Viewport
 {
 public:
-    Viewport(const std::string& name, int width, int height, bool hasDepth, bool hasStencil, SceneSharedPtr pScene = nullptr);
+    Viewport( const std::string& name, int width, int height, SceneSharedPtr pScene, SceneCameraSharedPtr pCamera, bool hasDepth = true, bool hasStencil = true );
     ~Viewport();
 
     void Render();
 
     const std::string& GetName() const;
     RenderTargetSharedPtr GetRenderTarget();
-    Scene* GetScene();
-    int GetWidth();
-    int GetHeight();
+    SceneSharedPtr& GetScene();
+    const SceneSharedPtr& GetScene() const;
+    SceneCameraSharedPtr& GetCamera();
+    const SceneCameraSharedPtr& GetCamera() const;
+    int GetWidth() const;
+    int GetHeight() const;
 
 private:
     std::string m_Name;
     RenderTargetSharedPtr m_pRenderTarget;
     SceneSharedPtr m_pScene;
+    SceneCameraSharedPtr m_pCamera;
     int m_Width;
     int m_Height;
 };
+
+inline SceneSharedPtr& Viewport::GetScene()
+{
+    return m_pScene;
+}
+
+inline const SceneSharedPtr& Viewport::GetScene() const
+{
+    return m_pScene;
+}
+
+inline SceneCameraSharedPtr& Viewport::GetCamera()
+{
+    return m_pCamera;
+}
+
+inline const SceneCameraSharedPtr& Viewport::GetCamera() const
+{
+    return m_pCamera;
+}
+
+inline RenderTargetSharedPtr Viewport::GetRenderTarget()
+{
+    return m_pRenderTarget;
+}
+
+inline int Viewport::GetWidth() const
+{
+    return m_Width;
+}
+
+inline int Viewport::GetHeight() const
+{
+    return m_Height;
+}
+
+inline const std::string& Viewport::GetName() const
+{
+    return m_Name;
+}
 
 } // namespace Genesis

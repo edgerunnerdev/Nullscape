@@ -51,7 +51,7 @@ DebugRender::~DebugRender()
     delete m_pVertexBuffer;
 }
 
-void DebugRender::Render()
+void DebugRender::Render( const SceneCameraSharedPtr& pCamera )
 {
     RenderLines();
     RenderCircles();

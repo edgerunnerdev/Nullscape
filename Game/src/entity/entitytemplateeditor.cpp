@@ -24,6 +24,7 @@
 #include <resources/resourcemodel.h>
 #include <scene/light.h>
 #include <scene/scene.h>
+#include <scene/scenecamera.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl.h>
@@ -53,10 +54,13 @@ EntityTemplateEditor::EntityTemplateEditor()
     using namespace Genesis;
     ImGuiImpl::RegisterDevMenu("Game", "Entity template editor", &m_IsOpen);
 
-    m_pViewport = std::make_shared<Viewport>("Entity template editor", sViewportWidth, sViewportHeight, true, false);
+    m_pScene = std::make_shared<Scene>();
+    m_pCamera = std::make_shared<SceneCamera>();
+    m_pScene->AddCamera( m_pCamera );
+    m_pViewport = std::make_shared<Viewport>( "Entity template edito", sViewportWidth, sViewportHeight, m_pScene, m_pCamera, true, false );
     FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
 
-    Scene* pScene = m_pViewport->GetScene();
+    SceneSharedPtr pScene = m_pViewport->GetScene();
     m_pBackgroundLayer = pScene->AddLayer(1, true);
     m_pMainLayer = pScene->AddLayer(2);
 
@@ -217,7 +221,7 @@ void EntityTemplateEditor::DrawTemplateList()
 
 void EntityTemplateEditor::UpdateCamera(bool acceptInput)
 {
-    Genesis::Camera* pCamera = m_pViewport->GetScene()->GetCamera();
+    Genesis::SceneCameraSharedPtr pCamera = m_pViewport->GetScene()->GetCamera();
 
     ImGuiIO& io = ImGui::GetIO();
     if (acceptInput && io.MouseDownDuration[0] > 0.05f)

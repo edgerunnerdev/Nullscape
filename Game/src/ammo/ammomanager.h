@@ -54,7 +54,7 @@ public:
 
 	Ammo*			Create( Weapon* pWeapon, float additionalRotation = 0.0f );
 	virtual void	Update( float delta ) override;
-	virtual void	Render() override;
+	virtual void	Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
 	void			GetInterceptables( AmmoVector& vec ) const;
 

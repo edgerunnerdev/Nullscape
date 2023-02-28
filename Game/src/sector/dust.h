@@ -43,8 +43,8 @@ class Dust: public Genesis::SceneObject
 public:
 	Dust();
 	virtual ~Dust();
-	virtual void Update(float fDelta);
-	virtual void Render();
+	virtual void Update(float fDelta) override;
+	virtual void Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
 private:
 	Genesis::ResourceImage*		m_pDust;

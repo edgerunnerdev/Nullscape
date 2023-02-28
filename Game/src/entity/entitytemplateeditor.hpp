@@ -21,6 +21,8 @@
 #include <render/viewport.hpp>
 #include <rendersystem.fwd.h>
 #include <scene/layer.h>
+#include <scene/scene.h>
+#include <scene/scenecamera.h>
 
 namespace Hyperscape
 {
@@ -42,6 +44,8 @@ private:
     void LoadTemplate(const std::string& templateName);
 
     bool m_IsOpen;
+    Genesis::SceneSharedPtr m_pScene;
+    Genesis::SceneCameraSharedPtr m_pCamera;
     Genesis::ViewportSharedPtr m_pViewport;
     Genesis::LayerSharedPtr m_pBackgroundLayer;
     Genesis::LayerSharedPtr m_pMainLayer;

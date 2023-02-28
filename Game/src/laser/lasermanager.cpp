@@ -100,7 +100,7 @@ void LaserManager::Update( float delta )
 	m_pVertexBuffer->CopyColours( colourData );
 }
 
-void LaserManager::Render()
+void LaserManager::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	using namespace Genesis;
 

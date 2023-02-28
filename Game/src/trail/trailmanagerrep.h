@@ -45,7 +45,7 @@ public:
     TrailManagerRep(TrailManager* pTrailManager);
     virtual ~TrailManagerRep() override;
     virtual void Update(float delta) override;
-    virtual void Render() override;
+    virtual void Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
 private:
     void PushBackUVs(Genesis::UVData& uvData);

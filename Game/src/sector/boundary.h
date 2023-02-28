@@ -37,7 +37,7 @@ public:
 								Boundary();
 	virtual						~Boundary();
 	virtual void				Update( float delta ) override;
-	virtual void				Render() override;
+	virtual void				Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
 
 private:

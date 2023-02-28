@@ -24,6 +24,8 @@
 #include <externalheadersend.hpp>
 // clang-format on
 
+#include <coredefines.h>
+
 #include <string>
 #include <vector>
 
@@ -32,6 +34,8 @@ using namespace magic_enum::bitwise_operators;
 
 namespace Genesis
 {
+
+GENESIS_DECLARE_SMART_PTR(Scene);
 
 class TaskManager;
 class Timer;
@@ -74,7 +78,7 @@ public:
     static Window* GetWindow();
     static RenderSystem* GetRenderSystem();
     static ResourceManager* GetResourceManager();
-    static Scene* GetScene();
+    static SceneSharedPtr& GetScene();
     static Gui::GuiManager* GetGuiManager();
     static Sound::SoundManager* GetSoundManager();
     static VideoPlayer* GetVideoPlayer();

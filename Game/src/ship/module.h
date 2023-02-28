@@ -90,7 +90,7 @@ public:
 
 	virtual void					Update( float delta ) override;
 	virtual void					UpdateShipyard( float delta );
-	virtual void					Render() override;
+	virtual void					Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 	virtual void					Render( const glm::mat4& modelTransform, bool drawOutline );
 	bool							ShouldRender() const;
 

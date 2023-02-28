@@ -181,9 +181,9 @@ void ParticleManagerRep::AddQuad( const Genesis::Gui::Atlas* pAtlas, const Parti
 	}
 }
 
-void ParticleManagerRep::Render()
+void ParticleManagerRep::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
-	Genesis::SceneObject::Render();
+	Genesis::SceneObject::Render( pCamera );
 
 	for ( int i = 0; i < sNumParticlePasses; ++i )
 	{

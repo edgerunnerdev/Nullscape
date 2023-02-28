@@ -21,11 +21,14 @@
 
 #include "render/debugrender.h"
 #include "render/viewport.hpp"
-#include "scene/layer.h"
 #include "rendersystem.fwd.h"
+#include "scene/layer.h"
 
 namespace Genesis
 {
+
+GENESIS_DECLARE_SMART_PTR( Scene );
+GENESIS_DECLARE_SMART_PTR( SceneCamera );
 
 class FileViewer;
 class ModelViewerObject;
@@ -39,8 +42,8 @@ public:
     void UpdateDebugUI();
 
 private:
-    void LoadModel(const std::filesystem::path& path);
-    void UpdateCamera(bool acceptInput);
+    void LoadModel( const std::filesystem::path& path );
+    void UpdateCamera( bool acceptInput );
     void DrawAxis();
     void DrawLights();
     void DrawDebugModel();
@@ -49,6 +52,8 @@ private:
     void ShowLights();
 
     bool m_IsOpen;
+    SceneSharedPtr m_pScene;
+    SceneCameraSharedPtr m_pCamera;
     ViewportSharedPtr m_pViewport;
     LayerSharedPtr m_pBackgroundLayer;
     LayerSharedPtr m_pMainLayer;

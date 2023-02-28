@@ -168,11 +168,11 @@ void MuzzleflashManagerRep::PushBackColours( Genesis::ColourData& colourData, co
 }
 
 
-void MuzzleflashManagerRep::Render()
+void MuzzleflashManagerRep::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	using namespace Genesis;
 
-	SceneObject::Render();
+	SceneObject::Render( pCamera );
 
     if ( m_NumVertices > 0 )
     {

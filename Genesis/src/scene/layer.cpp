@@ -17,9 +17,9 @@
 
 #include "layer.h"
 
-#include "render/viewport.hpp"
 #include "../genesis.h"
 #include "../rendersystem.h"
+#include "render/viewport.hpp"
 #include "sceneobject.h"
 
 #include <log.hpp>
@@ -27,11 +27,11 @@
 namespace Genesis
 {
 
-Layer::Layer(uint32_t depth, bool isBackground)
-    : mDepth(depth)
-    , mIsBackground(isBackground)
-    , mMarkedForDeletion(false)
-    , m_pScene(nullptr)
+Layer::Layer( uint32_t depth, bool isBackground )
+    : mDepth( depth )
+    , mIsBackground( isBackground )
+    , mMarkedForDeletion( false )
+    , m_pScene( nullptr )
 {
 }
 
@@ -39,9 +39,9 @@ Layer::~Layer()
 {
     // Remove any remaining objects from the layer
     LayerObjectList::iterator itEnd = mObjectList.end();
-    for (LayerObjectList::iterator it = mObjectList.begin(); it != itEnd; ++it)
+    for ( LayerObjectList::iterator it = mObjectList.begin(); it != itEnd; ++it )
     {
-        if (it->hasOwnership)
+        if ( it->hasOwnership )
         {
             delete it->pSceneObject;
         }
@@ -49,35 +49,35 @@ Layer::~Layer()
 }
 
 // Update all objects in this layer
-void Layer::Update(float delta)
+void Layer::Update( float delta )
 {
-    if (IsMarkedForDeletion())
+    if ( IsMarkedForDeletion() )
         return;
 
     {
         LayerObjectList::const_iterator itEnd = mObjectList.end();
-        for (LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it)
+        for ( LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it )
         {
-            it->pSceneObject->Update(delta);
+            it->pSceneObject->Update( delta );
         }
     }
 
-    if (mToRemove.empty() == false)
+    if ( mToRemove.empty() == false )
     {
         SceneObjectList::iterator itEnd = mToRemove.end();
-        for (SceneObjectList::iterator it = mToRemove.begin(); it != itEnd; ++it)
+        for ( SceneObjectList::iterator it = mToRemove.begin(); it != itEnd; ++it )
         {
             LayerObjectList::iterator it2End = mObjectList.end();
-            for (LayerObjectList::iterator it2 = mObjectList.begin(); it2 != it2End; ++it2)
+            for ( LayerObjectList::iterator it2 = mObjectList.begin(); it2 != it2End; ++it2 )
             {
-                if (it2->pSceneObject == *it)
+                if ( it2->pSceneObject == *it )
                 {
-                    it2->pSceneObject->SetScene(nullptr);
-                    if (it2->hasOwnership)
+                    it2->pSceneObject->SetScene( nullptr );
+                    if ( it2->hasOwnership )
                     {
                         delete *it;
                     }
-                    mObjectList.erase(it2);
+                    mObjectList.erase( it2 );
                     break;
                 }
             }
@@ -87,44 +87,45 @@ void Layer::Update(float delta)
 }
 
 // Render all objects in this layer
-void Layer::Render(Viewport* pViewport)
+void Layer::Render( Viewport* pViewport )
 {
-    if (IsMarkedForDeletion())
+    if ( IsMarkedForDeletion() )
         return;
 
     RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();
 
-    Scene* pScene = pViewport ? pViewport->GetScene() : nullptr;
+    SceneSharedPtr pScene = pViewport ? pViewport->GetScene() : nullptr;
     int width = pViewport ? pViewport->GetWidth() : 0;
     int height = pViewport ? pViewport->GetHeight() : 0;
 
-    if (IsBackground())
+    if ( IsBackground() )
     {
-        pRenderSystem->ViewOrtho(width, height);
+        pRenderSystem->ViewOrtho( width, height );
     }
     else
     {
-        pRenderSystem->ViewPerspective(width, height, pScene);
+        pRenderSystem->ViewPerspective( width, height, pScene, pViewport->GetCamera() );
     }
 
+    SceneCameraSharedPtr pCamera = pViewport->GetCamera();
     LayerObjectList::const_iterator itEnd = mObjectList.end();
-    for (LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it)
+    for ( LayerObjectList::const_iterator it = mObjectList.begin(); it != itEnd; ++it )
     {
-        if (it->pSceneObject->IsTerminating() == false)
+        if ( it->pSceneObject->IsTerminating() == false )
         {
-            it->pSceneObject->Render();
+            it->pSceneObject->Render( pCamera );
         }
     }
 }
 
-void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
+void Layer::AddSceneObject( SceneObject* pObject, bool hasOwnership /* = true */ )
 {
-    SDL_assert(pObject != nullptr);
+    SDL_assert( pObject != nullptr );
 
 #ifdef _DEBUG
-    for (auto& pLayerObject : mObjectList)
+    for ( auto& pLayerObject : mObjectList )
     {
-        if (pLayerObject.pSceneObject == pObject)
+        if ( pLayerObject.pSceneObject == pObject )
         {
             Log::Warning() << "Object has already been added to the layer!";
         }
@@ -133,24 +134,24 @@ void Layer::AddSceneObject(SceneObject* pObject, bool hasOwnership /* = true */)
 
     LayerObject obj;
     obj.pSceneObject = pObject;
-    obj.pSceneObject->SetScene(GetScene());
+    obj.pSceneObject->SetScene( GetScene() );
     obj.hasOwnership = hasOwnership;
-    if (pObject->GetRenderHint() == RenderHint::Transparent)
+    if ( pObject->GetRenderHint() == RenderHint::Transparent )
     {
-        mObjectList.push_back(obj);
+        mObjectList.push_back( obj );
     }
-    else 
+    else
     {
-        mObjectList.push_front(obj);
+        mObjectList.push_front( obj );
     }
 }
 
 // We can't remove the objects immediately, since they may be
 // being stepped by the Update. Therefore we only remove them
 // when the update is finished.
-void Layer::RemoveSceneObject(SceneObject* object)
+void Layer::RemoveSceneObject( SceneObject* object )
 {
     object->SetTerminating();
-    mToRemove.push_back(object);
+    mToRemove.push_back( object );
 }
 } // namespace Genesis

@@ -42,7 +42,7 @@ public:
     ~TrailManager() {}
 
     void Update(float delta) override;
-    void Render() override {}
+    void Render( const Genesis::SceneCameraSharedPtr& pCamera ) override {}
     const TrailList& GetTrails() const;
     TrailWeakPtr Add(float initialWidth, float decay, const glm::vec4& color);
     void Remove(TrailWeakPtr pTrail);

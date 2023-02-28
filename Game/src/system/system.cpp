@@ -52,7 +52,7 @@ System::System(const std::string& seed, bool demoMode /* = false*/)
    
 System::~System()
 {
-    Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
+    Genesis::SceneSharedPtr pScene = Genesis::FrameWork::GetScene();
     for (size_t i = 0; i < m_Layers.size(); ++i)
     {
         pScene->RemoveLayer(m_Layers[i]->GetLayerDepth());
@@ -112,7 +112,7 @@ void System::InitializeRandomEngine()
 
 void System::InitializeLayers()
 {
-    Genesis::Scene* pScene = Genesis::FrameWork::GetScene();
+    Genesis::SceneSharedPtr pScene = Genesis::FrameWork::GetScene();
     m_Layers[static_cast<size_t>(LayerId::Background)] = pScene->AddLayer(1, true);
     m_Layers[static_cast<size_t>(LayerId::Ships)] = pScene->AddLayer(2);
     m_Layers[static_cast<size_t>(LayerId::Effects)] = pScene->AddLayer(3);

@@ -228,7 +228,7 @@ ResourceManager* FrameWork::GetResourceManager()
     return gResourceManager;
 }
 
-Scene* FrameWork::GetScene()
+SceneSharedPtr& FrameWork::GetScene()
 {
     return gRenderSystem->GetPrimaryViewport()->GetScene();
 }

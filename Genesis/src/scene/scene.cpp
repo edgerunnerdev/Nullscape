@@ -14,7 +14,6 @@ namespace Genesis
 
 Scene::Scene()
 {
-    m_pCamera = std::make_unique<Camera>();
     mMask = 0xFFFFFFFF;
     FrameWork::GetTaskManager()->AddTask("Scene", this, (TaskFunc)&Scene::Update, TaskPriority::GameLogic);
 }
@@ -93,15 +92,4 @@ void Scene::RemoveLayer(uint32_t depth)
     }
 }
 
-//------------------------------------------------------------------
-// Camera
-//------------------------------------------------------------------
-
-Camera::Camera()
-    : mPosition(0.0f, 0.0f, 0.0f)
-    , mTargetPosition(0.0f, 0.0f, 1.0f)
-{
-}
-
-Camera::~Camera() {}
 } // namespace Genesis

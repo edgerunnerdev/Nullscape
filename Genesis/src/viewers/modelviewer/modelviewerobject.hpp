@@ -36,7 +36,7 @@ public:
     ModelViewerObject(const std::filesystem::path& path);
     virtual ~ModelViewerObject() override;
     virtual void Update(float delta) override;
-    virtual void Render() override;
+    virtual void Render( const SceneCameraSharedPtr& pCamera ) override;
     void DebugRender(Render::DebugRender* pDebugRender, ResourceModel::DebugRenderFlags flags);
 
     size_t GetVertexCount() const;

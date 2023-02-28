@@ -25,13 +25,13 @@
 namespace Genesis
 {
 
-ModelViewerBackground::ModelViewerBackground(int width, int height)
-    : m_pShader(nullptr)
-    , m_pVertexBuffer(nullptr)
+ModelViewerBackground::ModelViewerBackground( int width, int height )
+    : m_pShader( nullptr )
+    , m_pVertexBuffer( nullptr )
 {
-    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>("data/shaders/untextured_vertex_coloured.glsl");
-    m_pVertexBuffer = new VertexBuffer(GeometryType::Triangle, VBO_POSITION | VBO_COLOUR);
-    m_pVertexBuffer->CreateUntexturedQuad(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>( "data/shaders/untextured_vertex_coloured.glsl" );
+    m_pVertexBuffer = new VertexBuffer( GeometryType::Triangle, VBO_POSITION | VBO_COLOUR );
+    m_pVertexBuffer->CreateUntexturedQuad( 0.0f, 0.0f, static_cast<float>( width ), static_cast<float>( height ), glm::vec4( 0.0f, 0.0f, 0.0f, 1.0f ) );
 }
 
 ModelViewerBackground::~ModelViewerBackground()
@@ -39,12 +39,12 @@ ModelViewerBackground::~ModelViewerBackground()
     delete m_pVertexBuffer;
 }
 
-void ModelViewerBackground::Update(float delta)
+void ModelViewerBackground::Update( float delta )
 {
-    Genesis::SceneObject::Update(delta);
+    Genesis::SceneObject::Update( delta );
 }
 
-void ModelViewerBackground::Render()
+void ModelViewerBackground::Render( const SceneCameraSharedPtr& pCamera )
 {
     m_pShader->Use();
     m_pVertexBuffer->Draw();

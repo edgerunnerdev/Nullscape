@@ -75,7 +75,7 @@ void Background::Update( float delta )
     Genesis::SceneObject::Update( delta );
 }
 
-void Background::Render()
+void Background::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
     m_pShader->Use();
     m_pVertexBuffer->Draw();

@@ -17,19 +17,20 @@
 
 #include "viewers/modelviewer/modelviewer.hpp"
 
-#include <sstream>
+#include "genesis.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl.h"
-#include "viewers/fileviewer/fileviewer.hpp"
-#include "viewers/modelviewer/modelviewerbackground.hpp"
-#include "viewers/modelviewer/modelviewerobject.hpp"
-#include "resources/resourcemodel.h"
-#include "genesis.h"
 #include "render/rendertarget.h"
 #include "render/viewport.hpp"
 #include "rendersystem.h"
+#include "resources/resourcemodel.h"
 #include "scene/light.h"
 #include "scene/scene.h"
+#include "scene/scenecamera.h"
+#include "viewers/fileviewer/fileviewer.hpp"
+#include "viewers/modelviewer/modelviewerbackground.hpp"
+#include "viewers/modelviewer/modelviewerobject.hpp"
+#include <sstream>
 
 namespace Genesis
 {
@@ -38,75 +39,77 @@ static const int sViewportWidth = 800;
 static const int sViewportHeight = 800;
 
 ModelViewer::ModelViewer()
-    : m_IsOpen(false)
-    , m_Pitch(0.0f)
-    , m_Yaw(-90.0f)
-    , m_Position(0.0f, 0.0f, 200.0f)
-    , m_pModel(nullptr)
-    , m_DrawLights(false)
-    , m_DrawAxis(true)
-    , m_DrawNormals(false)
-    , m_DrawTangents(false)
-    , m_DrawBitangents(false)
-    , m_DrawPhysicsMesh(false)
+    : m_IsOpen( false )
+    , m_Pitch( 0.0f )
+    , m_Yaw( -90.0f )
+    , m_Position( 0.0f, 0.0f, 200.0f )
+    , m_pModel( nullptr )
+    , m_DrawLights( false )
+    , m_DrawAxis( true )
+    , m_DrawNormals( false )
+    , m_DrawTangents( false )
+    , m_DrawBitangents( false )
+    , m_DrawPhysicsMesh( false )
 {
-    ImGuiImpl::RegisterDevMenu("Tools", "Model viewer", &m_IsOpen);
+    ImGuiImpl::RegisterDevMenu( "Tools", "Model viewer", &m_IsOpen );
 
-    m_pViewport = std::make_shared<Viewport>("Model viewer", sViewportWidth, sViewportHeight, true, false);
-    FrameWork::GetRenderSystem()->AddViewport(m_pViewport);
+    m_pScene = std::make_shared<Scene>();
+    m_pCamera = std::make_shared<SceneCamera>();
+    m_pScene->AddCamera( m_pCamera );
+    m_pViewport = std::make_shared<Viewport>( "Model viewer", sViewportWidth, sViewportHeight, m_pScene, m_pCamera, true, false );
+    FrameWork::GetRenderSystem()->AddViewport( m_pViewport );
 
-    Scene* pScene = m_pViewport->GetScene();
-    m_pBackgroundLayer = pScene->AddLayer(1, true);
-    m_pMainLayer = pScene->AddLayer(2);
+    m_pBackgroundLayer = m_pScene->AddLayer( 1, true );
+    m_pMainLayer = m_pScene->AddLayer( 2 );
 
-    LightArray& lights = pScene->GetLights();
-    lights[0].SetPosition({100.0f, 100.0f, 100.0f});
-    lights[1].SetPosition({100.0f, 0.0f, 0.0f});
-    lights[2].SetPosition({-100.0f, 100.0f, -100.0f});
+    LightArray& lights = m_pScene->GetLights();
+    lights[ 0 ].SetPosition( { 100.0f, 100.0f, 100.0f } );
+    lights[ 1 ].SetPosition( { 100.0f, 0.0f, 0.0f } );
+    lights[ 2 ].SetPosition( { -100.0f, 100.0f, -100.0f } );
 
-    ModelViewerBackground* pBackground = new ModelViewerBackground(sViewportWidth, sViewportHeight);
-    m_pBackgroundLayer->AddSceneObject(pBackground, true);
+    ModelViewerBackground* pBackground = new ModelViewerBackground( sViewportWidth, sViewportHeight );
+    m_pBackgroundLayer->AddSceneObject( pBackground, true );
 
     m_pDebugRender = new Render::DebugRender();
-    m_pMainLayer->AddSceneObject(m_pDebugRender, true);
+    m_pMainLayer->AddSceneObject( m_pDebugRender, true );
 
-    m_pFileViewer = std::make_unique<FileViewer>("data/models", ".gmdl");
+    m_pFileViewer = std::make_unique<FileViewer>( "data/models", ".gmdl" );
 }
 
 ModelViewer::~ModelViewer()
 {
-    FrameWork::GetRenderSystem()->RemoveViewport(m_pViewport);
+    FrameWork::GetRenderSystem()->RemoveViewport( m_pViewport );
 }
 
 void ModelViewer::UpdateDebugUI()
 {
-    if (ImGuiImpl::IsEnabled() && m_IsOpen)
+    if ( ImGuiImpl::IsEnabled() && m_IsOpen )
     {
-        ImGui::Begin("Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin( "Model viewer", &m_IsOpen, ImGuiWindowFlags_AlwaysAutoResize );
 
-        ImGui::BeginChild("File viewer", ImVec2(300, sViewportHeight), true);
+        ImGui::BeginChild( "File viewer", ImVec2( 300, sViewportHeight ), true );
         m_pFileViewer->Render();
         ImGui::EndChild();
 
         ImGui::SameLine();
 
         RenderTargetSharedPtr pRenderTarget = m_pViewport->GetRenderTarget();
-        ImGui::Image(reinterpret_cast<ImTextureID>(static_cast<uintptr_t>(pRenderTarget->GetColor())),
-                     ImVec2(static_cast<float>(pRenderTarget->GetWidth()), static_cast<float>(pRenderTarget->GetHeight())), ImVec2(0, 1), // UV1
-                     ImVec2(1, 0),                                                                                                        // UV2
-                     ImVec4(1, 1, 1, 1),                                                                                                  // Tint
-                     ImVec4(1, 1, 1, 1)                                                                                                   // Border
+        ImGui::Image( reinterpret_cast<ImTextureID>( static_cast<uintptr_t>( pRenderTarget->GetColor() ) ),
+            ImVec2( static_cast<float>( pRenderTarget->GetWidth() ), static_cast<float>( pRenderTarget->GetHeight() ) ), ImVec2( 0, 1 ), // UV1
+            ImVec2( 1, 0 ), // UV2
+            ImVec4( 1, 1, 1, 1 ), // Tint
+            ImVec4( 1, 1, 1, 1 ) // Border
         );
-        
+
         DrawAxis();
         DrawDebugModel();
         DrawLights();
 
-        UpdateCamera(ImGui::IsItemHovered());
+        UpdateCamera( ImGui::IsItemHovered() );
 
         ImGui::SameLine();
 
-        ImGui::BeginChild("Properties", ImVec2(300, sViewportHeight), true);
+        ImGui::BeginChild( "Properties", ImVec2( 300, sViewportHeight ), true );
         ShowStats();
         ShowOverlays();
         ShowLights();
@@ -114,154 +117,156 @@ void ModelViewer::UpdateDebugUI()
 
         ImGui::End();
 
-        if (m_pFileViewer->HasSelected())
+        if ( m_pFileViewer->HasSelected() )
         {
-            LoadModel(m_pFileViewer->GetSelected());
+            LoadModel( m_pFileViewer->GetSelected() );
         }
     }
 }
 
-void ModelViewer::DrawAxis() 
+void ModelViewer::DrawAxis()
 {
-    if (m_DrawAxis)
+    if ( m_DrawAxis )
     {
-        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        m_pDebugRender->DrawLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        m_pDebugRender->DrawLine( glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3( 200.0f, 0.0f, 0.0f ), glm::vec3( 1.0f, 0.0f, 0.0f ) );
+        m_pDebugRender->DrawLine( glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3( 0.0f, 200.0f, 0.0f ), glm::vec3( 0.0f, 1.0f, 0.0f ) );
+        m_pDebugRender->DrawLine( glm::vec3( 0.0f, 0.0f, 0.0f ), glm::vec3( 0.0f, 0.0f, 200.0f ), glm::vec3( 0.0f, 0.0f, 1.0f ) );
     }
 }
 
-void ModelViewer::DrawDebugModel() 
+void ModelViewer::DrawDebugModel()
 {
-    if (m_pModel)
+    if ( m_pModel )
     {
         ResourceModel::DebugRenderFlags flags = ResourceModel::DebugRenderFlags::None;
-        if (m_DrawNormals)
+        if ( m_DrawNormals )
         {
             flags |= ResourceModel::DebugRenderFlags::Normals;
         }
-        if (m_DrawTangents)
+        if ( m_DrawTangents )
         {
             flags |= ResourceModel::DebugRenderFlags::Tangents;
         }
-        if (m_DrawBitangents)
+        if ( m_DrawBitangents )
         {
             flags |= ResourceModel::DebugRenderFlags::Bitangents;
         }
-        if (m_DrawPhysicsMesh)
+        if ( m_DrawPhysicsMesh )
         {
             flags |= ResourceModel::DebugRenderFlags::PhysicsMesh;
         }
-        m_pModel->DebugRender(m_pDebugRender, flags);
+        m_pModel->DebugRender( m_pDebugRender, flags );
     }
 }
 
-void ModelViewer::DrawLights() 
+void ModelViewer::DrawLights()
 {
-    if (m_DrawLights)
+    if ( m_DrawLights )
     {
-        for (const Light& light : m_pViewport->GetScene()->GetLights())
+        for ( const Light& light : m_pViewport->GetScene()->GetLights() )
         {
-            m_pDebugRender->DrawLine(light.GetPosition(), glm::vec3(0.0f), light.GetColor());
+            m_pDebugRender->DrawLine( light.GetPosition(), glm::vec3( 0.0f ), light.GetColor() );
         }
     }
 }
 
-void ModelViewer::UpdateCamera(bool acceptInput) 
+void ModelViewer::UpdateCamera( bool acceptInput )
 {
-    Camera* pCamera = m_pViewport->GetScene()->GetCamera();
-    
+    SceneCameraSharedPtr pCamera = m_pViewport->GetScene()->GetCamera();
+    SDL_assert( pCamera );
+
     ImGuiIO& io = ImGui::GetIO();
-    if (acceptInput && io.MouseDownDuration[0] > 0.05f)
+    if ( acceptInput && io.MouseDownDuration[ 0 ] > 0.05f )
     {
         static const float sMouseDeltaScale = 0.2f;
         m_Yaw += io.MouseDelta.x * sMouseDeltaScale;
         m_Pitch -= io.MouseDelta.y * sMouseDeltaScale;
     }
-    
+
     glm::vec3 direction;
-    direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    direction.y = sin(glm::radians(m_Pitch));
-    direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+    direction.x = cos( glm::radians( m_Yaw ) ) * cos( glm::radians( m_Pitch ) );
+    direction.y = sin( glm::radians( m_Pitch ) );
+    direction.z = sin( glm::radians( m_Yaw ) ) * cos( glm::radians( m_Pitch ) );
 
-    if (acceptInput)
+    if ( acceptInput )
     {
-        const float speed = io.KeyShift ? 100.0f : 10.0f;;
+        const float speed = io.KeyShift ? 100.0f : 10.0f;
+        ;
 
-        if (io.KeysDown[SDLK_w])
+        if ( io.KeysDown[ SDLK_w ] )
         {
             m_Position += direction * io.DeltaTime * speed;
         }
-        else if (io.KeysDown[SDLK_s])
+        else if ( io.KeysDown[ SDLK_s ] )
         {
             m_Position -= direction * io.DeltaTime * speed;
         }
 
-        const glm::vec3 right = glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f));
-        if (io.KeysDown[SDLK_a])
+        const glm::vec3 right = glm::cross( direction, glm::vec3( 0.0f, 1.0f, 0.0f ) );
+        if ( io.KeysDown[ SDLK_a ] )
         {
             m_Position -= right * io.DeltaTime * speed;
         }
-        else if (io.KeysDown[SDLK_d])
+        else if ( io.KeysDown[ SDLK_d ] )
         {
             m_Position += right * io.DeltaTime * speed;
         }
     }
 
-    pCamera->SetPosition(m_Position);
-    pCamera->SetTargetPosition(m_Position + direction);
+    pCamera->SetPosition( m_Position );
+    pCamera->SetTargetPosition( m_Position + direction );
 }
 
-void ModelViewer::LoadModel(const std::filesystem::path& path) 
+void ModelViewer::LoadModel( const std::filesystem::path& path )
 {
-    if (m_pModel != nullptr)
+    if ( m_pModel != nullptr )
     {
-        m_pMainLayer->RemoveSceneObject(m_pModel);
+        m_pMainLayer->RemoveSceneObject( m_pModel );
     }
 
-    m_pModel = new ModelViewerObject(path);
-    m_pMainLayer->AddSceneObject(m_pModel);
+    m_pModel = new ModelViewerObject( path );
+    m_pMainLayer->AddSceneObject( m_pModel );
 }
 
-void ModelViewer::ShowStats() 
+void ModelViewer::ShowStats()
 {
-    if (ImGui::CollapsingHeader("Statistics", ImGuiTreeNodeFlags_DefaultOpen))
+    if ( ImGui::CollapsingHeader( "Statistics", ImGuiTreeNodeFlags_DefaultOpen ) )
     {
         size_t triangleCount = m_pModel ? m_pModel->GetTriangleCount() : 0;
-        ImGui::Text("Triangles: %lu", triangleCount);
+        ImGui::Text( "Triangles: %lu", triangleCount );
 
         size_t vertexCount = m_pModel ? m_pModel->GetVertexCount() : 0;
-        ImGui::Text("Vertices: %lu", vertexCount);
+        ImGui::Text( "Vertices: %lu", vertexCount );
     }
 }
 
-void ModelViewer::ShowOverlays() 
+void ModelViewer::ShowOverlays()
 {
-    if (ImGui::CollapsingHeader("Overlays", ImGuiTreeNodeFlags_DefaultOpen))
+    if ( ImGui::CollapsingHeader( "Overlays", ImGuiTreeNodeFlags_DefaultOpen ) )
     {
-        ImGui::Checkbox("Draw axis", &m_DrawAxis);
-        ImGui::Checkbox("Draw normals", &m_DrawNormals);
-        ImGui::Checkbox("Draw tangents", &m_DrawTangents);
-        ImGui::Checkbox("Draw bitangents", &m_DrawBitangents);
-        ImGui::Checkbox("Draw physics mesh", &m_DrawPhysicsMesh);
+        ImGui::Checkbox( "Draw axis", &m_DrawAxis );
+        ImGui::Checkbox( "Draw normals", &m_DrawNormals );
+        ImGui::Checkbox( "Draw tangents", &m_DrawTangents );
+        ImGui::Checkbox( "Draw bitangents", &m_DrawBitangents );
+        ImGui::Checkbox( "Draw physics mesh", &m_DrawPhysicsMesh );
     }
 }
 
-void ModelViewer::ShowLights() 
+void ModelViewer::ShowLights()
 {
-    if (ImGui::CollapsingHeader("Lights", ImGuiTreeNodeFlags_DefaultOpen))
+    if ( ImGui::CollapsingHeader( "Lights", ImGuiTreeNodeFlags_DefaultOpen ) )
     {
-        ImGui::Checkbox("Draw lights", &m_DrawLights);
+        ImGui::Checkbox( "Draw lights", &m_DrawLights );
 
         LightArray& lights = m_pViewport->GetScene()->GetLights();
         size_t numLights = lights.size();
-        for (size_t i = 0; i < numLights; ++i)
+        for ( size_t i = 0; i < numLights; ++i )
         {
             std::stringstream ss;
             ss << "Directional light " << i + 1;
-            if (ImGui::TreeNode(ss.str().c_str()))
+            if ( ImGui::TreeNode( ss.str().c_str() ) )
             {
-                lights[i].DebugDraw();
+                lights[ i ].DebugDraw();
                 ImGui::TreePop();
             }
         }

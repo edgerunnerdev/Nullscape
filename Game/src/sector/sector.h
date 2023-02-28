@@ -21,9 +21,14 @@
 #include "ship/moduleinfo.h"
 #include "ship/ship.fwd.h"
 
+#include <render/debugrender.h>
+#include <render/viewport.hpp>
+#include <rendersystem.fwd.h>
+#include <scene/layer.h>
+#include <scene/scenecamera.h>
+
 #include <list>
 #include <memory>
-#include <scene/layer.h>
 #include <vector>
 
 namespace Hyperscape
@@ -89,6 +94,8 @@ public:
     bool IsPlayerVictorious() const;
 
 private:
+    void CreateOtherFleetViewport();
+
     void DeleteRemovedShips();
     bool GetFleetSpawnPosition(Faction* pFaction, float& x, float& y);
     void GetFleetSpawnPositionAtPoint(int idx, float& x, float& y);
@@ -139,6 +146,8 @@ private:
 
     FleetSharedPtr m_pPlayerFleet;
     FleetSharedPtr m_pOtherFleet;
+    Genesis::ViewportSharedPtr m_pOtherFleetViewport;
+    Genesis::SceneCameraSharedPtr m_pOtherFleetCamera;
 };
 
 inline AmmoManager* Sector::GetAmmoManager() const

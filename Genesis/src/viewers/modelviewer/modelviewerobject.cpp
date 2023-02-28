@@ -38,7 +38,7 @@ void ModelViewerObject::Update(float delta)
     SceneObject::Update(delta);
 }
 
-void ModelViewerObject::Render()
+void ModelViewerObject::Render( const SceneCameraSharedPtr& pCamera )
 {
     if (m_pModel != nullptr)
     {

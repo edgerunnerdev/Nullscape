@@ -182,11 +182,11 @@ void TrailManagerRep::PushBackColours(Genesis::ColourData& colourData, const glm
         colourData.push_back(colours[sBaseIndices[i]]);
 }
 
-void TrailManagerRep::Render()
+void TrailManagerRep::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
     using namespace Genesis;
 
-    SceneObject::Render();
+    SceneObject::Render( pCamera );
 
     if (m_NumVertices > 0)
     {

@@ -21,8 +21,8 @@
 #include "glm/gtx/transform.hpp"
 #include "inputmanager.h"
 #include "render/rendertarget.h"
-#include "resources/resourceshader.hpp"
 #include "rendersystem.fwd.h"
+#include "resources/resourceshader.hpp"
 #include "shaderuniformtype.h"
 #include "taskmanager.h"
 
@@ -35,7 +35,9 @@
 namespace Genesis
 {
 
-class Scene;
+GENESIS_DECLARE_SMART_PTR( Scene );
+GENESIS_DECLARE_SMART_PTR( SceneCamera );
+
 class VertexBuffer;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -47,18 +49,18 @@ class RenderSystem : public Task
 public:
     RenderSystem();
     virtual ~RenderSystem();
-    TaskStatus Update(float delta);
-    void Initialize(GLuint screenWidth, GLuint screenHeight);
-    void ViewOrtho(int width = 0, int height = 0);
-    void ViewPerspective(int width = 0, int height = 0, Scene* pScene = nullptr);
+    TaskStatus Update( float delta );
+    void Initialize( GLuint screenWidth, GLuint screenHeight );
+    void ViewOrtho( int width = 0, int height = 0 );
+    void ViewPerspective( int width = 0, int height = 0, SceneSharedPtr pScene = nullptr, SceneCameraSharedPtr pCamera = nullptr );
 
-    glm::vec3 Raycast(const glm::vec2& screenCoordinates);
+    glm::vec3 Raycast( const glm::vec2& screenCoordinates );
 
     inline float GetShaderTimer() const;
 
-    RenderTargetSharedPtr CreateRenderTarget(const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil, bool autoClear);
-    RenderTargetSharedPtr GetRenderTarget(const std::string& name) const;
-    void SetRenderTarget(const RenderTargetSharedPtr& pRenderTarget);
+    RenderTargetSharedPtr CreateRenderTarget( const std::string& name, GLuint width, GLuint height, bool hasDepth, bool hasStencil, bool autoClear );
+    RenderTargetSharedPtr GetRenderTarget( const std::string& name ) const;
+    void SetRenderTarget( const RenderTargetSharedPtr& pRenderTarget );
     void SetDefaultRenderTarget();
     void SetGlowRenderTarget();
 
@@ -75,9 +77,9 @@ public:
     void ResetDrawCallCount();
 
     BlendMode GetBlendMode() const;
-    void SetBlendMode(BlendMode blendMode);
+    void SetBlendMode( BlendMode blendMode );
 
-    void PrintFramebufferInfo(GLuint fboId);
+    void PrintFramebufferInfo( GLuint fboId );
 
     enum class PostProcessEffect
     {
@@ -87,11 +89,11 @@ public:
 
         Count
     };
-    void EnablePostProcessEffect(PostProcessEffect effect, bool enable);
-    bool IsPostProcessEffectEnabled(PostProcessEffect effect);
+    void EnablePostProcessEffect( PostProcessEffect effect, bool enable );
+    bool IsPostProcessEffectEnabled( PostProcessEffect effect );
 
-    void AddViewport(const ViewportSharedPtr& pViewport);
-    void RemoveViewport(const ViewportSharedPtr& pViewport);
+    void AddViewport( const ViewportSharedPtr& pViewport );
+    void RemoveViewport( const ViewportSharedPtr& pViewport );
     Viewport* GetPrimaryViewport() const;
     Viewport* GetCurrentViewport() const;
 
@@ -103,20 +105,20 @@ private:
     void InitializeGlowChain();
     void RenderGlow();
     void RegisterPostProcessingUniforms();
-    void ScreenPosToWorldRay(int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin,
-                             glm::vec3& out_direction);
-    IntersectionResult LinePlaneIntersection(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result);
+    void ScreenPosToWorldRay( int mouseX, int mouseY, int screenWidth, int screenHeight, const glm::mat4& ViewMatrix, const glm::mat4& ProjectionMatrix, glm::vec3& out_origin,
+        glm::vec3& out_direction );
+    IntersectionResult LinePlaneIntersection( const glm::vec3& position, const glm::vec3& direction, const glm::vec3& planePosition, const glm::vec3& planeNormal, glm::vec3& result );
 
-    bool GetScreenshotFilename(std::string& filename) const;
-    SDL_Surface* FlipSurfaceVertical(SDL_Surface* pSurface) const;
+    bool GetScreenshotFilename( std::string& filename ) const;
+    SDL_Surface* FlipSurfaceVertical( SDL_Surface* pSurface ) const;
     void TakeScreenshot();
-    void TakeScreenshotAux(bool immediate);
+    void TakeScreenshotAux( bool immediate );
     void Capture();
 
     void InitializeDebug();
-    std::string GetRenderbufferParameters(GLuint id);
-    std::string GetTextureParameters(GLuint id);
-    std::string ConvertInternalFormatToString(GLenum format);
+    std::string GetRenderbufferParameters( GLuint id );
+    std::string GetTextureParameters( GLuint id );
+    std::string ConvertInternalFormatToString( GLenum format );
 
     bool m_ScreenshotScheduled;
     bool m_CaptureInProgress;
@@ -151,13 +153,15 @@ private:
     InputCallbackToken m_InputCallbackCapture;
     bool m_DebugWindowOpen;
 
-    using PostProcessBitSet = std::bitset<static_cast<size_t>(PostProcessEffect::Count)>;
+    using PostProcessBitSet = std::bitset<static_cast<size_t>( PostProcessEffect::Count )>;
     PostProcessBitSet m_ActivePostProcessEffects;
-    std::array<ShaderUniformSharedPtr, static_cast<size_t>(PostProcessEffect::Count)> m_PostProcessShaderUniforms;
+    std::array<ShaderUniformSharedPtr, static_cast<size_t>( PostProcessEffect::Count )> m_PostProcessShaderUniforms;
 
     std::list<ViewportSharedPtr> m_Viewports;
     ViewportSharedPtr m_pPrimaryViewport;
     ViewportSharedPtr m_pCurrentViewport;
+    SceneSharedPtr m_pScene;
+    SceneCameraSharedPtr m_pCamera;
 };
 
 inline float RenderSystem::GetShaderTimer() const
@@ -215,17 +219,17 @@ inline BlendMode RenderSystem::GetBlendMode() const
     return m_BlendMode;
 }
 
-inline bool RenderSystem::IsPostProcessEffectEnabled(PostProcessEffect effect)
+inline bool RenderSystem::IsPostProcessEffectEnabled( PostProcessEffect effect )
 {
-    return m_ActivePostProcessEffects[static_cast<size_t>(effect)];
+    return m_ActivePostProcessEffects[ static_cast<size_t>( effect ) ];
 }
 
-inline Viewport* RenderSystem::GetPrimaryViewport() const 
+inline Viewport* RenderSystem::GetPrimaryViewport() const
 {
     return m_pPrimaryViewport.get();
 }
 
-inline Viewport* RenderSystem::GetCurrentViewport() const 
+inline Viewport* RenderSystem::GetCurrentViewport() const
 {
     return m_pCurrentViewport.get();
 }
@@ -237,15 +241,15 @@ inline Viewport* RenderSystem::GetCurrentViewport() const
 struct VboFloat4
 {
     VboFloat4()
-        : x(0.0f)
-        , y(0.0f)
-        , z(0.0f)
-        , w(0.0f){};
-    VboFloat4(float inX, float inY, float inZ, float inW)
-        : x(inX)
-        , y(inY)
-        , z(inZ)
-        , w(inW){};
+        : x( 0.0f )
+        , y( 0.0f )
+        , z( 0.0f )
+        , w( 0.0f ){};
+    VboFloat4( float inX, float inY, float inZ, float inW )
+        : x( inX )
+        , y( inY )
+        , z( inZ )
+        , w( inW ){};
     float x, y, z, w;
 };
 typedef std::vector<VboFloat4> VboFloat4Vec;
@@ -253,13 +257,13 @@ typedef std::vector<VboFloat4> VboFloat4Vec;
 struct VboFloat3
 {
     VboFloat3()
-        : x(0.0f)
-        , y(0.0f)
-        , z(0.0f){};
-    VboFloat3(float inX, float inY, float inZ)
-        : x(inX)
-        , y(inY)
-        , z(inZ){};
+        : x( 0.0f )
+        , y( 0.0f )
+        , z( 0.0f ){};
+    VboFloat3( float inX, float inY, float inZ )
+        : x( inX )
+        , y( inY )
+        , z( inZ ){};
     float x, y, z;
 };
 typedef std::vector<VboFloat3> VboFloat3Vec;
@@ -267,11 +271,11 @@ typedef std::vector<VboFloat3> VboFloat3Vec;
 struct VboFloat2
 {
     VboFloat2()
-        : x(0.0f)
-        , y(0.0f){};
-    VboFloat2(float inX, float inY)
-        : x(inX)
-        , y(inY){};
+        : x( 0.0f )
+        , y( 0.0f ){};
+    VboFloat2( float inX, float inY )
+        : x( inX )
+        , y( inY ){};
     float x, y;
 };
 typedef std::vector<VboFloat2> VboFloat2Vec;

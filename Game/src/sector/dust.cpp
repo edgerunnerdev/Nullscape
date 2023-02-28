@@ -17,6 +17,7 @@
 
 #include <genesis.h>
 #include <scene/scene.h>
+#include <scene/scenecamera.h>
 
 #include <resources/resourceimage.h>
 #include <resources/resourceshader.hpp>
@@ -83,7 +84,7 @@ void Dust::Update(float fDelta)
 	}
 }
 
-void Dust::Render()
+void Dust::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	using namespace Genesis;
 

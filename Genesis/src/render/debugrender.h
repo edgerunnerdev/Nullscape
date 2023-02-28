@@ -45,7 +45,7 @@ public:
     DebugRender();
     virtual ~DebugRender() override;
 
-    virtual void Render() override;
+    virtual void Render( const SceneCameraSharedPtr& pCamera ) override;
 
     void DrawCross(const glm::vec3& origin, float size, const glm::vec3& color);
     void DrawLine(const glm::vec2& start, const glm::vec2& end, const glm::vec3& colour);

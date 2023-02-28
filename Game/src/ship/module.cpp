@@ -141,7 +141,7 @@ void Module::UpdateShipyard( float delta )
 	}
 }
 
-void Module::Render()
+void Module::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	// Should never be called directly. Use Render( modelTransform, drawOutline ) instead.
 	SDL_assert( false ); 

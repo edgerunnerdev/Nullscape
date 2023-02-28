@@ -46,7 +46,7 @@ public:
 	virtual						~ParticleManagerRep();
 	void						SetParticleManager( ParticleManager* pParticleManager );
 	void						Update( float delta ) override;
-	void						Render() override;
+	void						Render( const Genesis::SceneCameraSharedPtr& pCamera ) override;
 
 private:
 	int							FindIndexForTexture( ParticlePass* pPass, int id );

@@ -36,7 +36,7 @@ public:
 	bool					HasClosed() const;
 
 	virtual void			Update( float delta ) override;
-	void					Render() override {};
+	void					Render( const Genesis::SceneCameraSharedPtr& pCamera ) override {};
 	void			        Render( const glm::mat4& modelTransform );
 
 	const glm::vec3&		GetGatePosition() const;

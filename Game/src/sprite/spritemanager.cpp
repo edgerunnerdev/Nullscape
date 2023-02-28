@@ -18,6 +18,7 @@
 #include <resources/resourceshader.hpp>
 #include <rendersystem.h>
 #include <scene/scene.h>
+#include <scene/scenecamera.h>
 #include <shaderuniform.h>
 
 #include "sprite/spritemanager.h"
@@ -105,7 +106,7 @@ void SpriteManager::Update( float delta )
 	m_pVertexBuffer->CopyColours( colourData );
 }
 
-void SpriteManager::Render()
+void SpriteManager::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
 	using namespace Genesis;
 
