@@ -186,8 +186,6 @@ void TrailManagerRep::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
     using namespace Genesis;
 
-    SceneObject::Render( pCamera );
-
     if (m_NumVertices > 0)
     {
         RenderSystem* pRenderSystem = FrameWork::GetRenderSystem();

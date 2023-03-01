@@ -41,7 +41,6 @@
 #include "player.h"
 #include "sector/boundary.h"
 #include "sector/dust.h"
-#include "sector/sectorcamera.h"
 #include "ship/collisionmasks.h"
 #include "ship/damagetracker.h"
 #include "ship/hyperspacecore.h"
@@ -100,8 +99,6 @@ Sector::Sector( System* pSystem, const glm::vec2& coordinates )
     , m_AdditionalWaves( 0u )
     , m_AdditionalWavesSpawned( 0u )
 {
-    m_pCamera = new SectorCamera();
-
     m_pHyperspaceMenu = new HyperspaceMenu();
     m_pDeathMenu = new DeathMenu();
     m_pLootWindow = new LootWindow();
@@ -123,7 +120,6 @@ Sector::~Sector()
 {
     DamageTrackerDebugWindow::Unregister();
 
-    delete m_pCamera;
     delete m_pHyperspaceMenu;
     delete m_pDeathMenu;
     delete m_pLootWindow;
@@ -162,6 +158,8 @@ bool Sector::Initialize()
             m_AvailableSpawnPoints.push_back( i );
         }
     }
+
+    m_pPlayerFleetCamera = Genesis::FrameWork::GetScene()->GetCamera();
 
     m_pTrailManager = new TrailManager();
     m_pSystem->GetLayer( LayerId::Ships )->AddSceneObject( m_pTrailManager );
@@ -265,11 +263,12 @@ void Sector::SelectPlaylist()
 
 void Sector::Update( float delta )
 {
+    UpdateCameras();
+
 #ifndef _FINAL
     m_pShipTweaks->Update( delta );
 #endif
 
-    m_pCamera->Update( delta );
     m_pLootWindow->Update( delta );
 
     // Draw axis.
@@ -303,6 +302,28 @@ void Sector::Update( float delta )
     m_pDeathMenu->Update( delta );
 
     DamageTrackerDebugWindow::Update();
+}
+
+void Sector::UpdateCameras()
+{
+    static float sPlayerCameraPos[ 3 ] = { -40.0f, 25.0f, 35.0f };
+    static float sPlayerCameraTarget[ 3 ] = { 20.0f, 10.0f, 25.0f };
+    static float sOtherCameraPos[ 3 ] = { -40.0f, 25.0f, 35.0f };
+    static float sOtherCameraTarget[ 3 ] = { 20.0f, 10.0f, 25.0f };
+    static bool sDebugCamera = false;
+    if ( sDebugCamera && ImGui::Begin( "Camera" ) )
+    {
+        ImGui::InputFloat3( "Player camera position", sPlayerCameraPos );
+        ImGui::InputFloat3( "Player camera target", sPlayerCameraTarget );
+        ImGui::InputFloat3( "Other camera position", sOtherCameraPos );
+        ImGui::InputFloat3( "Other camera target", sOtherCameraTarget );
+        ImGui::End();
+    }
+
+    m_pPlayerFleetCamera->SetPosition( glm::vec3( sPlayerCameraPos[ 0 ], sPlayerCameraPos[ 1 ], sPlayerCameraPos[ 2 ] ) );
+    m_pPlayerFleetCamera->SetTargetPosition( glm::vec3( sPlayerCameraTarget[ 0 ], sPlayerCameraTarget[ 1 ], sPlayerCameraTarget[ 2 ] ) );
+    m_pOtherFleetCamera->SetPosition( glm::vec3( sOtherCameraPos[ 0 ], sOtherCameraPos[ 1 ], sOtherCameraPos[ 2 ] ) );
+    m_pOtherFleetCamera->SetTargetPosition( glm::vec3( sOtherCameraTarget[ 0 ], sOtherCameraTarget[ 1 ], sOtherCameraTarget[ 2 ] ) );
 }
 
 void Sector::DeleteRemovedShips()

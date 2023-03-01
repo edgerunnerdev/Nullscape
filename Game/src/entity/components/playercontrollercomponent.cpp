@@ -17,10 +17,8 @@
 
 #include "entity/components/playercontrollercomponent.hpp"
 
-#include "entity/components/navigationcomponent.hpp"
 #include "entity/entity.hpp"
 #include "sector/sector.h"
-#include "sector/sectorcamera.h"
 #include "game.hpp"
 
 #include <genesis.h>
@@ -29,34 +27,18 @@ namespace Hyperscape
 {
 
 PlayerControllerComponent::PlayerControllerComponent()
-    : m_MoveToken(Genesis::InputManager::sInvalidInputCallbackToken)
-    , m_MoveTimer(0.0f)
 {
-    using namespace Genesis;
-    m_MoveToken = FrameWork::GetInputManager()->AddMouseCallback(
-        [this]()
-        {
-            OnLeftMouseButtonDown();
-        },
-        MouseButton::Left, ButtonState::Pressed);
+
 }
 
 PlayerControllerComponent::~PlayerControllerComponent()
 {
-    using namespace Genesis;
-    InputManager* pInputManager = FrameWork::GetInputManager();
-    if (pInputManager)
-    {
-        pInputManager->RemoveKeyboardCallback(m_MoveToken);
-    }
+
 }
 
 void PlayerControllerComponent::Update(float delta)
 {
-    if (m_MoveTimer > 0.0f)
-    {
-        m_MoveTimer -= delta;
-    }
+
 }
 
 bool PlayerControllerComponent::Serialize(nlohmann::json& data)
@@ -72,28 +54,6 @@ bool PlayerControllerComponent::Deserialize(const nlohmann::json& data)
 void PlayerControllerComponent::CloneFrom(Component* pComponent)
 {
     SDL_assert(false); // The PlayerControllerComponent should never be cloned.
-}
-
-void PlayerControllerComponent::OnLeftMouseButtonDown() 
-{
-    if (m_MoveTimer > 0.0f) // On double click.
-    {
-        Sector* pSector = g_pGame->GetCurrentSector();
-        if (pSector && pSector->GetCamera())
-        {
-            const glm::mat4x4& cameraTransform = pSector->GetCamera()->GetTransform();
-
-            NavigationComponent* pNavigationComponent = GetOwner()->GetComponent<NavigationComponent>();
-            if (pNavigationComponent)
-            {
-                pNavigationComponent->FlyTowards(glm::vec3(cameraTransform[0]));
-            }
-        }
-    }
-    else
-    {
-        m_MoveTimer = 0.5f;
-    }
 }
 
 } // namespace Hyperscape

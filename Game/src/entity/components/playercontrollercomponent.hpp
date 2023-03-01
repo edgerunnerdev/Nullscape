@@ -20,7 +20,6 @@
 #include "entity/component.hpp"
 
 #include <genesis.h>
-#include <inputmanager.h>
 
 namespace Hyperscape
 {
@@ -43,10 +42,6 @@ public:
     DEFINE_COMPONENT(PlayerControllerComponent);
 
 private:
-    void OnLeftMouseButtonDown();
-
-    Genesis::InputCallbackToken m_MoveToken;
-    float m_MoveTimer;
 };
 
 inline bool PlayerControllerComponent::UpdatesInEditor() const

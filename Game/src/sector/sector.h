@@ -47,7 +47,6 @@ class MuzzleflashManager;
 class MuzzleflashManagerRep;
 class LaserManager;
 class SpriteManager;
-class SectorCamera;
 class Dust;
 class ShipInfo;
 class Faction;
@@ -84,7 +83,6 @@ public:
     MuzzleflashManager* GetMuzzleflashManager() const;
     const ShipList& GetShipList() const;
     ShipTweaks* GetShipTweaks() const;
-    SectorCamera* GetCamera() const;
     const glm::vec2& GetCoordinates() const;
     Entity* GetPlayerShip() const;
 
@@ -94,6 +92,7 @@ public:
     bool IsPlayerVictorious() const;
 
 private:
+    void UpdateCameras();
     void CreateOtherFleetViewport();
 
     void DeleteRemovedShips();
@@ -118,7 +117,6 @@ private:
     SpriteManager* m_pSpriteManager;
     TrailManager* m_pTrailManager;
     TrailManagerRep* m_pTrailManagerRep;
-    SectorCamera* m_pCamera;
 
     IntVector m_AvailableSpawnPoints;
 
@@ -147,6 +145,7 @@ private:
     FleetSharedPtr m_pPlayerFleet;
     FleetSharedPtr m_pOtherFleet;
     Genesis::ViewportSharedPtr m_pOtherFleetViewport;
+    Genesis::SceneCameraSharedPtr m_pPlayerFleetCamera;
     Genesis::SceneCameraSharedPtr m_pOtherFleetCamera;
 };
 
@@ -183,11 +182,6 @@ inline bool Sector::IsPlayerVictorious() const
 inline ShipTweaks* Sector::GetShipTweaks() const
 {
     return m_pShipTweaks.get();
-}
-
-inline SectorCamera* Sector::GetCamera() const
-{
-    return m_pCamera;
 }
 
 inline const glm::vec2& Sector::GetCoordinates() const

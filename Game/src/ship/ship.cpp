@@ -29,7 +29,6 @@
 #include "particles/particlemanager.h"
 #include "player.h"
 #include "sector/sector.h"
-#include "sector/sectorcamera.h"
 #include "sector/sectorinfo.h"
 #include "ship/controller/controller.h"
 #include "ship/controller/controllerassault.h"
@@ -1477,21 +1476,7 @@ bool Ship::IsTerminating() const
 
 bool Ship::IsVisible() const
 {
-    if (GetTowerModule() == nullptr)
-    {
-        return true;
-    }
-
-    glm::vec3 shipTopLeftLocal;
-    glm::vec3 shipBottomRightLocal;
-    GetBoundingBox(shipTopLeftLocal, shipBottomRightLocal);
-    const float shipRadius = glm::distance(shipBottomRightLocal, shipTopLeftLocal) / 2.0f;
-    glm::vec2 shipPosition = glm::vec2(glm::column(GetRigidBody()->GetWorldTransform(), 3));
-    glm::vec2 borderTopLeftWorld;
-    glm::vec2 borderBottomRightWorld;
-    g_pGame->GetCurrentSector()->GetCamera()->GetBorders(borderTopLeftWorld, borderBottomRightWorld);
-
-    return Math::IntersectCircleRect(shipPosition, shipRadius, borderTopLeftWorld, borderBottomRightWorld);
+    return true;
 }
 
 void Ship::CalculateBoundingBox()
