@@ -118,7 +118,8 @@ void System::InitializeLayers()
     m_Layers[static_cast<size_t>(LayerId::Effects)] = pScene->AddLayer(3);
     m_Layers[static_cast<size_t>(LayerId::Ammo)] = pScene->AddLayer(4);
     m_Layers[static_cast<size_t>(LayerId::Physics)] = pScene->AddLayer(5);
-    m_Layers[static_cast<size_t>(LayerId::Debug)] = pScene->AddLayer(6);
+    m_Layers[static_cast<size_t>(LayerId::Split)] = pScene->AddLayer(6, true);
+    m_Layers[static_cast<size_t>(LayerId::Debug)] = pScene->AddLayer(7);
 }
 
 void System::InitializeBackground() 

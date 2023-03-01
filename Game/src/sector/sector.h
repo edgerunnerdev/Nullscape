@@ -61,6 +61,7 @@ class DeathMenu;
 class LootWindow;
 class Boundary;
 class System;
+class SplitRenderer;
 
 static const float sSpawnPointSize = 1000.0f;
 static const int sSectorSpawnPoints = 9;
@@ -93,6 +94,8 @@ public:
 
 private:
     void UpdateCameras();
+    void CreatePlayerFleet();
+    void CreateOtherFleet();
     void CreateOtherFleetViewport();
 
     void DeleteRemovedShips();
@@ -100,6 +103,8 @@ private:
     void GetFleetSpawnPositionAtPoint(int idx, float& x, float& y);
     void DebugDrawFleetSpawnPositions();
     void SelectPlaylist();
+
+    EntitySharedPtr CreateShip( const std::string& templateName, const glm::vec3& position, FleetSharedPtr& pFleet );
 
     System* m_pSystem;
     glm::vec2 m_Coordinates;
@@ -117,6 +122,7 @@ private:
     SpriteManager* m_pSpriteManager;
     TrailManager* m_pTrailManager;
     TrailManagerRep* m_pTrailManagerRep;
+    SplitRenderer* m_pSplitRenderer;
 
     IntVector m_AvailableSpawnPoints;
 

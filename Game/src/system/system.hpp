@@ -53,6 +53,7 @@ enum class LayerId
     Ammo,
     Physics,
     Debug,
+    Split,
 
     Count
 };

@@ -41,6 +41,7 @@
 #include "player.h"
 #include "sector/boundary.h"
 #include "sector/dust.h"
+#include "sector/splitrenderer.hpp"
 #include "ship/collisionmasks.h"
 #include "ship/damagetracker.h"
 #include "ship/hyperspacecore.h"
@@ -93,6 +94,7 @@ Sector::Sector( System* pSystem, const glm::vec2& coordinates )
     , m_pSpriteManager( nullptr )
     , m_pTrailManager( nullptr )
     , m_pTrailManagerRep( nullptr )
+    , m_pSplitRenderer( nullptr )
     , m_pShipyard( nullptr )
     , m_IsPlayerVictorious( false )
     , m_pLootWindow( nullptr )
@@ -198,38 +200,28 @@ bool Sector::Initialize()
     lights[ 1 ].SetPosition( { 100.0f, 0.0f, 0.0f } );
     lights[ 2 ].SetPosition( { -100.0f, 100.0f, -100.0f } );
 
-    m_pPlayerFleet = std::make_shared<Fleet>();
-    EntitySharedPtr pShipEntity = EntityFactory::Get()->Create( "dagger" );
-    if ( pShipEntity )
-    {
-        pShipEntity->AddComponent( ComponentFactory::Get()->Create( ComponentType::PlayerControllerComponent ) );
-        m_pSystem->GetLayer( LayerId::Ships )->AddSceneObject( pShipEntity.get(), false );
-        m_Entities.push_back( pShipEntity );
-        m_pPlayerShip = pShipEntity;
-        m_pPlayerFleet->AddShip( pShipEntity );
-    }
-
-    pShipEntity = EntityFactory::Get()->Create( "dagger" );
-    if ( pShipEntity )
-    {
-        m_pSystem->GetLayer( LayerId::Ships )->AddSceneObject( pShipEntity.get(), false );
-        m_Entities.push_back( pShipEntity );
-        m_pPlayerFleet->AddShip( pShipEntity );
-        pShipEntity->GetComponent<TransformComponent>()->SetTransform( glm::translate( glm::vec3( 20.0f, 20.0f, -10.0f ) ) );
-    }
-
-    pShipEntity = EntityFactory::Get()->Create( "dagger" );
-    if ( pShipEntity )
-    {
-        m_pSystem->GetLayer( LayerId::Ships )->AddSceneObject( pShipEntity.get(), false );
-        m_Entities.push_back( pShipEntity );
-        m_pPlayerFleet->AddShip( pShipEntity );
-        pShipEntity->GetComponent<TransformComponent>()->SetTransform( glm::translate( glm::vec3( 50.0f, -15.0f, -5.0f ) ) );
-    }
-
+    CreatePlayerFleet();
+    CreateOtherFleet();
     CreateOtherFleetViewport();
+    m_pSplitRenderer = new SplitRenderer( m_pOtherFleetViewport );
+    m_pSystem->GetLayer( LayerId::Split )->AddSceneObject( m_pSplitRenderer );
 
     return true;
+}
+
+void Sector::CreatePlayerFleet()
+{
+    m_pPlayerFleet = std::make_shared<Fleet>();
+    m_pPlayerShip = CreateShip( "dagger", glm::vec3(0.0f, 0.0f, 0.0f), m_pPlayerFleet);
+    m_pPlayerShip->AddComponent( ComponentFactory::Get()->Create( ComponentType::PlayerControllerComponent ) );
+    CreateShip( "dagger", glm::vec3(20.0f, 20.0f, -10.0f), m_pPlayerFleet);
+    CreateShip( "dagger", glm::vec3(50.0f, -15.0f, -5.0f), m_pPlayerFleet);
+}
+
+void Sector::CreateOtherFleet()
+{
+    m_pOtherFleet = std::make_shared<Fleet>();
+    CreateShip( "dagger", glm::vec3(0.0f, 0.0f, 1000.0f), m_pOtherFleet);
 }
 
 void Sector::CreateOtherFleetViewport()
@@ -239,6 +231,25 @@ void Sector::CreateOtherFleetViewport()
     FrameWork::GetScene()->AddCamera( m_pOtherFleetCamera );
     m_pOtherFleetViewport = std::make_shared<Viewport>( "Other fleet", static_cast<int>( Configuration::GetScreenWidth() ), static_cast<int>( Configuration::GetScreenHeight() ), FrameWork::GetScene(), m_pOtherFleetCamera );
     FrameWork::GetRenderSystem()->AddViewport( m_pOtherFleetViewport );
+}
+
+EntitySharedPtr Sector::CreateShip( const std::string& templateName, const glm::vec3& position, FleetSharedPtr& pFleet )
+{
+    SDL_assert( pFleet );
+    EntitySharedPtr pShipEntity = EntityFactory::Get()->Create( templateName );
+    if ( pShipEntity )
+    {
+        m_pSystem->GetLayer( LayerId::Ships )->AddSceneObject( pShipEntity.get(), false );
+        m_Entities.push_back( pShipEntity );
+        pFleet->AddShip( pShipEntity );
+        pShipEntity->GetComponent<TransformComponent>()->SetTransform( glm::translate( position ) );
+        return pShipEntity;
+    }
+    else
+    {
+        Genesis::Log::Error() << "Failed to create ship based on template '" << templateName << "'.";
+        return nullptr;
+    }
 }
 
 void Sector::SelectPlaylist()
@@ -308,8 +319,8 @@ void Sector::UpdateCameras()
 {
     static float sPlayerCameraPos[ 3 ] = { -40.0f, 25.0f, 35.0f };
     static float sPlayerCameraTarget[ 3 ] = { 20.0f, 10.0f, 25.0f };
-    static float sOtherCameraPos[ 3 ] = { -40.0f, 25.0f, 35.0f };
-    static float sOtherCameraTarget[ 3 ] = { 20.0f, 10.0f, 25.0f };
+    static float sOtherCameraPos[ 3 ] = { -40.0f, 25.0f, 1035.0f };
+    static float sOtherCameraTarget[ 3 ] = { 20.0f, 10.0f, 1025.0f };
     static bool sDebugCamera = false;
     if ( sDebugCamera && ImGui::Begin( "Camera" ) )
     {
