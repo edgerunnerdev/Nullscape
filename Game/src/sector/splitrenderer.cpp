@@ -34,13 +34,13 @@ SplitRenderer::SplitRenderer( const Genesis::ViewportSharedPtr& pViewport )
 {
     using namespace Genesis;
 
-    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>( "data/shaders/textured.glsl" );
+    m_pShader = FrameWork::GetResourceManager()->GetResource<ResourceShader*>( "data/shaders/split.glsl" );
     ShaderUniformSharedPtr pSampler = m_pShader->RegisterUniform( "k_sampler0", ShaderUniformType::Texture );
     pSampler->Set( pViewport->GetRenderTarget()->GetColor(), GL_TEXTURE0 );
     m_pVertexBuffer = std::make_shared<VertexBuffer>( GeometryType::Triangle, VBO_POSITION | VBO_UV );
-    m_pVertexBuffer->CreateUntexturedQuad(1000.0f, 128.0f, 512.0f, 512.0f );
+    m_pVertexBuffer->CreateUntexturedQuad( 0.0f, 0.0f, static_cast<float>( Configuration::GetScreenWidth() ), static_cast<float>( Configuration::GetScreenHeight() ) );
     const float uvs[] = { 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f }; // Flipping V. This shouldn't be needed, something wrong with the post chain?
-    m_pVertexBuffer->CopyData(uvs, 12, Genesis::VBO_UV);
+    m_pVertexBuffer->CopyData( uvs, 12, Genesis::VBO_UV );
 }
 
 SplitRenderer::~SplitRenderer()
@@ -53,9 +53,11 @@ void SplitRenderer::Update( float delta )
 
 void SplitRenderer::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
-	Genesis::FrameWork::GetRenderSystem()->SetBlendMode( Genesis::BlendMode::Disabled );
-	m_pShader->Use();
-	m_pVertexBuffer->Draw();
+    using namespace Genesis;
+    FrameWork::GetRenderSystem()->SetBlendMode( Genesis::BlendMode::Blend );
+    m_pShader->Use();
+    m_pVertexBuffer->Draw();
+    FrameWork::GetRenderSystem()->SetBlendMode( Genesis::BlendMode::Disabled );
 }
 
 } // namespace Hyperscape

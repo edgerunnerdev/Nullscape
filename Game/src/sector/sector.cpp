@@ -222,6 +222,7 @@ void Sector::CreateOtherFleet()
 {
     m_pOtherFleet = std::make_shared<Fleet>();
     CreateShip( "dagger", glm::vec3(0.0f, 0.0f, 1000.0f), m_pOtherFleet);
+    CreateShip( "dagger", glm::vec3(20.0f, 20.0f, 1000.0f - 10.0f), m_pOtherFleet);
 }
 
 void Sector::CreateOtherFleetViewport()
@@ -319,15 +320,16 @@ void Sector::UpdateCameras()
 {
     static float sPlayerCameraPos[ 3 ] = { -40.0f, 25.0f, 35.0f };
     static float sPlayerCameraTarget[ 3 ] = { 20.0f, 10.0f, 25.0f };
-    static float sOtherCameraPos[ 3 ] = { -40.0f, 25.0f, 1035.0f };
-    static float sOtherCameraTarget[ 3 ] = { 20.0f, 10.0f, 1025.0f };
+    static float sOtherCameraPos[ 3 ] = { 55.0f, 45.0f, 1050.0f };
+    static float sOtherCameraTarget[ 3 ] = { -40.0f, 10.0f, 1010.0f };
     static bool sDebugCamera = false;
     if ( sDebugCamera && ImGui::Begin( "Camera" ) )
     {
         ImGui::InputFloat3( "Player camera position", sPlayerCameraPos );
         ImGui::InputFloat3( "Player camera target", sPlayerCameraTarget );
-        ImGui::InputFloat3( "Other camera position", sOtherCameraPos );
-        ImGui::InputFloat3( "Other camera target", sOtherCameraTarget );
+
+        ImGui::SliderFloat3("Other camera position", sOtherCameraPos, -100.0f, 1200.0f );
+        ImGui::SliderFloat3("Other camera target", sOtherCameraTarget, -100.0f, 1200.0f );
         ImGui::End();
     }
 

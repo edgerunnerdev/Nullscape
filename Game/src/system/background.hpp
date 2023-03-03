@@ -43,12 +43,27 @@ public:
     const glm::vec4& GetAmbientColour() const;
 
 private:
+    enum class Anchor
+    {
+        BottomLeft,
+        TopLeft,
+        TopRight,
+        BottomRight
+    };
+
     void CreateGeometry();
+    void SetupCameraAnchors();
+    void CalculateCameraOffsets();
+    glm::mat4x4 AnchorToOffset( const Anchor& anchor ) const;
 
     Genesis::ResourceShader* m_pShader;
     Genesis::VertexBufferUniquePtr m_pVertexBuffer;
     glm::vec4 m_AmbientColour;
     float m_Size;
+    Anchor m_PrimaryCameraAnchor;
+    Anchor m_SecondaryCameraAnchor;
+    glm::mat4x4 m_PrimaryCameraOffset;
+    glm::mat4x4 m_SecondaryCameraOffset;
 };
 
 inline const glm::vec4& Background::GetAmbientColour() const

@@ -18,6 +18,7 @@
 #include "system/background.hpp"
 
 #include "game.hpp"
+#include "misc/random.h"
 #include "player.h"
 
 #include <algorithm>
@@ -43,6 +44,10 @@ Background::Background( const std::string& seed )
     : m_pShader( nullptr )
     , m_AmbientColour( 1.0 )
     , m_Size( 512.0f )
+    , m_PrimaryCameraAnchor( Anchor::BottomLeft )
+    , m_SecondaryCameraAnchor( Anchor::BottomLeft )
+    , m_PrimaryCameraOffset( 0.0f )
+    , m_SecondaryCameraOffset( 0.0f )
 {
     using namespace Genesis;
 
@@ -57,6 +62,8 @@ Background::Background( const std::string& seed )
     pBackgroundSampler->Set( pBackground, GL_TEXTURE0 );
 
     CreateGeometry();
+    SetupCameraAnchors();
+    CalculateCameraOffsets();
 }
 
 Background::~Background()
@@ -70,6 +77,45 @@ void Background::CreateGeometry()
     m_pVertexBuffer->CreateTexturedQuad( 0.0f, 0.0f, m_Size, m_Size );
 }
 
+void Background::SetupCameraAnchors()
+{
+    // The primary anchor is always bottom left or top right, while the secondary anchor is diagonally opposite.
+    m_PrimaryCameraAnchor = ( Random::Next() % 2 == 0 ) ? Anchor::BottomLeft : Anchor::TopLeft;
+    m_SecondaryCameraAnchor = ( m_PrimaryCameraAnchor == Anchor::BottomLeft ) ? Anchor::TopRight : Anchor::BottomRight;
+}
+
+void Background::CalculateCameraOffsets()
+{
+    m_PrimaryCameraOffset = AnchorToOffset( m_PrimaryCameraAnchor );
+    m_SecondaryCameraOffset = AnchorToOffset( m_SecondaryCameraAnchor );
+}
+
+glm::mat4x4 Background::AnchorToOffset( const Anchor& anchor ) const
+{
+    using namespace Genesis;
+    const glm::vec2 screenSize( static_cast<float>( Configuration::GetScreenWidth() ), static_cast<float>( Configuration::GetScreenHeight() ) );
+
+    glm::vec2 offset;
+    if ( anchor == Anchor::BottomLeft )
+    {
+        offset = glm::vec2( 0.0f, 0.0f );
+    }
+    else if ( anchor == Anchor::BottomRight )
+    {
+        offset = glm::vec2( -m_Size + screenSize.x, 0.0f );
+    }
+    else if ( anchor == Anchor::TopLeft )
+    {
+        offset = glm::vec2( 0.0f, -m_Size + screenSize.y );
+    }
+    else if ( anchor == Anchor::TopRight )
+    {
+        offset = glm::vec2( -m_Size + screenSize.x, -m_Size + screenSize.y );
+    }
+
+    return glm::translate( glm::vec3( offset.x, offset.y, 0.0f ) );
+}
+
 void Background::Update( float delta )
 {
     Genesis::SceneObject::Update( delta );
@@ -77,7 +123,10 @@ void Background::Update( float delta )
 
 void Background::Render( const Genesis::SceneCameraSharedPtr& pCamera )
 {
-    m_pShader->Use();
+    const bool isPrimaryCamera = ( Genesis::FrameWork::GetScene()->GetCamera() == pCamera );
+    const glm::mat4x4& cameraOffset = isPrimaryCamera ? m_PrimaryCameraOffset : m_SecondaryCameraOffset;
+
+    m_pShader->Use( cameraOffset );
     m_pVertexBuffer->Draw();
 }
 
