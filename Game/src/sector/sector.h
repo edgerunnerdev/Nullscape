@@ -34,12 +34,13 @@
 namespace Hyperscape
 {
 
-GENESIS_DECLARE_SMART_PTR(Entity);
-GENESIS_DECLARE_SMART_PTR(Fleet);
+GENESIS_DECLARE_SMART_PTR( BattleController );
+GENESIS_DECLARE_SMART_PTR( Entity );
+GENESIS_DECLARE_SMART_PTR( Fleet );
 
 namespace UI2
 {
-GENESIS_DECLARE_SMART_PTR(Window);
+    GENESIS_DECLARE_SMART_PTR( Window );
 }
 
 class AmmoManager;
@@ -72,9 +73,9 @@ using ShipVector = std::vector<Ship*>;
 class Sector
 {
 public:
-    Sector(System* pSystem, const glm::vec2& coordinates);
+    Sector( System* pSystem, const glm::vec2& coordinates );
     virtual ~Sector();
-    void Update(float fDelta);
+    void Update( float fDelta );
 
     bool Initialize();
 
@@ -87,8 +88,8 @@ public:
     const glm::vec2& GetCoordinates() const;
     Entity* GetPlayerShip() const;
 
-    void AddShip(Ship* pShip);
-    void RemoveShip(Ship* pShip);
+    void AddShip( Ship* pShip );
+    void RemoveShip( Ship* pShip );
 
     bool IsPlayerVictorious() const;
 
@@ -99,8 +100,8 @@ private:
     void CreateOtherFleetViewport();
 
     void DeleteRemovedShips();
-    bool GetFleetSpawnPosition(Faction* pFaction, float& x, float& y);
-    void GetFleetSpawnPositionAtPoint(int idx, float& x, float& y);
+    bool GetFleetSpawnPosition( Faction* pFaction, float& x, float& y );
+    void GetFleetSpawnPositionAtPoint( int idx, float& x, float& y );
     void DebugDrawFleetSpawnPositions();
     void SelectPlaylist();
 
@@ -134,8 +135,8 @@ private:
 
     bool m_IsPlayerVictorious;
 
-    TowerBonus m_TowerBonus[static_cast<unsigned int>(FactionId::Count)];
-    float m_TowerBonusMagnitude[static_cast<unsigned int>(FactionId::Count)];
+    TowerBonus m_TowerBonus[ static_cast<unsigned int>( FactionId::Count ) ];
+    float m_TowerBonusMagnitude[ static_cast<unsigned int>( FactionId::Count ) ];
 
     LootWindow* m_pLootWindow;
 
@@ -153,6 +154,7 @@ private:
     Genesis::ViewportSharedPtr m_pOtherFleetViewport;
     Genesis::SceneCameraSharedPtr m_pPlayerFleetCamera;
     Genesis::SceneCameraSharedPtr m_pOtherFleetCamera;
+    BattleControllerSharedPtr m_pBattleController;
 };
 
 inline AmmoManager* Sector::GetAmmoManager() const
@@ -195,7 +197,7 @@ inline const glm::vec2& Sector::GetCoordinates() const
     return m_Coordinates;
 }
 
-inline Entity* Sector::GetPlayerShip() const 
+inline Entity* Sector::GetPlayerShip() const
 {
     return m_pPlayerShip.get();
 }

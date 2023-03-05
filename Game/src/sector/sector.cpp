@@ -39,6 +39,7 @@
 #include "particles/particlemanager.h"
 #include "particles/particlemanagerrep.h"
 #include "player.h"
+#include "sector/battlecontroller.hpp"
 #include "sector/boundary.h"
 #include "sector/dust.h"
 #include "sector/splitrenderer.hpp"
@@ -205,6 +206,9 @@ bool Sector::Initialize()
     CreateOtherFleetViewport();
     m_pSplitRenderer = new SplitRenderer( m_pOtherFleetViewport );
     m_pSystem->GetLayer( LayerId::Split )->AddSceneObject( m_pSplitRenderer );
+
+    m_pBattleController = std::make_shared<BattleController>( m_pPlayerFleet, m_pOtherFleet );
+    m_pSystem->GetLayer( LayerId::Ships )->AddSceneObject( m_pBattleController.get(), false );
 
     return true;
 }
