@@ -20,6 +20,7 @@
 #include "sector/battlecontrollerevents.hpp"
 
 #include <coredefines.h>
+#include <imgui/imgui.h>
 
 #include <list>
 #include <string>
@@ -48,6 +49,7 @@ private:
     FleetSharedPtr m_pOtherFleet;
     std::list<BattleEventUniquePtr> m_Events;
     bool m_DebugUIOpen;
+    ImVec4 m_DebugUITitleColor;
 };
 GENESIS_DECLARE_SMART_PTR( BattleController );
 

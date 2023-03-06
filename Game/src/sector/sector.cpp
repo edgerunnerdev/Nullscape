@@ -21,6 +21,7 @@
 #include "ammo/ammomanager.h"
 #include "entity/component.hpp"
 #include "entity/componentfactory.hpp"
+#include "entity/components/shipdetailscomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
 #include "entity/entity.hpp"
 #include "entity/entityfactory.hpp"
@@ -216,17 +217,17 @@ bool Sector::Initialize()
 void Sector::CreatePlayerFleet()
 {
     m_pPlayerFleet = std::make_shared<Fleet>();
-    m_pPlayerShip = CreateShip( "dagger", glm::vec3(0.0f, 0.0f, 0.0f), m_pPlayerFleet);
+    m_pPlayerShip = CreateShip( "dagger", "Obsidian Sword", glm::vec3( 0.0f, 0.0f, 0.0f ), m_pPlayerFleet );
     m_pPlayerShip->AddComponent( ComponentFactory::Get()->Create( ComponentType::PlayerControllerComponent ) );
-    CreateShip( "dagger", glm::vec3(20.0f, 20.0f, -10.0f), m_pPlayerFleet);
-    CreateShip( "dagger", glm::vec3(50.0f, -15.0f, -5.0f), m_pPlayerFleet);
+    CreateShip( "dagger", "Absence of Gravitas", glm::vec3( 20.0f, 20.0f, -10.0f ), m_pPlayerFleet );
+    CreateShip( "dagger", "Gardenia", glm::vec3( 50.0f, -15.0f, -5.0f ), m_pPlayerFleet );
 }
 
 void Sector::CreateOtherFleet()
 {
     m_pOtherFleet = std::make_shared<Fleet>();
-    CreateShip( "dagger", glm::vec3(0.0f, 0.0f, 1000.0f), m_pOtherFleet);
-    CreateShip( "dagger", glm::vec3(20.0f, 20.0f, 1000.0f - 10.0f), m_pOtherFleet);
+    CreateShip( "dagger", "Red Claw Hunter", glm::vec3( 0.0f, 0.0f, 1000.0f ), m_pOtherFleet );
+    CreateShip( "dagger", "Red Claw Hunter", glm::vec3( 20.0f, 20.0f, 1000.0f - 10.0f ), m_pOtherFleet );
 }
 
 void Sector::CreateOtherFleetViewport()
@@ -238,7 +239,7 @@ void Sector::CreateOtherFleetViewport()
     FrameWork::GetRenderSystem()->AddViewport( m_pOtherFleetViewport );
 }
 
-EntitySharedPtr Sector::CreateShip( const std::string& templateName, const glm::vec3& position, FleetSharedPtr& pFleet )
+EntitySharedPtr Sector::CreateShip( const std::string& templateName, const std::string& shipName, const glm::vec3& position, FleetSharedPtr& pFleet )
 {
     SDL_assert( pFleet );
     EntitySharedPtr pShipEntity = EntityFactory::Get()->Create( templateName );
@@ -248,6 +249,10 @@ EntitySharedPtr Sector::CreateShip( const std::string& templateName, const glm::
         m_Entities.push_back( pShipEntity );
         pFleet->AddShip( pShipEntity );
         pShipEntity->GetComponent<TransformComponent>()->SetTransform( glm::translate( position ) );
+
+        pShipEntity->AddComponent( ComponentFactory::Get()->Create( ComponentType::ShipDetailsComponent ) );
+        pShipEntity->GetComponent<ShipDetailsComponent>()->SetShipName( shipName );
+
         return pShipEntity;
     }
     else
@@ -332,8 +337,8 @@ void Sector::UpdateCameras()
         ImGui::InputFloat3( "Player camera position", sPlayerCameraPos );
         ImGui::InputFloat3( "Player camera target", sPlayerCameraTarget );
 
-        ImGui::SliderFloat3("Other camera position", sOtherCameraPos, -100.0f, 1200.0f );
-        ImGui::SliderFloat3("Other camera target", sOtherCameraTarget, -100.0f, 1200.0f );
+        ImGui::SliderFloat3( "Other camera position", sOtherCameraPos, -100.0f, 1200.0f );
+        ImGui::SliderFloat3( "Other camera target", sOtherCameraTarget, -100.0f, 1200.0f );
         ImGui::End();
     }
 

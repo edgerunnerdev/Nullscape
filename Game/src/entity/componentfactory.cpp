@@ -19,10 +19,12 @@
 
 #include "entity/components/cameracomponent.hpp"
 #include "entity/components/enginecomponent.hpp"
+#include "entity/components/hullcomponent.hpp"
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/navigationcomponent.hpp"
 #include "entity/components/playercontrollercomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
+#include "entity/components/shipdetailscomponent.hpp"
 #include "entity/components/swaycomponent.hpp"
 #include "entity/components/trailcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
@@ -34,33 +36,35 @@ namespace Hyperscape
 
 std::unique_ptr<ComponentFactory> g_pComponentFactory;
 
-#define REGISTER_COMPONENT(COMPONENT_NAME)                                              \
-    {                                                                                   \
-        auto createComponentFn = []() {                                                 \
-            return std::make_unique<COMPONENT_NAME>();                                  \
-        };                                                                              \
-        m_TypeRegistry[static_cast<size_t>(COMPONENT_NAME::sType)] = createComponentFn; \
-        m_NameRegistry[#COMPONENT_NAME] = createComponentFn;                            \
+#define REGISTER_COMPONENT( COMPONENT_NAME )                                                \
+    {                                                                                       \
+        auto createComponentFn = []() {                                                     \
+            return std::make_unique<COMPONENT_NAME>();                                      \
+        };                                                                                  \
+        m_TypeRegistry[ static_cast<size_t>( COMPONENT_NAME::sType ) ] = createComponentFn; \
+        m_NameRegistry[ #COMPONENT_NAME ] = createComponentFn;                              \
     }
 
 ComponentFactory::ComponentFactory()
 {
-    REGISTER_COMPONENT(CameraComponent);
-    REGISTER_COMPONENT(EngineComponent);
-    REGISTER_COMPONENT(ModelComponent);
-    REGISTER_COMPONENT(NavigationComponent);
-    REGISTER_COMPONENT(PlayerControllerComponent);
-    REGISTER_COMPONENT(TransformComponent);
-    REGISTER_COMPONENT(RigidBodyComponent);
-    REGISTER_COMPONENT(TrailComponent);
-    REGISTER_COMPONENT(SwayComponent);
+    REGISTER_COMPONENT( CameraComponent );
+    REGISTER_COMPONENT( EngineComponent );
+    REGISTER_COMPONENT( ModelComponent );
+    REGISTER_COMPONENT( NavigationComponent );
+    REGISTER_COMPONENT( PlayerControllerComponent );
+    REGISTER_COMPONENT( TransformComponent );
+    REGISTER_COMPONENT( RigidBodyComponent );
+    REGISTER_COMPONENT( TrailComponent );
+    REGISTER_COMPONENT( SwayComponent );
+    REGISTER_COMPONENT( ShipDetailsComponent );
+    REGISTER_COMPONENT( HullComponent );
 }
 
 ComponentFactory::~ComponentFactory() {}
 
 ComponentFactory* ComponentFactory::Get()
 {
-    if (g_pComponentFactory == nullptr)
+    if ( g_pComponentFactory == nullptr )
     {
         g_pComponentFactory = std::make_unique<ComponentFactory>();
     }
@@ -68,15 +72,15 @@ ComponentFactory* ComponentFactory::Get()
     return g_pComponentFactory.get();
 }
 
-ComponentUniquePtr ComponentFactory::Create(ComponentType type) const
+ComponentUniquePtr ComponentFactory::Create( ComponentType type ) const
 {
-    return m_TypeRegistry[static_cast<size_t>(type)]();
+    return m_TypeRegistry[ static_cast<size_t>( type ) ]();
 }
 
-ComponentUniquePtr ComponentFactory::Create(const std::string& typeName) const
+ComponentUniquePtr ComponentFactory::Create( const std::string& typeName ) const
 {
-    auto it = m_NameRegistry.find(typeName);
-    return (it == m_NameRegistry.cend()) ? nullptr : it->second();
+    auto it = m_NameRegistry.find( typeName );
+    return ( it == m_NameRegistry.cend() ) ? nullptr : it->second();
 }
 
 } // namespace Hyperscape

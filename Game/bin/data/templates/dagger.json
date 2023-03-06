@@ -18,6 +18,13 @@
       "version": 1
     },
     {
+      "type": "HullComponent",
+      "version": 1,
+      "hull_type": "Gunship",
+      "maximum_hit_points": 300,
+      "current_hit_points": 300
+    },
+    {
       "acceleration": 10.0,
       "alignment_time": 1.0,
       "current_speed": 0.0,

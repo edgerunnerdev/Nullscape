@@ -17,15 +17,26 @@
 
 #include "sector/battlecontroller.hpp"
 
-#include <imgui/imgui.h>
+#include "entity/components/hullcomponent.hpp"
+#include "entity/components/shipdetailscomponent.hpp"
+#include "entity/entity.hpp"
+#include "fleet/fleet.hpp"
+
+#include <genesis.h>
 #include <imgui/imgui_impl.h>
+
+#include <sstream>
 
 namespace Hyperscape
 {
 
 BattleController::BattleController( const FleetSharedPtr& pPlayerFleet, const FleetSharedPtr& pOtherFleet )
     : m_DebugUIOpen( false )
+    , m_pPlayerFleet( pPlayerFleet )
+    , m_pOtherFleet( pOtherFleet )
 {
+    m_DebugUITitleColor = ImColor( 86, 224, 199, 255 ).Value;
+
     Genesis::ImGuiImpl::RegisterDevMenu( "Game", "Battle controller", &m_DebugUIOpen );
 }
 
@@ -69,7 +80,33 @@ void BattleController::UpdateFleetDebugUI( FleetSharedPtr& pFleet, const std::st
 {
     if ( ImGui::BeginChild( title.c_str(), ImVec2( 400.0f, 0.0f ), true ) )
     {
-        ImGui::TextColored( ImVec4( 1.0f, 0.65f, 0.0f, 1.0f ), "Ships - %s", title.c_str() );
+        ImGui::TextColored( m_DebugUITitleColor, "Ships - %s", title.c_str() );
+        ImGui::Separator();
+
+        int shipIndex = 1;
+        for ( auto& pShip : pFleet->GetShips() )
+        {
+            ShipDetailsComponent* pShipDetailsComponent = pShip->GetComponent<ShipDetailsComponent>();
+            SDL_assert( pShipDetailsComponent );
+            if ( pShipDetailsComponent == nullptr )
+            {
+                continue;
+            }
+
+            std::stringstream shipTitle;
+            shipTitle << "Ship #" << shipIndex++ << ": " << pShipDetailsComponent->GetShipName();
+            if ( ImGui::CollapsingHeader( shipTitle.str().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
+            {
+                HullComponent* pHullComponent = pShip->GetComponent<HullComponent>();
+                if ( pHullComponent != nullptr )
+                {
+                    ImGui::TextColored( m_DebugUITitleColor, "Hull" );
+                    ImGui::Text( "- Type: %s", magic_enum::enum_name( pHullComponent->GetHullType() ).data() );
+                    ImGui::Text( "- Hit points: %d / %d", pHullComponent->GetCurrentHitPoints(), pHullComponent->GetMaximumHitPoints() );
+                }
+            }
+        }
+
         ImGui::EndChild();
     }
 }
@@ -78,7 +115,8 @@ void BattleController::UpdateBattleEventsDebugUI()
 {
     if ( ImGui::BeginChild( "Events", ImVec2( 0.0f, 0.0f ), true ) )
     {
-        ImGui::TextColored( ImVec4( 1.0f, 0.65f, 0.0f, 1.0f ), "%s", "Events" );
+        ImGui::TextColored( m_DebugUITitleColor, "%s", "Events" );
+        ImGui::Separator();
         ImGui::EndChild();
     }
 }

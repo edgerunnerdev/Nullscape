@@ -1,4 +1,4 @@
-// Copyright 2022 Pedro Nunes
+// Copyright 2023 Pedro Nunes
 //
 // This file is part of Hyperscape.
 //
@@ -13,30 +13,19 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Genesis. If not, see <http://www.gnu.org/licenses/>.
+// along with Hyperscape. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-
-#include <SDL.h>
 
 namespace Hyperscape
 {
 
-enum class ComponentType:uint16_t
+// If this type is modified, you must update the serialization code in jsonserialization.hpp.
+enum class HullType
 {
-	ModelComponent = 0,
-	TransformComponent,
-	RigidBodyComponent,
-	NavigationComponent,
-	EngineComponent,
-	CameraComponent,
-	PlayerControllerComponent,
-	TrailComponent,
-	SwayComponent,
-	ShipDetailsComponent,
-	HullComponent,
-
-	Count
+    Gunship,
+    Frigate,
+    Battleship
 };
 
 } // namespace Hyperscape

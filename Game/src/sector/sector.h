@@ -105,7 +105,7 @@ private:
     void DebugDrawFleetSpawnPositions();
     void SelectPlaylist();
 
-    EntitySharedPtr CreateShip( const std::string& templateName, const glm::vec3& position, FleetSharedPtr& pFleet );
+    EntitySharedPtr CreateShip( const std::string& templateName, const std::string& shipName, const glm::vec3& position, FleetSharedPtr& pFleet );
 
     System* m_pSystem;
     glm::vec2 m_Coordinates;

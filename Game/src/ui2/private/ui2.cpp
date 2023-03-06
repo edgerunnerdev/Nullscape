@@ -55,6 +55,9 @@ void SetupStyle()
     style.Colors[ ImGuiCol_FrameBgActive ] = ImColor( 255, 255, 255, 50 );
     style.Colors[ ImGuiCol_SliderGrab ] = ImColor( 86, 224, 199, 255 );
     style.Colors[ ImGuiCol_SliderGrabActive ] = ImColor( 0, 255, 209, 255 );
+    style.Colors[ ImGuiCol_Header ] = ImColor( 48, 48, 51, 255 );
+    style.Colors[ ImGuiCol_HeaderHovered ] = ImColor( 48, 48, 51, 255 );
+    style.Colors[ ImGuiCol_HeaderActive ] = ImColor( 48, 48, 51, 255 );
 }
 
 } // namespace Hyperscape::UI2::Private
