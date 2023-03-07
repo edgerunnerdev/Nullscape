@@ -23,6 +23,7 @@
 #include "entity/components/modelcomponent.hpp"
 #include "entity/components/navigationcomponent.hpp"
 #include "entity/components/playercontrollercomponent.hpp"
+#include "entity/components/reactorcomponent.hpp"
 #include "entity/components/rigidbodycomponent.hpp"
 #include "entity/components/shipdetailscomponent.hpp"
 #include "entity/components/swaycomponent.hpp"
@@ -58,6 +59,7 @@ ComponentFactory::ComponentFactory()
     REGISTER_COMPONENT( SwayComponent );
     REGISTER_COMPONENT( ShipDetailsComponent );
     REGISTER_COMPONENT( HullComponent );
+    REGISTER_COMPONENT( ReactorComponent );
 }
 
 ComponentFactory::~ComponentFactory() {}

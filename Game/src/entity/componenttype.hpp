@@ -35,6 +35,7 @@ enum class ComponentType:uint16_t
 	SwayComponent,
 	ShipDetailsComponent,
 	HullComponent,
+	ReactorComponent,
 
 	Count
 };

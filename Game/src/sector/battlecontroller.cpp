@@ -18,6 +18,7 @@
 #include "sector/battlecontroller.hpp"
 
 #include "entity/components/hullcomponent.hpp"
+#include "entity/components/reactorcomponent.hpp"
 #include "entity/components/shipdetailscomponent.hpp"
 #include "entity/entity.hpp"
 #include "fleet/fleet.hpp"
@@ -103,6 +104,15 @@ void BattleController::UpdateFleetDebugUI( FleetSharedPtr& pFleet, const std::st
                     ImGui::TextColored( m_DebugUITitleColor, "Hull" );
                     ImGui::Text( "- Type: %s", magic_enum::enum_name( pHullComponent->GetHullType() ).data() );
                     ImGui::Text( "- Hit points: %d / %d", pHullComponent->GetCurrentHitPoints(), pHullComponent->GetMaximumHitPoints() );
+                }
+
+                ReactorComponent* pReactorComponent = pShip->GetComponent<ReactorComponent>();
+                if ( pReactorComponent != nullptr )
+                {
+                    ImGui::TextColored( m_DebugUITitleColor, "Reactor" );
+                    ImGui::Text( "- Energy: %d / %d", static_cast<int>( pReactorComponent->GetCurrentEnergy() ), pReactorComponent->GetMaximumEnergy() );
+                    ImGui::Text( "- Recovery rate: %.2fGW/s", pReactorComponent->GetEnergyRecoveryRate() );
+                    ImGui::Text( "- Hit points: %d / %d", pReactorComponent->GetCurrentHitPoints(), pReactorComponent->GetMaximumHitPoints() );
                 }
             }
         }

@@ -1,80 +1,88 @@
 {
-  "components": [
-    {
-      "filename": "data/models/ships/corvettes/dagger/exported/model.gmdl",
-      "type": "ModelComponent",
-      "version": 1
-    },
-    {
-      "type": "TransformComponent",
-      "version": 1
-    },
-    {
-      "type": "NavigationComponent",
-      "version": 1
-    },
-    {
-      "type": "SwayComponent",
-      "version": 1
-    },
-    {
-      "type": "HullComponent",
-      "version": 1,
-      "hull_type": "Gunship",
-      "maximum_hit_points": 300,
-      "current_hit_points": 300
-    },
-    {
-      "acceleration": 10.0,
-      "alignment_time": 1.0,
-      "current_speed": 0.0,
-      "maximum_speed": 50.0,
-      "target_throttle": 0.0,
-      "type": "EngineComponent",
-      "version": 1
-    },
-    {
-      "offset": [
-        -20.0,
-        6.0,
-        8.0
-      ],
-      "type": "CameraComponent",
-      "version": 1
-    },
-    {
-      "color": [
-        1.0,
-        1.0,
-        1.0,
-        1.0
-      ],
-      "lifetime": 5.0,
-      "offset": [
-        -6.0,
-        0.6000000238418579,
-        1.0
-      ],
-      "type": "TrailComponent",
-      "version": 1,
-      "width": 1.5
-    },
-    {
-      "color": [
-        1.0,
-        1.0,
-        1.0,
-        1.0
-      ],
-      "lifetime": 5.0,
-      "offset": [
-        -6.0,
-        0.6000000238418579,
-        -1.0
-      ],
-      "type": "TrailComponent",
-      "version": 1,
-      "width": 1.5
-    }
-  ]
+    "components": [
+        {
+            "filename": "data/models/ships/corvettes/dagger/exported/model.gmdl",
+            "type": "ModelComponent",
+            "version": 1
+        },
+        {
+            "type": "TransformComponent",
+            "version": 1
+        },
+        {
+            "type": "NavigationComponent",
+            "version": 1
+        },
+        {
+            "acceleration": 10.0,
+            "alignment_time": 1.0,
+            "current_speed": 0.0,
+            "maximum_speed": 50.0,
+            "target_throttle": 0.0,
+            "type": "EngineComponent",
+            "version": 1
+        },
+        {
+            "offset": [
+                -20.0,
+                6.0,
+                8.0
+            ],
+            "type": "CameraComponent",
+            "version": 1
+        },
+        {
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "lifetime": 5.0,
+            "offset": [
+                -6.0,
+                0.6000000238418579,
+                1.0
+            ],
+            "type": "TrailComponent",
+            "version": 1,
+            "width": 1.5
+        },
+        {
+            "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "lifetime": 5.0,
+            "offset": [
+                -6.0,
+                0.6000000238418579,
+                -1.0
+            ],
+            "type": "TrailComponent",
+            "version": 1,
+            "width": 1.5
+        },
+        {
+            "type": "SwayComponent",
+            "version": 1
+        },
+        {
+            "current_hit_points": 300,
+            "hull_type": "Gunship",
+            "maximum_hit_points": 300,
+            "type": "HullComponent",
+            "version": 1
+        },
+        {
+            "baseline_energy_recovery_rate": 0.5,
+            "current_hit_points": 100,
+            "maximum_energy": 4,
+            "maximum_hit_points": 100,
+            "type": "ReactorComponent",
+            "version": 1
+        }
+    ]
 }
