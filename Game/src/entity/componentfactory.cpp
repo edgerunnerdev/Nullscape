@@ -29,6 +29,7 @@
 #include "entity/components/swaycomponent.hpp"
 #include "entity/components/trailcomponent.hpp"
 #include "entity/components/transformcomponent.hpp"
+#include "entity/components/weaponcomponent.hpp"
 
 #include <memory>
 
@@ -60,6 +61,7 @@ ComponentFactory::ComponentFactory()
     REGISTER_COMPONENT( ShipDetailsComponent );
     REGISTER_COMPONENT( HullComponent );
     REGISTER_COMPONENT( ReactorComponent );
+    REGISTER_COMPONENT( WeaponComponent );
 }
 
 ComponentFactory::~ComponentFactory() {}

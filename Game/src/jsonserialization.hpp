@@ -18,6 +18,7 @@
 #pragma once
 
 #include "entity/components/hulltype.hpp"
+#include "entity/components/weapontype.hpp"
 
 #include <genesis.h>
 
@@ -125,6 +126,21 @@ struct adl_serializer<Hyperscape::HullType>
     {
         auto type = magic_enum::enum_cast<Hyperscape::HullType>( j.get<std::string>() );
         v = type.value_or( Hyperscape::HullType::Gunship );
+    }
+};
+
+template <>
+struct adl_serializer<Hyperscape::WeaponType>
+{
+    static void to_json( json& j, const Hyperscape::WeaponType& v )
+    {
+        j = json{ magic_enum::enum_name( v ) };
+    }
+
+    static void from_json( const json& j, Hyperscape::WeaponType& v )
+    {
+        auto type = magic_enum::enum_cast<Hyperscape::WeaponType>( j.get<std::string>() );
+        v = type.value_or( Hyperscape::WeaponType::Turret );
     }
 };
 

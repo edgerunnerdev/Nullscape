@@ -217,7 +217,7 @@ bool Sector::Initialize()
 void Sector::CreatePlayerFleet()
 {
     m_pPlayerFleet = std::make_shared<Fleet>();
-    m_pPlayerShip = CreateShip( "dagger", "Obsidian Sword", glm::vec3( 0.0f, 0.0f, 0.0f ), m_pPlayerFleet );
+    m_pPlayerShip = CreateShip( "phaeton", "Obsidian Sword", glm::vec3( 0.0f, 0.0f, 0.0f ), m_pPlayerFleet );
     m_pPlayerShip->AddComponent( ComponentFactory::Get()->Create( ComponentType::PlayerControllerComponent ) );
     CreateShip( "dagger", "Absence of Gravitas", glm::vec3( 20.0f, 20.0f, -10.0f ), m_pPlayerFleet );
     CreateShip( "dagger", "Gardenia", glm::vec3( 50.0f, -15.0f, -5.0f ), m_pPlayerFleet );
@@ -327,18 +327,21 @@ void Sector::Update( float delta )
 
 void Sector::UpdateCameras()
 {
-    static float sPlayerCameraPos[ 3 ] = { -40.0f, 25.0f, 35.0f };
-    static float sPlayerCameraTarget[ 3 ] = { 20.0f, 10.0f, 25.0f };
+    static float sPlayerCameraPos[ 3 ] = { -80.0f, 25.0f, 48.0f };
+    static float sPlayerCameraTarget[ 3 ] = { 53.0f, -14.0f, 21.0f };
     static float sOtherCameraPos[ 3 ] = { 55.0f, 45.0f, 1050.0f };
     static float sOtherCameraTarget[ 3 ] = { -40.0f, 10.0f, 1010.0f };
     static bool sDebugCamera = false;
-    if ( sDebugCamera && ImGui::Begin( "Camera" ) )
+    if ( sDebugCamera )
     {
-        ImGui::InputFloat3( "Player camera position", sPlayerCameraPos );
-        ImGui::InputFloat3( "Player camera target", sPlayerCameraTarget );
+        if ( ImGui::Begin( "Camera" ) )
+        {
+            ImGui::SliderFloat3( "Player camera position", sPlayerCameraPos, -100.0f, 100.0f );
+            ImGui::SliderFloat3( "Player camera target", sPlayerCameraTarget, -100.0f, 100.0f );
 
-        ImGui::SliderFloat3( "Other camera position", sOtherCameraPos, -100.0f, 1200.0f );
-        ImGui::SliderFloat3( "Other camera target", sOtherCameraTarget, -100.0f, 1200.0f );
+            ImGui::SliderFloat3( "Other camera position", sOtherCameraPos, -100.0f, 1200.0f );
+            ImGui::SliderFloat3( "Other camera target", sOtherCameraTarget, -100.0f, 1200.0f );
+        }
         ImGui::End();
     }
 

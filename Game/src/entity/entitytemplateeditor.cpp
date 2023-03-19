@@ -42,8 +42,8 @@
 namespace Hyperscape
 {
 
-static const int sViewportWidth = 800;
-static const int sViewportHeight = 800;
+static const int sViewportWidth = 1024;
+static const int sViewportHeight = 1024;
 
 EntityTemplateEditor::EntityTemplateEditor()
     : m_IsOpen(false)
@@ -109,7 +109,7 @@ void EntityTemplateEditor::UpdateDebugUI()
 
         ImGui::SameLine();
 
-        ImGui::BeginChild("Components", ImVec2(300, sViewportHeight), true);
+        ImGui::BeginChild("Components", ImVec2(600, sViewportHeight), true);
         
         ImGui::TextUnformatted("Components");
         ImGui::Separator();
